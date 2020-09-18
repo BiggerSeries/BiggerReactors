@@ -1,0 +1,27 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "biggerreactors:block/reactor_terminal_off"
+      }
+    },
+    {
+      "when": {
+        "direction": "face",
+        "reactoractivity": "active"
+      },
+      "apply": {
+        "model": "biggerreactors:block/reactor_terminal_active"
+      }
+    },
+    {
+      "when": {
+        "direction": "face",
+        "reactoractivity": "inactive"
+      },
+      "apply": {
+        "model": "biggerreactors:block/reactor_terminal_idle"
+      }
+    }
+  ]
+}

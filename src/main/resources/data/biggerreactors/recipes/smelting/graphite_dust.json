@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": [
+    {
+      "item": "biggerreactors:graphite_dust"
+    }
+  ],
+  "result": "biggerreactors:graphite_ingot",
+  "cookingtime": 200
+}

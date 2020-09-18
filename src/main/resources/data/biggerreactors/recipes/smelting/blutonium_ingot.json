@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": [
+    {
+      "item": "biggerreactors:blutonium_dust"
+    }
+  ],
+  "result": "biggerreactors:blutonium_ingot",
+  "cookingtime": 200
+}
