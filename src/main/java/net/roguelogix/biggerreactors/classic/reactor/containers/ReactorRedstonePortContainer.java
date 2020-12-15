@@ -5,26 +5,26 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.math.BlockPos;
-import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorCoolantPort;
-import net.roguelogix.biggerreactors.classic.reactor.tiles.ReactorCoolantPortTile;
+import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorRedstonePort;
+import net.roguelogix.biggerreactors.classic.reactor.tiles.ReactorRedstonePortTile;
 import net.roguelogix.phosphophyllite.gui.GuiSync;
 import net.roguelogix.phosphophyllite.registry.RegisterContainer;
 
 import javax.annotation.Nonnull;
 
-@RegisterContainer(name = "reactor_coolant_port")
-public class ReactorCoolantPortContainer extends Container implements GuiSync.IGUIPacketProvider {
+@RegisterContainer(name = "reactor_redstone_port")
+public class ReactorRedstonePortContainer extends Container implements GuiSync.IGUIPacketProvider {
 
     @RegisterContainer.Instance
-    public static ContainerType<ReactorCoolantPortContainer> INSTANCE;
+    public static ContainerType<ReactorRedstonePortContainer> INSTANCE;
 
     private PlayerEntity player;
-    private ReactorCoolantPortTile tileEntity;
+    private ReactorRedstonePortTile tileEntity;
 
-    public ReactorCoolantPortContainer(int windowId, BlockPos blockPos, PlayerEntity player) {
+    public ReactorRedstonePortContainer(int windowId, BlockPos blockPos, PlayerEntity player) {
         super(INSTANCE, windowId);
         this.player = player;
-        this.tileEntity = (ReactorCoolantPortTile) player.world.getTileEntity(blockPos);
+        this.tileEntity = (ReactorRedstonePortTile) player.world.getTileEntity(blockPos);
         this.getGuiPacket();
     }
 
@@ -33,14 +33,15 @@ public class ReactorCoolantPortContainer extends Container implements GuiSync.IG
      */
     @Override
     public GuiSync.IGUIPacket getGuiPacket() {
-        return this.tileEntity.getState();
+        // We gather the current changes, not the active state.
+        return this.tileEntity.getCurrentChanges();
     }
 
     @Override
     public boolean canInteractWith(@Nonnull PlayerEntity player) {
         assert tileEntity.getWorld() != null;
         return isWithinUsableDistance(IWorldPosCallable.of(tileEntity.getWorld(), tileEntity.getPos()),
-                player, ReactorCoolantPort.INSTANCE);
+                player, ReactorRedstonePort.INSTANCE);
     }
 
     @Override
