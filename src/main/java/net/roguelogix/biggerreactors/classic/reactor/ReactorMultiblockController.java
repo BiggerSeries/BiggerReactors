@@ -1,11 +1,15 @@
 package net.roguelogix.biggerreactors.classic.reactor;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.classic.reactor.blocks.*;
@@ -15,6 +19,7 @@ import net.roguelogix.biggerreactors.classic.reactor.state.ReactorState;
 import net.roguelogix.biggerreactors.classic.reactor.state.ReactorType;
 import net.roguelogix.biggerreactors.classic.reactor.tiles.*;
 import net.roguelogix.biggerreactors.fluids.FluidIrradiatedSteam;
+import net.roguelogix.biggerreactors.registries.FluidTransitionRegistry;
 import net.roguelogix.phosphophyllite.Phosphophyllite;
 import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
 import net.roguelogix.phosphophyllite.multiblock.generic.ValidationError;
@@ -219,6 +224,39 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             simulation.battery.extractPower(-compound.getLong("storedPower"));
         }
         
+        if (compound.contains("currentLiquid")) {
+            ResourceLocation location = new ResourceLocation(compound.getString("currentLiquid"));
+            if (ForgeRegistries.FLUIDS.containsKey(location)) {
+                Fluid fluid = ForgeRegistries.FLUIDS.getValue(location);
+                FluidTransitionRegistry.FluidTransition transition = FluidTransitionRegistry.liquidTransition(fluid);
+                if (transition == null) {
+                    // transition no longer exists, so, void it
+                    simulation.coolantTank.voidLiquid();
+                    simulation.coolantTank.voidVapor();
+                } else {
+                    activeTransition = transition;
+                    currentLiquid = fluid;
+                }
+            } else {
+                // registry no longer knows what fluid we had, id assume the mod was removed, sooo, *void it all*
+                simulation.coolantTank.voidLiquid();
+                simulation.coolantTank.voidVapor();
+            }
+        }
+        
+        if (compound.contains("currentVapor")) {
+            ResourceLocation location = new ResourceLocation(compound.getString("currentVapor"));
+            if (ForgeRegistries.FLUIDS.containsKey(location)) {
+                Fluid fluid = ForgeRegistries.FLUIDS.getValue(location);
+                if (activeTransition != null && activeTransition.gases.contains(fluid)) {
+                    currentVapor = fluid;
+                }
+            }
+            if (currentVapor == null && activeTransition != null) {
+                currentVapor = activeTransition.gases.get(0);
+            }
+        }
+        
         updateBlockStates();
     }
     
@@ -228,6 +266,12 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         {
             compound.putString("reactorState", reactorActivity.toString());
             compound.put("simulationData", simulation.serializeNBT());
+            if (currentLiquid != null) {
+                compound.putString("currentLiquid", currentLiquid.getRegistryName().toString());
+            }
+            if (currentVapor != null) {
+                compound.putString("currentVapor", currentVapor.getRegistryName().toString());
+            }
         }
         return compound;
     }
@@ -309,12 +353,55 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     
     private ClassicReactorSimulation simulation = new ClassicReactorSimulation();
     
-    public long addCoolant(long coolant, boolean simulated) {
-        return simulation.coolantTank.insertWater(coolant, simulated);
+    private Fluid currentLiquid;
+    private Fluid currentVapor;
+    private FluidTransitionRegistry.FluidTransition activeTransition;
+    
+    public Fluid getCurrentLiquid() {
+        return currentLiquid;
     }
     
-    public long extractSteam(long steam, boolean simulated) {
-        return simulation.coolantTank.extractSteam(steam, simulated);
+    public FluidStack getCurrentLiquidStack() {
+        return new FluidStack(currentLiquid, (int) simulation.coolantTank.getLiquidAmount());
+    }
+    
+    public Fluid getCurrentVapor() {
+        return currentVapor;
+    }
+    
+    public FluidStack getCurrentVaporStack() {
+        return new FluidStack(currentVapor, (int) simulation.coolantTank.getVaporAmount());
+    }
+    
+    public FluidTransitionRegistry.FluidTransition getActiveTransition() {
+        return activeTransition;
+    }
+    
+    public long addCoolantLiquid(Fluid liquid, long amount, boolean simulated) {
+        if (liquid == currentLiquid || (activeTransition != null && activeTransition.liquids.contains(liquid))) {
+            return simulation.coolantTank.insertLiquid(amount, simulated);
+        } else {
+            if (simulation.coolantTank.getLiquidAmount() == 0 && simulation.coolantTank.getVaporAmount() == 0) {
+                // new transition time!
+                // tank is empty, and the current transition doesnt work for this liquid
+                activeTransition = FluidTransitionRegistry.liquidTransition(liquid);
+                if (activeTransition == null) {
+                    return 0;
+                }
+                currentLiquid = liquid;
+                currentVapor = activeTransition.gases.get(0);
+                return addCoolantLiquid(liquid, amount, simulated);
+            }
+            return 0;
+        }
+    }
+    
+    public long extractCoolantVapor(Fluid vapor, long amount, boolean simulated) {
+        if (vapor == currentVapor || (activeTransition != null && activeTransition.gases.contains(vapor))) {
+            currentVapor = vapor;
+            return simulation.coolantTank.extractVapor(amount, simulated);
+        }
+        return 0;
     }
     
     private boolean forceDirty = false;
@@ -345,7 +432,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         
         // i know this is just a hose out, not sure if it should be changed or not
         for (ReactorCoolantPortTile coolantPort : coolantPorts) {
-            simulation.coolantTank.extractSteam(coolantPort.pushSteam(simulation.coolantTank.extractSteam(Integer.MAX_VALUE, true)), false);
+            simulation.coolantTank.extractVapor(coolantPort.pushSteam(simulation.coolantTank.extractVapor(Integer.MAX_VALUE, true)), false);
         }
         
         updateFuelRenderingLevel();
@@ -544,10 +631,10 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         reactorState.fuelStored = simulation.fuelTank.getFuelAmount();
         reactorState.fuelCapacity = simulation.fuelTank.getCapacity();
         
-        reactorState.coolantStored = simulation.coolantTank.getWaterAmount();
+        reactorState.coolantStored = simulation.coolantTank.getLiquidAmount();
         reactorState.coolantCapacity = simulation.coolantTank.getPerSideCapacity();
         
-        reactorState.steamStored = simulation.coolantTank.getSteamAmount();
+        reactorState.steamStored = simulation.coolantTank.getVaporAmount();
         reactorState.steamCapacity = simulation.coolantTank.getPerSideCapacity();
         
         reactorState.caseHeatStored = simulation.getReactorHeat();
@@ -602,8 +689,10 @@ public class ReactorMultiblockController extends RectangularMultiblockController
                 "FuelHeat: " + simulation.getFuelHeat() + "\n" +
                 "ReactorHeat: " + simulation.getReactorHeat() + "\n" +
                 "CoolantTankSize: " + simulation.coolantTank.getPerSideCapacity() + "\n" +
-                "Water: " + simulation.coolantTank.getWaterAmount() + "\n" +
-                "Steam: " + simulation.coolantTank.getSteamAmount() + "\n" +
+                "LiquidType: " + currentLiquid + "\n" +
+                "Liquid: " + simulation.coolantTank.getLiquidAmount() + "\n" +
+                "VaporType: " + currentVapor + "\n" +
+                "Vapor: " + simulation.coolantTank.getVaporAmount() + "\n" +
                 "";
     }
     
@@ -630,7 +719,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     }
     
     public long getSteamAmount() {
-        return simulation.coolantTank.getSteamAmount();
+        return simulation.coolantTank.getVaporAmount();
     }
     
     // -- ComputerCraft API --
@@ -724,26 +813,26 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     
     @Nullable
     public String CCgetCoolantType() {
-        if (simulation.coolantTank.getWaterAmount() == 0) {
+        if (simulation.coolantTank.getLiquidAmount() == 0 || currentLiquid == null) {
             return null;
         }
-        return Objects.requireNonNull(Fluids.WATER.getRegistryName()).toString();
+        return Objects.requireNonNull(currentLiquid.getRegistryName()).toString();
     }
     
     public long CCgetCoolantAmount() {
-        return simulation.coolantTank.getWaterAmount();
+        return simulation.coolantTank.getLiquidAmount();
     }
     
     @Nullable
     public String CCgetHotFluidType() {
-        if (simulation.coolantTank.getSteamAmount() == 0) {
+        if (simulation.coolantTank.getVaporAmount() == 0 || currentVapor == null) {
             return null;
         }
-        return Objects.requireNonNull(FluidIrradiatedSteam.INSTANCE.getRegistryName()).toString();
+        return Objects.requireNonNull(currentVapor.getRegistryName()).toString();
     }
     
     public long CCgetHotFluidAmount() {
-        return simulation.coolantTank.getSteamAmount();
+        return simulation.coolantTank.getVaporAmount();
     }
     
     public double CCgetFuelReactivity() {

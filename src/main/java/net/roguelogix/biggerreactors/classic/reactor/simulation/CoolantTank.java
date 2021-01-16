@@ -9,8 +9,11 @@ import javax.annotation.Nonnull;
 public class CoolantTank implements INBTSerializable<CompoundNBT> {
     
     private long perSideCapacity = 0;
-    private long waterAmount = 0;
-    private long steamAmount = 0;
+    private long liquidAmount = 0;
+    private long vaporAmount = 0;
+    
+    private long vaporizationEnergy = 4;
+    private long boilingPoint = 100;
     
     private long vaporizedLastTick = 0;
     private long maxVaporizedLastTick = 0;
@@ -23,12 +26,12 @@ public class CoolantTank implements INBTSerializable<CompoundNBT> {
         return maxVaporizedLastTick;
     }
     
-    public long getSteamAmount() {
-        return steamAmount;
+    public long getVaporAmount() {
+        return vaporAmount;
     }
     
-    public long getWaterAmount() {
-        return waterAmount;
+    public long getLiquidAmount() {
+        return liquidAmount;
     }
     
     public long getPerSideCapacity() {
@@ -39,50 +42,66 @@ public class CoolantTank implements INBTSerializable<CompoundNBT> {
         perSideCapacity = capacity;
     }
     
+    public void setVaporizationEnergy(long vaporizationEnergy) {
+        this.vaporizationEnergy = vaporizationEnergy;
+    }
+    
+    public void setBoilingPoint(long boilingPoint) {
+        this.boilingPoint = boilingPoint;
+    }
+    
+    public void voidLiquid(){
+        liquidAmount = 0;
+    }
+    
+    public void voidVapor(){
+        vaporAmount = 0;
+    }
+    
     public double absorbHeat(double rfTransferred) {
         vaporizedLastTick = 0;
-        if (waterAmount <= 0 || rfTransferred <= 0) {
+        if (liquidAmount <= 0 || rfTransferred <= 0) {
             return rfTransferred;
         }
         
-        long amountVaporized = (long) (rfTransferred / Config.Reactor.CoolantVaporizationEnergy);
+        long amountVaporized = (long) (rfTransferred / vaporizationEnergy);
         maxVaporizedLastTick = amountVaporized;
         
-        amountVaporized = Math.min(waterAmount, amountVaporized);
-        amountVaporized = Math.min(amountVaporized, perSideCapacity - steamAmount);
+        amountVaporized = Math.min(liquidAmount, amountVaporized);
+        amountVaporized = Math.min(amountVaporized, perSideCapacity - vaporAmount);
         
         if (amountVaporized < 1) {
             return rfTransferred;
         }
         
         vaporizedLastTick = amountVaporized;
-        waterAmount -= amountVaporized;
-        steamAmount += amountVaporized;
+        liquidAmount -= amountVaporized;
+        vaporAmount += amountVaporized;
         
-        double energyUsed = amountVaporized * Config.Reactor.CoolantVaporizationEnergy;
+        double energyUsed = amountVaporized * vaporizationEnergy;
         
         return Math.max(0, rfTransferred - energyUsed);
     }
     
     public double getCoolantTemperature(double reactorHeat) {
-        if (waterAmount <= 0) {
+        if (liquidAmount <= 0) {
             return reactorHeat;
         }
-        return Math.min(reactorHeat, Config.Reactor.CoolantBoilingPoint);
+        return Math.min(reactorHeat, boilingPoint);
     }
     
-    public long insertWater(long amount, boolean simulated) {
-        amount = Math.min(perSideCapacity - waterAmount, amount);
+    public long insertLiquid(long amount, boolean simulated) {
+        amount = Math.min(perSideCapacity - liquidAmount, amount);
         if (!simulated) {
-            waterAmount += amount;
+            liquidAmount += amount;
         }
         return amount;
     }
     
-    public long extractSteam(long amount, boolean simulated) {
-        amount = Math.min(steamAmount, amount);
+    public long extractVapor(long amount, boolean simulated) {
+        amount = Math.min(vaporAmount, amount);
         if (!simulated) {
-            steamAmount -= amount;
+            vaporAmount -= amount;
         }
         return amount;
     }
@@ -92,8 +111,8 @@ public class CoolantTank implements INBTSerializable<CompoundNBT> {
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = new CompoundNBT();
         nbt.putLong("perSideCapacity", perSideCapacity);
-        nbt.putLong("waterAmount", waterAmount);
-        nbt.putLong("steamAmount", steamAmount);
+        nbt.putLong("liquidAmount", liquidAmount);
+        nbt.putLong("vaporAmount", vaporAmount);
         return nbt;
     }
     
@@ -102,11 +121,17 @@ public class CoolantTank implements INBTSerializable<CompoundNBT> {
         if (nbt.contains("perSideCapacity")) {
             perSideCapacity = nbt.getLong("perSideCapacity");
         }
-        if (nbt.contains("waterAmount")) {
-            waterAmount = nbt.getLong("waterAmount");
+        if (nbt.contains("liquidAmount")) {
+            liquidAmount = nbt.getLong("liquidAmount");
+        } else if (nbt.contains("waterAmount")) {
+            // cant go breaking worlds, unfortunately
+            liquidAmount = nbt.getLong("waterAmount");
         }
-        if (nbt.contains("steamAmount")) {
-            steamAmount = nbt.getLong("steamAmount");
+        
+        if (nbt.contains("vaporAmount")) {
+            vaporAmount = nbt.getLong("vaporAmount");
+        } else if (nbt.contains("steamAmount")) {
+            vaporAmount = nbt.getLong("steamAmount");
         }
     }
 }

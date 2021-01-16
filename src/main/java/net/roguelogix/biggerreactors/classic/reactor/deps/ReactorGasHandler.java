@@ -8,7 +8,7 @@ import mekanism.api.chemical.gas.IGasHandler;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.LazyOptional;
 import net.roguelogix.biggerreactors.classic.reactor.ReactorMultiblockController;
-import net.roguelogix.phosphophyllite.gui.GuiSync;
+import net.roguelogix.biggerreactors.fluids.FluidIrradiatedSteam;
 
 import javax.annotation.Nonnull;
 import java.util.function.Supplier;
@@ -95,7 +95,7 @@ public class ReactorGasHandler implements IGasHandler {
     public GasStack extractChemical(int tank, long amount, @Nonnull Action action) {
         if (tank == 1 && controllerSupplier.get() != null) {
             boolean simulate = action.simulate();
-            long extracted = controllerSupplier.get().extractSteam(amount, simulate);
+            long extracted = controllerSupplier.get().extractCoolantVapor(FluidIrradiatedSteam.INSTANCE, amount, simulate);
             steamStack.setAmount(extracted);
             return steamStack.copy();
         }

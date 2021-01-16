@@ -87,10 +87,6 @@ public class Config {
         public static long FuelMBPerIngot = 1000;
         @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
         public static long CoolantTankAmountPerExternalBlock = 100;
-        @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-        public static float CoolantBoilingPoint = 100;
-        @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-        public static float CoolantVaporizationEnergy = 4;
         @PhosphophylliteConfig.Value(range = "(0,1]", advanced = true)
         public static float RadIntensityScalingMultiplier = 0.95f;
         @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)

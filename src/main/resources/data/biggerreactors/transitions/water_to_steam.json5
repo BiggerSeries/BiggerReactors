@@ -1,0 +1,14 @@
+{
+    // Resource location type
+    liquidType: "registry",
+    // resource location
+    liquid: "minecraft:water",
+    // resource location type
+    gasType: "tag",
+    // resource location
+    gas: "forge:steam",
+    // latent heat of vaporization, in rf
+    latentHeat: 4,
+    // boiling point, in C
+    boilingPoint: 100,
+}
