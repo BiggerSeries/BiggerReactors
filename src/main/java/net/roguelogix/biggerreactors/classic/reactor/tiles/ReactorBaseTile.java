@@ -2,12 +2,13 @@ package net.roguelogix.biggerreactors.classic.reactor.tiles;
 
 import net.minecraft.tileentity.TileEntityType;
 import net.roguelogix.biggerreactors.classic.reactor.ReactorMultiblockController;
+import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorBaseBlock;
 import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblockTile;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ReactorBaseTile extends RectangularMultiblockTile<ReactorMultiblockController, ReactorBaseTile> {
+public class ReactorBaseTile extends RectangularMultiblockTile<ReactorMultiblockController, ReactorBaseTile, ReactorBaseBlock> {
     
     public ReactorBaseTile(@Nonnull TileEntityType<?> tileEntityTypeIn) {
         super(tileEntityTypeIn);

@@ -30,9 +30,9 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 // ahh shit, here we go again
-public class TurbineMultiblockController extends RectangularMultiblockController<TurbineMultiblockController, TurbineBaseTile> {
+public class TurbineMultiblockController extends RectangularMultiblockController<TurbineMultiblockController, TurbineBaseTile, TurbineBaseBlock> {
     public TurbineMultiblockController(World world) {
-        super(world, tile -> tile instanceof TurbineBaseTile);
+        super(world, tile -> tile instanceof TurbineBaseTile, block -> block instanceof TurbineBaseBlock);
         minSize.set(5, 4, 5);
         maxSize.set(Config.Turbine.MaxLength, Config.Turbine.MaxHeight, Config.Turbine.MaxWidth);
         frameValidator = block -> {
