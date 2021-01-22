@@ -1,0 +1,31 @@
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
+
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
+
+# gradle
+build
+.gradle
+
+# other
+eclipse
+run
+
+# extras needed
+BiggerReactors/run
+Phosphophyllite/run
+workspace/run
+logs
+
+# Files from Forge MDK
+forge*changelog.txt
