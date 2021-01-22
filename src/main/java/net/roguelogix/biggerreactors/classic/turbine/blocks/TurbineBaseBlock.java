@@ -33,11 +33,6 @@ public class TurbineBaseBlock extends RectangularMultiblockBlock<TurbineMultiblo
     }
     
     @Override
-    public final boolean hasTileEntity(BlockState state) {
-        return true;
-    }
-    
-    @Override
     protected void fillStateContainer(@Nonnull StateContainer.Builder<Block, BlockState> builder) {
         super.fillStateContainer(builder);
         if(usesTurbineState()) {

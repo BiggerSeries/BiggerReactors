@@ -1,6 +1,5 @@
 package net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.HeatExchangerMultiblockController;
@@ -15,8 +14,4 @@ public class HeatExchangerBaseBlock extends RectangularMultiblockBlock<HeatExcha
         super(PROPERTIES_SOLID);
     }
     
-    @Override
-    public final boolean hasTileEntity(BlockState state) {
-        return true;
-    }
 }

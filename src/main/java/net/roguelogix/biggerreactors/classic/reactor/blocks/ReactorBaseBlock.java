@@ -34,11 +34,6 @@ public class ReactorBaseBlock extends RectangularMultiblockBlock<ReactorMultiblo
     }
     
     @Override
-    public final boolean hasTileEntity(BlockState state) {
-        return true;
-    }
-    
-    @Override
     protected void fillStateContainer(@Nonnull StateContainer.Builder<Block, BlockState> builder) {
         super.fillStateContainer(builder);
         if (usesReactorState()) {
