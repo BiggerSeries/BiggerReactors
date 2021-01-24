@@ -1,4 +1,12 @@
 # 1.16.4-0.4.3
+
+## Turbine
+ - correct tank size and flow rate calculations
+
+## misc
+ - move JEI integration to remove hard dependency
+
+# 1.16.4-0.4.3-beta
 I tip my hat to you, one legend to another
 
 ## Reactor
