@@ -14,4 +14,18 @@ public class HeatExchangerBaseBlock extends RectangularMultiblockBlock<HeatExcha
         super(PROPERTIES_SOLID);
     }
     
+    @Override
+    public boolean isGoodForInterior() {
+        return false;
+    }
+    
+    @Override
+    public boolean isGoodForExterior() {
+        return true;
+    }
+    
+    @Override
+    public boolean isGoodForFrame() {
+        return false;
+    }
 }

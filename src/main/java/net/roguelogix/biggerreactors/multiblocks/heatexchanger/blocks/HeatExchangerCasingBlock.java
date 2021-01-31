@@ -10,7 +10,7 @@ import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 import javax.annotation.Nullable;
 
 @RegisterBlock(name = "heat_exchanger_casing", tileEntityClass = HeatExchangerCasingTile.class)
-public class HeatExchangerCasingBlock extends HeatExchangerBaseBlock{
+public class HeatExchangerCasingBlock extends HeatExchangerBaseBlock {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
@@ -19,6 +19,11 @@ public class HeatExchangerCasingBlock extends HeatExchangerBaseBlock{
     
     @Override
     public boolean usesAxisPositions() {
+        return true;
+    }
+    
+    @Override
+    public boolean isGoodForFrame() {
         return true;
     }
 }

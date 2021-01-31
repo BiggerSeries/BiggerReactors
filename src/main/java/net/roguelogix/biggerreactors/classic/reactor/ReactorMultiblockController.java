@@ -39,28 +39,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         
         minSize.set(3);
         maxSize.set(Config.Reactor.MaxLength, Config.Reactor.MaxHeight, Config.Reactor.MaxWidth);
-        frameValidator = block -> {
-            return block instanceof ReactorCasing;
-        };
-        exteriorValidator = Validator.or(frameValidator, block -> {
-            return block instanceof ReactorTerminal ||
-                    block instanceof ReactorControlRod ||
-                    block instanceof ReactorGlass ||
-                    block instanceof ReactorAccessPort ||
-                    block instanceof ReactorCoolantPort ||
-                    block instanceof ReactorPowerTap ||
-                    block instanceof ReactorRedstonePort ||
-                    block instanceof ReactorComputerPort;
-        });
-        interiorValidator = block -> {
-            if (block instanceof ReactorFuelRod) {
-                return true;
-            }
-            if (!ReactorModeratorRegistry.isBlockAllowed(block)) {
-                return false;
-            }
-            return !exteriorValidator.validate(block);
-        };
+        interiorValidator = ReactorModeratorRegistry::isBlockAllowed;
         setAssemblyValidator(genericController -> {
             if (terminals.isEmpty()) {
                 throw new ValidationError("multiblock.error.biggerreactors.no_terminal");

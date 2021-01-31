@@ -40,4 +40,19 @@ public class ReactorBaseBlock extends RectangularMultiblockBlock<ReactorMultiblo
             builder.add(ReactorActivity.REACTOR_ACTIVITY_ENUM_PROPERTY);
         }
     }
+    
+    @Override
+    public boolean isGoodForInterior() {
+        return false;
+    }
+    
+    @Override
+    public boolean isGoodForExterior() {
+        return true;
+    }
+    
+    @Override
+    public boolean isGoodForFrame() {
+        return false;
+    }
 }

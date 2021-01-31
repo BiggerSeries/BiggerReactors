@@ -39,4 +39,19 @@ public class TurbineBaseBlock extends RectangularMultiblockBlock<TurbineMultiblo
             builder.add(TurbineActivity.TURBINE_STATE_ENUM_PROPERTY);
         }
     }
+    
+    @Override
+    public boolean isGoodForInterior() {
+        return false;
+    }
+    
+    @Override
+    public boolean isGoodForExterior() {
+        return true;
+    }
+    
+    @Override
+    public boolean isGoodForFrame() {
+        return false;
+    }
 }

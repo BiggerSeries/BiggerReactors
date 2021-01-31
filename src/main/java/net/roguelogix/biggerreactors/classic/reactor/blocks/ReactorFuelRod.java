@@ -62,4 +62,14 @@ public class ReactorFuelRod extends ReactorBaseBlock {
     public boolean usesAssmeblyState() {
         return false;
     }
+    
+    @Override
+    public boolean isGoodForInterior() {
+        return true;
+    }
+    
+    @Override
+    public boolean isGoodForExterior() {
+        return false;
+    }
 }
