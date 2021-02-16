@@ -1,6 +1,6 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all": "biggerreactors:block/heat_exchanger_casing_disassembled"
+    "all": "biggerreactors:block/heat_exchanger/casing/disassembled"
   }
 }
