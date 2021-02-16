@@ -11,6 +11,10 @@ import javax.annotation.Nullable;
 
 @RegisterBlock(name = "heat_exchanger_casing", tileEntityClass = HeatExchangerCasingTile.class)
 public class HeatExchangerCasingBlock extends HeatExchangerBaseBlock {
+    
+    @RegisterBlock.Instance
+    public static HeatExchangerCasingBlock INSTANCE;
+    
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
