@@ -1,0 +1,19 @@
+{
+  // Resource location type
+  liquidType: "registry",
+  // resource location
+  liquid: "biggerreactors:fluid_obsidian",
+  // thermal conductivity, in watts per metre-kelvin
+  liquidThermalConductivity: 1.9,
+  // resource location type
+  gasType: "registry",
+  // resource location
+  gas: "minecraft:lava",
+  // thermal conductivity, in watts per metre-kelvin
+  gasThermalConductivity: 1.0,
+  // latent heat of vaporization, in rf/mb
+  latentHeat: 1.5,
+  // boiling point, in K
+  boilingPoint: 1273.15,
+
+}
