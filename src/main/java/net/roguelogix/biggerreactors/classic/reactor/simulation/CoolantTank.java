@@ -13,7 +13,7 @@ public class CoolantTank implements INBTSerializable<CompoundNBT> {
     private long vaporAmount = 0;
     
     private long vaporizationEnergy = 4;
-    private long boilingPoint = 100;
+    private double boilingPoint = 100;
     
     private long vaporizedLastTick = 0;
     private long maxVaporizedLastTick = 0;
@@ -46,7 +46,7 @@ public class CoolantTank implements INBTSerializable<CompoundNBT> {
         this.vaporizationEnergy = vaporizationEnergy;
     }
     
-    public void setBoilingPoint(long boilingPoint) {
+    public void setBoilingPoint(double boilingPoint) {
         this.boilingPoint = boilingPoint;
     }
     

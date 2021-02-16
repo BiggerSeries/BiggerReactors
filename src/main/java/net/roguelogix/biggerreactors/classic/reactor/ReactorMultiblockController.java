@@ -367,6 +367,8 @@ public class ReactorMultiblockController extends RectangularMultiblockController
                 if (activeTransition == null) {
                     return 0;
                 }
+                simulation.coolantTank.setVaporizationEnergy(activeTransition.latentHeat);
+                simulation.coolantTank.setBoilingPoint(activeTransition.boilingPoint);
                 currentLiquid = liquid;
                 currentVapor = activeTransition.gases.get(0);
                 return addCoolantLiquid(liquid, amount, simulated);
