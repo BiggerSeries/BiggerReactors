@@ -110,9 +110,6 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IFluidHan
         if (direction == OUTLET) {
             return 0;
         }
-        if (resource.getFluid() != Fluids.WATER) {
-            return 0;
-        }
         if (controller != null) {
             return (int) controller.addCoolantLiquid(resource.getRawFluid(), resource.getAmount(), action.simulate());
         }
