@@ -139,6 +139,26 @@ public class Config {
         @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
         public static long BatterySizePerCoilBlock = 30_000;
     }
+    
+    @PhosphophylliteConfig
+    public static class HeatExchanger {
+        @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+        public static long ChannelTankVolumePerBlock = 1000;
+        @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+        public static double ChannelToChannelHeatConductivityMultiplier = 0.5;
+        @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+        public static double ChannelFEPerKelvinUnitVolume = 100.0f;
+        @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+        public static double ChannelFEPerKelvinMetreSquared = 50.0f;
+        @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+        public static double AirFEPerKelvinUnitVolume = 10.0f;
+        @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+        public static double AirFEPerKelvinMetreSquared = 0.01f;
+        @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+        public static double AmbientFEPerKelvinMetreSquared = 0.01f;
+    }
+    
+    
     @PhosphophylliteConfig
     public static class CyaniteReprocessor {
         @PhosphophylliteConfig.Value(range = "(0,)", comment = "Max transfer rate of fluids and energy.")
