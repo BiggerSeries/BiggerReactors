@@ -21,7 +21,45 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         interiorValidator = block -> block instanceof AirBlock;
     }
     
-    private boolean validate(){
+
+    private final Set<HeatExchangerCoolantPortTile> coolantPorts = new LinkedHashSet<>();
+    private boolean validate() {
+        if (coolantPorts.size() != 4) {
+            throw new ValidationError("heat exchangers require exactly 4 coolant ports //TODO lang file this");
+        }
+        
         return true;
+    }
+    @Override
+    protected void onPartPlaced(@Nonnull HeatExchangerBaseTile placed) {
+        onPartAttached(placed);
+    }
+    
+    @Override
+    protected void onPartAttached(@Nonnull HeatExchangerBaseTile toAttach) {
+        if (toAttach instanceof HeatExchangerCoolantPortTile) {
+            coolantPorts.add((HeatExchangerCoolantPortTile) toAttach);
+        }
+    }
+    
+    @Override
+    protected void onPartBroken(@Nonnull HeatExchangerBaseTile broken) {
+        onPartDetached(broken);
+    }
+    
+    @Override
+    protected void onPartDetached(@Nonnull HeatExchangerBaseTile toDetach) {
+        if (toDetach instanceof HeatExchangerCoolantPortTile) {
+            coolantPorts.remove(toDetach);
+        }
+    }
+    
+    public void setInletPort(HeatExchangerCoolantPortTile port, boolean inlet) {
+        port.setInlet(inlet);
+        for (HeatExchangerCoolantPortTile coolantPort : coolantPorts) {
+            if(coolantPort != port && coolantPort.isCondenser() == port.isCondenser()){
+                coolantPort.setInlet(!inlet);
+            }
+        }
     }
 }
