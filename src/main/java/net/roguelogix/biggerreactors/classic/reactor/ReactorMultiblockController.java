@@ -148,7 +148,14 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         }
         if (tile instanceof ReactorControlRodTile) {
             synchronized (controlRods) {
-                controlRods.remove(tile);
+                // because order doesnt matter after a reactor is disassembled
+                // should help with chunk unload times
+                // yes this is specific to the arraylist
+                int index = controlRods.indexOf(tile);
+                if (index != -1) {
+                    controlRods.set(index, controlRods.get(controlRods.size() - 1));
+                    controlRods.remove(controlRods.size() - 1);
+                }
             }
         }
         if (tile instanceof ReactorFuelRodTile) {
