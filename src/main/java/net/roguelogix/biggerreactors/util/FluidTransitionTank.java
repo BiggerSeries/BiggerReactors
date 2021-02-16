@@ -137,19 +137,21 @@ public class FluidTransitionTank implements IPhosphophylliteFluidHandler {
     }
     
     public void transferWith(HeatBody body, int surfaceArea) {
-        if(activeTransition == null || inAmount <= 0 || outAmount >= perSideCapacity){
+        if (activeTransition == null || inAmount <= 0 || outAmount >= perSideCapacity) {
             return;
         }
-        
+    
         double rfkt = surfaceArea * (condenser ? activeTransition.gasRFMKT : activeTransition.liquidRFMKT);
-        
+    
+        rfkt *= (double) inAmount / (double) perSideCapacity;
+    
         double newTemp = body.temperature - activeTransition.boilingPoint;
         newTemp *= Math.exp(-rfkt / body.rfPerKelvin);
         newTemp += activeTransition.boilingPoint;
-        
+    
         double toTransfer = newTemp - body.temperature;
         toTransfer *= body.rfPerKelvin;
-        
+    
         if ((toTransfer > 0 && !condenser) || (toTransfer < 0 && condenser)) {
             return;
         }
