@@ -9,9 +9,14 @@ import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblo
 public class HeatExchangerBaseBlock extends RectangularMultiblockBlock<HeatExchangerMultiblockController, HeatExchangerBaseTile, HeatExchangerBaseBlock> {
     
     public static final Properties PROPERTIES_SOLID = Properties.create(Material.IRON).sound(SoundType.METAL).hardnessAndResistance(2, 10).setAllowsSpawn((a, b, c, d) -> false);
+    public static final Properties PROPERTIES_GLASS = Properties.create(Material.GLASS).sound(SoundType.GLASS).notSolid().hardnessAndResistance(2).setAllowsSpawn((a, b, c, d) -> false);
     
     public HeatExchangerBaseBlock() {
         super(PROPERTIES_SOLID);
+    }
+    
+    public HeatExchangerBaseBlock(Properties properties) {
+        super(properties);
     }
     
     @Override
