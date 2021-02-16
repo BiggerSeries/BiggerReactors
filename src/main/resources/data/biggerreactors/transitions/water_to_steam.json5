@@ -3,12 +3,17 @@
     liquidType: "registry",
     // resource location
     liquid: "minecraft:water",
+    // thermal conductivity, in watts per metre-kelvin
+    liquidThermalConductivity: 0.6,
     // resource location type
     gasType: "tag",
     // resource location
     gas: "forge:steam",
-    // latent heat of vaporization, in rf
+    // thermal conductivity, in watts per metre-kelvin
+    gasThermalConductivity: 0.025,
+    // latent heat of vaporization, in rf/mb
     latentHeat: 4,
-    // boiling point, in C
-    boilingPoint: 100,
+    // boiling point, in K
+    boilingPoint: 373.15,
+
 }

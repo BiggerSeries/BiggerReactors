@@ -23,12 +23,16 @@ public class FluidTransitionRegistry {
         public final List<Fluid> gases;
         public final long latentHeat;
         public final double boilingPoint;
+        public final double liquidRFMKT;
+        public final double gasRFMKT;
         
-        public FluidTransition(List<Fluid> liquids, List<Fluid> gases, long latentHeat, double boilingPoint) {
+        public FluidTransition(List<Fluid> liquids, List<Fluid> gases, long latentHeat, double boilingPoint, double liquidRFMKT, double gasRFMKT) {
             this.liquids = Collections.unmodifiableList(liquids);
             this.gases = Collections.unmodifiableList(gases);
             this.latentHeat = latentHeat;
             this.boilingPoint = boilingPoint;
+            this.liquidRFMKT = liquidRFMKT;
+            this.gasRFMKT = gasRFMKT;
         }
     }
     
@@ -59,6 +63,12 @@ public class FluidTransitionRegistry {
         
         @DataLoader.Range("(20,)")
         public double boilingPoint;
+    
+        @DataLoader.Range("(0,)")
+        public double liquidThermalConductivity;
+        
+        @DataLoader.Range("(0,)")
+        public double gasThermalConductivity;
     }
     
     private static final DataLoader<FluidTransitionJsonData> loader = new DataLoader<>(FluidTransitionJsonData.class);
@@ -124,7 +134,7 @@ public class FluidTransitionRegistry {
                 continue;
             }
             
-            FluidTransition transition = new FluidTransition(liquids, gases, transitionData.latentHeat, transitionData.boilingPoint);
+            FluidTransition transition = new FluidTransition(liquids, gases, transitionData.latentHeat, transitionData.boilingPoint, transitionData.liquidThermalConductivity, transitionData.gasThermalConductivity);
             
             for (Fluid liquid : transition.liquids) {
                 if (liquidTransitions.put(liquid, transition) != null) {
