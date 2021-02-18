@@ -3,6 +3,10 @@ package net.roguelogix.biggerreactors.util;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.registries.FluidTransitionRegistry;
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
 import net.roguelogix.phosphophyllite.util.HeatBody;
@@ -10,10 +14,11 @@ import net.roguelogix.phosphophyllite.util.HeatBody;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class FluidTransitionTank implements IPhosphophylliteFluidHandler {
+public class FluidTransitionTank implements IPhosphophylliteFluidHandler, INBTSerializable<CompoundNBT> {
     
     public final boolean condenser;
     
@@ -164,12 +169,59 @@ public class FluidTransitionTank implements IPhosphophylliteFluidHandler {
         long toTransition = (long) (toTransfer / activeTransition.latentHeat);
         inAmount -= toTransition;
         outAmount += toTransition;
-        
+    
         toTransfer = toTransition * activeTransition.latentHeat;
         if (!condenser) {
             toTransfer *= -1;
         }
-        
+    
         body.absorbRF(toTransfer);
+    }
+    
+    @Override
+    public CompoundNBT serializeNBT() {
+        CompoundNBT nbt = new CompoundNBT();
+        nbt.putString("inFluid", inFluid.getRegistryName().toString());
+        nbt.putLong("inAmount", inAmount);
+        nbt.putString("outFluid", outFluid.getRegistryName().toString());
+        nbt.putLong("outAmount", outAmount);
+        return nbt;
+    }
+    
+    @Override
+    public void deserializeNBT(CompoundNBT nbt) {
+        ResourceLocation inFluidLocation = new ResourceLocation(nbt.getString("inFluid"));
+        if (ForgeRegistries.FLUIDS.containsKey(inFluidLocation)) {
+            Fluid newInFluid = ForgeRegistries.FLUIDS.getValue(inFluidLocation);
+            if (newInFluid == null) {
+                return;
+            }
+            FluidTransitionRegistry.FluidTransition newTransition;
+            if (condenser) {
+                newTransition = FluidTransitionRegistry.gasTransition(newInFluid);
+            } else {
+                newTransition = FluidTransitionRegistry.liquidTransition(newInFluid);
+            }
+            if (newTransition == null) {
+                return;
+            }
+            List<Fluid> outFluidList = (condenser ? newTransition.liquids : newTransition.gases);
+            Fluid newOutFluid = null;
+            ResourceLocation outFluidLocation = new ResourceLocation(nbt.getString("outFluid"));
+            if (ForgeRegistries.FLUIDS.containsKey(outFluidLocation)) {
+                Fluid oldOutFluid = ForgeRegistries.FLUIDS.getValue(outFluidLocation);
+                if(outFluidList.contains(oldOutFluid)){
+                    newOutFluid = oldOutFluid;
+                }
+            }
+            if(newOutFluid == null){
+                newOutFluid = outFluidList.get(0);
+            }
+            activeTransition = newTransition;
+            inFluid = newInFluid;
+            outFluid = newOutFluid;
+            inAmount = nbt.getLong("inAmount");
+            outAmount = nbt.getLong("outAmount");
+        }
     }
 }

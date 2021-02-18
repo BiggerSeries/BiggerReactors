@@ -2,6 +2,7 @@ package net.roguelogix.biggerreactors.multiblocks.heatexchanger;
 
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -276,10 +277,43 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         coolantPorts.forEach(HeatExchangerCoolantPortTile::pushFluid);
     }
     
+    
+    @Override
+    protected void read(@Nonnull CompoundNBT nbt) {
+        super.read(nbt);
+        condenserTank.deserializeNBT(nbt.getCompound("condenserTank"));
+        evaporatorTank.deserializeNBT(nbt.getCompound("evaporatorTank"));
+        ambientHeatBody.temperature = nbt.getDouble("ambientHeatBody");
+        airHeatBody.temperature = nbt.getDouble("airHeatBody");
+        condenserHeatBody.temperature = nbt.getDouble("condenserHeatBody");
+        evaporatorHeatBody.temperature = nbt.getDouble("evaporatorHeatBody");
+        channelRFKT = nbt.getDouble("channelRFKT");
+        evaporatorAirRFKT = nbt.getDouble("evaporatorAirRFKT");
+        condenserAirRFKT = nbt.getDouble("condenserAirRFKT");
+        airAmbientRFKT = nbt.getDouble("airAmbientRFKT");
+    }
+    
+    @Nonnull
+    @Override
+    protected CompoundNBT write() {
+        CompoundNBT nbt = super.write();
+        nbt.put("condenserTank", condenserTank.serializeNBT());
+        nbt.put("evaporatorTank", evaporatorTank.serializeNBT());
+        nbt.putDouble("ambientHeatBody", ambientHeatBody.temperature);
+        nbt.putDouble("airHeatBody", airHeatBody.temperature);
+        nbt.putDouble("condenserHeatBody", condenserHeatBody.temperature);
+        nbt.putDouble("evaporatorHeatBody", evaporatorHeatBody.temperature);
+        nbt.putDouble("channelRFKT", channelRFKT);
+        nbt.putDouble("evaporatorAirRFKT", evaporatorAirRFKT);
+        nbt.putDouble("condenserAirRFKT", condenserAirRFKT);
+        nbt.putDouble("airAmbientRFKT", airAmbientRFKT);
+        return nbt;
+    }
+    
     public void setInletPort(HeatExchangerCoolantPortTile port, boolean inlet) {
         port.setInlet(inlet);
         for (HeatExchangerCoolantPortTile coolantPort : coolantPorts) {
-            if(coolantPort != port && coolantPort.isCondenser() == port.isCondenser()){
+            if (coolantPort != port && coolantPort.isCondenser() == port.isCondenser()) {
                 coolantPort.setInlet(!inlet);
             }
         }
