@@ -20,7 +20,6 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
@@ -29,8 +28,10 @@ import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorAccessPort;
 import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorCoolantPort;
 import net.roguelogix.biggerreactors.classic.reactor.containers.ReactorCoolantPortContainer;
 import net.roguelogix.biggerreactors.classic.reactor.deps.ReactorGasHandler;
+import net.roguelogix.biggerreactors.classic.reactor.simulation.IReactorCoolantTank;
 import net.roguelogix.biggerreactors.classic.reactor.state.ReactorCoolantPortState;
-import net.roguelogix.biggerreactors.registries.FluidTransitionRegistry;
+import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
+import net.roguelogix.phosphophyllite.fluids.PhosphophylliteFluidStack;
 import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.multiblock.generic.IAssemblyAttemptedTile;
 import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockBlock;
@@ -43,7 +44,7 @@ import javax.annotation.Nullable;
 import static net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorAccessPort.PortDirection.*;
 
 @RegisterTileEntity(name = "reactor_coolant_port")
-public class ReactorCoolantPortTile extends ReactorBaseTile implements IFluidHandler, INamedContainerProvider, IHasUpdatableState<ReactorCoolantPortState>, IAssemblyAttemptedTile {
+public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphophylliteFluidHandler, INamedContainerProvider, IHasUpdatableState<ReactorCoolantPortState>, IAssemblyAttemptedTile {
     
     @RegisterTileEntity.Type
     public static TileEntityType<?> TYPE;
@@ -62,120 +63,96 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IFluidHan
             return LazyOptional.of(() -> this).cast();
         }
         if (cap == GAS_HANDLER_CAPABILITY) {
-            return ReactorGasHandler.create(() -> controller).cast();
+            return ReactorGasHandler.create(() -> transitionTank).cast();
         }
         return super.getCapability(cap, side);
     }
     
-    @Override
-    public int getTanks() {
-        return 2;
-    }
+    private static final PhosphophylliteFluidStack fluidStack = new PhosphophylliteFluidStack();
     
-    @Nonnull
-    @Override
-    public FluidStack getFluidInTank(int tank) {
-        if (controller != null) {
-            if (tank == 0) {
-                return controller.getCurrentLiquidStack();
-            }
-            if (tank == 1) {
-                return controller.getCurrentVaporStack();
-            }
-        }
-        return FluidStack.EMPTY;
+    private IReactorCoolantTank transitionTank;
+    
+    public void setTransitionTank(IReactorCoolantTank transitionTank) {
+        this.transitionTank = transitionTank;
     }
     
     @Override
-    public int getTankCapacity(int tank) {
-        if (controller != null) {
-            return (int) controller.getSteamCapacity();
-        }
-        return 0;
-    }
-    
-    @Override
-    public boolean isFluidValid(int tank, @Nonnull FluidStack stack) {
-        if (tank == 0) {
-            return FluidTransitionRegistry.liquidTransition(stack.getRawFluid()) != null;
-        }
-        if (tank == 1) {
-            return FluidTransitionRegistry.gasTransition(stack.getRawFluid()) != null;
-        }
-        return false;
-    }
-    
-    @Override
-    public int fill(FluidStack resource, FluidAction action) {
-        if (direction == OUTLET) {
+    public int tankCount() {
+        if (transitionTank == null) {
             return 0;
         }
-        if (controller != null) {
-            return (int) controller.addCoolantLiquid(resource.getRawFluid(), resource.getAmount(), action.simulate());
-        }
-        return 0;
+        return transitionTank.tankCount();
     }
     
-    @Nonnull
     @Override
-    public FluidStack drain(FluidStack resource, FluidAction action) {
-        if (direction == INLET || controller == null) {
-            return FluidStack.EMPTY;
-        }
-        resource = resource.copy(); // do i need to do this? the documentation doesnt say if i can modify this stack or not
-        resource.setAmount((int) controller.extractCoolantVapor(resource.getFluid(), resource.getAmount(), action.simulate()));
-        return resource;
-    }
-    
-    @Nonnull
-    @Override
-    public FluidStack drain(int maxDrain, FluidAction action) {
-        if (direction == INLET || controller == null) {
-            return FluidStack.EMPTY;
-        }
-        FluidStack vaporStack = controller.getCurrentVaporStack();
-        vaporStack.setAmount((int) controller.extractCoolantVapor(vaporStack.getFluid(), vaporStack.getAmount(), action.simulate()));
-        return vaporStack;
-    }
-    
-    public long pushSteam(long amount) {
-        if (!connected || direction == INLET || amount == 0) {
+    public long tankCapacity(int tank) {
+        if (transitionTank == null) {
             return 0;
         }
-        if (steamGasOutput != null && steamGasOutput.isPresent()) {
-            if (!controller.getCurrentVapor().getTags().contains(new ResourceLocation("forge:steam"))) {
+        return transitionTank.tankCapacity(tank);
+    }
+    
+    @Nonnull
+    @Override
+    public Fluid fluidTypeInTank(int tank) {
+        if (transitionTank == null) {
+            return Fluids.EMPTY;
+        }
+        return transitionTank.fluidTypeInTank(tank);
+    }
+    
+    @Override
+    public long fluidAmountInTank(int tank) {
+        if (transitionTank == null) {
+            return 0;
+        }
+        return transitionTank.fluidAmountInTank(tank);
+    }
+    
+    @Override
+    public boolean fluidValidForTank(int tank, @Nonnull Fluid fluid) {
+        if (transitionTank == null) {
+            return false;
+        }
+        return transitionTank.fluidValidForTank(tank, fluid);
+    }
+    
+    @Override
+    public long fill(@Nonnull Fluid fluid, long amount, boolean simulate) {
+        if (transitionTank == null || direction != INLET) {
+            return 0;
+        }
+        return transitionTank.fill(fluid, amount, simulate);
+    }
+    
+    @Override
+    public long drain(@Nonnull Fluid fluid, long amount, boolean simulate) {
+        if (transitionTank == null || direction == INLET) {
+            return 0;
+        }
+        return transitionTank.drain(fluid, amount, simulate);
+    }
+    
+    
+    public long pushFluid() {
+        if (!connected || direction == INLET) {
+            return 0;
+        }
+        if (vaporOutput.isPresent()) {
+            IFluidHandler handler = vaporOutput.orElse(EMPTY_TANK);
+            fluidStack.setFluid(transitionTank.vaporType());
+            fluidStack.setAmount(transitionTank.drain(fluidStack.getRawFluid(), transitionTank.vaporAmount(), true));
+            int filled = handler.fill(fluidStack, FluidAction.EXECUTE);
+            return transitionTank.drain(fluidStack.getRawFluid(), filled, false);
+        } else if (steamGasOutput != null && steamGasOutput.isPresent()) {
+            if (!transitionTank.vaporType().getTags().contains(new ResourceLocation("forge:steam"))) {
                 return 0;
             }
             IGasHandler output = steamGasOutput.orElse(ReactorGasHandler.EMPTY_TANK);
-            return ReactorGasHandler.pushSteamToHandler(output, amount);
-        } else if (vaporOutput != null && vaporOutput.isPresent()) {
-            IFluidHandler handler = vaporOutput.orElse(EMPTY_TANK);
-            FluidStack vaporStack = controller.getCurrentVaporStack();
-            vaporStack.setAmount((int) amount);
-            if (handler.fill(vaporStack, FluidAction.SIMULATE) == 0) {
-                // aight, so, whatever we have isn't gonna work, so, gonna try all of the possible vapors
-                vaporStack = null;
-                for (Fluid gas : controller.getActiveTransition().gases) {
-                    if (gas != controller.getCurrentVapor()) {
-                        FluidStack possibleStack = new FluidStack(gas, (int) amount);
-                        if (handler.fill(possibleStack, FluidAction.SIMULATE) != 0) {
-                            vaporStack = possibleStack;
-                            break;
-                        }
-                    }
-                }
-                if (vaporStack == null) {
-                    return 0;
-                }
-                // set the reactors vapor to whatever was successfully pushed
-                controller.extractCoolantVapor(vaporStack.getRawFluid(), 0, true);
-            }
-            
-            return vaporOutput.orElse(EMPTY_TANK).fill(vaporStack, FluidAction.EXECUTE);
+            return ReactorGasHandler.pushSteamToHandler(output, transitionTank.vaporAmount());
         }
         return 0;
     }
-    
     
     private boolean connected = false;
     Direction steamOutputDirection = null;
@@ -223,13 +200,6 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IFluidHan
         if (vaporOutput.isPresent()) {
             // just gonna assume its fine
             connected = true;
-//            IFluidHandler handler = steamOutput.orElse(EMPTY_TANK);
-//            for (int i = 0; i < handler.getTanks(); i++) {
-//                if (handler.isFluidValid(i, steam)) {
-//                    connected = true;
-//                    break;
-//                }
-//            }
         }
         if (GAS_HANDLER_CAPABILITY != null) {
             steamGasOutput = te.getCapability(GAS_HANDLER_CAPABILITY, steamOutputDirection.getOpposite());
