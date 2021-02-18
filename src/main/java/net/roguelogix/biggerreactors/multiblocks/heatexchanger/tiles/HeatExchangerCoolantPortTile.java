@@ -132,7 +132,7 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
     }
     
     
-    private static PhosphophylliteFluidStack fluidStack = new PhosphophylliteFluidStack();
+    private static final PhosphophylliteFluidStack fluidStack = new PhosphophylliteFluidStack();
     
     public long pushFluid(){
         if(fluidOutputCapability.isPresent() && !inlet){
