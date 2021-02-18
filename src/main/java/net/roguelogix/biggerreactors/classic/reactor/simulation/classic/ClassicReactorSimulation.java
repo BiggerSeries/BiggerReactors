@@ -1,19 +1,22 @@
-package net.roguelogix.biggerreactors.classic.reactor.simulation;
+package net.roguelogix.biggerreactors.classic.reactor.simulation.classic;
 
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.common.util.INBTSerializable;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.classic.reactor.ReactorModeratorRegistry;
+import net.roguelogix.biggerreactors.classic.reactor.simulation.IReactorBattery;
+import net.roguelogix.biggerreactors.classic.reactor.simulation.IReactorCoolantTank;
+import net.roguelogix.biggerreactors.classic.reactor.simulation.IReactorFuelTank;
+import net.roguelogix.biggerreactors.classic.reactor.simulation.IReactorSimulation;
 import net.roguelogix.phosphophyllite.repack.org.joml.Vector2i;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 
-public class ClassicReactorSimulation implements INBTSerializable<CompoundNBT> {
+public class ClassicReactorSimulation implements IReactorSimulation {
     
-    public final FuelTank fuelTank = new FuelTank();
-    public final CoolantTank coolantTank = new CoolantTank();
-    public final Battery battery = new Battery();
+    private final FuelTank fuelTank = new FuelTank();
+    private final CoolantTank coolantTank = new CoolantTank();
+    private final Battery battery = new Battery();
     private final ArrayList<ControlRod> controlRods = new ArrayList<>();
     private final Vector2i[] directions = new Vector2i[]{
             new Vector2i(1, 0),
@@ -22,9 +25,9 @@ public class ClassicReactorSimulation implements INBTSerializable<CompoundNBT> {
             new Vector2i(0, -1),
     };
     public double fuelConsumedLastTick = 0f;
-    public double FEProducedLastTick = 0f;
+    public long FEProducedLastTick = 0;
     private int x, y, z;
-    private ReactorModeratorRegistry.ModeratorProperties[][][] moderatorProperties;
+    private ReactorModeratorRegistry.IModeratorProperties[][][] moderatorProperties;
     private ControlRod[][] controlRodsXZ;
     private double fuelToReactorHeatTransferCoefficient = 0;
     private double reactorToCoolantSystemHeatTransferCoefficient = 0;
@@ -57,11 +60,11 @@ public class ClassicReactorSimulation implements INBTSerializable<CompoundNBT> {
         this.x = x;
         this.y = y;
         this.z = z;
-        moderatorProperties = new ReactorModeratorRegistry.ModeratorProperties[x][][];
+        moderatorProperties = new ReactorModeratorRegistry.IModeratorProperties[x][][];
         for (int i = 0; i < moderatorProperties.length; i++) {
-            moderatorProperties[i] = new ReactorModeratorRegistry.ModeratorProperties[y][];
+            moderatorProperties[i] = new ReactorModeratorRegistry.IModeratorProperties[y][];
             for (int j = 0; j < moderatorProperties[i].length; j++) {
-                moderatorProperties[i][j] = new ReactorModeratorRegistry.ModeratorProperties[z];
+                moderatorProperties[i][j] = new ReactorModeratorRegistry.IModeratorProperties[z];
             }
         }
         controlRodsXZ = new ControlRod[x][];
@@ -71,7 +74,7 @@ public class ClassicReactorSimulation implements INBTSerializable<CompoundNBT> {
         controlRods.clear();
     }
     
-    public void setModeratorProperties(int x, int y, int z, ReactorModeratorRegistry.ModeratorProperties properties) {
+    public void setModeratorProperties(int x, int y, int z, ReactorModeratorRegistry.IModeratorProperties properties) {
         moderatorProperties[x][y][z] = properties;
     }
     
@@ -100,9 +103,9 @@ public class ClassicReactorSimulation implements INBTSerializable<CompoundNBT> {
                         fuelToReactorHeatTransferCoefficient += Config.Reactor.CasingHeatTransferCoefficient;
                         continue;
                     }
-                    ReactorModeratorRegistry.ModeratorProperties properties = moderatorProperties[controlRod.x + direction.x][i][controlRod.z + direction.y];
+                    ReactorModeratorRegistry.IModeratorProperties properties = moderatorProperties[controlRod.x + direction.x][i][controlRod.z + direction.y];
                     if (properties != null) {
-                        fuelToReactorHeatTransferCoefficient += properties.heatConductivity;
+                        fuelToReactorHeatTransferCoefficient += properties.heatConductivity();
                     }
                 }
             }
@@ -114,10 +117,10 @@ public class ClassicReactorSimulation implements INBTSerializable<CompoundNBT> {
         reactorHeatLossCoefficient = 2 * ((x + 2) * (y + 2) + (x + 2) * (z + 2) + (z + 2) * (y + 2)) * Config.Reactor.HeatLossCoefficientMultiplier;
         
         if (passive) {
-            coolantTank.setPerSideCapacity(0);
+            coolantTank.perSideCapacity = 0;
             battery.setMaxStoredPower((((x + 2) * (y + 2) * (z + 2)) - (x * y * z)) * Config.Reactor.PassiveBatteryPerExternalBlock);
         } else {
-            coolantTank.setPerSideCapacity((((x + 2) * (y + 2) * (z + 2)) - (x * y * z)) * Config.Reactor.CoolantTankAmountPerExternalBlock);
+            coolantTank.perSideCapacity = (((x + 2) * (y + 2) * (z + 2)) - (x * y * z)) * Config.Reactor.CoolantTankAmountPerExternalBlock;
         }
         
         rodToIrradiate = 0;
@@ -171,11 +174,12 @@ public class ClassicReactorSimulation implements INBTSerializable<CompoundNBT> {
             
             if (passive) {
                 rfTransferred *= Config.Reactor.PassiveCoolingTransferEfficiency;
-                FEProducedLastTick = rfTransferred * Config.Reactor.OutputMultiplier * Config.Reactor.PassiveOutputMultiplier;
-                battery.addPower(FEProducedLastTick);
+                rfTransferred *= Config.Reactor.OutputMultiplier * Config.Reactor.PassiveOutputMultiplier;
+                FEProducedLastTick = battery.addPower(rfTransferred);
             } else {
+                // yes this is kinda broken physics, *oh well*
                 rfTransferred -= coolantTank.absorbHeat(rfTransferred * Config.Reactor.OutputMultiplier * Config.Reactor.ActiveOutputMultiplier) / (Config.Reactor.OutputMultiplier * Config.Reactor.ActiveOutputMultiplier);
-                FEProducedLastTick = coolantTank.getFluidVaporizedLastTick(); // Piggyback so we don't have useless stuff in the update packet
+                FEProducedLastTick = coolantTank.transitionedLastTick(); // Piggyback so we don't have useless stuff in the update packet
             }
             
             reactorRf -= rfTransferred;
@@ -232,7 +236,7 @@ public class ClassicReactorSimulation implements INBTSerializable<CompoundNBT> {
         // mostly copied
         
         // No fuel? No radiation!
-        if (fuelTank.getFuelAmount() <= 0) {
+        if (fuelTank.fuel() <= 0) {
             return;
         }
         
@@ -243,7 +247,7 @@ public class ClassicReactorSimulation implements INBTSerializable<CompoundNBT> {
         
         // Raw amount - what's actually in the tanks
         // Effective amount - how
-        long baseFuelAmount = fuelTank.getFuelAmount() + (fuelTank.getWasteAmount() / 100);
+        long baseFuelAmount = fuelTank.fuel() + (fuelTank.waste() / 100);
         
         // Intensity = how strong the radiation is, hardness = how energetic the radiation is (penetration)
         double rawRadIntensity = (double) baseFuelAmount * Config.Reactor.FissionEventsPerFuelUnit;
@@ -267,7 +271,7 @@ public class ClassicReactorSimulation implements INBTSerializable<CompoundNBT> {
         double radHardness = 0.2f + (0.8 * radiationPenaltyBase);
         
         // Calculate based on propagation-to-self
-        double rawFuelUsage = (Config.Reactor.FuelPerRadiationUnit * rawRadIntensity / getFertility()) * Config.Reactor.FuelUsageMultiplier; // Not a typo. Fuel usage is thus penalized at high heats.
+        double rawFuelUsage = (Config.Reactor.FuelPerRadiationUnit * rawRadIntensity / fertility()) * Config.Reactor.FuelUsageMultiplier; // Not a typo. Fuel usage is thus penalized at high heats.
         double fuelRfChange = Config.Reactor.FEPerRadiationUnit * effectiveRadIntensity;
         double environmentRfChange = 0f;
         
@@ -290,14 +294,14 @@ public class ClassicReactorSimulation implements INBTSerializable<CompoundNBT> {
                     break;
                 }
                 
-                ReactorModeratorRegistry.ModeratorProperties properties = moderatorProperties[position.x][yLevelToIrradiate][position.y];
+                ReactorModeratorRegistry.IModeratorProperties properties = moderatorProperties[position.x][yLevelToIrradiate][position.y];
                 if (properties != null) {
                     // this is the simple part, which is why its first
                     
-                    double radiationAbsorbed = intensity * properties.absorption * (1f - hardness);
+                    double radiationAbsorbed = intensity * properties.absorption() * (1f - hardness);
                     intensity = Math.max(0f, intensity - radiationAbsorbed);
-                    hardness /= properties.moderation;
-                    environmentRfChange += properties.heatEfficiency * radiationAbsorbed * Config.Reactor.FEPerRadiationUnit;
+                    hardness /= properties.moderation();
+                    environmentRfChange += properties.heatEfficiency() * radiationAbsorbed * Config.Reactor.FEPerRadiationUnit;
                     
                 } else {
                     // oh, oh ok, its a fuel rod
@@ -335,7 +339,7 @@ public class ClassicReactorSimulation implements INBTSerializable<CompoundNBT> {
         }
         
         fuelFertility += fuelAbsorbedRadiation;
-        if(Double.isNaN(fuelFertility)){
+        if (Double.isNaN(fuelFertility)) {
             fuelFertility = 1;
         }
         fuelTank.burn(rawFuelUsage);
@@ -370,7 +374,7 @@ public class ClassicReactorSimulation implements INBTSerializable<CompoundNBT> {
         }
     }
     
-    public double getFertility() {
+    public double fertility() {
         if (fuelFertility <= 1f) {
             return 1f;
         } else {
@@ -378,20 +382,57 @@ public class ClassicReactorSimulation implements INBTSerializable<CompoundNBT> {
         }
     }
     
-    public double getFuelHeat() {
+    public double fuelHeat() {
         return fuelHeat;
     }
     
-    public double getReactorHeat() {
+    public double caseHeat() {
         return reactorHeat;
     }
     
-    public double getFuelConsumedLastTick() {
+    public double fuelConsumptionLastTick() {
         return fuelConsumedLastTick;
     }
     
-    public double getFEProducedLastTick() {
+    public long outputLastTick() {
         return FEProducedLastTick;
+    }
+    
+    @Override
+    public long FEProducedLastTick() {
+        // TODO: when actively cooled, this is the wrong number
+        return FEProducedLastTick;
+    }
+    
+    @Override
+    public long MBProducedLastTick() {
+        if (isPassive()) {
+            return 0;
+        }
+        return FEProducedLastTick;
+    }
+    
+    @Override
+    public long maxMBProductionLastTick() {
+        if (isPassive()) {
+            return 0;
+        }
+        return coolantTank.maxTransitionedLastTick();
+    }
+    
+    @Override
+    public IReactorBattery battery() {
+        return battery;
+    }
+    
+    @Override
+    public IReactorCoolantTank coolantTank() {
+        return coolantTank;
+    }
+    
+    @Override
+    public IReactorFuelTank fuelTank() {
+        return fuelTank;
     }
     
     @Override

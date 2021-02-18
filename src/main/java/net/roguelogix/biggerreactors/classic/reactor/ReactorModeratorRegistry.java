@@ -1,27 +1,31 @@
 package net.roguelogix.biggerreactors.classic.reactor;
 
 import net.minecraft.block.Block;
-import net.minecraft.resources.IResource;
-import net.minecraft.resources.IResourceManager;
 import net.minecraft.tags.ITag;
 import net.minecraft.tags.ITagCollection;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.ResourceLocationException;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
-import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.phosphophyllite.data.DataLoader;
-import net.roguelogix.phosphophyllite.repack.tnjson.ParseException;
-import net.roguelogix.phosphophyllite.repack.tnjson.TnJson;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ReactorModeratorRegistry {
     
-    public static class ModeratorProperties {
+    public interface IModeratorProperties {
+        double absorption();
+        
+        double heatEfficiency();
+        
+        double moderation();
+        
+        double heatConductivity();
+    }
+    
+    public static class ModeratorProperties implements IModeratorProperties {
         
         public final double absorption;
         public final double heatEfficiency;
@@ -34,7 +38,26 @@ public class ReactorModeratorRegistry {
             this.moderation = moderation;
             this.heatConductivity = heatConductivity;
         }
-        
+    
+        @Override
+        public double absorption() {
+            return absorption;
+        }
+    
+        @Override
+        public double heatEfficiency() {
+            return heatEfficiency;
+        }
+    
+        @Override
+        public double moderation() {
+            return moderation;
+        }
+    
+        @Override
+        public double heatConductivity() {
+            return heatConductivity;
+        }
     }
     
     private final static HashMap<Block, ModeratorProperties> registry = new HashMap<>();

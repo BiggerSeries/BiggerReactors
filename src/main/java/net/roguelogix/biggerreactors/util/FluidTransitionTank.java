@@ -23,15 +23,18 @@ public class FluidTransitionTank implements IPhosphophylliteFluidHandler, INBTSe
     public final boolean condenser;
     
     public long perSideCapacity;
-    private FluidTransitionRegistry.FluidTransition activeTransition;
+    protected FluidTransitionRegistry.FluidTransition activeTransition;
     
-    private static final int IN_TANK = 0;
-    Fluid inFluid;
-    long inAmount = 0;
+    public static final int IN_TANK = 0;
+    protected Fluid inFluid;
+    protected long inAmount = 0;
     
-    private static final int OUT_TANK = 1;
-    Fluid outFluid;
-    long outAmount = 0;
+    public static final int OUT_TANK = 1;
+    protected Fluid outFluid;
+    protected long outAmount = 0;
+    
+    protected long transitionedLastTick;
+    protected long maxTransitionedLastTick;
     
     public FluidTransitionTank(boolean condenser) {
         this.condenser = condenser;
@@ -68,6 +71,14 @@ public class FluidTransitionTank implements IPhosphophylliteFluidHandler, INBTSe
             return outAmount;
         }
         return 0;
+    }
+    
+    public long transitionedLastTick(){
+        return transitionedLastTick;
+    }
+    
+    public long maxTransitionedLastTick(){
+        return maxTransitionedLastTick;
     }
     
     @Override
@@ -163,10 +174,13 @@ public class FluidTransitionTank implements IPhosphophylliteFluidHandler, INBTSe
         
         toTransfer = Math.abs(toTransfer);
         
-        double maxTransitionable = Math.min(inAmount, perSideCapacity - outAmount);
-        toTransfer = Math.min(maxTransitionable * activeTransition.latentHeat, toTransfer);
-        
         long toTransition = (long) (toTransfer / activeTransition.latentHeat);
+        long maxTransitionable = Math.min(inAmount, perSideCapacity - outAmount);
+        
+        maxTransitionedLastTick = toTransition;
+        toTransition = Math.min(maxTransitionable, toTransition);
+        transitionedLastTick = toTransition;
+        
         inAmount -= toTransition;
         outAmount += toTransition;
     

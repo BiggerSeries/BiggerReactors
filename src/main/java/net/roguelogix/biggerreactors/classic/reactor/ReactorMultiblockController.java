@@ -2,28 +2,25 @@ package net.roguelogix.biggerreactors.classic.reactor;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.Config;
-import net.roguelogix.biggerreactors.classic.reactor.blocks.*;
-import net.roguelogix.biggerreactors.classic.reactor.simulation.ClassicReactorSimulation;
+import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorBaseBlock;
+import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorFuelRod;
+import net.roguelogix.biggerreactors.classic.reactor.simulation.IReactorSimulation;
+import net.roguelogix.biggerreactors.classic.reactor.simulation.classic.ClassicReactorSimulation;
 import net.roguelogix.biggerreactors.classic.reactor.state.ReactorActivity;
 import net.roguelogix.biggerreactors.classic.reactor.state.ReactorState;
 import net.roguelogix.biggerreactors.classic.reactor.state.ReactorType;
 import net.roguelogix.biggerreactors.classic.reactor.tiles.*;
-import net.roguelogix.biggerreactors.fluids.FluidIrradiatedSteam;
 import net.roguelogix.biggerreactors.registries.FluidTransitionRegistry;
 import net.roguelogix.phosphophyllite.Phosphophyllite;
 import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
 import net.roguelogix.phosphophyllite.multiblock.generic.ValidationError;
-import net.roguelogix.phosphophyllite.multiblock.generic.Validator;
 import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblockController;
 import net.roguelogix.phosphophyllite.repack.org.joml.Vector3i;
 import net.roguelogix.phosphophyllite.util.Util;
@@ -206,43 +203,6 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             simulation.deserializeNBT(compound.getCompound("simulationData"));
         }
         
-        if (compound.contains("storedPower")) {
-            simulation.battery.extractPower(-compound.getLong("storedPower"));
-        }
-        
-        if (compound.contains("currentLiquid")) {
-            ResourceLocation location = new ResourceLocation(compound.getString("currentLiquid"));
-            if (ForgeRegistries.FLUIDS.containsKey(location)) {
-                Fluid fluid = ForgeRegistries.FLUIDS.getValue(location);
-                FluidTransitionRegistry.FluidTransition transition = FluidTransitionRegistry.liquidTransition(fluid);
-                if (transition == null) {
-                    // transition no longer exists, so, void it
-                    simulation.coolantTank.voidLiquid();
-                    simulation.coolantTank.voidVapor();
-                } else {
-                    activeTransition = transition;
-                    currentLiquid = fluid;
-                }
-            } else {
-                // registry no longer knows what fluid we had, id assume the mod was removed, sooo, *void it all*
-                simulation.coolantTank.voidLiquid();
-                simulation.coolantTank.voidVapor();
-            }
-        }
-        
-        if (compound.contains("currentVapor")) {
-            ResourceLocation location = new ResourceLocation(compound.getString("currentVapor"));
-            if (ForgeRegistries.FLUIDS.containsKey(location)) {
-                Fluid fluid = ForgeRegistries.FLUIDS.getValue(location);
-                if (activeTransition != null && activeTransition.gases.contains(fluid)) {
-                    currentVapor = fluid;
-                }
-            }
-            if (currentVapor == null && activeTransition != null) {
-                currentVapor = activeTransition.gases.get(0);
-            }
-        }
-        
         updateBlockStates();
     }
     
@@ -252,12 +212,6 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         {
             compound.putString("reactorState", reactorActivity.toString());
             compound.put("simulationData", simulation.serializeNBT());
-            if (currentLiquid != null) {
-                compound.putString("currentLiquid", currentLiquid.getRegistryName().toString());
-            }
-            if (currentVapor != null) {
-                compound.putString("currentVapor", currentVapor.getRegistryName().toString());
-            }
         }
         return compound;
     }
@@ -337,7 +291,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     }
     
     
-    private ClassicReactorSimulation simulation = new ClassicReactorSimulation();
+    private IReactorSimulation simulation = new ClassicReactorSimulation();
     
     private Fluid currentLiquid;
     private Fluid currentVapor;
@@ -348,7 +302,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     }
     
     public FluidStack getCurrentLiquidStack() {
-        return new FluidStack(currentLiquid, (int) simulation.coolantTank.getLiquidAmount());
+        return new FluidStack(currentLiquid, (int) simulation.coolantTank().liquidAmount());
     }
     
     public Fluid getCurrentVapor() {
@@ -356,7 +310,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     }
     
     public FluidStack getCurrentVaporStack() {
-        return new FluidStack(currentVapor, (int) simulation.coolantTank.getVaporAmount());
+        return new FluidStack(currentVapor, (int) simulation.coolantTank().vaporAmount());
     }
     
     public FluidTransitionRegistry.FluidTransition getActiveTransition() {
@@ -364,32 +318,11 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     }
     
     public long addCoolantLiquid(Fluid liquid, long amount, boolean simulated) {
-        if (liquid == currentLiquid || (activeTransition != null && activeTransition.liquids.contains(liquid))) {
-            return simulation.coolantTank.insertLiquid(amount, simulated);
-        } else {
-            if (simulation.coolantTank.getLiquidAmount() == 0 && simulation.coolantTank.getVaporAmount() == 0) {
-                // new transition time!
-                // tank is empty, and the current transition doesnt work for this liquid
-                activeTransition = FluidTransitionRegistry.liquidTransition(liquid);
-                if (activeTransition == null) {
-                    return 0;
-                }
-                simulation.coolantTank.setVaporizationEnergy(activeTransition.latentHeat);
-                simulation.coolantTank.setBoilingPoint(activeTransition.boilingPoint);
-                currentLiquid = liquid;
-                currentVapor = activeTransition.gases.get(0);
-                return addCoolantLiquid(liquid, amount, simulated);
-            }
-            return 0;
-        }
+        return simulation.coolantTank().fill(liquid, amount, simulated);
     }
     
     public long extractCoolantVapor(Fluid vapor, long amount, boolean simulated) {
-        if (vapor == currentVapor || (activeTransition != null && activeTransition.gases.contains(vapor))) {
-            currentVapor = vapor;
-            return simulation.coolantTank.extractVapor(amount, simulated);
-        }
-        return 0;
+        return simulation.coolantTank().drain(vapor, amount, simulated);
     }
     
     private boolean forceDirty = false;
@@ -404,7 +337,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         
         
         long totalPowerRequested = 0;
-        final long startingPower = simulation.battery.storedPower();
+        final long startingPower = simulation.battery().stored();
         for (ReactorPowerTapTile powerPort : powerPorts) {
             totalPowerRequested += powerPort.distributePower(startingPower, true);
         }
@@ -413,14 +346,15 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         for (ReactorPowerTapTile powerPort : powerPorts) {
             long powerRequested = powerPort.distributePower(startingPower, true);
             powerRequested *= distributionMultiplier;
-            powerRequested = Math.min(simulation.battery.storedPower(), powerRequested); // just in casei
+            powerRequested = Math.min(simulation.battery().stored(), powerRequested); // just in casei
             long powerAccepted = powerPort.distributePower(powerRequested, false);
-            simulation.battery.extractPower(powerAccepted);
+            simulation.battery().extract(powerAccepted);
         }
         
         // i know this is just a hose out, not sure if it should be changed or not
         for (ReactorCoolantPortTile coolantPort : coolantPorts) {
-            simulation.coolantTank.extractVapor(coolantPort.pushSteam(simulation.coolantTank.extractVapor(Integer.MAX_VALUE, true)), false);
+            // TODO vapor output, switch over to what the heat exchanger is doing
+//            simulation.coolantTank().extractVapor(coolantPort.pushSteam(simulation.coolantTank().extractVapor(Integer.MAX_VALUE, true)), false);
         }
         
         updateFuelRenderingLevel();
@@ -440,13 +374,13 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     
     private void updateFuelRenderingLevel(boolean forceFullUpdate) {
         
-        if (simulation.fuelTank.getCapacity() == 0) {
+        if (simulation.fuelTank().capacity() == 0) {
             return;
         }
         
         long rodPixels = fuelRodsByLevel.size() * 16L;
-        long fuelPixels = (simulation.fuelTank.getTotalAmount() * rodPixels) / simulation.fuelTank.getCapacity();
-        long wastePixels = (simulation.fuelTank.getWasteAmount() * rodPixels) / simulation.fuelTank.getCapacity();
+        long fuelPixels = (simulation.fuelTank().totalStored() * rodPixels) / simulation.fuelTank().capacity();
+        long wastePixels = (simulation.fuelTank().totalStored() * rodPixels) / simulation.fuelTank().capacity();
         
         if (fuelPixels == currentFuelRenderLevel && wastePixels == currentWasteRenderLevel) {
             return;
@@ -524,18 +458,18 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     }
     
     private void distributeFuel() {
-        if (simulation.fuelTank.getTotalAmount() > 0 && !fuelRods.isEmpty()) {
-            long fuelToDistribute = simulation.fuelTank.getFuelAmount();
-            long wasteToDistribute = simulation.fuelTank.getWasteAmount();
+        if (simulation.fuelTank().totalStored() > 0 && !fuelRods.isEmpty()) {
+            long fuelToDistribute = simulation.fuelTank().fuel();
+            long wasteToDistribute = simulation.fuelTank().waste();
             fuelToDistribute /= fuelRods.size();
             wasteToDistribute /= fuelRods.size();
             for (ReactorFuelRodTile fuelRod : fuelRods) {
-                fuelRod.fuel += simulation.fuelTank.extractFuel(fuelToDistribute, false);
-                fuelRod.waste += simulation.fuelTank.extractWaste(wasteToDistribute, false);
+                fuelRod.fuel += simulation.fuelTank().extractFuel(fuelToDistribute, false);
+                fuelRod.waste += simulation.fuelTank().extractWaste(wasteToDistribute, false);
             }
             for (ReactorFuelRodTile fuelRod : fuelRods) {
-                fuelRod.fuel += simulation.fuelTank.extractFuel(Long.MAX_VALUE, false);
-                fuelRod.waste += simulation.fuelTank.extractWaste(Long.MAX_VALUE, false);
+                fuelRod.fuel += simulation.fuelTank().extractFuel(Long.MAX_VALUE, false);
+                fuelRod.waste += simulation.fuelTank().extractWaste(Long.MAX_VALUE, false);
             }
             markDirty();
         }
@@ -543,8 +477,8 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     
     private void collectFuel() {
         for (ReactorFuelRodTile fuelRod : fuelRods) {
-            fuelRod.fuel -= simulation.fuelTank.insertFuel(fuelRod.fuel, false);
-            fuelRod.waste -= simulation.fuelTank.insertWaste(fuelRod.waste, false);
+            fuelRod.fuel -= simulation.fuelTank().insertFuel(fuelRod.fuel, false);
+            fuelRod.waste -= simulation.fuelTank().insertWaste(fuelRod.waste, false);
             if (fuelRod.fuel != 0 || fuelRod.waste != 0) {
                 BiggerReactors.LOGGER.warn("Reactor overfilled with fuel at " + fuelRod.getPos().toString());
                 // for now, just void the fuel
@@ -562,18 +496,18 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             if (accessPort.isInlet()) {
                 continue;
             }
-            long wastePushed = accessPort.pushWaste((int) simulation.fuelTank.getWasteAmount(), false);
-            forceDirty = simulation.fuelTank.extractWaste(wastePushed, false) > 0;
+            long wastePushed = accessPort.pushWaste((int) simulation.fuelTank().waste(), false);
+            forceDirty = simulation.fuelTank().extractWaste(wastePushed, false) > 0;
             
         }
         
         // outlets have already taken as much as they can, now just hose it out the inlets too
         // this will only actually do anything with items, so, we only care if there is a full ingot or more
         // if/when fluid fueling is added, only oulets will output it
-        if (simulation.fuelTank.getWasteAmount() > Config.Reactor.FuelMBPerIngot) {
+        if (simulation.fuelTank().waste() > Config.Reactor.FuelMBPerIngot) {
             for (ReactorAccessPortTile accessPort : accessPorts) {
-                long wastePushed = accessPort.pushWaste((int) simulation.fuelTank.getWasteAmount(), false);
-                forceDirty = simulation.fuelTank.extractWaste(wastePushed, false) > 0;
+                long wastePushed = accessPort.pushWaste((int) simulation.fuelTank().waste(), false);
+                forceDirty = simulation.fuelTank().extractWaste(wastePushed, false) > 0;
             }
         }
     }
@@ -582,7 +516,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         if (assemblyState() != AssemblyState.ASSEMBLED) {
             return 0;
         }
-        long wasteExtracted = simulation.fuelTank.extractWaste(mb, simulated);
+        long wasteExtracted = simulation.fuelTank().extractWaste(mb, simulated);
         forceDirty = wasteExtracted > 0 && !simulated;
         return wasteExtracted;
     }
@@ -591,7 +525,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         if (assemblyState() != AssemblyState.ASSEMBLED) {
             return 0;
         }
-        long fuelExtracted = simulation.fuelTank.extractFuel(mb, simulated);
+        long fuelExtracted = simulation.fuelTank().extractFuel(mb, simulated);
         forceDirty = fuelExtracted > 0 && !simulated;
         return fuelExtracted;
     }
@@ -600,7 +534,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         if (assemblyState() != AssemblyState.ASSEMBLED) {
             return 0;
         }
-        long fuelInserted = simulation.fuelTank.insertFuel(mb, simulated);
+        long fuelInserted = simulation.fuelTank().insertFuel(mb, simulated);
         forceDirty = fuelInserted > 0 && !simulated;
         return fuelInserted;
     }
@@ -612,25 +546,25 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         
         reactorState.doAutoEject = autoEjectWaste;
         
-        reactorState.energyStored = simulation.battery.storedPower();
-        reactorState.energyCapacity = simulation.battery.size();
+        reactorState.energyStored = simulation.battery().stored();
+        reactorState.energyCapacity = simulation.battery().capacity();
         
-        reactorState.wasteStored = simulation.fuelTank.getWasteAmount();
-        reactorState.fuelStored = simulation.fuelTank.getFuelAmount();
-        reactorState.fuelCapacity = simulation.fuelTank.getCapacity();
+        reactorState.wasteStored = simulation.fuelTank().waste();
+        reactorState.fuelStored = simulation.fuelTank().fuel();
+        reactorState.fuelCapacity = simulation.fuelTank().capacity();
         
-        reactorState.coolantStored = simulation.coolantTank.getLiquidAmount();
-        reactorState.coolantCapacity = simulation.coolantTank.getPerSideCapacity();
+        reactorState.coolantStored = simulation.coolantTank().liquidAmount();
+        reactorState.coolantCapacity = simulation.coolantTank().perSideCapacity();
         
-        reactorState.steamStored = simulation.coolantTank.getVaporAmount();
-        reactorState.steamCapacity = simulation.coolantTank.getPerSideCapacity();
+        reactorState.steamStored = simulation.coolantTank().vaporAmount();
+        reactorState.steamCapacity = simulation.coolantTank().perSideCapacity();
         
-        reactorState.caseHeatStored = simulation.getReactorHeat();
-        reactorState.fuelHeatStored = simulation.getFuelHeat();
+        reactorState.caseHeatStored = simulation.caseHeat();
+        reactorState.fuelHeatStored = simulation.fuelHeat();
         
-        reactorState.reactivityRate = simulation.getFertility();
-        reactorState.fuelUsageRate = simulation.getFuelConsumedLastTick();
-        reactorState.reactorOutputRate = simulation.getFEProducedLastTick();
+        reactorState.reactivityRate = simulation.fertility();
+        reactorState.fuelUsageRate = simulation.fuelConsumptionLastTick();
+        reactorState.reactorOutputRate = simulation.outputLastTick();
     }
     
     public void runRequest(@Nonnull String requestName, @Nullable Object requestData) {
@@ -664,23 +598,24 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     public String getDebugInfo() {
         return super.getDebugInfo() +
                 "State: " + reactorActivity.toString() + "\n" +
-                "StoredPower: " + simulation.battery.storedPower() + "\n" +
-                "PowerProduction: " + simulation.getFEProducedLastTick() + "\n" +
-                "FuelUsage: " + simulation.getFuelConsumedLastTick() + "\n" +
-                "ReactantCapacity: " + simulation.fuelTank.getCapacity() + "\n" +
-                "TotalReactant: " + simulation.fuelTank.getTotalAmount() + "\n" +
-                "PercentFull: " + (float) simulation.fuelTank.getTotalAmount() * 100 / simulation.fuelTank.getCapacity() + "\n" +
-                "Fuel: " + simulation.fuelTank.getFuelAmount() + "\n" +
-                "Waste: " + simulation.fuelTank.getWasteAmount() + "\n" +
+                "StoredPower: " + simulation.battery().stored() + "\n" +
+                "PowerProduction: " + simulation.FEProducedLastTick() + "\n" +
+                "MBProduction: " + simulation.MBProducedLastTick() + "\n" +
+                "FuelUsage: " + simulation.fuelConsumptionLastTick() + "\n" +
+                "ReactantCapacity: " + simulation.fuelTank().capacity() + "\n" +
+                "TotalReactant: " + simulation.fuelTank().totalStored() + "\n" +
+                "PercentFull: " + (float) simulation.fuelTank().totalStored() * 100 / simulation.fuelTank().capacity() + "\n" +
+                "Fuel: " + simulation.fuelTank().fuel() + "\n" +
+                "Waste: " + simulation.fuelTank().waste() + "\n" +
                 "AutoEjectWaste: " + autoEjectWaste + "\n" +
-                "Fertility: " + simulation.getFertility() + "\n" +
-                "FuelHeat: " + simulation.getFuelHeat() + "\n" +
-                "ReactorHeat: " + simulation.getReactorHeat() + "\n" +
-                "CoolantTankSize: " + simulation.coolantTank.getPerSideCapacity() + "\n" +
+                "Fertility: " + simulation.fertility() + "\n" +
+                "FuelHeat: " + simulation.fuelHeat() + "\n" +
+                "ReactorHeat: " + simulation.caseHeat() + "\n" +
+                "CoolantTankSize: " + simulation.coolantTank().perSideCapacity() + "\n" +
                 "LiquidType: " + currentLiquid + "\n" +
-                "Liquid: " + simulation.coolantTank.getLiquidAmount() + "\n" +
+                "Liquid: " + simulation.coolantTank().liquidAmount() + "\n" +
                 "VaporType: " + currentVapor + "\n" +
-                "Vapor: " + simulation.coolantTank.getVaporAmount() + "\n" +
+                "Vapor: " + simulation.coolantTank().vaporAmount() + "\n" +
                 "";
     }
     
@@ -703,11 +638,11 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     // -- Mekanism compat
     
     public long getSteamCapacity() {
-        return simulation.coolantTank.getPerSideCapacity();
+        return simulation.coolantTank().perSideCapacity();
     }
     
     public long getSteamAmount() {
-        return simulation.coolantTank.getVaporAmount();
+        return simulation.coolantTank().vaporAmount();
     }
     
     // -- ComputerCraft API --
@@ -726,39 +661,39 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     
     public long CCgetEnergyStored() {
         // backwards compatible with the old CC API, which requires this assumption
-        return (simulation.battery.storedPower() * 10_000_000) / simulation.battery.size();
+        return (simulation.battery().stored() * 10_000_000) / simulation.battery().capacity();
     }
     
     public long CCgetEnergyStoredUnscaled() {
-        return simulation.battery.storedPower();
+        return simulation.battery().stored();
     }
     
     public long CCgetMaxEnergyStored() {
-        return simulation.battery.size();
+        return simulation.battery().capacity();
     }
     
     public double CCgetFuelTemperature() {
-        return simulation.getFuelHeat();
+        return simulation.fuelHeat();
     }
     
     public double CCgetCasingTemperature() {
-        return simulation.getReactorHeat();
+        return simulation.caseHeat();
     }
     
     public long CCgetFuelAmount() {
-        return simulation.fuelTank.getFuelAmount();
+        return simulation.fuelTank().fuel();
     }
     
     public long CCgetWasteAmount() {
-        return simulation.fuelTank.getWasteAmount();
+        return simulation.fuelTank().waste();
     }
     
     public long CCgetReactantAmount() {
-        return simulation.fuelTank.getTotalAmount();
+        return simulation.fuelTank().totalStored();
     }
     
     public long CCgetFuelAmountMax() {
-        return simulation.fuelTank.getCapacity();
+        return simulation.fuelTank().capacity();
     }
     
     @Nonnull
@@ -781,54 +716,51 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     }
     
     public double CCgetEnergyProducedLastTick() {
-        return simulation.FEProducedLastTick;
+        return simulation.outputLastTick();
     }
     
     public double CCgetHotFluidProducedLastTick() {
-        if (simulation.isPassive()) {
-            return 0;
-        }
-        return simulation.FEProducedLastTick;
+        return simulation.MBProducedLastTick();
     }
     
     public double CCgetMaxHotFluidProducedLastTick() {
         if (simulation.isPassive()) {
             return 0;
         }
-        return simulation.coolantTank.getMaxFluidVaporizedLastTick();
+        return simulation.maxMBProductionLastTick();
     }
     
     
     @Nullable
     public String CCgetCoolantType() {
-        if (simulation.coolantTank.getLiquidAmount() == 0 || currentLiquid == null) {
+        if (simulation.coolantTank().liquidAmount() == 0 || currentLiquid == null) {
             return null;
         }
         return Objects.requireNonNull(currentLiquid.getRegistryName()).toString();
     }
     
     public long CCgetCoolantAmount() {
-        return simulation.coolantTank.getLiquidAmount();
+        return simulation.coolantTank().liquidAmount();
     }
     
     @Nullable
     public String CCgetHotFluidType() {
-        if (simulation.coolantTank.getVaporAmount() == 0 || currentVapor == null) {
+        if (simulation.coolantTank().vaporAmount() == 0 || currentVapor == null) {
             return null;
         }
         return Objects.requireNonNull(currentVapor.getRegistryName()).toString();
     }
     
     public long CCgetHotFluidAmount() {
-        return simulation.coolantTank.getVaporAmount();
+        return simulation.coolantTank().vaporAmount();
     }
     
     public double CCgetFuelReactivity() {
-        return simulation.getFertility() * 100;
+        return simulation.fertility() * 100;
     }
     
     public double CCgetFuelConsumedLastTick() {
-        return simulation.getFuelConsumedLastTick();
+        return simulation.fuelConsumptionLastTick();
     }
     
     public BlockPos CCgetControlRodLocation(int index) {
@@ -880,10 +812,10 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     }
     
     public long CCgetCoolantAmountMax() {
-        return simulation.coolantTank.getPerSideCapacity();
+        return simulation.coolantTank().perSideCapacity();
     }
     
     public long CCgetHotFluidAmountMax() {
-        return simulation.coolantTank.getPerSideCapacity();
+        return simulation.coolantTank().perSideCapacity();
     }
 }
