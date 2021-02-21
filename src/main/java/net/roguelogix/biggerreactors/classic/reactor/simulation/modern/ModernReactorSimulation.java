@@ -97,6 +97,7 @@ public class ModernReactorSimulation implements IReactorSimulation {
     
     @Override
     public void setPassivelyCooled(boolean passivelyCooled) {
+        this.passivelyCooled = passivelyCooled;
         output = passivelyCooled ? battery : coolantTank;
     }
     
