@@ -16,11 +16,19 @@ public interface IReactorSimulation extends INBTSerializable<CompoundNBT> {
     
     void setPassivelyCooled(boolean passivelyCooled);
     
+    void setAmbientTemperature(double temperature);
+    
     boolean isPassive();
     
     void updateInternalValues();
     
     void setActive(boolean active);
+    
+    /**
+     * tick the reactor simulation
+     * call this even if inactive, as there can be some inactive decay
+     */
+    void tick();
     
     IReactorBattery battery();
     
@@ -30,12 +38,6 @@ public interface IReactorSimulation extends INBTSerializable<CompoundNBT> {
      * @return simulation's fuel tank
      */
     IReactorFuelTank fuelTank();
-    
-    /**
-     * tick the reactor simulation
-     * call this even if inactive, as there can be some inactive decay
-     */
-    void tick();
     
     /**
      * FE produced if passive
@@ -71,4 +73,6 @@ public interface IReactorSimulation extends INBTSerializable<CompoundNBT> {
     double fuelHeat();
     
     double caseHeat();
+    
+    double ambientTemperature();
 }

@@ -207,6 +207,10 @@ public class ClassicReactorSimulation implements IReactorSimulation {
         passive = passivelyCooled;
     }
     
+    @Override
+    public void setAmbientTemperature(double temperature) {
+    }
+    
     private double getCoolantTemperature() {
         if (passive) {
             return Config.Reactor.AmbientTemperature;
@@ -388,6 +392,11 @@ public class ClassicReactorSimulation implements IReactorSimulation {
     
     public double caseHeat() {
         return reactorHeat;
+    }
+    
+    @Override
+    public double ambientTemperature() {
+        return 20;
     }
     
     public double fuelConsumptionLastTick() {
