@@ -236,7 +236,7 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements INamedCo
         return this.currentChanges;
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public ReactorRedstonePortState getState() {
         this.updateState();
