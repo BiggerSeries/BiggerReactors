@@ -130,10 +130,10 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
         if (controller == null) {
             return ItemStack.EMPTY;
         } else if (slot == WASTE_SLOT) {
-            long availableIngots = controller.CCgetWasteAmount() / Config.Reactor.FuelMBPerIngot;
+            long availableIngots = controller.simulation().fuelTank().waste() / Config.Reactor.FuelMBPerIngot;
             return new ItemStack(CyaniteIngot.INSTANCE, (int) availableIngots);
         } else if (slot == FUEL_SLOT) {
-            long availableIngots = controller.CCgetFuelAmount() / Config.Reactor.FuelMBPerIngot;
+            long availableIngots = controller.simulation().fuelTank().fuel() / Config.Reactor.FuelMBPerIngot;
             return new ItemStack(YelloriumIngot.INSTANCE, (int) availableIngots);
         } else {
             return ItemStack.EMPTY;
@@ -195,7 +195,7 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
         if(controller == null){
             return 0;
         }
-        return (int) (controller.CCgetFuelAmountMax() / Config.Reactor.FuelMBPerIngot);
+        return (int) (controller.simulation().fuelTank().capacity() / Config.Reactor.FuelMBPerIngot);
     }
     
     @Override

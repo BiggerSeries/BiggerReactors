@@ -463,16 +463,16 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     
     private boolean autoEjectWaste = true;
     
-    private void ejectWaste() {
+    public void ejectWaste() {
         for (ReactorAccessPortTile accessPort : accessPorts) {
             if (accessPort.isInlet()) {
                 continue;
             }
             long wastePushed = accessPort.pushWaste((int) simulation.fuelTank().waste(), false);
             forceDirty = simulation.fuelTank().extractWaste(wastePushed, false) > 0;
-            
-        }
         
+        }
+    
         // outlets have already taken as much as they can, now just hose it out the inlets too
         // this will only actually do anything with items, so, we only care if there is a full ingot or more
         // if/when fluid fueling is added, only oulets will output it
@@ -598,6 +598,10 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             });
             updateControlRodLevels();
         }
+    }
+    
+    public double controlRdoLevel(int index) {
+        return controlRods.get(index).getInsertion();
     }
     
     public void updateControlRodLevels() {

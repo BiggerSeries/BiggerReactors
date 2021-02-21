@@ -90,23 +90,23 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements INamedCo
                         break;
                     }
                     if (isPowered) {
-                        controller.CCsetAllControlRodLevels(mainVal);
+                        controller.setAllControlRodLevels(mainVal);
                     } else {
-                        controller.CCsetAllControlRodLevels(secondaryVal);
+                        controller.setAllControlRodLevels(secondaryVal);
                     }
                 } else {
                     if (!wasPowered && isPowered) {
                         switch (reactorRedstonePortState.triggerMode) {
                             case 0: {
-                                controller.CCsetAllControlRodLevels(controller.CCgetControlRodLevel(0) + mainVal);
+                                controller.setAllControlRodLevels(controller.controlRdoLevel(0) + mainVal);
                                 break;
                             }
                             case 1: {
-                                controller.CCsetAllControlRodLevels(controller.CCgetControlRodLevel(0) - mainVal);
+                                controller.setAllControlRodLevels(controller.controlRdoLevel(0) - mainVal);
                                 break;
                             }
                             case 2: {
-                                controller.CCsetAllControlRodLevels(mainVal);
+                                controller.setAllControlRodLevels(mainVal);
                                 break;
                             }
                             default:
@@ -119,27 +119,27 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements INamedCo
             case INPUT_EJECT_WASTE: {
                 shouldLight = isPowered;
                 if (!wasPowered && isPowered) {
-                    controller.CCdoEjectWaste();
+                    controller.ejectWaste();
                 }
                 break;
             }
             case OUTPUT_FUEL_TEMP: {
-                double fuelTemp = controller.CCgetFuelTemperature();
+                double fuelTemp = controller.simulation().fuelHeat();
                 if ((fuelTemp < mainVal) == reactorRedstonePortState.triggerAB.toBool()) {
                     shouldBeEmitting = true;
                 }
             }
             break;
             case OUTPUT_CASING_TEMP: {
-                double casingTemperature = controller.CCgetCasingTemperature();
+                double casingTemperature = controller.simulation().caseHeat();
                 if ((casingTemperature < mainVal) == reactorRedstonePortState.triggerAB.toBool()) {
                     shouldBeEmitting = true;
                 }
             }
             break;
             case OUTPUT_FUEL_ENRICHMENT: {
-                double fuelPercent = controller.CCgetFuelAmount();
-                fuelPercent /= controller.CCgetReactantAmount();
+                double fuelPercent = controller.simulation().fuelTank().fuel();
+                fuelPercent /= controller.simulation().fuelTank().totalStored();
                 fuelPercent *= 100;
                 if ((fuelPercent < mainVal) == reactorRedstonePortState.triggerAB.toBool()) {
                     shouldBeEmitting = true;
@@ -147,22 +147,22 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements INamedCo
             }
             break;
             case OUTPUT_FUEL_AMOUNT: {
-                double fuelAmount = controller.CCgetFuelAmount();
+                double fuelAmount = controller.simulation().fuelTank().fuel();
                 if ((fuelAmount < mainVal) == reactorRedstonePortState.triggerAB.toBool()) {
                     shouldBeEmitting = true;
                 }
             }
             break;
             case OUTPUT_WASTE_AMOUNT: {
-                double wasteAmount = controller.CCgetWasteAmount();
+                double wasteAmount = controller.simulation().fuelTank().waste();
                 if ((wasteAmount < mainVal) == reactorRedstonePortState.triggerAB.toBool()) {
                     shouldBeEmitting = true;
                 }
             }
             break;
             case OUTPUT_ENERGY_AMOUNT: {
-                double energyAmount = controller.CCgetEnergyStoredUnscaled();
-                energyAmount /= (double) controller.CCgetMaxEnergyStored();
+                double energyAmount = controller.simulation().battery().stored();
+                energyAmount /= (double) controller.simulation().battery().capacity();
                 energyAmount *= 100;
                 if ((energyAmount < mainVal) == reactorRedstonePortState.triggerAB.toBool()) {
                     shouldBeEmitting = true;
