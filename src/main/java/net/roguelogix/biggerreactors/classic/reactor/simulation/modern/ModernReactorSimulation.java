@@ -7,7 +7,6 @@ import net.roguelogix.biggerreactors.classic.reactor.simulation.IReactorBattery;
 import net.roguelogix.biggerreactors.classic.reactor.simulation.IReactorCoolantTank;
 import net.roguelogix.biggerreactors.classic.reactor.simulation.IReactorFuelTank;
 import net.roguelogix.biggerreactors.classic.reactor.simulation.IReactorSimulation;
-import net.roguelogix.phosphophyllite.repack.org.joml.Quaterniond;
 import net.roguelogix.phosphophyllite.repack.org.joml.Random;
 import net.roguelogix.phosphophyllite.repack.org.joml.Vector2i;
 import net.roguelogix.phosphophyllite.repack.org.joml.Vector3d;
@@ -279,13 +278,6 @@ public class ModernReactorSimulation implements IReactorSimulation {
             new Vector3d()
     };
     
-    final Vector3d[] directions = new Vector3d[]{
-            new Vector3d(+1, +0, +0),
-            new Vector3d(-1, +0, +0),
-            new Vector3d(+0, +0, +1),
-            new Vector3d(+0, +0, -1),
-    };
-    
     void radiateFrom(int x, int y, int z) {
         // ray tracing, because cardinal directions isn't good enough for me
         // also keeps you from building a skeleton reactor
@@ -295,7 +287,7 @@ public class ModernReactorSimulation implements IReactorSimulation {
         radiationDirection.sub(0.5, 0.5, 0.5);
         radiationDirection.normalize();
         
-        // radaition extends for RadiationBlocksToLive from the outside of the fuel rod
+        // radiation extends for RadiationBlocksToLive from the outside of the fuel rod
         // but i rotate about the center of the fuel rod, so, i need to add the length of the inside
         currentSegmentStart.set(radiationDirection);
         currentSegmentStart.mul(1 / Math.abs(currentSegmentStart.get(currentSegmentStart.maxComponent())));
@@ -353,7 +345,7 @@ public class ModernReactorSimulation implements IReactorSimulation {
             ReactorModeratorRegistry.IModeratorProperties properties = moderatorProperties[(int) currentSectionBlock.x][(int) currentSectionBlock.y][(int) currentSectionBlock.z];
             
             if (!firstIteration && segmentLength != 0) {
-                performIrradiation((int) currentSectionBlock.x, (int) currentSectionBlock.y, (int) currentSectionBlock.z, properties, segmentLength);
+                performIrradiation((int) currentSectionBlock.x, (int) currentSectionBlock.z, properties, segmentLength);
             }
             firstIteration = false;
             
@@ -367,7 +359,7 @@ public class ModernReactorSimulation implements IReactorSimulation {
         }
     }
     
-    void performIrradiation(int x, int y, int z, ReactorModeratorRegistry.IModeratorProperties properties, double effectMultiplier) {
+    void performIrradiation(int x, int z, ReactorModeratorRegistry.IModeratorProperties properties, double effectMultiplier) {
         // TODO, use exponentials for the effect multiplier, linear doesnt describe it perfectly
         if (properties != null) {
             double radiationAbsorbed = neutronIntensity * properties.absorption() * (1f - neutronHardness) * effectMultiplier;
