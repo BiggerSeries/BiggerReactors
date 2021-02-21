@@ -10,7 +10,7 @@ import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorBaseBlock;
 import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorFuelRod;
 import net.roguelogix.biggerreactors.classic.reactor.simulation.IReactorSimulation;
-import net.roguelogix.biggerreactors.classic.reactor.simulation.classic.ClassicReactorSimulation;
+import net.roguelogix.biggerreactors.classic.reactor.simulation.modern.ModernReactorSimulation;
 import net.roguelogix.biggerreactors.classic.reactor.state.ReactorActivity;
 import net.roguelogix.biggerreactors.classic.reactor.state.ReactorState;
 import net.roguelogix.biggerreactors.classic.reactor.state.ReactorType;
@@ -218,7 +218,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         setActive(ReactorActivity.INACTIVE);
         distributeFuel();
         otherController.distributeFuel();
-        simulation = new ClassicReactorSimulation();
+        simulation = createSimulation();
     }
     
     @Override
@@ -250,6 +250,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             simulation.setControlRod(rodPos.getX() - start.x, rodPos.getZ() - start.z);
         }
         simulation.setPassivelyCooled(coolantPorts.isEmpty());
+        simulation.setAmbientTemperature(20);
         simulation.updateInternalValues();
         updateControlRodLevels();
         collectFuel();
@@ -289,7 +290,11 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     }
     
     
-    private IReactorSimulation simulation = new ClassicReactorSimulation();
+    private IReactorSimulation simulation = createSimulation();
+    
+    IReactorSimulation createSimulation(){
+        return new ModernReactorSimulation();
+    }
     
     public IReactorSimulation simulation() {
         return simulation;

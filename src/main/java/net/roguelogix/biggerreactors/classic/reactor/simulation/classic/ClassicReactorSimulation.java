@@ -34,18 +34,18 @@ public class ClassicReactorSimulation implements IReactorSimulation {
     private double reactorHeatLossCoefficient = 0;
     private boolean active = false;
     private double fuelFertility = 1f;
-    private double fuelHeat = Config.Reactor.AmbientTemperature;
-    private double reactorHeat = Config.Reactor.AmbientTemperature;
+    private double fuelHeat = Config.Reactor.Classic.AmbientTemperature;
+    private double reactorHeat = Config.Reactor.Classic.AmbientTemperature;
     private boolean passive = true;
     private int rodToIrradiate = 0;
     private int yLevelToIrradiate = 0;
     
     public static double getRFFromVolumeAndTemp(double volume, double temperature) {
-        return temperature * volume * Config.Reactor.FEPerCentigradePerUnitVolume;
+        return temperature * volume * Config.Reactor.Classic.FEPerCentigradePerUnitVolume;
     }
     
     public static double getTempFromVolumeAndRF(double volume, double rf) {
-        return rf / (volume * Config.Reactor.FEPerCentigradePerUnitVolume);
+        return rf / (volume * Config.Reactor.Classic.FEPerCentigradePerUnitVolume);
     }
     
     double reactorVolume() {
@@ -93,14 +93,14 @@ public class ClassicReactorSimulation implements IReactorSimulation {
     }
     
     public void updateInternalValues() {
-        fuelTank.setCapacity(Config.Reactor.PerFuelRodCapacity * controlRods.size() * y);
+        fuelTank.setCapacity(Config.Reactor.Classic.PerFuelRodCapacity * controlRods.size() * y);
         
         fuelToReactorHeatTransferCoefficient = 0;
         for (ControlRod controlRod : controlRods) {
             for (int i = 0; i < y; i++) {
                 for (Vector2i direction : directions) {
                     if (controlRod.x + direction.x < 0 || controlRod.x + direction.x >= x || controlRod.z + direction.y < 0 || controlRod.z + direction.y >= z) {
-                        fuelToReactorHeatTransferCoefficient += Config.Reactor.CasingHeatTransferCoefficient;
+                        fuelToReactorHeatTransferCoefficient += Config.Reactor.Classic.CasingHeatTransferCoefficient;
                         continue;
                     }
                     ReactorModeratorRegistry.IModeratorProperties properties = moderatorProperties[controlRod.x + direction.x][i][controlRod.z + direction.y];
@@ -110,17 +110,17 @@ public class ClassicReactorSimulation implements IReactorSimulation {
                 }
             }
         }
-        fuelToReactorHeatTransferCoefficient *= Config.Reactor.FuelToCasingTransferCoefficientMultiplier;
-        
-        reactorToCoolantSystemHeatTransferCoefficient = 2 * (x * y + x * z + z * y) * Config.Reactor.CasingToCoolantSystemCoefficientMultiplier;
-        
-        reactorHeatLossCoefficient = 2 * ((x + 2) * (y + 2) + (x + 2) * (z + 2) + (z + 2) * (y + 2)) * Config.Reactor.HeatLossCoefficientMultiplier;
+        fuelToReactorHeatTransferCoefficient *= Config.Reactor.Classic.FuelToCasingTransferCoefficientMultiplier;
+    
+        reactorToCoolantSystemHeatTransferCoefficient = 2 * (x * y + x * z + z * y) * Config.Reactor.Classic.CasingToCoolantSystemCoefficientMultiplier;
+    
+        reactorHeatLossCoefficient = 2 * ((x + 2) * (y + 2) + (x + 2) * (z + 2) + (z + 2) * (y + 2)) * Config.Reactor.Classic.HeatLossCoefficientMultiplier;
         
         if (passive) {
             coolantTank.perSideCapacity = 0;
-            battery.setMaxStoredPower((((x + 2) * (y + 2) * (z + 2)) - (x * y * z)) * Config.Reactor.PassiveBatteryPerExternalBlock);
+            battery.setMaxStoredPower((((x + 2) * (y + 2) * (z + 2)) - (x * y * z)) * Config.Reactor.Classic.PassiveBatteryPerExternalBlock);
         } else {
-            coolantTank.perSideCapacity = (((x + 2) * (y + 2) * (z + 2)) - (x * y * z)) * Config.Reactor.CoolantTankAmountPerExternalBlock;
+            coolantTank.perSideCapacity = (((x + 2) * (y + 2) * (z + 2)) - (x * y * z)) * Config.Reactor.Classic.CoolantTankAmountPerExternalBlock;
         }
         
         rodToIrradiate = 0;
@@ -141,14 +141,14 @@ public class ClassicReactorSimulation implements IReactorSimulation {
         
         {
             // decay fertility, RadiationHelper.tick in old BR, this is copied, mostly
-            double denominator = Config.Reactor.FuelFertilityDecayDenominator;
+            double denominator = Config.Reactor.Classic.FuelFertilityDecayDenominator;
             if (!active) {
                 // Much slower decay when off
-                denominator *= Config.Reactor.FuelFertilityDecayDenominatorInactiveMultiplier;
+                denominator *= Config.Reactor.Classic.FuelFertilityDecayDenominatorInactiveMultiplier;
             }
             
             // Fertility decay, at least 0.1 rad/t, otherwise halve it every 10 ticks
-            fuelFertility = Math.max(0f, fuelFertility - Math.max(Config.Reactor.FuelFertilityMinimumDecay, fuelFertility / denominator));
+            fuelFertility = Math.max(0f, fuelFertility - Math.max(Config.Reactor.Classic.FuelFertilityMinimumDecay, fuelFertility / denominator));
         }
         
         // Heat Transfer: Fuel Pool <> Reactor Environment
@@ -173,9 +173,8 @@ public class ClassicReactorSimulation implements IReactorSimulation {
             double reactorRf = getRFFromVolumeAndTemp(reactorVolume(), reactorHeat);
             
             if (passive) {
-                rfTransferred *= Config.Reactor.PassiveCoolingTransferEfficiency;
-                rfTransferred *= Config.Reactor.OutputMultiplier * Config.Reactor.PassiveOutputMultiplier;
-                FEProducedLastTick = battery.addPower(rfTransferred);
+                rfTransferred *= Config.Reactor.Classic.PassiveCoolingTransferEfficiency;
+                FEProducedLastTick = battery.addPower(rfTransferred * Config.Reactor.OutputMultiplier * Config.Reactor.PassiveOutputMultiplier);
             } else {
                 // yes this is kinda broken physics, *oh well*
                 rfTransferred -= coolantTank.absorbHeat(rfTransferred * Config.Reactor.OutputMultiplier * Config.Reactor.ActiveOutputMultiplier) / (Config.Reactor.OutputMultiplier * Config.Reactor.ActiveOutputMultiplier);
@@ -185,21 +184,21 @@ public class ClassicReactorSimulation implements IReactorSimulation {
             reactorRf -= rfTransferred;
             reactorHeat = getTempFromVolumeAndRF(reactorVolume(), reactorRf);
         }
-        
+    
         // Do passive heat loss - this is always versus external environment
-        tempDiff = reactorHeat - Config.Reactor.AmbientTemperature;
+        tempDiff = reactorHeat - Config.Reactor.Classic.AmbientTemperature;
         if (tempDiff > 0.000001f) {
             double rfLost = Math.max(1f, tempDiff * reactorHeatLossCoefficient); // Lose at least 1RF/t
             double reactorNewRf = Math.max(0f, getRFFromVolumeAndTemp(reactorVolume(), reactorHeat) - rfLost);
             reactorHeat = getTempFromVolumeAndRF(reactorVolume(), reactorNewRf);
         }
-        
+    
         // Prevent cryogenics, and clamp when really close
-        if (reactorHeat < Config.Reactor.AmbientTemperature + 0.01f) {
-            reactorHeat = Config.Reactor.AmbientTemperature;
+        if (reactorHeat < Config.Reactor.Classic.AmbientTemperature + 0.01f) {
+            reactorHeat = Config.Reactor.Classic.AmbientTemperature;
         }
-        if (fuelHeat < Config.Reactor.AmbientTemperature + 0.01f) {
-            fuelHeat = Config.Reactor.AmbientTemperature;
+        if (fuelHeat < Config.Reactor.Classic.AmbientTemperature + 0.01f) {
+            fuelHeat = Config.Reactor.Classic.AmbientTemperature;
         }
     }
     
@@ -213,7 +212,7 @@ public class ClassicReactorSimulation implements IReactorSimulation {
     
     private double getCoolantTemperature() {
         if (passive) {
-            return Config.Reactor.AmbientTemperature;
+            return Config.Reactor.Classic.AmbientTemperature;
         }
         return coolantTank.getCoolantTemperature(reactorHeat);
     }
@@ -247,57 +246,57 @@ public class ClassicReactorSimulation implements IReactorSimulation {
         // Determine radiation amount & intensity, heat amount, determine fuel usage
         
         // Base value for radiation production penalties. 0-1, caps at about 3000C;
-        double radiationPenaltyBase = Math.exp(-Config.Reactor.RadPenaltyShiftMultiplier * Math.exp(-0.001 * Config.Reactor.RadPenaltyRateMultiplier * fuelHeat));
+        double radiationPenaltyBase = Math.exp(-Config.Reactor.Classic.RadPenaltyShiftMultiplier * Math.exp(-0.001 * Config.Reactor.Classic.RadPenaltyRateMultiplier * fuelHeat));
         
         // Raw amount - what's actually in the tanks
         // Effective amount - how
         long baseFuelAmount = fuelTank.fuel() + (fuelTank.waste() / 100);
         
         // Intensity = how strong the radiation is, hardness = how energetic the radiation is (penetration)
-        double rawRadIntensity = (double) baseFuelAmount * Config.Reactor.FissionEventsPerFuelUnit;
+        double rawRadIntensity = (double) baseFuelAmount * Config.Reactor.Classic.FissionEventsPerFuelUnit;
         
         // Scale up the "effective" intensity of radiation, to provide an incentive for bigger reactors in general.
-        double scaledRadIntensity = Math.pow((rawRadIntensity), Config.Reactor.FuelReactivity);
+        double scaledRadIntensity = Math.pow((rawRadIntensity), Config.Reactor.Classic.FuelReactivity);
         
         // Scale up a second time based on scaled amount in each fuel rod. Provides an incentive for making reactors that aren't just pancakes.
-        scaledRadIntensity = Math.pow((scaledRadIntensity / controlRods.size()), Config.Reactor.FuelReactivity) * controlRods.size();
+        scaledRadIntensity = Math.pow((scaledRadIntensity / controlRods.size()), Config.Reactor.Classic.FuelReactivity) * controlRods.size();
         
         // Apply control rod moderation of radiation to the quantity of produced radiation. 100% insertion = 100% reduction.
         double controlRodModifier = (100 - controlRods.get(rodToIrradiate).insertion) / 100f;
         scaledRadIntensity = scaledRadIntensity * controlRodModifier;
         rawRadIntensity = rawRadIntensity * controlRodModifier;
-        
+    
         // Now nerf actual radiation production based on heat.
-        double effectiveRadIntensity = scaledRadIntensity * (1f + (-Config.Reactor.RadIntensityScalingMultiplier * Math.exp(-10f * Config.Reactor.RadIntensityScalingShiftMultiplier * Math.exp(-0.001f * Config.Reactor.RadIntensityScalingRateExponentMultiplier * fuelHeat))));
-        
+        double effectiveRadIntensity = scaledRadIntensity * (1f + (-Config.Reactor.Classic.RadIntensityScalingMultiplier * Math.exp(-10f * Config.Reactor.Classic.RadIntensityScalingShiftMultiplier * Math.exp(-0.001f * Config.Reactor.Classic.RadIntensityScalingRateExponentMultiplier * fuelHeat))));
+    
         // Radiation hardness starts at 20% and asymptotically approaches 100% as heat rises.
         // This will make radiation harder and harder to capture.
         double radHardness = 0.2f + (0.8 * radiationPenaltyBase);
-        
+    
         // Calculate based on propagation-to-self
-        double rawFuelUsage = (Config.Reactor.FuelPerRadiationUnit * rawRadIntensity / fertility()) * Config.Reactor.FuelUsageMultiplier; // Not a typo. Fuel usage is thus penalized at high heats.
-        double fuelRfChange = Config.Reactor.FEPerRadiationUnit * effectiveRadIntensity;
+        double rawFuelUsage = (Config.Reactor.Classic.FuelPerRadiationUnit * rawRadIntensity / fertility()) * Config.Reactor.FuelUsageMultiplier; // Not a typo. Fuel usage is thus penalized at high heats.
+        double fuelRfChange = Config.Reactor.Classic.FEPerRadiationUnit * effectiveRadIntensity;
         double environmentRfChange = 0f;
-        
+    
         effectiveRadIntensity *= 0.25f; // We're going to do this four times, no need to repeat
-        
+    
         double fuelAbsorbedRadiation = 0f;
-        
+    
         Vector2i position = new Vector2i();
-        
+    
         for (Vector2i direction : directions) {
             position.set(controlRods.get(rodToIrradiate).x, controlRods.get(rodToIrradiate).z);
             
             double hardness = radHardness;
             double intensity = effectiveRadIntensity;
-            
-            for (int i = 0; i < Config.Reactor.IrradiationDistance && intensity > 0.0001f; i++) {
+        
+            for (int i = 0; i < Config.Reactor.Classic.IrradiationDistance && intensity > 0.0001f; i++) {
                 position.add(direction);
                 // out of bounds
                 if (position.x < 0 || position.x >= x || position.y < 0 || position.y >= z) {
                     break;
                 }
-                
+            
                 ReactorModeratorRegistry.IModeratorProperties properties = moderatorProperties[position.x][yLevelToIrradiate][position.y];
                 if (properties != null) {
                     // this is the simple part, which is why its first
@@ -305,7 +304,7 @@ public class ClassicReactorSimulation implements IReactorSimulation {
                     double radiationAbsorbed = intensity * properties.absorption() * (1f - hardness);
                     intensity = Math.max(0f, intensity - radiationAbsorbed);
                     hardness /= properties.moderation();
-                    environmentRfChange += properties.heatEfficiency() * radiationAbsorbed * Config.Reactor.FEPerRadiationUnit;
+                    environmentRfChange += properties.heatEfficiency() * radiationAbsorbed * Config.Reactor.Classic.FEPerRadiationUnit;
                     
                 } else {
                     // oh, oh ok, its a fuel rod
@@ -316,10 +315,10 @@ public class ClassicReactorSimulation implements IReactorSimulation {
                     // Fuel absorptiveness is determined by control rod + a heat modifier.
                     // Starts at 1 and decays towards 0.05, reaching 0.6 at 1000 and just under 0.2 at 2000. Inflection point at about 500-600.
                     // Harder radiation makes absorption more difficult.
-                    double baseAbsorption = (1.0 - (Config.Reactor.FuelAbsorptionScalingMultiplier * Math.exp(-10 * Config.Reactor.FuelAbsorptionScalingShiftMultiplier * Math.exp(-0.001 * Config.Reactor.FuelAbsorptionScalingRateExponentMultiplier * fuelHeat)))) * (1f - (hardness / Config.Reactor.FuelHardnessDivisor));
+                    double baseAbsorption = (1.0 - (Config.Reactor.Classic.FuelAbsorptionScalingMultiplier * Math.exp(-10 * Config.Reactor.Classic.FuelAbsorptionScalingShiftMultiplier * Math.exp(-0.001 * Config.Reactor.Classic.FuelAbsorptionScalingRateExponentMultiplier * fuelHeat)))) * (1f - (hardness / Config.Reactor.Classic.FuelHardnessDivisor));
                     
                     // Some fuels are better at absorbing radiation than others
-                    double scaledAbsorption = Math.min(1f, baseAbsorption * Config.Reactor.FuelAbsorptionCoefficient);
+                    double scaledAbsorption = Math.min(1f, baseAbsorption * Config.Reactor.Classic.FuelAbsorptionCoefficient);
                     
                     // Control rods increase total neutron absorption, but decrease the total neutrons which fertilize the fuel
                     // Absorb up to 50% better with control rods inserted.
@@ -328,15 +327,15 @@ public class ClassicReactorSimulation implements IReactorSimulation {
                     
                     double radiationAbsorbed = (scaledAbsorption + controlRodBonus) * intensity;
                     double fertilityAbsorbed = (scaledAbsorption - controlRodPenalty) * intensity;
-                    
-                    double fuelModerationFactor = Config.Reactor.FuelModerationFactor;
+                
+                    double fuelModerationFactor = Config.Reactor.Classic.FuelModerationFactor;
                     fuelModerationFactor += fuelModerationFactor * controlRodInsertion + controlRodInsertion; // Full insertion doubles the moderaetion factor of the fuel as well as adding its own level
                     
                     intensity = Math.max(0f, intensity - radiationAbsorbed);
                     hardness /= fuelModerationFactor;
                     
                     // Being irradiated both heats up the fuel and also enhances its fertility
-                    fuelRfChange += radiationAbsorbed * Config.Reactor.FEPerRadiationUnit;
+                    fuelRfChange += radiationAbsorbed * Config.Reactor.Classic.FEPerRadiationUnit;
                     fuelAbsorbedRadiation += fertilityAbsorbed;
                 }
             }
