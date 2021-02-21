@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "up" : "biggerreactors:block/heat_exchanger/glass/glass_connected_bl",
+    "down" : "biggerreactors:block/heat_exchanger/glass/glass_connected_tl",
+    "north" : "biggerreactors:block/heat_exchanger/glass/glass_connected_r",
+    "south" : "phosphophyllite:block/transparent",
+    "east" : "biggerreactors:block/heat_exchanger/glass/glass_connected_l",
+    "west" : "phosphophyllite:block/transparent",
+    "particle": "biggerreactors:block/heat_exchanger/glass/glass_connected_none"
+  }
+}

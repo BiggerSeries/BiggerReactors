@@ -3,10 +3,12 @@
 
   "item.biggerreactors.wrench": "Reactor Wrench",
 
-  "fluid.biggerreactors.fluid_yellorium": "Fluid Yellorium",
-  "item.biggerreactors.fluid_yellorium_bucket": "Fluid Yellorium Bucket",
+  "fluid.biggerreactors.fluid_yellorium": "Liquid Yellorium",
+  "item.biggerreactors.fluid_yellorium_bucket": "Liquid Yellorium Bucket",
   "fluid.biggerreactors.fluid_irradiated_steam": "Irradiated Steam",
   "item.biggerreactors.fluid_irradiated_steam_bucket": "Irradiated Steam Bucket",
+  "fluid.biggerreactors.fluid_obsidian": "Liquid Obsidian",
+  "item.biggerreactors.fluid_obsidian_bucket": "Liquid Obsidian Bucket",
 
   "block.biggerreactors.yellorite_ore": "Yellorite Ore",
   "block.biggerreactors.yellorium_block": "Yellorium Block",
@@ -176,6 +178,12 @@
   "screen.biggerreactors.turbine_coolant_port.direction_toggle.input": "Direction: §cInput",
   "screen.biggerreactors.turbine_coolant_port.direction_toggle.output": "Direction: §9Output",
   "screen.biggerreactors.turbine_coolant_port.direction_toggle.tooltip": "Toggle Direction\n§7Change which direction this port flows.",
+
+  "block.biggerreactors.heat_exchanger_casing": "Heat Exchanger Casing",
+  "block.biggerreactors.heat_exchanger_glass": "Heat Exchanger Glass",
+  "block.biggerreactors.heat_exchanger_condenser_channel": "Heat Exchanger Condenser Channel",
+  "block.biggerreactors.heat_exchanger_evaporator_channel": "Heat Exchanger Evaporator Channel",
+  "block.biggerreactors.heat_exchanger_coolant_port": "Heat Exchanger Coolant Port",
 
   "jei.biggerreactors.classic.turbine_coil_block": "Turbine Coil Blocks",
   "jei.biggerreactors.classic.turbine_coil_bonus": "Bonus: %s",

@@ -5,12 +5,14 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.state.StateContainer;
+import net.roguelogix.biggerreactors.classic.turbine.TurbineMultiblockController;
 import net.roguelogix.biggerreactors.classic.turbine.state.TurbineActivity;
+import net.roguelogix.biggerreactors.classic.turbine.tiles.TurbineBaseTile;
 import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblockBlock;
 
 import javax.annotation.Nonnull;
 
-public class TurbineBaseBlock extends RectangularMultiblockBlock {
+public class TurbineBaseBlock extends RectangularMultiblockBlock<TurbineMultiblockController, TurbineBaseTile, TurbineBaseBlock> {
     public static final Block.Properties PROPERTIES_SOLID = Block.Properties.create(Material.IRON).sound(SoundType.METAL).hardnessAndResistance(2, 10).setAllowsSpawn((a, b, c, d) -> false);
     public static final Block.Properties PROPERTIES_GLASS = Block.Properties.create(Material.IRON).sound(SoundType.METAL).notSolid().hardnessAndResistance(2).setAllowsSpawn((a, b, c, d) -> false);
     
@@ -31,15 +33,25 @@ public class TurbineBaseBlock extends RectangularMultiblockBlock {
     }
     
     @Override
-    public final boolean hasTileEntity(BlockState state) {
-        return true;
-    }
-    
-    @Override
     protected void fillStateContainer(@Nonnull StateContainer.Builder<Block, BlockState> builder) {
         super.fillStateContainer(builder);
         if(usesTurbineState()) {
             builder.add(TurbineActivity.TURBINE_STATE_ENUM_PROPERTY);
         }
+    }
+    
+    @Override
+    public boolean isGoodForInterior() {
+        return false;
+    }
+    
+    @Override
+    public boolean isGoodForExterior() {
+        return true;
+    }
+    
+    @Override
+    public boolean isGoodForFrame() {
+        return false;
     }
 }

@@ -1,0 +1,251 @@
+{
+    "variants": {
+        "top_connected=true,bottom_connected=false,west_connected=false,east_connected=false,north_connected=false,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb"
+        },
+        "top_connected=false,bottom_connected=false,west_connected=false,east_connected=false,north_connected=false,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb"
+        },
+        "top_connected=true,bottom_connected=true,west_connected=false,east_connected=false,north_connected=false,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb"
+        },
+        "top_connected=false,bottom_connected=true,west_connected=false,east_connected=false,north_connected=false,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb"
+        },
+        "top_connected=true,bottom_connected=false,west_connected=true,east_connected=false,north_connected=false,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_bn",
+            "x" : 180,
+            "y" : 90
+        },
+        "top_connected=false,bottom_connected=false,west_connected=true,east_connected=false,north_connected=false,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x" : 90,
+            "y" : 90
+        },
+        "top_connected=true,bottom_connected=true,west_connected=true,east_connected=false,north_connected=false,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb"
+        },
+        "top_connected=false,bottom_connected=true,west_connected=true,east_connected=false,north_connected=false,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_bn",
+            "y" : 270
+        },
+        "top_connected=true,bottom_connected=false,west_connected=false,east_connected=true,north_connected=false,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_bn",
+            "x" : 180,
+            "y" : 270
+        },
+        "top_connected=false,bottom_connected=false,west_connected=false,east_connected=true,north_connected=false,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x" : 90,
+            "y" : 90
+        },
+        "top_connected=true,bottom_connected=true,west_connected=false,east_connected=true,north_connected=false,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb"
+        },
+        "top_connected=false,bottom_connected=true,west_connected=false,east_connected=true,north_connected=false,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_bn",
+            "y" : 90
+        },
+        "top_connected=true,bottom_connected=false,west_connected=true,east_connected=true,north_connected=false,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x" : 90,
+            "y" : 90
+        },
+        "top_connected=false,bottom_connected=false,west_connected=true,east_connected=true,north_connected=false,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x" : 90,
+            "y" : 90
+        },
+        "top_connected=true,bottom_connected=true,west_connected=true,east_connected=true,north_connected=false,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb"
+        },
+        "top_connected=false,bottom_connected=true,west_connected=true,east_connected=true,north_connected=false,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x" : 90,
+            "y" : 90
+        },
+        "top_connected=true,bottom_connected=false,west_connected=false,east_connected=false,north_connected=true,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_bn",
+            "x" : 270
+        },
+        "top_connected=false,bottom_connected=false,west_connected=false,east_connected=false,north_connected=true,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x": 90
+        },
+        "top_connected=true,bottom_connected=true,west_connected=false,east_connected=false,north_connected=true,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb"
+        },
+        "top_connected=false,bottom_connected=true,west_connected=false,east_connected=false,north_connected=true,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_bn"
+        },
+        "top_connected=true,bottom_connected=false,west_connected=true,east_connected=false,north_connected=true,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_bn",
+            "x" : 270
+        },
+        "top_connected=false,bottom_connected=false,west_connected=true,east_connected=false,north_connected=true,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_ne",
+            "y": 270
+        },
+        "top_connected=true,bottom_connected=true,west_connected=true,east_connected=false,north_connected=true,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb"
+        },
+        "top_connected=false,bottom_connected=true,west_connected=true,east_connected=false,north_connected=true,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_bn"
+        },
+        "top_connected=true,bottom_connected=false,west_connected=false,east_connected=true,north_connected=true,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_bn",
+            "x" : 270
+        },
+        "top_connected=false,bottom_connected=false,west_connected=false,east_connected=true,north_connected=true,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_ne"
+        },
+        "top_connected=true,bottom_connected=true,west_connected=false,east_connected=true,north_connected=true,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb"
+        },
+        "top_connected=false,bottom_connected=true,west_connected=false,east_connected=true,north_connected=true,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_bn"
+        },
+        "top_connected=true,bottom_connected=false,west_connected=true,east_connected=true,north_connected=true,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x" : 90,
+            "y" : 90
+        },
+        "top_connected=false,bottom_connected=false,west_connected=true,east_connected=true,north_connected=true,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x" : 90,
+            "y" : 90
+        },
+        "top_connected=true,bottom_connected=true,west_connected=true,east_connected=true,north_connected=true,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb"
+        },
+        "top_connected=false,bottom_connected=true,west_connected=true,east_connected=true,north_connected=true,south_connected=false": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x" : 90,
+            "y" : 90
+        },
+        "top_connected=true,bottom_connected=false,west_connected=false,east_connected=false,north_connected=false,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_bn",
+            "x" : 180
+        },
+        "top_connected=false,bottom_connected=false,west_connected=false,east_connected=false,north_connected=false,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x": 90
+        },
+        "top_connected=true,bottom_connected=true,west_connected=false,east_connected=false,north_connected=false,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb"
+        },
+        "top_connected=false,bottom_connected=true,west_connected=false,east_connected=false,north_connected=false,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_bn",
+            "y" : 180
+        },
+        "top_connected=true,bottom_connected=false,west_connected=true,east_connected=false,north_connected=false,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_bn",
+            "x" : 180
+        },
+        "top_connected=false,bottom_connected=false,west_connected=true,east_connected=false,north_connected=false,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_ne",
+            "y": 180
+        },
+        "top_connected=true,bottom_connected=true,west_connected=true,east_connected=false,north_connected=false,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb"
+        },
+        "top_connected=false,bottom_connected=true,west_connected=true,east_connected=false,north_connected=false,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_bn",
+            "y" : 180
+        },
+        "top_connected=true,bottom_connected=false,west_connected=false,east_connected=true,north_connected=false,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_bn",
+            "x" : 180
+        },
+        "top_connected=false,bottom_connected=false,west_connected=false,east_connected=true,north_connected=false,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_ne",
+            "y": 90
+        },
+        "top_connected=true,bottom_connected=true,west_connected=false,east_connected=true,north_connected=false,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb"
+        },
+        "top_connected=false,bottom_connected=true,west_connected=false,east_connected=true,north_connected=false,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_bn",
+            "y" : 180
+        },
+        "top_connected=true,bottom_connected=false,west_connected=true,east_connected=true,north_connected=false,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x" : 90,
+            "y" : 90
+        },
+        "top_connected=false,bottom_connected=false,west_connected=true,east_connected=true,north_connected=false,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x" : 90,
+            "y" : 90
+        },
+        "top_connected=true,bottom_connected=true,west_connected=true,east_connected=true,north_connected=false,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb"
+        },
+        "top_connected=false,bottom_connected=true,west_connected=true,east_connected=true,north_connected=false,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x" : 90,
+            "y" : 90
+        },
+        "top_connected=true,bottom_connected=false,west_connected=false,east_connected=false,north_connected=true,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x": 90
+        },
+        "top_connected=false,bottom_connected=false,west_connected=false,east_connected=false,north_connected=true,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x": 90
+        },
+        "top_connected=true,bottom_connected=true,west_connected=false,east_connected=false,north_connected=true,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb"
+        },
+        "top_connected=false,bottom_connected=true,west_connected=false,east_connected=false,north_connected=true,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x": 90
+        },
+        "top_connected=true,bottom_connected=false,west_connected=true,east_connected=false,north_connected=true,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x": 90
+        },
+        "top_connected=false,bottom_connected=false,west_connected=true,east_connected=false,north_connected=true,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x": 90
+        },
+        "top_connected=true,bottom_connected=true,west_connected=true,east_connected=false,north_connected=true,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb"
+        },
+        "top_connected=false,bottom_connected=true,west_connected=true,east_connected=false,north_connected=true,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x": 90
+        },
+        "top_connected=true,bottom_connected=false,west_connected=false,east_connected=true,north_connected=true,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x": 90
+        },
+        "top_connected=false,bottom_connected=false,west_connected=false,east_connected=true,north_connected=true,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x": 90
+        },
+        "top_connected=true,bottom_connected=true,west_connected=false,east_connected=true,north_connected=true,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x": 90
+        },
+        "top_connected=false,bottom_connected=true,west_connected=false,east_connected=true,north_connected=true,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x": 90
+        },
+        "top_connected=true,bottom_connected=false,west_connected=true,east_connected=true,north_connected=true,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x": 90
+        },
+        "top_connected=false,bottom_connected=false,west_connected=true,east_connected=true,north_connected=true,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x": 90
+        },
+        "top_connected=true,bottom_connected=true,west_connected=true,east_connected=true,north_connected=true,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb"
+        },
+        "top_connected=false,bottom_connected=true,west_connected=true,east_connected=true,north_connected=true,south_connected=true": {
+            "model": "biggerreactors:block/heat_exchanger/cold_channel/connected_tb",
+            "x": 90
+        }
+    }
+}

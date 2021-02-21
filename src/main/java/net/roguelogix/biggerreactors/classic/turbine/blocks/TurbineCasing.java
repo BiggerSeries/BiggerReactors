@@ -28,4 +28,9 @@ public class TurbineCasing extends TurbineBaseBlock {
     public boolean usesAxisPositions() {
         return true;
     }
+    
+    @Override
+    public boolean isGoodForFrame() {
+        return true;
+    }
 }

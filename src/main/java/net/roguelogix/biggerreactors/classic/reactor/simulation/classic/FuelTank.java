@@ -1,11 +1,12 @@
-package net.roguelogix.biggerreactors.classic.reactor.simulation;
+package net.roguelogix.biggerreactors.classic.reactor.simulation.classic;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.roguelogix.biggerreactors.classic.reactor.simulation.IReactorFuelTank;
 
 import javax.annotation.Nonnull;
 
-public class FuelTank implements INBTSerializable<CompoundNBT> {
+public class FuelTank implements IReactorFuelTank {
     private long capacity;
     
     private long fuel = 0;
@@ -39,17 +40,17 @@ public class FuelTank implements INBTSerializable<CompoundNBT> {
         this.capacity = capacity;
     }
     
-    public long getCapacity() {
+    public long capacity() {
         return capacity;
     }
     
     public long insertFuel(long amount, boolean simulated) {
-        if (getTotalAmount() >= capacity) {
+        if (totalStored() >= capacity) {
             // if we are overfilled, then we need to *not* insert more
             return 0;
         }
         
-        amount = Math.min(amount, capacity - getTotalAmount());
+        amount = Math.min(amount, capacity - totalStored());
         
         if (!simulated) {
             fuel += amount;
@@ -59,12 +60,12 @@ public class FuelTank implements INBTSerializable<CompoundNBT> {
     }
     
     public long insertWaste(long amount, boolean simulated) {
-        if (getTotalAmount() >= capacity) {
+        if (totalStored() >= capacity) {
             // if we are overfilled, then we need to *not* insert more
             return 0;
         }
         
-        amount = Math.min(amount, capacity - getTotalAmount());
+        amount = Math.min(amount, capacity - totalStored());
         
         if (!simulated) {
             waste += amount;
@@ -74,7 +75,7 @@ public class FuelTank implements INBTSerializable<CompoundNBT> {
     }
     
     public long spaceAvailable() {
-        return getCapacity() - getTotalAmount();
+        return capacity() - totalStored();
     }
     
     public long extractFuel(long toExtract, boolean simulated) {
@@ -93,15 +94,15 @@ public class FuelTank implements INBTSerializable<CompoundNBT> {
         return toExtract;
     }
     
-    public long getTotalAmount() {
+    public long totalStored() {
         return fuel + waste;
     }
     
-    public long getFuelAmount() {
+    public long fuel() {
         return fuel;
     }
     
-    public long getWasteAmount() {
+    public long waste() {
         return waste;
     }
     

@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "condenser=true,port_direction=true": {
+      "model": "biggerreactors:block/heat_exchanger/coolant_port/condenser_inlet"
+    },
+    "condenser=true,port_direction=false": {
+      "model": "biggerreactors:block/heat_exchanger/coolant_port/condenser_outlet"
+    },
+    "condenser=false,port_direction=true": {
+      "model": "biggerreactors:block/heat_exchanger/coolant_port/evaporator_inlet"
+    },
+    "condenser=false,port_direction=false": {
+      "model": "biggerreactors:block/heat_exchanger/coolant_port/evaporator_outlet"
+    }
+  }
+}

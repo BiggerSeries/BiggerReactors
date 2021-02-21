@@ -53,4 +53,14 @@ public class TurbineRotorBlade extends TurbineBaseBlock {
     public boolean propagatesSkylightDown(@Nonnull BlockState state, @Nonnull IBlockReader reader, @Nonnull BlockPos pos) {
         return true;
     }
+    
+    @Override
+    public boolean isGoodForInterior() {
+        return true;
+    }
+    
+    @Override
+    public boolean isGoodForExterior() {
+        return false;
+    }
 }

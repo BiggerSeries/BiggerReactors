@@ -1,9 +1,10 @@
-package net.roguelogix.biggerreactors.classic.reactor.simulation;
+package net.roguelogix.biggerreactors.classic.reactor.simulation.classic;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.roguelogix.biggerreactors.classic.reactor.simulation.IReactorBattery;
 
-public class Battery implements INBTSerializable<CompoundNBT> {
+public class Battery implements IReactorBattery {
     private double partialStored = 0;
     private long storedPower = 0;
     private long maxStoredPower = 0;
@@ -12,15 +13,15 @@ public class Battery implements INBTSerializable<CompoundNBT> {
         this.maxStoredPower = maxStoredPower;
     }
     
-    void addPower(double powerProduced) {
+    long addPower(double powerProduced) {
         if (Double.isInfinite(powerProduced) || Double.isNaN(powerProduced)) {
-            return;
+            return 0;
         }
         
         partialStored += powerProduced;
         
         if (partialStored < 1f) {
-            return;
+            return 0;
         }
         
         long toAdd = (long) partialStored;
@@ -31,17 +32,20 @@ public class Battery implements INBTSerializable<CompoundNBT> {
         if (storedPower > maxStoredPower) {
             storedPower = maxStoredPower;
         }
+        
+        return toAdd;
     }
     
-    public void extractPower(long toExtract) {
+    public long extract(long toExtract) {
         storedPower -= toExtract;
+        return toExtract;
     }
     
-    public long storedPower() {
+    public long stored() {
         return storedPower;
     }
     
-    public long size() {
+    public long capacity() {
         return maxStoredPower;
     }
     

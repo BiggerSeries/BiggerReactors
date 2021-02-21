@@ -7,15 +7,15 @@ import mekanism.api.chemical.gas.GasStack;
 import mekanism.api.chemical.gas.IGasHandler;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.LazyOptional;
-import net.roguelogix.biggerreactors.classic.reactor.ReactorMultiblockController;
-import net.roguelogix.phosphophyllite.gui.GuiSync;
+import net.roguelogix.biggerreactors.fluids.FluidIrradiatedSteam;
+import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
 
 import javax.annotation.Nonnull;
 import java.util.function.Supplier;
 
 public class ReactorGasHandler implements IGasHandler {
     
-    private final Supplier<ReactorMultiblockController> controllerSupplier;
+    private final Supplier<IPhosphophylliteFluidHandler> fluidHandlerSupplier;
     public static final Gas steam;
     public static GasStack steamStack;
     public static IGasHandler EMPTY_TANK;
@@ -40,12 +40,12 @@ public class ReactorGasHandler implements IGasHandler {
         return false;
     }
     
-    public static LazyOptional<Object> create(@Nonnull Supplier<ReactorMultiblockController> controllerSupplier) {
-        return LazyOptional.of(() -> new ReactorGasHandler(controllerSupplier));
+    public static LazyOptional<Object> create(@Nonnull Supplier<IPhosphophylliteFluidHandler> fluidHandlerSupplier) {
+        return LazyOptional.of(() -> new ReactorGasHandler(fluidHandlerSupplier));
     }
     
-    public ReactorGasHandler(@Nonnull Supplier<ReactorMultiblockController> controllerSupplier) {
-        this.controllerSupplier = controllerSupplier;
+    public ReactorGasHandler(@Nonnull Supplier<IPhosphophylliteFluidHandler> fluidHandlerSupplier) {
+        this.fluidHandlerSupplier = fluidHandlerSupplier;
     }
     
     @Override
@@ -56,8 +56,11 @@ public class ReactorGasHandler implements IGasHandler {
     @Override
     @Nonnull
     public GasStack getChemicalInTank(int tank) {
-        if (tank == 0 && controllerSupplier.get() != null) {
-            steamStack.setAmount(controllerSupplier.get().getSteamAmount());
+        if (tank == 0 && fluidHandlerSupplier.get() != null) {
+            if (!fluidHandlerSupplier.get().fluidTypeInTank(1).getTags().contains(new ResourceLocation("forge:steam"))) {
+                return GasStack.EMPTY;
+            }
+            steamStack.setAmount(fluidHandlerSupplier.get().fluidAmountInTank(1));
             return steamStack;
         }
         return GasStack.EMPTY;
@@ -69,9 +72,9 @@ public class ReactorGasHandler implements IGasHandler {
     
     @Override
     public long getTankCapacity(int tank) {
-        if (tank == 0 && controllerSupplier.get() != null) {
-            ReactorMultiblockController controller = controllerSupplier.get();
-            return controller.getSteamCapacity();
+        if (tank == 0 && fluidHandlerSupplier.get() != null) {
+            IPhosphophylliteFluidHandler handler = fluidHandlerSupplier.get();
+            return handler.getTankCapacity(0);
         }
         return 0;
     }
@@ -93,9 +96,9 @@ public class ReactorGasHandler implements IGasHandler {
     @Override
     @Nonnull
     public GasStack extractChemical(int tank, long amount, @Nonnull Action action) {
-        if (tank == 1 && controllerSupplier.get() != null) {
+        if (tank == 1 && fluidHandlerSupplier.get() != null) {
             boolean simulate = action.simulate();
-            long extracted = controllerSupplier.get().extractSteam(amount, simulate);
+            long extracted = fluidHandlerSupplier.get().drain(FluidIrradiatedSteam.INSTANCE, amount, simulate);
             steamStack.setAmount(extracted);
             return steamStack.copy();
         }

@@ -26,6 +26,7 @@ import net.roguelogix.biggerreactors.classic.turbine.client.TurbineTerminalScree
 import net.roguelogix.biggerreactors.classic.turbine.containers.TurbineCoolantPortContainer;
 import net.roguelogix.biggerreactors.classic.turbine.containers.TurbineTerminalContainer;
 import net.roguelogix.biggerreactors.classic.turbine.tiles.TurbineRotorBearingTile;
+import net.roguelogix.biggerreactors.registries.FluidTransitionRegistry;
 import net.roguelogix.phosphophyllite.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,6 +67,7 @@ public class BiggerReactors {
         }
         ReactorModeratorRegistry.loadRegistry(tagsUpdatedEvent.getTagManager().getBlockTags());
         TurbineCoilRegistry.loadRegistry(tagsUpdatedEvent.getTagManager().getBlockTags());
+        FluidTransitionRegistry.loadRegistry(tagsUpdatedEvent.getTagManager().getFluidTags());
     }
 
     public void onClientSetup(final FMLClientSetupEvent e) {
