@@ -18,7 +18,7 @@ import java.util.List;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class FluidTransitionTank implements IPhosphophylliteFluidHandler, INBTSerializable<CompoundNBT> {
+public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFluidHandler, INBTSerializable<CompoundNBT> {
     
     public final boolean condenser;
     
@@ -33,11 +33,13 @@ public class FluidTransitionTank implements IPhosphophylliteFluidHandler, INBTSe
     protected Fluid outFluid;
     protected long outAmount = 0;
     
+    protected long rfTransferredLastTick;
     protected long transitionedLastTick;
     protected long maxTransitionedLastTick;
     
     public FluidTransitionTank(boolean condenser) {
         this.condenser = condenser;
+        setInfinite(true);
     }
     
     @Override
@@ -79,6 +81,10 @@ public class FluidTransitionTank implements IPhosphophylliteFluidHandler, INBTSe
     
     public long maxTransitionedLastTick(){
         return maxTransitionedLastTick;
+    }
+    
+    public long rfTransferredLastTick(){
+        return rfTransferredLastTick;
     }
     
     @Override
@@ -152,58 +158,71 @@ public class FluidTransitionTank implements IPhosphophylliteFluidHandler, INBTSe
         }
     }
     
-    public void transferWith(HeatBody body, int surfaceArea) {
+    public double transferWith(HeatBody body, double rfkt) {
         if (activeTransition == null || inAmount <= 0 || outAmount >= perSideCapacity) {
-            return;
+            return 0;
         }
     
-        double rfkt = surfaceArea * (condenser ? activeTransition.gasRFMKT : activeTransition.liquidRFMKT);
+        rfkt *= (condenser ? activeTransition.gasRFMKT : activeTransition.liquidRFMKT);
     
         rfkt *= (double) inAmount / (double) perSideCapacity;
     
-        double newTemp = body.temperature - activeTransition.boilingPoint;
-        newTemp *= Math.exp(-rfkt / body.rfPerKelvin);
+        double newTemp = body.temperature() - activeTransition.boilingPoint;
+        newTemp *= Math.exp(-rfkt / body.rfPerKelvin());
         newTemp += activeTransition.boilingPoint;
     
-        double toTransfer = newTemp - body.temperature;
-        toTransfer *= body.rfPerKelvin;
+        double toTransfer = newTemp - body.temperature();
+        toTransfer *= body.rfPerKelvin();
+        
+        toTransfer = absorbRF(toTransfer);
+        
+        body.absorbRF(toTransfer);
+        return -toTransfer;
+    }
     
-        if ((toTransfer > 0 && !condenser) || (toTransfer < 0 && condenser)) {
-            return;
+    @Override
+    public double absorbRF(double rf) {
+        if ((rf > 0 && !condenser) || (rf < 0 && condenser)) {
+            return 0;
         }
+    
+        rf = Math.abs(rf);
         
-        toTransfer = Math.abs(toTransfer);
-        
-        long toTransition = (long) (toTransfer / activeTransition.latentHeat);
+        long toTransition = (long) (rf / activeTransition.latentHeat);
         long maxTransitionable = Math.min(inAmount, perSideCapacity - outAmount);
-        
+    
         maxTransitionedLastTick = toTransition;
         toTransition = Math.min(maxTransitionable, toTransition);
         transitionedLastTick = toTransition;
-        
+    
         inAmount -= toTransition;
         outAmount += toTransition;
     
-        toTransfer = toTransition * activeTransition.latentHeat;
+        rf = toTransition * activeTransition.latentHeat;
         if (!condenser) {
-            toTransfer *= -1;
+            rf *= -1;
         }
-    
-        body.absorbRF(toTransfer);
+        
+        return rf;
     }
     
     @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = new CompoundNBT();
-        nbt.putString("inFluid", inFluid.getRegistryName().toString());
-        nbt.putLong("inAmount", inAmount);
-        nbt.putString("outFluid", outFluid.getRegistryName().toString());
-        nbt.putLong("outAmount", outAmount);
+        if(inFluid != null) {
+            nbt.putString("inFluid", inFluid.getRegistryName().toString());
+            nbt.putLong("inAmount", inAmount);
+            nbt.putString("outFluid", outFluid.getRegistryName().toString());
+            nbt.putLong("outAmount", outAmount);
+        }
         return nbt;
     }
     
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
+        if (!nbt.contains("inFluid")){
+            return;
+        }
         ResourceLocation inFluidLocation = new ResourceLocation(nbt.getString("inFluid"));
         if (ForgeRegistries.FLUIDS.containsKey(inFluidLocation)) {
             Fluid newInFluid = ForgeRegistries.FLUIDS.getValue(inFluidLocation);

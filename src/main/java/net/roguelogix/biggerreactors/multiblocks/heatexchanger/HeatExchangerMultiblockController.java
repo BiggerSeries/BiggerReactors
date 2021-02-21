@@ -176,18 +176,18 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         onUnpaused();
         // its in kelvin, 150C and 20C
         double ambientTemperature = world.getDimensionType().isUltrawarm() ? 423.15 : 293.15; // TODO config these, also the end
-        ambientHeatBody.temperature = ambientTemperature;
-        airHeatBody.temperature = ambientTemperature;
-        condenserHeatBody.temperature = ambientTemperature;
-        evaporatorHeatBody.temperature = ambientTemperature;
+        ambientHeatBody.setTemperature(ambientTemperature);
+        airHeatBody.setTemperature(ambientTemperature);
+        condenserHeatBody.setTemperature(ambientTemperature);
+        evaporatorHeatBody.setTemperature(ambientTemperature);
     }
     
     @Override
     protected void onUnpaused() {
         BlockPos.Mutable mutableBlockPos = new BlockPos.Mutable();
         
-        condenserHeatBody.rfPerKelvin = condenserChannels.size() * Config.HeatExchanger.ChannelFEPerKelvinUnitVolume;
-        evaporatorHeatBody.rfPerKelvin = evaporatorChannels.size() * Config.HeatExchanger.ChannelFEPerKelvinUnitVolume;
+        condenserHeatBody.setRfPerKelvin(condenserChannels.size() * Config.HeatExchanger.ChannelFEPerKelvinUnitVolume);
+        evaporatorHeatBody.setRfPerKelvin(evaporatorChannels.size() * Config.HeatExchanger.ChannelFEPerKelvinUnitVolume);
     
         condenserTank.perSideCapacity = condenserChannels.size() * Config.HeatExchanger.ChannelTankVolumePerBlock;
         evaporatorTank.perSideCapacity = evaporatorChannels.size() * Config.HeatExchanger.ChannelTankVolumePerBlock;
@@ -196,7 +196,7 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         int airVolume = vec.x * vec.y * vec.z;
         airVolume -= condenserChannels.size();
         airVolume -= evaporatorChannels.size();
-        airHeatBody.rfPerKelvin = airVolume * Config.HeatExchanger.AirFEPerKelvinUnitVolume;
+        airHeatBody.setRfPerKelvin(airVolume * Config.HeatExchanger.AirFEPerKelvinUnitVolume);
         
         int channelContactArea = 0;
         int evaporatorAirContactArea = 0;
@@ -263,7 +263,7 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
             }
         }
     
-        ambientHeatBody.isInfinite = true;
+        ambientHeatBody.setInfinite(true);
     }
     
     @Override
@@ -283,10 +283,10 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         super.read(nbt);
         condenserTank.deserializeNBT(nbt.getCompound("condenserTank"));
         evaporatorTank.deserializeNBT(nbt.getCompound("evaporatorTank"));
-        ambientHeatBody.temperature = nbt.getDouble("ambientHeatBody");
-        airHeatBody.temperature = nbt.getDouble("airHeatBody");
-        condenserHeatBody.temperature = nbt.getDouble("condenserHeatBody");
-        evaporatorHeatBody.temperature = nbt.getDouble("evaporatorHeatBody");
+        ambientHeatBody.setTemperature(nbt.getDouble("ambientHeatBody"));
+        airHeatBody.setTemperature(nbt.getDouble("airHeatBody"));
+        condenserHeatBody.setTemperature(nbt.getDouble("condenserHeatBody"));
+        evaporatorHeatBody.setTemperature(nbt.getDouble("evaporatorHeatBody"));
         channelRFKT = nbt.getDouble("channelRFKT");
         evaporatorAirRFKT = nbt.getDouble("evaporatorAirRFKT");
         condenserAirRFKT = nbt.getDouble("condenserAirRFKT");
@@ -299,10 +299,10 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         CompoundNBT nbt = super.write();
         nbt.put("condenserTank", condenserTank.serializeNBT());
         nbt.put("evaporatorTank", evaporatorTank.serializeNBT());
-        nbt.putDouble("ambientHeatBody", ambientHeatBody.temperature);
-        nbt.putDouble("airHeatBody", airHeatBody.temperature);
-        nbt.putDouble("condenserHeatBody", condenserHeatBody.temperature);
-        nbt.putDouble("evaporatorHeatBody", evaporatorHeatBody.temperature);
+        nbt.putDouble("ambientHeatBody", ambientHeatBody.temperature());
+        nbt.putDouble("airHeatBody", airHeatBody.temperature());
+        nbt.putDouble("condenserHeatBody", condenserHeatBody.temperature());
+        nbt.putDouble("evaporatorHeatBody", evaporatorHeatBody.temperature());
         nbt.putDouble("channelRFKT", channelRFKT);
         nbt.putDouble("evaporatorAirRFKT", evaporatorAirRFKT);
         nbt.putDouble("condenserAirRFKT", condenserAirRFKT);
