@@ -42,7 +42,7 @@ public class CoolantTank extends FluidTransitionTank implements IReactorCoolantT
         if (inAmount <= 0) {
             return reactorHeat;
         }
-        return Math.min(reactorHeat, activeTransition.boilingPoint);
+        return Math.min(reactorHeat, activeTransition.boilingPoint - 273.15);
     }
     
     @Override
