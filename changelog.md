@@ -1,3 +1,18 @@
+# 1.16.5-0.5.0-alpha.0
+Boldly go where no reactor has gone before
+
+## Reactor
+ - capability to boil fluids other than water
+ - new simulation with radiation moving in all directions, identical mechanics
+ - new simulation corrects heat transfer rates
+
+## Heat Exchanger
+ - added
+
+## Misc
+ - new textures all around (thx Ridanisaurus)
+ - added fluid obsidian (mostly for testing, may end up staying)
+
 # 1.16.4-0.4.3
 
 ## Turbine
