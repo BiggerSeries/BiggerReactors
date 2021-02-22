@@ -103,8 +103,6 @@ public class ModernReactorSimulation implements IReactorSimulation {
     @Override
     public void setAmbientTemperature(double temperature) {
         ambientHeat.setTemperature(temperature + 273.15);
-        caseHeat.setTemperature(temperature + 273.15);
-        fuelHeat.setTemperature(temperature + 273.15);
         battery.setTemperature(temperature + 273.15);
     }
     
