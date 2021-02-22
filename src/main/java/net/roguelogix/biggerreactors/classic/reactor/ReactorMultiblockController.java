@@ -10,6 +10,7 @@ import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorBaseBlock;
 import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorFuelRod;
 import net.roguelogix.biggerreactors.classic.reactor.simulation.IReactorSimulation;
+import net.roguelogix.biggerreactors.classic.reactor.simulation.classic.ClassicReactorSimulation;
 import net.roguelogix.biggerreactors.classic.reactor.simulation.modern.ModernReactorSimulation;
 import net.roguelogix.biggerreactors.classic.reactor.state.ReactorActivity;
 import net.roguelogix.biggerreactors.classic.reactor.state.ReactorState;
@@ -292,8 +293,15 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     
     private IReactorSimulation simulation = createSimulation();
     
-    IReactorSimulation createSimulation(){
-        return new ModernReactorSimulation();
+    IReactorSimulation createSimulation() {
+        switch (Config.mode) {
+            case CLASSIC:
+                return new ClassicReactorSimulation();
+            default:
+            case MODERN:
+            case EXPERIMENTAL:
+                return new ModernReactorSimulation();
+        }
     }
     
     public IReactorSimulation simulation() {

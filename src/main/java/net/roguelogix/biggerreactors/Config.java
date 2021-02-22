@@ -12,6 +12,19 @@ public class Config {
     @PhosphophylliteConfig.Value(hidden = true)
     private static boolean EnableAdvancedConfig = false;
     
+    public enum Modes {
+        // classic BR, if available
+        CLASSIC,
+        // Modern BiR, familer yet different
+        MODERN,
+        // Mechanics of modern, usually, may be unstable, may be more resource intensive, may not even run
+        // if not applicable to multiblock, defaults to modern
+        EXPERIMENTAL,
+    }
+    
+    @PhosphophylliteConfig.Value(advanced = true)
+    public static Modes mode = Modes.MODERN;
+    
     @PhosphophylliteConfig
     public static class WorldGen {
         @PhosphophylliteConfig.Value(range = "[1,)")
@@ -45,7 +58,7 @@ public class Config {
         public static float ActiveOutputMultiplier = 1.0f;
         @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
         public static long FuelMBPerIngot = 1000;
-    
+        
         @PhosphophylliteConfig
         public static class Classic {
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
