@@ -524,27 +524,16 @@ public class ModernReactorSimulation implements IReactorSimulation {
         nbt.putDouble("fuelFertility", fuelFertility);
         nbt.putDouble("fuelHeat", fuelHeat.temperature() - 273.15);
         nbt.putDouble("reactorHeat", caseHeat.temperature() - 273.15);
-        return nbt;    }
+        return nbt;
+    }
     
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
-        if (nbt.contains("fuelTank")) {
-            fuelTank.deserializeNBT(nbt.getCompound("fuelTank"));
-        }
-        if (nbt.contains("coolantTank")) {
-            coolantTank.deserializeNBT(nbt.getCompound("coolantTank"));
-        }
-        if (nbt.contains("battery")) {
-            battery.deserializeNBT(nbt.getCompound("battery"));
-        }
-        if (nbt.contains("fuelFertility")) {
-            fuelFertility = nbt.getDouble("fuelFertility");
-        }
-        if (nbt.contains("fuelHeat")) {
-            fuelHeat.setTemperature(nbt.getDouble("fuelHeat") + 273.15);
-        }
-        if (nbt.contains("reactorHeat")) {
-            caseHeat.setTemperature(nbt.getDouble("reactorHeat") + 273.15);
-        }
+        fuelTank.deserializeNBT(nbt.getCompound("fuelTank"));
+        coolantTank.deserializeNBT(nbt.getCompound("coolantTank"));
+        battery.deserializeNBT(nbt.getCompound("battery"));
+        fuelFertility = nbt.getDouble("fuelFertility");
+        fuelHeat.setTemperature(nbt.getDouble("fuelHeat") + 273.15);
+        caseHeat.setTemperature(nbt.getDouble("reactorHeat") + 273.15);
     }
 }
