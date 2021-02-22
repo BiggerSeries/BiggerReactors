@@ -42,6 +42,9 @@ public class CoolantTank extends FluidTransitionTank implements IReactorCoolantT
     
     @Override
     public double absorption() {
+        if(perSideCapacity == 0){
+            return airProperties.absorption();
+        }
         double absorption = 0;
         absorption += airProperties.absorption() * ((perSideCapacity * 2) - (inAmount + outAmount));
         absorption += liquidProperties.absorption() * inAmount;
@@ -52,6 +55,9 @@ public class CoolantTank extends FluidTransitionTank implements IReactorCoolantT
     
     @Override
     public double heatEfficiency() {
+        if(perSideCapacity == 0){
+            return airProperties.heatEfficiency();
+        }
         double heatEfficiency = 0;
         heatEfficiency += airProperties.heatEfficiency() * ((perSideCapacity * 2) - (inAmount + outAmount));
         heatEfficiency += liquidProperties.heatEfficiency() * inAmount;
@@ -62,6 +68,9 @@ public class CoolantTank extends FluidTransitionTank implements IReactorCoolantT
     
     @Override
     public double moderation() {
+        if(perSideCapacity == 0){
+            return airProperties.moderation();
+        }
         double moderation = 0;
         moderation += airProperties.moderation() * ((perSideCapacity * 2) - (inAmount + outAmount));
         moderation += liquidProperties.moderation() * inAmount;
@@ -72,6 +81,9 @@ public class CoolantTank extends FluidTransitionTank implements IReactorCoolantT
     
     @Override
     public double heatConductivity() {
+        if(perSideCapacity == 0){
+            return airProperties.heatConductivity();
+        }
         double heatConductivity = 0;
         heatConductivity += airProperties.heatConductivity() * ((perSideCapacity * 2) - (inAmount + outAmount));
         heatConductivity += liquidProperties.heatConductivity() * inAmount;

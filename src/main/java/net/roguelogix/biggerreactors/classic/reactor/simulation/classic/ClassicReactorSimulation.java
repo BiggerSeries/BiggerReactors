@@ -99,7 +99,9 @@ public class ClassicReactorSimulation implements IReactorSimulation {
     
     public void updateInternalValues() {
         fuelTank.setCapacity(Config.Reactor.Classic.PerFuelRodCapacity * controlRods.size() * y);
-        
+    
+        coolantTank.perSideCapacity = 0;
+    
         fuelToReactorHeatTransferCoefficient = 0;
         for (ControlRod controlRod : controlRods) {
             for (int i = 0; i < y; i++) {
@@ -122,7 +124,6 @@ public class ClassicReactorSimulation implements IReactorSimulation {
         reactorHeatLossCoefficient = 2 * ((x + 2) * (y + 2) + (x + 2) * (z + 2) + (z + 2) * (y + 2)) * Config.Reactor.Classic.HeatLossCoefficientMultiplier;
         
         if (passive) {
-            coolantTank.perSideCapacity = 0;
             battery.setMaxStoredPower((((x + 2) * (y + 2) * (z + 2)) - (x * y * z)) * Config.Reactor.Classic.PassiveBatteryPerExternalBlock);
         } else {
             coolantTank.perSideCapacity = (((x + 2) * (y + 2) * (z + 2)) - (x * y * z)) * Config.Reactor.Classic.CoolantTankAmountPerExternalBlock;
