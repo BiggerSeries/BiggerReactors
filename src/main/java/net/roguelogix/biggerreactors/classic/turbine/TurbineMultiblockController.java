@@ -35,27 +35,9 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         super(world, tile -> tile instanceof TurbineBaseTile, block -> block instanceof TurbineBaseBlock);
         minSize.set(5, 4, 5);
         maxSize.set(Config.Turbine.MaxLength, Config.Turbine.MaxHeight, Config.Turbine.MaxWidth);
-        frameValidator = block -> {
-            //noinspection CodeBlock2Expr
-            return block instanceof TurbineCasing;
-        };
-        exteriorValidator = Validator.or(frameValidator, block -> {
-            //noinspection CodeBlock2Expr
-            return block instanceof TurbineTerminal
-                    || block instanceof TurbineCoolantPort
-                    || block instanceof TurbineRotorBearing
-                    || block instanceof TurbinePowerTap
-                    || block instanceof TurbineComputerPort
-                    || block instanceof TurbineGlass;
-        });
-        interiorValidator = block -> {
-            if (TurbineCoilRegistry.isBlockAllowed(block)) {
-                return true;
-            }
-            return block instanceof TurbineRotorShaft
-                    || block instanceof TurbineRotorBlade
-                    || block instanceof AirBlock;
-        };
+        frameValidator = block -> false;
+        exteriorValidator = frameValidator;
+        interiorValidator = block -> TurbineCoilRegistry.isBlockAllowed(block) || block instanceof AirBlock;
         setAssemblyValidator(multiblockController -> {
             if (rotorBearings.size() != 2) {
                 throw new ValidationError("multiblock.error.biggerreactors.turbine.rotor_bearing_count");
