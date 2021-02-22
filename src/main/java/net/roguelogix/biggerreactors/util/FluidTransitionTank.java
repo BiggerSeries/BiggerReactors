@@ -115,13 +115,15 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
             return 0;
         }
         if (fluid == inFluid || (condenser ? transition.gases.contains(fluid) : transition.liquids.contains(fluid))) {
-            inFluid = fluid;
             long maxFill = perSideCapacity - inAmount;
             long toFill = Math.min(amount, maxFill);
             if (!simulate) {
                 if(activeTransition == null){
+                    outFluid = condenser ? transition.liquids.get(0) : transition.gases.get(0);
+                }
+                if(activeTransition != transition){
                     activeTransition = transition;
-                    outFluid = condenser ? activeTransition.liquids.get(0) : activeTransition.gases.get(0);
+                    transitionUpdate();
                 }
                 inFluid = fluid;
                 inAmount += toFill;
@@ -204,6 +206,9 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
         }
         
         return rf;
+    }
+    
+    protected void transitionUpdate(){
     }
     
     @Override

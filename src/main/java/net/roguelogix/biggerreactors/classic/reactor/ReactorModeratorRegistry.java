@@ -25,6 +25,28 @@ public class ReactorModeratorRegistry {
         double heatConductivity();
     }
     
+    public static final IModeratorProperties EMPTY_MODERATOR = new IModeratorProperties() {
+        @Override
+        public double absorption() {
+            return 0;
+        }
+    
+        @Override
+        public double heatEfficiency() {
+            return 0;
+        }
+    
+        @Override
+        public double moderation() {
+            return 0;
+        }
+    
+        @Override
+        public double heatConductivity() {
+            return 0;
+        }
+    };
+    
     public static class ModeratorProperties implements IModeratorProperties {
         
         public final double absorption;
