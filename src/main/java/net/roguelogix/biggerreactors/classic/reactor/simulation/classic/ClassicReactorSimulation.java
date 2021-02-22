@@ -84,6 +84,11 @@ public class ClassicReactorSimulation implements IReactorSimulation {
         controlRodsXZ[x][z] = rod;
     }
     
+    @Override
+    public void setManifold(int x, int y, int z) {
+        moderatorProperties[x][y][x] = coolantTank;
+    }
+    
     public int controlRodCount() {
         return controlRods.size();
     }

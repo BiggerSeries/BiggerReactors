@@ -12,6 +12,8 @@ public interface IReactorSimulation extends INBTSerializable<CompoundNBT> {
     
     void setControlRod(int x, int z);
     
+    void setManifold(int x, int y, int z);
+    
     void setControlRodInsertion(int x, int z, double insertion);
     
     void setPassivelyCooled(boolean passivelyCooled);

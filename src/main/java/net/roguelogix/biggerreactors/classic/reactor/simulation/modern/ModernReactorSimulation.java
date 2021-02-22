@@ -10,6 +10,7 @@ import net.roguelogix.biggerreactors.classic.reactor.simulation.IReactorSimulati
 import net.roguelogix.phosphophyllite.repack.org.joml.Random;
 import net.roguelogix.phosphophyllite.repack.org.joml.Vector2i;
 import net.roguelogix.phosphophyllite.repack.org.joml.Vector3d;
+import net.roguelogix.phosphophyllite.repack.org.joml.Vector3i;
 import net.roguelogix.phosphophyllite.util.HeatBody;
 
 import java.util.ArrayList;
@@ -20,9 +21,10 @@ public class ModernReactorSimulation implements IReactorSimulation {
     private ControlRod[][] controlRodsXZ;
     private final ArrayList<ControlRod> controlRods = new ArrayList<>();
     
-    double fuelToCasingRFKT;
-    double casingToCoolantSystemRFKT;
-    double casingToAmbientRFKT;
+    private double fuelToCasingRFKT;
+    private double fuelToManifoldSurfaceArea;
+    private double casingToCoolantSystemRFKT;
+    private double casingToAmbientRFKT;
     
     private final HeatBody fuelHeat = new HeatBody();
     private final HeatBody caseHeat = new HeatBody();
@@ -46,6 +48,15 @@ public class ModernReactorSimulation implements IReactorSimulation {
             new Vector2i(-1, 0),
             new Vector2i(0, 1),
             new Vector2i(0, -1),
+    };
+    
+    private final Vector3i[] axisDirections = new Vector3i[]{
+            new Vector3i(+1, +0, +0),
+            new Vector3i(-1, +0, +0),
+            new Vector3i(+0, +1, +0),
+            new Vector3i(+0, -1, +0),
+            new Vector3i(+0, +0, +1),
+            new Vector3i(+0, +0, -1)
     };
     
     {
@@ -90,6 +101,11 @@ public class ModernReactorSimulation implements IReactorSimulation {
     }
     
     @Override
+    public void setManifold(int x, int y, int z) {
+        moderatorProperties[x][y][x] = coolantTank;
+    }
+    
+    @Override
     public void setControlRodInsertion(int x, int z, double insertion) {
         controlRodsXZ[x][z].insertion = insertion;
     }
@@ -116,6 +132,7 @@ public class ModernReactorSimulation implements IReactorSimulation {
         fuelTank.setCapacity(Config.Reactor.Modern.PerFuelRodCapacity * controlRods.size() * y);
         
         fuelToCasingRFKT = 0;
+        fuelToManifoldSurfaceArea = 0;
         for (ControlRod controlRod : controlRods) {
             for (int i = 0; i < y; i++) {
                 for (Vector2i direction : cardinalDirections) {
@@ -125,14 +142,50 @@ public class ModernReactorSimulation implements IReactorSimulation {
                     }
                     ReactorModeratorRegistry.IModeratorProperties properties = moderatorProperties[controlRod.x + direction.x][i][controlRod.z + direction.y];
                     if (properties != null) {
-                        fuelToCasingRFKT += properties.heatConductivity();
+                        if (properties instanceof CoolantTank) {
+                            // manifold, dynamic heat transfer rate
+                            fuelToManifoldSurfaceArea++;
+                        } else {
+                            // normal block
+                            fuelToCasingRFKT += properties.heatConductivity();
+                        }
                     }
                 }
             }
         }
         fuelToCasingRFKT *= Config.Reactor.Modern.FuelToCasingRFKTMultiplier;
         
-        casingToCoolantSystemRFKT = 2 * (x * y + x * z + z * y) * Config.Reactor.Modern.CasingToCoolantRFMKT;
+        casingToCoolantSystemRFKT = 2 * (x * y + x * z + z * y);
+        
+        for (int i = 0; i < x; i++) {
+            for (int j = 0; j < y; j++) {
+                for (int k = 0; k < z; k++) {
+                    ReactorModeratorRegistry.IModeratorProperties properties = moderatorProperties[i][j][k];
+                    if (properties instanceof CoolantTank) {
+                        // its a manifold here, need to consider its surface area
+                        for (Vector3i axisDirection : axisDirections) {
+                            int neighborX = i + axisDirection.x;
+                            int neighborY = j + axisDirection.y;
+                            int neighborZ = k + axisDirection.z;
+                            if (neighborX < 0 || neighborX >= this.x ||
+                                    neighborY < 0 || neighborY >= this.y ||
+                                    neighborZ < 0 || neighborZ >= this.z) {
+                                // OOB, so its a casing we are against here, this counts against us
+                                casingToCoolantSystemRFKT--;
+                                continue;
+                            }
+                            ReactorModeratorRegistry.IModeratorProperties neighborProperties = moderatorProperties[neighborX][neighborY][neighborZ];
+                            // should a fuel rod add to surface area? it does right now.
+                            if (!(neighborProperties instanceof CoolantTank)) {
+                                casingToCoolantSystemRFKT++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        casingToCoolantSystemRFKT *= Config.Reactor.Modern.CasingToCoolantRFMKT;
+        
         casingToAmbientRFKT = 2 * ((x + 2) * (y + 2) + (x + 2) * (z + 2) + (z + 2) * (y + 2)) * Config.Reactor.Modern.CasingToAmbientRFMKT;
         
         if (passivelyCooled) {
@@ -172,7 +225,7 @@ public class ModernReactorSimulation implements IReactorSimulation {
             fuelFertility = Math.max(0f, fuelFertility - Math.max(Config.Reactor.Modern.FuelFertilityMinimumDecay, fuelFertility / denominator));
         }
         
-        fuelHeat.transferWith(caseHeat, fuelToCasingRFKT);
+        fuelHeat.transferWith(caseHeat, fuelToCasingRFKT + fuelToManifoldSurfaceArea * coolantTank.heatConductivity());
         output.transferWith(caseHeat, casingToCoolantSystemRFKT);
         caseHeat.transferWith(ambientHeat, casingToAmbientRFKT);
     }
