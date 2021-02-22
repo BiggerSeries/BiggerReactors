@@ -54,12 +54,14 @@ public class Battery extends HeatBody implements IReactorBattery {
     
     @Override
     public CompoundNBT serializeNBT() {
-        return null;
+        CompoundNBT nbt = new CompoundNBT();
+        nbt.putLong("storedPower", stored);
+        return nbt;
     }
     
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
-    
+        stored = nbt.getLong("storedPower");
     }
     
     public long generatedLastTick() {
