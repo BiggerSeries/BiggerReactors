@@ -59,7 +59,7 @@ public class ReactorFuelRod extends ReactorBaseBlock {
     }
     
     @Override
-    public boolean usesAssmeblyState() {
+    public boolean usesAssemblyState() {
         return false;
     }
     

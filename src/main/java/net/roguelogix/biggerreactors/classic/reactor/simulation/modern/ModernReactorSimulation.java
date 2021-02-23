@@ -102,7 +102,7 @@ public class ModernReactorSimulation implements IReactorSimulation {
     
     @Override
     public void setManifold(int x, int y, int z) {
-        moderatorProperties[x][y][x] = coolantTank;
+        moderatorProperties[x][y][z] = coolantTank;
     }
     
     @Override
