@@ -21,16 +21,15 @@ import net.roguelogix.biggerreactors.classic.reactor.state.ReactorRedstonePortSe
 import net.roguelogix.biggerreactors.classic.reactor.state.ReactorRedstonePortState;
 import net.roguelogix.biggerreactors.classic.reactor.state.ReactorRedstonePortTriggers;
 import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
-import net.roguelogix.phosphophyllite.multiblock.generic.ITickableMultiblockTile;
-import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockBlock;
-import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
+import net.roguelogix.phosphophyllite.multiblock.generic.*;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.util.BlockStates;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @RegisterTileEntity(name = "reactor_redstone_port")
-public class ReactorRedstonePortTile extends ReactorBaseTile implements INamedContainerProvider, ITickableMultiblockTile, IHasUpdatableState<ReactorRedstonePortState> {
+public class ReactorRedstonePortTile extends ReactorBaseTile implements INamedContainerProvider, ITickableMultiblockTile, IHasUpdatableState<ReactorRedstonePortState>, IOnAssemblyTile, IOnDisassemblyTile {
 
     @RegisterTileEntity.Type
     public static TileEntityType<?> TYPE;
@@ -184,25 +183,6 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements INamedCo
             world.setBlockState(pos, getBlockState().with(ReactorRedstonePort.IS_LIT_BOOLEAN_PROPERTY, isLit));
         }
         this.markDirty();
-    }
-
-    public void updateOutputDirection() {
-        if (controller.assemblyState() == MultiblockController.AssemblyState.DISASSEMBLED) {
-            powerOutputDirection = null;
-        } else if (pos.getX() == controller.minCoord().x()) {
-            powerOutputDirection = Direction.WEST;
-        } else if (pos.getX() == controller.maxCoord().x()) {
-            powerOutputDirection = Direction.EAST;
-        } else if (pos.getY() == controller.minCoord().y()) {
-            powerOutputDirection = Direction.DOWN;
-        } else if (pos.getY() == controller.maxCoord().y()) {
-            powerOutputDirection = Direction.UP;
-        } else if (pos.getZ() == controller.minCoord().z()) {
-            powerOutputDirection = Direction.NORTH;
-        } else if (pos.getZ() == controller.maxCoord().z()) {
-            powerOutputDirection = Direction.SOUTH;
-        }
-        updatePowered();
     }
 
     @Override
@@ -362,5 +342,17 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements INamedCo
         // Call reverted changes to align uncommitted settings to the active ones.
         revertChanges();
         applyChanges();
+    }
+    
+    @Override
+    public void onAssembly() {
+        powerOutputDirection = getBlockState().get(BlockStates.FACING);
+        updatePowered();
+    }
+    
+    @Override
+    public void onDisassembly() {
+        powerOutputDirection = null;
+        updatePowered();
     }
 }

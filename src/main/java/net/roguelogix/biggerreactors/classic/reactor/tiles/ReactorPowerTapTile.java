@@ -9,8 +9,11 @@ import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.roguelogix.biggerreactors.classic.reactor.ReactorMultiblockController;
+import net.roguelogix.phosphophyllite.multiblock.generic.IOnAssemblyTile;
+import net.roguelogix.phosphophyllite.multiblock.generic.IOnDisassemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.util.BlockStates;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -19,7 +22,7 @@ import static net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorPowerT
 
 
 @RegisterTileEntity(name = "reactor_power_tap")
-public class ReactorPowerTapTile extends ReactorBaseTile implements IEnergyStorage {
+public class ReactorPowerTapTile extends ReactorBaseTile implements IEnergyStorage, IOnAssemblyTile, IOnDisassemblyTile {
     @RegisterTileEntity.Type
     public static TileEntityType<?> TYPE;
     
@@ -97,26 +100,6 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IEnergyStora
     }
     
     @SuppressWarnings("DuplicatedCode")
-    public void updateOutputDirection() {
-        if (controller.assemblyState() == MultiblockController.AssemblyState.DISASSEMBLED) {
-            powerOutputDirection = null;
-        } else if (pos.getX() == controller.minCoord().x()) {
-            powerOutputDirection = Direction.WEST;
-        } else if (pos.getX() == controller.maxCoord().x()) {
-            powerOutputDirection = Direction.EAST;
-        } else if (pos.getY() == controller.minCoord().y()) {
-            powerOutputDirection = Direction.DOWN;
-        } else if (pos.getY() == controller.maxCoord().y()) {
-            powerOutputDirection = Direction.UP;
-        } else if (pos.getZ() == controller.minCoord().z()) {
-            powerOutputDirection = Direction.NORTH;
-        } else if (pos.getZ() == controller.maxCoord().z()) {
-            powerOutputDirection = Direction.SOUTH;
-        }
-        neighborChanged();
-    }
-    
-    @SuppressWarnings("DuplicatedCode")
     public void neighborChanged() {
         energyOutput = LazyOptional.empty();
         if (powerOutputDirection == null) {
@@ -133,4 +116,15 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IEnergyStora
         setConnected(energyOutput.isPresent());
     }
     
+    @Override
+    public void onAssembly() {
+        powerOutputDirection = getBlockState().get(BlockStates.FACING);
+        neighborChanged();
+    }
+    
+    @Override
+    public void onDisassembly() {
+        powerOutputDirection = null;
+        neighborChanged();
+    }
 }

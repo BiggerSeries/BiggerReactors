@@ -31,10 +31,9 @@ import net.roguelogix.biggerreactors.items.ingots.BlutoniumIngot;
 import net.roguelogix.biggerreactors.items.ingots.CyaniteIngot;
 import net.roguelogix.biggerreactors.items.ingots.YelloriumIngot;
 import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
-import net.roguelogix.phosphophyllite.multiblock.generic.IAssemblyAttemptedTile;
-import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockBlock;
-import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
+import net.roguelogix.phosphophyllite.multiblock.generic.*;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.util.BlockStates;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -42,7 +41,7 @@ import javax.annotation.Nullable;
 import static net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorAccessPort.PortDirection.*;
 
 @RegisterTileEntity(name = "reactor_access_port")
-public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandler, INamedContainerProvider, IHasUpdatableState<ReactorAccessPortState>, IAssemblyAttemptedTile {
+public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandler, INamedContainerProvider, IHasUpdatableState<ReactorAccessPortState>, IOnAssemblyTile, IOnDisassemblyTile {
     
     @RegisterTileEntity.Type
     public static TileEntityType<?> TYPE;
@@ -103,9 +102,17 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     }
     
     @Override
-    public void onAssemblyAttempted() {
+    public void onAssembly() {
         assert world != null;
-        world.setBlockState(pos, world.getBlockState(pos).with(PORT_DIRECTION_ENUM_PROPERTY, direction));
+        world.setBlockState(pos, getBlockState().with(PORT_DIRECTION_ENUM_PROPERTY, direction));
+        itemOutputDirection = getBlockState().get(BlockStates.FACING);
+        neighborChanged();
+    }
+    
+    @Override
+    public void onDisassembly() {
+        itemOutputDirection = null;
+        neighborChanged();
     }
     
     LazyOptional<IItemHandler> itemStackHandler = LazyOptional.of(() -> this);
@@ -260,27 +267,6 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     boolean connected;
     LazyOptional<IItemHandler> itemOutput = LazyOptional.empty();
     public final ReactorAccessPortState reactorAccessPortState = new ReactorAccessPortState(this);
-    
-    
-    @SuppressWarnings("DuplicatedCode")
-    public void updateOutputDirection() {
-        if (controller.assemblyState() == MultiblockController.AssemblyState.DISASSEMBLED) {
-            itemOutputDirection = null;
-        } else if (pos.getX() == controller.minCoord().x()) {
-            itemOutputDirection = Direction.WEST;
-        } else if (pos.getX() == controller.maxCoord().x()) {
-            itemOutputDirection = Direction.EAST;
-        } else if (pos.getY() == controller.minCoord().y()) {
-            itemOutputDirection = Direction.DOWN;
-        } else if (pos.getY() == controller.maxCoord().y()) {
-            itemOutputDirection = Direction.UP;
-        } else if (pos.getZ() == controller.minCoord().z()) {
-            itemOutputDirection = Direction.NORTH;
-        } else if (pos.getZ() == controller.maxCoord().z()) {
-            itemOutputDirection = Direction.SOUTH;
-        }
-        neighborChanged();
-    }
     
     @SuppressWarnings("DuplicatedCode")
     public void neighborChanged() {

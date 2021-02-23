@@ -33,10 +33,9 @@ import net.roguelogix.biggerreactors.classic.reactor.state.ReactorCoolantPortSta
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
 import net.roguelogix.phosphophyllite.fluids.PhosphophylliteFluidStack;
 import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
-import net.roguelogix.phosphophyllite.multiblock.generic.IAssemblyAttemptedTile;
-import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockBlock;
-import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
+import net.roguelogix.phosphophyllite.multiblock.generic.*;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.util.BlockStates;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -44,7 +43,7 @@ import javax.annotation.Nullable;
 import static net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorAccessPort.PortDirection.*;
 
 @RegisterTileEntity(name = "reactor_coolant_port")
-public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphophylliteFluidHandler, INamedContainerProvider, IHasUpdatableState<ReactorCoolantPortState>, IAssemblyAttemptedTile {
+public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphophylliteFluidHandler, INamedContainerProvider, IHasUpdatableState<ReactorCoolantPortState>, IAssemblyAttemptedTile, IOnAssemblyTile, IOnDisassemblyTile {
     
     @RegisterTileEntity.Type
     public static TileEntityType<?> TYPE;
@@ -71,10 +70,6 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
     private static final PhosphophylliteFluidStack fluidStack = new PhosphophylliteFluidStack();
     
     private IReactorCoolantTank transitionTank;
-    
-    public void setTransitionTank(IReactorCoolantTank transitionTank) {
-        this.transitionTank = transitionTank;
-    }
     
     @Override
     public int tankCount() {
@@ -161,26 +156,6 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
     FluidTank EMPTY_TANK = new FluidTank(0);
     private ReactorAccessPort.PortDirection direction = INLET;
     public final ReactorCoolantPortState reactorCoolantPortState = new ReactorCoolantPortState(this);
-    
-    @SuppressWarnings("DuplicatedCode")
-    public void updateOutputDirection() {
-        if (controller.assemblyState() == MultiblockController.AssemblyState.DISASSEMBLED) {
-            steamOutputDirection = null;
-        } else if (pos.getX() == controller.minCoord().x()) {
-            steamOutputDirection = Direction.WEST;
-        } else if (pos.getX() == controller.maxCoord().x()) {
-            steamOutputDirection = Direction.EAST;
-        } else if (pos.getY() == controller.minCoord().y()) {
-            steamOutputDirection = Direction.DOWN;
-        } else if (pos.getY() == controller.maxCoord().y()) {
-            steamOutputDirection = Direction.UP;
-        } else if (pos.getZ() == controller.minCoord().z()) {
-            steamOutputDirection = Direction.NORTH;
-        } else if (pos.getZ() == controller.maxCoord().z()) {
-            steamOutputDirection = Direction.SOUTH;
-        }
-        neighborChanged();
-    }
     
     @SuppressWarnings("DuplicatedCode")
     public void neighborChanged() {
@@ -285,5 +260,18 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
     @Override
     public void updateState() {
         reactorCoolantPortState.direction = (this.direction == INLET);
+    }
+    
+    @Override
+    public void onAssembly() {
+        this.transitionTank = controller.simulation().coolantTank();
+        steamOutputDirection = getBlockState().get(BlockStates.FACING);
+        neighborChanged();
+    }
+    
+    @Override
+    public void onDisassembly() {
+        steamOutputDirection = null;
+        neighborChanged();
     }
 }
