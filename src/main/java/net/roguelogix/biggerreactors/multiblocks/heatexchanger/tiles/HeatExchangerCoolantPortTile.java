@@ -14,8 +14,11 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
 import net.roguelogix.phosphophyllite.fluids.PhosphophylliteFluidStack;
 import net.roguelogix.phosphophyllite.multiblock.generic.IAssemblyAttemptedTile;
+import net.roguelogix.phosphophyllite.multiblock.generic.IOnAssemblyTile;
+import net.roguelogix.phosphophyllite.multiblock.generic.IOnDisassemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.util.BlockStates;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -24,15 +27,15 @@ import static net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.Hea
 import static net.roguelogix.phosphophyllite.util.BlockStates.PORT_DIRECTION;
 
 @RegisterTileEntity(name = "heat_exchanger_coolant_port")
-public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implements IPhosphophylliteFluidHandler, IAssemblyAttemptedTile {
-
+public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implements IPhosphophylliteFluidHandler, IOnAssemblyTile, IOnDisassemblyTile {
+    
     @RegisterTileEntity.Type
     public static TileEntityType<?> TYPE;
-
+    
     public HeatExchangerCoolantPortTile() {
         super(TYPE);
     }
-
+    
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
@@ -151,26 +154,6 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
     FluidTank EMPTY_TANK = new FluidTank(0);
     
     @SuppressWarnings("DuplicatedCode")
-    public void updateOutputDirection() {
-        if (controller.assemblyState() == MultiblockController.AssemblyState.DISASSEMBLED) {
-            outputDirection = null;
-        } else if (pos.getX() == controller.minCoord().x()) {
-            outputDirection = Direction.WEST;
-        } else if (pos.getX() == controller.maxCoord().x()) {
-            outputDirection = Direction.EAST;
-        } else if (pos.getY() == controller.minCoord().y()) {
-            outputDirection = Direction.DOWN;
-        } else if (pos.getY() == controller.maxCoord().y()) {
-            outputDirection = Direction.UP;
-        } else if (pos.getZ() == controller.minCoord().z()) {
-            outputDirection = Direction.NORTH;
-        } else if (pos.getZ() == controller.maxCoord().z()) {
-            outputDirection = Direction.SOUTH;
-        }
-        neighborChanged();
-    }
-    
-    @SuppressWarnings("DuplicatedCode")
     public void neighborChanged() {
         fluidOutputCapability = LazyOptional.empty();
         if (outputDirection == null) {
@@ -210,11 +193,6 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
     }
     
     @Override
-    public void onAssemblyAttempted() {
-        updateOutputDirection();
-    }
-    
-    @Override
     protected void readNBT(@Nonnull CompoundNBT compound) {
         super.readNBT(compound);
         inlet = compound.getBoolean("inlet");
@@ -226,5 +204,16 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
         CompoundNBT nbt = super.writeNBT();
         nbt.putBoolean("inlet", inlet);
         return nbt;
+    }
+    
+    @Override
+    public void onAssembly() {
+        outputDirection = getBlockState().get(BlockStates.FACING);
+    }
+    
+    @Override
+    public void onDisassembly() {
+        outputDirection = null;
+        neighborChanged();
     }
 }

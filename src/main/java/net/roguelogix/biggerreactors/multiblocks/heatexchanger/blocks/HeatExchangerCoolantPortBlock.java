@@ -80,4 +80,9 @@ public class HeatExchangerCoolantPortBlock extends HeatExchangerBaseBlock {
             ((HeatExchangerCoolantPortTile) te).neighborChanged();
         }
     }
+    
+    @Override
+    public boolean usesFaceDirection() {
+        return true;
+    }
 }
