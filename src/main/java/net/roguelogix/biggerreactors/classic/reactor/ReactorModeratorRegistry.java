@@ -38,7 +38,7 @@ public class ReactorModeratorRegistry {
     
         @Override
         public double moderation() {
-            return 0;
+            return 1;
         }
     
         @Override
