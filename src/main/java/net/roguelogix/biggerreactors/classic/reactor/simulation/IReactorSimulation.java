@@ -18,8 +18,6 @@ public interface IReactorSimulation extends INBTSerializable<CompoundNBT> {
     
     void setPassivelyCooled(boolean passivelyCooled);
     
-    void setAmbientTemperature(double temperature);
-    
     boolean isPassive();
     
     void updateInternalValues();

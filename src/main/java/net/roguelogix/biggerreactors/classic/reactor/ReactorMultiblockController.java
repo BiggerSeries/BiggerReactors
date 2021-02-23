@@ -231,7 +231,6 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             simulation.setControlRod(rodPos.getX() - start.x, rodPos.getZ() - start.z);
         }
         simulation.setPassivelyCooled(coolantPorts.isEmpty());
-        simulation.setAmbientTemperature(20);
         simulation.updateInternalValues();
         updateControlRodLevels();
         collectFuel();
@@ -274,7 +273,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             default:
             case MODERN:
             case EXPERIMENTAL:
-                return new ModernReactorSimulation();
+                return new ModernReactorSimulation(20);
         }
     }
     

@@ -59,12 +59,12 @@ public class ModernReactorSimulation implements IReactorSimulation {
             new Vector3i(+0, +0, -1)
     };
     
-    {
+    public ModernReactorSimulation(double ambientTemperature){
         ambientHeat.setInfinite(true);
-        // its in K, not C, this is 20C, just a default
-        ambientHeat.setTemperature(293.15);
-        caseHeat.setTemperature(293.15);
-        battery.setTemperature(293.15);
+        ambientHeat.setTemperature(ambientTemperature + 273.15);
+        caseHeat.setTemperature(ambientTemperature + 273.15);
+        fuelHeat.setTemperature(ambientTemperature + 273.15);
+        battery.setTemperature(ambientTemperature + 273.15);
     }
     
     private static class ControlRod {
@@ -114,12 +114,6 @@ public class ModernReactorSimulation implements IReactorSimulation {
     public void setPassivelyCooled(boolean passivelyCooled) {
         this.passivelyCooled = passivelyCooled;
         output = passivelyCooled ? battery : coolantTank;
-    }
-    
-    @Override
-    public void setAmbientTemperature(double temperature) {
-        ambientHeat.setTemperature(temperature + 273.15);
-        battery.setTemperature(temperature + 273.15);
     }
     
     @Override

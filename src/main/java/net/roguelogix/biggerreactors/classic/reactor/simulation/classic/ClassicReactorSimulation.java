@@ -212,10 +212,6 @@ public class ClassicReactorSimulation implements IReactorSimulation {
         passive = passivelyCooled;
     }
     
-    @Override
-    public void setAmbientTemperature(double temperature) {
-    }
-    
     private double getCoolantTemperature() {
         if (passive) {
             return Config.Reactor.Classic.AmbientTemperature;
