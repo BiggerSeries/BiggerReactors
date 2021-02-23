@@ -2,6 +2,8 @@ package net.roguelogix.biggerreactors.classic.reactor;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -9,6 +11,7 @@ import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorBaseBlock;
 import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorFuelRod;
+import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorManifold;
 import net.roguelogix.biggerreactors.classic.reactor.simulation.IReactorSimulation;
 import net.roguelogix.biggerreactors.classic.reactor.simulation.classic.ClassicReactorSimulation;
 import net.roguelogix.biggerreactors.classic.reactor.simulation.modern.ModernReactorSimulation;
@@ -69,6 +72,23 @@ public class ReactorMultiblockController extends RectangularMultiblockController
                     throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.no_control_rod_for_fuel_rod", fuelRod.getPos().getX(), fuelRod.getPos().getZ()));
                 }
             }
+    
+            for (ReactorManifoldTile manifold : manifolds) {
+                boolean foundNeighbor = false;
+                BlockPos pos = manifold.getPos();
+                for (Direction value : Direction.values()) {
+                    mutableBlockPos.setPos(pos);
+                    mutableBlockPos.move(value);
+                    TileEntity entity = blocks.getTile(mutableBlockPos);
+                    if (entity instanceof ReactorManifoldTile || entity instanceof ReactorCasingTile){
+                        foundNeighbor = true;
+                        break;
+                    }
+                }
+                if(!foundNeighbor){
+                    throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.no_manifold_neighbor", pos.getX(), pos.getY(), pos.getZ()));
+                }
+            }
             
             Util.chunkCachedBlockStateIteration(minCoord(), maxCoord(), world, (block, pos) -> {
                 if (block.getBlock() instanceof ReactorBaseBlock) {
@@ -92,6 +112,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     private final Set<ReactorPowerTapTile> powerPorts = new HashSet<>();
     private final Set<ReactorAccessPortTile> accessPorts = new HashSet<>();
     private final Set<ReactorCoolantPortTile> coolantPorts = new HashSet<>();
+    private final Set<ReactorManifoldTile> manifolds = new LinkedHashSet<>();
     
     @Override
     protected void onPartPlaced(@Nonnull ReactorBaseTile placed) {
@@ -124,6 +145,9 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         }
         if (tile instanceof ReactorCoolantPortTile) {
             coolantPorts.add((ReactorCoolantPortTile) tile);
+        }
+        if (tile instanceof ReactorManifoldTile) {
+            manifolds.add((ReactorManifoldTile) tile);
         }
     }
     
@@ -162,6 +186,9 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         }
         if (tile instanceof ReactorCoolantPortTile) {
             coolantPorts.remove(tile);
+        }
+        if (tile instanceof ReactorManifoldTile) {
+            manifolds.remove(tile);
         }
     }
     
@@ -222,10 +249,14 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         Vector3i end = new Vector3i(-1).add(maxCoord());
         Util.chunkCachedBlockStateIteration(start, end, world, (state, pos) -> {
             pos.sub(start);
-            if (state.getBlock() != ReactorFuelRod.INSTANCE) {
+            if (!(state.getBlock() instanceof ReactorBaseBlock)) {
                 simulation.setModeratorProperties(pos.x, pos.y, pos.z, ReactorModeratorRegistry.blockModeratorProperties(state.getBlock()));
             }
         });
+        for (ReactorManifoldTile manifold : manifolds) {
+            BlockPos manifoldPos = manifold.getPos();
+            simulation.setManifold(manifoldPos.getX() - start.x, manifoldPos.getY() - start.y, manifoldPos.getZ() - start.z);
+        }
         for (ReactorControlRodTile controlRod : controlRods) {
             BlockPos rodPos = controlRod.getPos();
             simulation.setControlRod(rodPos.getX() - start.x, rodPos.getZ() - start.z);

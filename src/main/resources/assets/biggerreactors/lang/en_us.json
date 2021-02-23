@@ -38,6 +38,7 @@
   "multiblock.error.biggerreactors.no_control_rod_for_fuel_rod": "All fuel elements must be topped with a control rod (%d, %d).",
   "multiblock.error.biggerreactors.dangling_internal_part": "There appears to be another reactor inside this one, is something wrong? (%d, %d, %d).",
   "multiblock.error.biggerreactors.coolant_and_power_ports": "Reactors may only have coolant ports (actively-cooled type) or power taps (passively-cooled type), not both.",
+  "multiblock.error.biggerreactors.no_manifold_neighbor": "Reactor coolant manifolds must neighbor another manifold or a casing",
 
   "screen.biggerreactors.disabled": "Disabled",
 
@@ -54,6 +55,7 @@
   "block.biggerreactors.reactor_coolant_port": "Reactor Coolant Port",
   "block.biggerreactors.reactor_computer_port": "Reactor Computer Port",
   "block.biggerreactors.reactor_redstone_port": "Reactor Redstone Port",
+  "block.biggerreactors.reactor_manifold": "Reactor Coolant Manifold",
 
   "block.biggerreactors.reactor_terminal": "Reactor Terminal",
   "screen.biggerreactors.reactor_terminal": "Reactor Info",
