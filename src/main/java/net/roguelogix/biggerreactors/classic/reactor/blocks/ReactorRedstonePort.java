@@ -62,6 +62,10 @@ public class ReactorRedstonePort extends ReactorBaseBlock {
         }
     }
     
+    @Override
+    public boolean usesFaceDirection() {
+        return true;
+    }
     
     public static BooleanProperty IS_LIT_BOOLEAN_PROPERTY = BooleanProperty.create("is_lit");
     

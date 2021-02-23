@@ -61,4 +61,9 @@ public class ReactorPowerTap extends ReactorBaseBlock {
             ((ReactorPowerTapTile) te).neighborChanged();
         }
     }
+    
+    @Override
+    public boolean usesFaceDirection() {
+        return true;
+    }
 }

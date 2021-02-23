@@ -91,4 +91,9 @@ public class ReactorAccessPort extends ReactorBaseBlock {
             ((ReactorAccessPortTile) te).neighborChanged();
         }
     }
+    
+    @Override
+    public boolean usesFaceDirection() {
+        return true;
+    }
 }

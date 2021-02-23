@@ -26,4 +26,9 @@ public class ReactorTerminal extends ReactorBaseBlock {
     public boolean usesReactorState() {
         return true;
     }
+    
+    @Override
+    public boolean usesFaceDirection() {
+        return true;
+    }
 }

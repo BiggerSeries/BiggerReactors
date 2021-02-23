@@ -24,4 +24,9 @@ public class ReactorComputerPort extends ReactorBaseBlock {
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         return new ReactorComputerPortTile();
     }
+    
+    @Override
+    public boolean usesFaceDirection() {
+        return true;
+    }
 }

@@ -76,4 +76,9 @@ public class ReactorCoolantPort extends ReactorBaseBlock {
             ((ReactorCoolantPortTile) te).neighborChanged();
         }
     }
+    
+    @Override
+    public boolean usesFaceDirection() {
+        return true;
+    }
 }
