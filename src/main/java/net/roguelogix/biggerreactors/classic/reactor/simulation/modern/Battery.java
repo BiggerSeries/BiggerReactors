@@ -39,7 +39,8 @@ public class Battery extends HeatBody implements IReactorBattery {
     
     @Override
     public long extract(long toExtract) {
-        return 0;
+        stored -= toExtract;
+        return toExtract;
     }
     
     @Override
