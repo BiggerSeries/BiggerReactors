@@ -1,6 +1,7 @@
 package net.roguelogix.biggerreactors.classic.reactor;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -11,7 +12,6 @@ import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorBaseBlock;
 import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorFuelRod;
-import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorManifold;
 import net.roguelogix.biggerreactors.classic.reactor.simulation.IReactorSimulation;
 import net.roguelogix.biggerreactors.classic.reactor.simulation.classic.ClassicReactorSimulation;
 import net.roguelogix.biggerreactors.classic.reactor.simulation.modern.ModernReactorSimulation;
@@ -539,10 +539,16 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         
         reactorState.coolantStored = simulation.coolantTank().liquidAmount();
         reactorState.coolantCapacity = simulation.coolantTank().perSideCapacity();
+        reactorState.coolantResourceLocation = (simulation.coolantTank().liquidType() != null)
+                ? Objects.requireNonNull(simulation.coolantTank().liquidType().getRegistryName()).toString()
+                : Objects.requireNonNull(Fluids.EMPTY.getRegistryName()).toString();
         
-        reactorState.steamStored = simulation.coolantTank().vaporAmount();
-        reactorState.steamCapacity = simulation.coolantTank().perSideCapacity();
-        
+        reactorState.exhaustStored = simulation.coolantTank().vaporAmount();
+        reactorState.exhaustCapacity = simulation.coolantTank().perSideCapacity();
+        reactorState.exhaustResourceLocation = (simulation.coolantTank().vaporType() != null)
+                ? Objects.requireNonNull(simulation.coolantTank().vaporType().getRegistryName()).toString()
+                : Objects.requireNonNull(Fluids.EMPTY.getRegistryName()).toString();
+
         reactorState.caseHeatStored = simulation.caseHeat();
         reactorState.fuelHeatStored = simulation.fuelHeat();
         

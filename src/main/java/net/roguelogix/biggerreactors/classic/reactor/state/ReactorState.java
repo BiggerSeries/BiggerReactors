@@ -1,6 +1,5 @@
 package net.roguelogix.biggerreactors.classic.reactor.state;
 
-import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorAccessPort;
 import net.roguelogix.biggerreactors.classic.reactor.tiles.ReactorTerminalTile;
 import net.roguelogix.phosphophyllite.gui.GuiSync;
 
@@ -79,13 +78,23 @@ public class ReactorState implements GuiSync.IGUIPacket {
     public long coolantCapacity = 0;
 
     /**
-     * [Active-Only] The amount of steam stored in the reactor.
+     * [Active-Only] The type of coolant being stored.
      */
-    public long steamStored = 0;
+    public String coolantResourceLocation = "";
+
     /**
-     * [Active-Only] The max steam capacity of the reactor.
+     * [Active-Only] The amount of hot exhaust stored in the reactor.
      */
-    public long steamCapacity = 0;
+    public long exhaustStored = 0;
+    /**
+     * [Active-Only] The max hot exhaust capacity of the reactor.
+     */
+    public long exhaustCapacity = 0;
+
+    /**
+     * [Active-Only] The type of exhaust being generated.
+     */
+    public String exhaustResourceLocation = "";
 
     /**
      * The tile whose information this belongs to.
@@ -98,9 +107,7 @@ public class ReactorState implements GuiSync.IGUIPacket {
 
     @Override
     public void read(@Nonnull Map<?, ?> data) {
-        //reactorActivity = ((Boolean) data.get("reactorActivity")) ? ReactorActivity.ACTIVE : ReactorActivity.INACTIVE;
         reactorActivity = ReactorActivity.fromInt((Integer) data.get("reactorActivity"));
-        //reactorType = ((Boolean) data.get("reactorType")) ? ReactorType.ACTIVE : ReactorType.PASSIVE;
         reactorType = ReactorType.fromInt((Integer) data.get("reactorType"));
 
         doAutoEject = (Boolean) data.get("doAutoEject");
@@ -114,9 +121,11 @@ public class ReactorState implements GuiSync.IGUIPacket {
 
         coolantStored = (Long) data.get("coolantStored");
         coolantCapacity = (Long) data.get("coolantCapacity");
+        coolantResourceLocation = (String) data.get("coolantResourceLocation");
 
-        steamStored = (Long) data.get("steamStored");
-        steamCapacity = (Long) data.get("steamCapacity");
+        exhaustStored = (Long) data.get("exhaustStored");
+        exhaustCapacity = (Long) data.get("exhaustCapacity");
+        exhaustResourceLocation = (String) data.get("exhaustResourceLocation");
 
         caseHeatStored = (Double) data.get("caseHeatStored");
         fuelHeatStored = (Double) data.get("fuelHeatStored");
@@ -131,9 +140,7 @@ public class ReactorState implements GuiSync.IGUIPacket {
     public Map<?, ?> write() {
         reactorTerminalTile.updateState();
         HashMap<String, Object> data = new HashMap<>();
-        //data.put("reactorActivity", reactorActivity == ReactorActivity.ACTIVE);
         data.put("reactorActivity", reactorActivity.toInt());
-        //data.put("reactorType", reactorType == ReactorType.ACTIVE);
         data.put("reactorType", reactorType.toInt());
 
         data.put("doAutoEject", doAutoEject);
@@ -147,9 +154,11 @@ public class ReactorState implements GuiSync.IGUIPacket {
 
         data.put("coolantStored", coolantStored);
         data.put("coolantCapacity", coolantCapacity);
+        data.put("coolantResourceLocation", coolantResourceLocation);
 
-        data.put("steamStored", steamStored);
-        data.put("steamCapacity", steamCapacity);
+        data.put("exhaustStored", exhaustStored);
+        data.put("exhaustCapacity", exhaustCapacity);
+        data.put("exhaustResourceLocation", exhaustResourceLocation);
 
         data.put("caseHeatStored", caseHeatStored);
         data.put("fuelHeatStored", fuelHeatStored);

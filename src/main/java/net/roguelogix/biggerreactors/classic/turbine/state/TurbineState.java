@@ -54,6 +54,10 @@ public class TurbineState implements GuiSync.IGUIPacket {
      * The max intake capacity of the turbine.
      */
     public long intakeCapacity = 0;
+    /**
+     * The type of intake being stored.
+     */
+    public String intakeResourceLocation = "";
     
     /**
      * The amount of exhaust stored in the turbine.
@@ -63,6 +67,10 @@ public class TurbineState implements GuiSync.IGUIPacket {
      * The max exhaust capacity of the turbine.
      */
     public long exhaustCapacity = 0;
+    /**
+     * The type of exhaust being stored.
+     */
+    public String exhaustResourceLocation = "";
     
     /**
      * The amount of energy stored in the turbine.
@@ -98,9 +106,11 @@ public class TurbineState implements GuiSync.IGUIPacket {
         
         intakeStored = (Long) data.get("intakeStored");
         intakeCapacity = (Long) data.get("intakeCapacity");
+        intakeResourceLocation = (String) data.get("intakeResourceLocation");
         
         exhaustStored = (Long) data.get("exhaustStored");
         exhaustCapacity = (Long) data.get("exhaustCapacity");
+        exhaustResourceLocation = (String) data.get("exhaustResourceLocation");
         
         energyStored = (Long) data.get("energyStored");
         energyCapacity = (Long) data.get("energyCapacity");
@@ -126,9 +136,11 @@ public class TurbineState implements GuiSync.IGUIPacket {
         
         data.put("intakeStored", intakeStored);
         data.put("intakeCapacity", intakeCapacity);
+        data.put("intakeResourceLocation", intakeResourceLocation);
         
         data.put("exhaustStored", exhaustStored);
         data.put("exhaustCapacity", exhaustCapacity);
+        data.put("exhaustResourceLocation", exhaustResourceLocation);
         
         data.put("energyStored", energyStored);
         data.put("energyCapacity", energyCapacity);

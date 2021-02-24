@@ -3,9 +3,11 @@ package net.roguelogix.biggerreactors.classic.turbine.client;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -18,7 +20,6 @@ import net.roguelogix.biggerreactors.client.Biselector;
 import net.roguelogix.biggerreactors.client.CommonRender;
 import net.roguelogix.biggerreactors.client.SelectorColors;
 import net.roguelogix.biggerreactors.client.Triselector;
-import net.roguelogix.biggerreactors.fluids.FluidIrradiatedSteam;
 import net.roguelogix.phosphophyllite.gui.client.RenderHelper;
 import net.roguelogix.phosphophyllite.gui.client.ScreenBase;
 import net.roguelogix.phosphophyllite.gui.client.elements.Button;
@@ -33,11 +34,16 @@ public class TurbineTerminalScreen extends ScreenBase<TurbineTerminalContainer> 
 
     private TurbineState turbineState;
 
+    private Fluid intakeFluid = Fluids.EMPTY;
+    private Fluid exhaustFluid = Fluids.EMPTY;
+
     public TurbineTerminalScreen(TurbineTerminalContainer container, PlayerInventory playerInventory, ITextComponent title) {
-        super(container, playerInventory, new TranslationTextComponent("screen.biggerreactors.turbine_terminal"), DEFAULT_TEXTURE, 198, 152);
+        super(container, playerInventory, new TranslationTextComponent("screen.biggerreactors.turbine_terminal"), DEFAULT_TEXTURE, 176, 152);
 
         // Initialize reactor state.
         turbineState = (TurbineState) this.getContainer().getGuiPacket();
+        intakeFluid = Registry.FLUID.getOrDefault(new ResourceLocation(turbineState.intakeResourceLocation));
+        exhaustFluid = Registry.FLUID.getOrDefault(new ResourceLocation(turbineState.exhaustResourceLocation));
     }
 
     /**
@@ -221,19 +227,17 @@ public class TurbineTerminalScreen extends ScreenBase<TurbineTerminalContainer> 
         tachometerGauge.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> TurbineTerminalScreen.renderTachometerGauge(mS, tachometerGauge, turbineState.currentRPM, turbineState.maxRPM);
         this.addElement(tachometerGauge);
 
-        // (Top) Coolant intake tank:
-        Symbol<TurbineTerminalContainer> steamIntakeTank = new Symbol<>(this, 107, 25, 18, 64, 0, 152, StringTextComponent.EMPTY);
-        steamIntakeTank.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> CommonRender.renderFluidGauge(mS,
-                steamIntakeTank, turbineState.intakeStored, turbineState.intakeCapacity,
-                FluidIrradiatedSteam.INSTANCE.getStillFluid());
-        this.addElement(steamIntakeTank);
+        // (Top) Hot intake tank:
+        Symbol<TurbineTerminalContainer> intakeTank = new Symbol<>(this, 107, 25, 18, 64, 0, 152, StringTextComponent.EMPTY);
+        intakeTank.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> CommonRender.renderFluidGauge(mS,
+                intakeTank, turbineState.intakeStored, turbineState.intakeCapacity, intakeFluid);
+        this.addElement(intakeTank);
 
-        // (Top) Steam exhaust tank:
-        Symbol<TurbineTerminalContainer> coolantExhaustTank = new Symbol<>(this, 129, 25, 18, 64, 0, 152, StringTextComponent.EMPTY);
-        coolantExhaustTank.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> CommonRender.renderFluidGauge(mS,
-                coolantExhaustTank, turbineState.exhaustStored, turbineState.exhaustCapacity,
-                Fluids.WATER.getStillFluid());
-        this.addElement(coolantExhaustTank);
+        // (Top) Cold exhaust tank:
+        Symbol<TurbineTerminalContainer> exhaustTank = new Symbol<>(this, 129, 25, 18, 64, 0, 152, StringTextComponent.EMPTY);
+        exhaustTank.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> CommonRender.renderFluidGauge(mS,
+                exhaustTank, turbineState.exhaustStored, turbineState.exhaustCapacity, exhaustFluid);
+        this.addElement(exhaustTank);
 
         // (Top) Internal battery:
         Symbol<TurbineTerminalContainer> internalBattery = new Symbol<>(this, 151, 25, 18, 64, 0, 152, StringTextComponent.EMPTY);
@@ -246,21 +250,21 @@ public class TurbineTerminalScreen extends ScreenBase<TurbineTerminalContainer> 
      * Initialize symbols.
      */
     private void initSymbols() {
-        // (Top) Steam intake tank symbol:
-        Symbol<TurbineTerminalContainer> steamIntakeTankSymbol = new Symbol<>(this, 108, 6, 16, 16, 54, 152, new TranslationTextComponent("screen.biggerreactors.turbine_terminal.steam_intake_tank.tooltip"));
-        steamIntakeTankSymbol.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> RenderHelper.drawMaskedFluid(mS,
-                steamIntakeTankSymbol.x, steamIntakeTankSymbol.y, this.getBlitOffset(),
-                steamIntakeTankSymbol.width, steamIntakeTankSymbol.height,
-                steamIntakeTankSymbol.u, steamIntakeTankSymbol.v, FluidIrradiatedSteam.INSTANCE.getStillFluid());
-        this.addElement(steamIntakeTankSymbol);
+        // (Top) Intake tank symbol:
+        Symbol<TurbineTerminalContainer> intakeTankSymbol = new Symbol<>(this, 108, 6, 16, 16, 54, 152, new TranslationTextComponent("screen.biggerreactors.turbine_terminal.intake_tank.tooltip"));
+        intakeTankSymbol.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> RenderHelper.drawMaskedFluid(mS,
+                intakeTankSymbol.x, intakeTankSymbol.y, this.getBlitOffset(),
+                intakeTankSymbol.width, intakeTankSymbol.height,
+                intakeTankSymbol.u, intakeTankSymbol.v, intakeFluid);
+        this.addElement(intakeTankSymbol);
 
-        // (Top) Coolant exhaust tank symbol:
-        Symbol<TurbineTerminalContainer> coolantExhaustTankSymbol = new Symbol<>(this, 130, 6, 16, 16, 70, 152, new TranslationTextComponent("screen.biggerreactors.turbine_terminal.coolant_exhaust_tank.tooltip"));
-        coolantExhaustTankSymbol.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> RenderHelper.drawMaskedFluid(mS,
-                coolantExhaustTankSymbol.x, coolantExhaustTankSymbol.y, this.getBlitOffset(),
-                coolantExhaustTankSymbol.width, coolantExhaustTankSymbol.height,
-                coolantExhaustTankSymbol.u, coolantExhaustTankSymbol.v, Fluids.WATER.getStillFluid());
-        this.addElement(coolantExhaustTankSymbol);
+        // (Top) Exhaust tank symbol:
+        Symbol<TurbineTerminalContainer> exhaustTankSymbol = new Symbol<>(this, 130, 6, 16, 16, 70, 152, new TranslationTextComponent("screen.biggerreactors.turbine_terminal.exhaust_tank.tooltip"));
+        exhaustTankSymbol.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> RenderHelper.drawMaskedFluid(mS,
+                exhaustTankSymbol.x, exhaustTankSymbol.y, this.getBlitOffset(),
+                exhaustTankSymbol.width, exhaustTankSymbol.height,
+                exhaustTankSymbol.u, exhaustTankSymbol.v, exhaustFluid);
+        this.addElement(exhaustTankSymbol);
     }
 
     /**

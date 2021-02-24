@@ -3,6 +3,7 @@ package net.roguelogix.biggerreactors.classic.turbine;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.Block;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.fluid.LavaFluid;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -15,6 +16,7 @@ import net.roguelogix.biggerreactors.classic.turbine.state.TurbineState;
 import net.roguelogix.biggerreactors.classic.turbine.state.VentState;
 import net.roguelogix.biggerreactors.classic.turbine.tiles.*;
 import net.roguelogix.biggerreactors.fluids.FluidIrradiatedSteam;
+import net.roguelogix.biggerreactors.fluids.FluidYellorium;
 import net.roguelogix.phosphophyllite.Phosphophyllite;
 import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
 import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockTile;
@@ -592,13 +594,22 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         
         turbineState.currentRPM = (rotorBlades.size() > 0 && rotorMass > 0 ? rotorEnergy / (double) (rotorBlades.size() * rotorMass) : 0);
         turbineState.maxRPM = 2200.0;
-        
+
+        // TODO: populate intakeResourceLocation and exhaustResourceLocation. Next 3 lines are an example from the reactor:
+        //reactorState.coolantResourceLocation = (simulation.coolantTank().liquidType() != null)
+        //                ? Objects.requireNonNull(simulation.coolantTank().liquidType().getRegistryName()).toString()
+        //                : Objects.requireNonNull(Fluids.EMPTY.getRegistryName()).toString();
+
         turbineState.intakeStored = steam;
         turbineState.intakeCapacity = tankSize;
-        
+        //turbineState.intakeResourceLocation = <some fluid here, such as steam>;
+        turbineState.intakeResourceLocation = FluidIrradiatedSteam.INSTANCE.getRegistryName().toString();
+
         turbineState.exhaustStored = water;
         turbineState.exhaustCapacity = tankSize;
-        
+        //turbineState.exhaustResourceLocation = <some fluid here, such as water>;
+        turbineState.exhaustResourceLocation = Fluids.WATER.getRegistryName().toString();
+
         turbineState.energyStored = storedPower;
         turbineState.energyCapacity = maxStoredPower;
     }
