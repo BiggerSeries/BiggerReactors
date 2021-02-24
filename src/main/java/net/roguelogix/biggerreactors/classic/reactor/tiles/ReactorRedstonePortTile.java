@@ -195,7 +195,7 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements INamedCo
             }
             return ActionResultType.SUCCESS;
         }
-        return ActionResultType.PASS;
+        return super.onBlockActivated(player, handIn);
     }
 
     @Override

@@ -69,7 +69,7 @@ public class ReactorTerminalTile extends ReactorBaseTile implements INamedContai
                 return ActionResultType.SUCCESS;
             }
         }
-        return ActionResultType.PASS;
+        return super.onBlockActivated(player, handIn);
     }
     
     @Override

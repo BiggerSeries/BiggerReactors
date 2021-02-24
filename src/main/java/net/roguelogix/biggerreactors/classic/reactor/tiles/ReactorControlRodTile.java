@@ -58,7 +58,7 @@ public class ReactorControlRodTile extends ReactorBaseTile implements INamedCont
             }
             return ActionResultType.SUCCESS;
         }
-        return ActionResultType.PASS;
+        return super.onBlockActivated(player, handIn);
     }
     
     @Override
