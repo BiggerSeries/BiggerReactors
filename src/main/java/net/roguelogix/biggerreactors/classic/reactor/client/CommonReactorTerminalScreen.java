@@ -236,10 +236,12 @@ public class CommonReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
         // Draw frame.
         symbol.blit(mStack);
         // Update tooltip.
-        symbol.tooltip = new StringTextComponent(String.format("\u00A76%s\u00A7r+\u00A7b%s\u00A7r/%s",
-                RenderHelper.formatValue(fuelStored / 1000.0, null, true),
-                RenderHelper.formatValue(wasteStored / 1000.0, null, true),
-                RenderHelper.formatValue(fuelCapacity / 1000.0, "B", true)));
+        symbol.tooltip = new StringTextComponent(String.format(
+                new TranslationTextComponent("screen.biggerreactors.reactor_terminal.fuel_mix_gauge.tooltip").getString(),
+                RenderHelper.formatValue((fuelStored + wasteStored) / 1000.0, null, true),
+                RenderHelper.formatValue(fuelCapacity / 1000.0, "B", true),
+                RenderHelper.formatValue(fuelStored / 1000.0, "B", true),
+                RenderHelper.formatValue(wasteStored / 1000.0, "B", true)));
     }
     
     /**
