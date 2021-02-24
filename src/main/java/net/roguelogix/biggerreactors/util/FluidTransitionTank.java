@@ -157,7 +157,7 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
     }
     
     public double transferWith(HeatBody body, double rfkt) {
-        if (activeTransition == null || inAmount <= 0 || outAmount >= perSideCapacity) {
+        if (activeTransition == null) {
             return 0;
         }
     
