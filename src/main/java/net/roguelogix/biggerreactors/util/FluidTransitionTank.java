@@ -105,11 +105,7 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
     
     private long fill(@Nonnull Fluid fluid, long amount, boolean simulate, @Nullable FluidTransitionRegistry.FluidTransition transition) {
         if (transition == null) {
-            if (condenser) {
-                transition = FluidTransitionRegistry.gasTransition(fluid);
-            } else {
-                transition = FluidTransitionRegistry.liquidTransition(fluid);
-            }
+            transition = selectTransition(fluid);
         }
         if (transition == null) {
             return 0;
@@ -260,6 +256,15 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
             outFluid = newOutFluid;
             inAmount = nbt.getLong("inAmount");
             outAmount = nbt.getLong("outAmount");
+        }
+    }
+    
+    @Nullable
+    protected FluidTransitionRegistry.FluidTransition selectTransition(Fluid fluid){
+        if (condenser) {
+            return FluidTransitionRegistry.gasTransition(fluid);
+        } else {
+            return FluidTransitionRegistry.liquidTransition(fluid);
         }
     }
 }
