@@ -117,11 +117,11 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
                 if(activeTransition == null){
                     outFluid = condenser ? transition.liquids.get(0) : transition.gases.get(0);
                 }
+                inFluid = fluid;
                 if(activeTransition != transition){
                     activeTransition = transition;
                     transitionUpdate();
                 }
-                inFluid = fluid;
                 inAmount += toFill;
             }
             return toFill;
