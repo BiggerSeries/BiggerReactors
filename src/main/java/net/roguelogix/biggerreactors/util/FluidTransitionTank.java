@@ -75,15 +75,15 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
         return 0;
     }
     
-    public long transitionedLastTick(){
+    public long transitionedLastTick() {
         return transitionedLastTick;
     }
     
-    public long maxTransitionedLastTick(){
+    public long maxTransitionedLastTick() {
         return maxTransitionedLastTick;
     }
     
-    public long rfTransferredLastTick(){
+    public long rfTransferredLastTick() {
         return rfTransferredLastTick;
     }
     
@@ -159,15 +159,15 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
         if (activeTransition == null) {
             return 0;
         }
-    
+        
         rfkt *= (condenser ? activeTransition.gasRFMKT : activeTransition.liquidRFMKT);
-    
+        
         rfkt *= (double) inAmount / (double) perSideCapacity;
-    
+        
         double newTemp = body.temperature() - activeTransition.boilingPoint;
         newTemp *= Math.exp(-rfkt / body.rfPerKelvin());
         newTemp += activeTransition.boilingPoint;
-    
+        
         double toTransfer = newTemp - body.temperature();
         toTransfer *= body.rfPerKelvin();
         
@@ -182,19 +182,19 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
         if ((rf > 0 && !condenser) || (rf < 0 && condenser)) {
             return 0;
         }
-    
+        
         rf = Math.abs(rf);
         
         long toTransition = (long) (rf / activeTransition.latentHeat);
         long maxTransitionable = Math.min(inAmount, perSideCapacity - outAmount);
-    
+        
         maxTransitionedLastTick = toTransition;
         toTransition = Math.min(maxTransitionable, toTransition);
         transitionedLastTick = toTransition;
-    
+        
         inAmount -= toTransition;
         outAmount += toTransition;
-    
+        
         rf = toTransition * activeTransition.latentHeat;
         if (!condenser) {
             rf *= -1;
@@ -203,13 +203,13 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
         return rf;
     }
     
-    protected void transitionUpdate(){
+    protected void transitionUpdate() {
     }
     
     @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = new CompoundNBT();
-        if(inFluid != null) {
+        if (inFluid != null) {
             nbt.putString("inFluid", inFluid.getRegistryName().toString());
             nbt.putLong("inAmount", inAmount);
             nbt.putString("outFluid", outFluid.getRegistryName().toString());
@@ -220,7 +220,7 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
     
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
-        if (!nbt.contains("inFluid")){
+        if (!nbt.contains("inFluid")) {
             return;
         }
         ResourceLocation inFluidLocation = new ResourceLocation(nbt.getString("inFluid"));
@@ -243,11 +243,11 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
             ResourceLocation outFluidLocation = new ResourceLocation(nbt.getString("outFluid"));
             if (ForgeRegistries.FLUIDS.containsKey(outFluidLocation)) {
                 Fluid oldOutFluid = ForgeRegistries.FLUIDS.getValue(outFluidLocation);
-                if(outFluidList.contains(oldOutFluid)){
+                if (outFluidList.contains(oldOutFluid)) {
                     newOutFluid = oldOutFluid;
                 }
             }
-            if(newOutFluid == null){
+            if (newOutFluid == null) {
                 newOutFluid = outFluidList.get(0);
             }
             activeTransition = newTransition;
@@ -259,7 +259,7 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
     }
     
     @Nullable
-    protected FluidTransitionRegistry.FluidTransition selectTransition(Fluid fluid){
+    protected FluidTransitionRegistry.FluidTransition selectTransition(Fluid fluid) {
         if (condenser) {
             return FluidTransitionRegistry.gasTransition(fluid);
         } else {
