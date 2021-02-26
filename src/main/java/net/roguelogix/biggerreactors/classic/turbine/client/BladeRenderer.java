@@ -127,9 +127,11 @@ public class BladeRenderer extends TileEntityRenderer<TurbineRotorBearingTile> {
                         matrixStackIn.push();
                         matrixStackIn.translate(0.5, 0.5, 0.5);
                         matrixStackIn.rotate(new Quaternion(Vector3f.YP, (float) (180 * (i & 1) + blade180RotationMultiplier * 135 * (i & 2)), true));
-                        matrixStackIn.rotate(new Quaternion(Vector3f.XP, 180, true));
                         matrixStackIn.translate(-0.5, -0.5, -0.5);
                         matrixStackIn.translate(0, 0, -(j + 1));
+                        matrixStackIn.translate(0.5, 0.5, 0.5);
+                        matrixStackIn.rotate(new Quaternion(Vector3f.ZP, 180, true));
+                        matrixStackIn.translate(-0.5, -0.5, -0.5);
                         Minecraft.getInstance().getBlockRendererDispatcher().renderBlock(TurbineRotorBlade.INSTANCE.getDefaultState(), matrixStackIn, bufferIn, combinedLight, 0xA0000, net.minecraftforge.client.model.data.EmptyModelData.INSTANCE);
                         matrixStackIn.pop();
                     }
