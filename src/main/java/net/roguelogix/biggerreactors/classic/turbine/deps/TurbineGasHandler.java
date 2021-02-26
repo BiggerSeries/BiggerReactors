@@ -8,6 +8,7 @@ import mekanism.api.chemical.gas.IGasHandler;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.LazyOptional;
 import net.roguelogix.biggerreactors.classic.turbine.TurbineMultiblockController;
+import net.roguelogix.biggerreactors.classic.turbine.simulation.ITurbineFluidTank;
 
 import javax.annotation.Nonnull;
 import java.util.function.Supplier;
@@ -73,7 +74,8 @@ public class TurbineGasHandler implements IGasHandler{
         }
         boolean simulated = action.simulate();
         long toInsert = stack.getAmount();
-        long inserted = controllerSupplier.get().addSteam(toInsert, simulated);
+        ITurbineFluidTank fluidTank = controllerSupplier.get().simulation().fluidTank();
+        long inserted = fluidTank.fill(fluidTank.vaporType(), toInsert, simulated);
         if(inserted > 0){
             stack = stack.copy();
             stack.setAmount(stack.getAmount() - inserted);

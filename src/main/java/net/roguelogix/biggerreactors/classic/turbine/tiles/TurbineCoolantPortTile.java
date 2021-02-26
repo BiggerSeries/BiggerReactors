@@ -4,6 +4,7 @@ import mekanism.api.chemical.gas.IGasHandler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
@@ -19,30 +20,32 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.fml.network.NetworkHooks;
-import net.roguelogix.biggerreactors.classic.turbine.TurbineMultiblockController;
+import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorAccessPort;
+import net.roguelogix.biggerreactors.classic.reactor.deps.ReactorGasHandler;
 import net.roguelogix.biggerreactors.classic.turbine.blocks.TurbineCoolantPort;
 import net.roguelogix.biggerreactors.classic.turbine.containers.TurbineCoolantPortContainer;
-import net.roguelogix.biggerreactors.classic.turbine.deps.TurbineGasHandler;
+import net.roguelogix.biggerreactors.classic.turbine.simulation.ITurbineFluidTank;
 import net.roguelogix.biggerreactors.classic.turbine.state.TurbineCoolantPortState;
-import net.roguelogix.biggerreactors.fluids.FluidIrradiatedSteam;
+import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
+import net.roguelogix.phosphophyllite.fluids.PhosphophylliteFluidStack;
 import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
-import net.roguelogix.phosphophyllite.multiblock.generic.IAssemblyAttemptedTile;
-import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockBlock;
-import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
+import net.roguelogix.phosphophyllite.multiblock.generic.*;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.util.BlockStates;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static net.roguelogix.biggerreactors.classic.turbine.blocks.TurbineCoolantPort.PortDirection.*;
+import static net.roguelogix.biggerreactors.classic.turbine.blocks.TurbineCoolantPort.PortDirection.INLET;
+import static net.roguelogix.biggerreactors.classic.turbine.blocks.TurbineCoolantPort.PortDirection.OUTLET;
+import static net.roguelogix.biggerreactors.classic.turbine.blocks.TurbineCoolantPort.PortDirection.PORT_DIRECTION_ENUM_PROPERTY;
 
 @RegisterTileEntity(name = "turbine_coolant_port")
-public class TurbineCoolantPortTile extends TurbineBaseTile implements IFluidHandler, INamedContainerProvider, IHasUpdatableState<TurbineCoolantPortState>, IAssemblyAttemptedTile {
+public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphophylliteFluidHandler, INamedContainerProvider, IHasUpdatableState<TurbineCoolantPortState>, IOnAssemblyTile, IOnDisassemblyTile {
     
     @RegisterTileEntity.Type
     public static TileEntityType<?> TYPE;
@@ -60,89 +63,91 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IFluidHan
         if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
             return LazyOptional.of(() -> this).cast();
         }
-        if (cap == GAS_HANDLER_CAPABILITY) {
-            return TurbineGasHandler.create(() -> controller).cast();
-        }
+//        if (cap == GAS_HANDLER_CAPABILITY) {
+//            return TurbineGasHandler.create(() -> controller).cast();
+//        }
         return super.getCapability(cap, side);
     }
     
-    private static final ResourceLocation steamTagLocation = new ResourceLocation("forge:steam");
+    private static final PhosphophylliteFluidStack fluidStack = new PhosphophylliteFluidStack();
     
-    private final FluidStack water = new FluidStack(Fluids.WATER, 0);
-    private final FluidStack steam = new FluidStack(FluidIrradiatedSteam.INSTANCE, 0);
-    
-    @Override
-    public int getTanks() {
-        return 2;
-    }
-    
-    @Nonnull
-    @Override
-    public FluidStack getFluidInTank(int tank) {
-        if (tank == 0) {
-            return steam;
-        }
-        if (tank == 1) {
-            return water;
-        }
-        return FluidStack.EMPTY;
-    }
+    private ITurbineFluidTank transitionTank;
     
     @Override
-    public int getTankCapacity(int tank) {
-        if(controller != null){
-            return (int) controller.getSteamCapacity();
-        }
-        return 0;
-    }
-    
-    @Override
-    public boolean isFluidValid(int tank, @Nonnull FluidStack stack) {
-        if (tank == 1 && stack.getRawFluid() == Fluids.WATER) {
-            return true;
-        }
-        return tank == 0 && stack.getRawFluid().getTags().contains(steamTagLocation);
-    }
-    
-    @Override
-    public int fill(FluidStack resource, IFluidHandler.FluidAction action) {
-        if (direction == OUTLET) {
+    public int tankCount() {
+        if (transitionTank == null) {
             return 0;
         }
-        if (!resource.getFluid().getTags().contains(steamTagLocation)) {
+        return transitionTank.tankCount();
+    }
+    
+    @Override
+    public long tankCapacity(int tank) {
+        if (transitionTank == null) {
             return 0;
         }
-        if (controller != null) {
-            return (int) controller.addSteam(resource.getAmount(), action.simulate());
-        }
-        return 0;
+        return transitionTank.tankCapacity(tank);
     }
     
     @Nonnull
     @Override
-    public FluidStack drain(FluidStack resource, IFluidHandler.FluidAction action) {
-        if (resource.getFluid() == FluidIrradiatedSteam.INSTANCE) {
-            return drain(resource.getAmount(), action);
+    public Fluid fluidTypeInTank(int tank) {
+        if (transitionTank == null) {
+            return Fluids.EMPTY;
         }
-        return FluidStack.EMPTY;
+        return transitionTank.fluidTypeInTank(tank);
     }
     
-    @Nonnull
     @Override
-    public FluidStack drain(int maxDrain, IFluidHandler.FluidAction action) {
-        if (direction == INLET || controller == null) {
-            return FluidStack.EMPTY;
+    public long fluidAmountInTank(int tank) {
+        if (transitionTank == null) {
+            return 0;
         }
-        water.setAmount((int) controller.extractWater(maxDrain, action.simulate()));
-        return water.copy();
+        return transitionTank.fluidAmountInTank(tank);
     }
     
-    public long pushWater(long amount) {
+    @Override
+    public boolean fluidValidForTank(int tank, @Nonnull Fluid fluid) {
+        if (transitionTank == null) {
+            return false;
+        }
+        return transitionTank.fluidValidForTank(tank, fluid);
+    }
+    
+    @Override
+    public long fill(@Nonnull Fluid fluid, long amount, boolean simulate) {
+        if (transitionTank == null || direction != INLET) {
+            return 0;
+        }
+        return transitionTank.fill(fluid, amount, simulate);
+    }
+    
+    @Override
+    public long drain(@Nonnull Fluid fluid, long amount, boolean simulate) {
+        if (transitionTank == null || direction == INLET) {
+            return 0;
+        }
+        return transitionTank.drain(fluid, amount, simulate);
+    }
+    
+    public long pushFluid() {
         if (!connected || direction == INLET) {
             return 0;
         }
-        water.setAmount((int) amount);
-        return waterOutput.orElse(EMPTY_TANK).fill(water, IFluidHandler.FluidAction.EXECUTE);
+        if (waterOutput.isPresent()) {
+            IFluidHandler handler = waterOutput.orElse(EMPTY_TANK);
+            fluidStack.setFluid(transitionTank.liquidType());
+            fluidStack.setAmount(transitionTank.drain(fluidStack.getRawFluid(), transitionTank.liquidAmount(), true));
+            int filled = handler.fill(fluidStack, FluidAction.EXECUTE);
+            return transitionTank.drain(fluidStack.getRawFluid(), filled, false);
+//        } else if (steamGasOutput != null && steamGasOutput.isPresent()) {
+//            if (!transitionTank.vaporType().getTags().contains(new ResourceLocation("forge:steam"))) {
+//                return 0;
+//            }
+//            IGasHandler output = steamGasOutput.orElse(ReactorGasHandler.EMPTY_TANK);
+//            return ReactorGasHandler.pushSteamToHandler(output, transitionTank.vaporAmount());
+        }
+        return 0;
     }
     
     private boolean connected = false;
@@ -151,26 +156,6 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IFluidHan
     FluidTank EMPTY_TANK = new FluidTank(0);
     private TurbineCoolantPort.PortDirection direction = INLET;
     public final TurbineCoolantPortState coolantPortState = new TurbineCoolantPortState(this);
-    
-    @SuppressWarnings("DuplicatedCode")
-    public void updateOutputDirection() {
-        if (controller.assemblyState() == MultiblockController.AssemblyState.DISASSEMBLED) {
-            waterOutputDirection = null;
-        } else if (pos.getX() == controller.minCoord().x()) {
-            waterOutputDirection = Direction.WEST;
-        } else if (pos.getX() == controller.maxCoord().x()) {
-            waterOutputDirection = Direction.EAST;
-        } else if (pos.getY() == controller.minCoord().y()) {
-            waterOutputDirection = Direction.DOWN;
-        } else if (pos.getY() == controller.maxCoord().y()) {
-            waterOutputDirection = Direction.UP;
-        } else if (pos.getZ() == controller.minCoord().z()) {
-            waterOutputDirection = Direction.NORTH;
-        } else if (pos.getZ() == controller.maxCoord().z()) {
-            waterOutputDirection = Direction.SOUTH;
-        }
-        neighborChanged();
-    }
     
     @SuppressWarnings("DuplicatedCode")
     public void neighborChanged() {
@@ -186,15 +171,7 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IFluidHan
             return;
         }
         waterOutput = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, waterOutputDirection.getOpposite());
-        connected = false;
-        IFluidHandler handler = waterOutput.orElse(EMPTY_TANK);
-        for (int i = 0; i < handler.getTanks(); i++) {
-            if (handler.isFluidValid(i, water)) {
-                connected = true;
-                break;
-            }
-        }
-        connected = connected && waterOutput.isPresent();
+        connected = waterOutput.isPresent();
     }
     
     public void setDirection(TurbineCoolantPort.PortDirection direction) {
@@ -215,12 +192,6 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IFluidHan
         CompoundNBT NBT = new CompoundNBT();
         NBT.putString("direction", String.valueOf(direction));
         return NBT;
-    }
-    
-    @Override
-    public void onAssemblyAttempted() {
-        assert world != null;
-        world.setBlockState(pos, world.getBlockState(pos).with(PORT_DIRECTION_ENUM_PROPERTY, direction));
     }
     
     @Override
@@ -268,5 +239,19 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IFluidHan
     @Override
     public void updateState() {
         coolantPortState.direction = (this.direction == INLET);
+    }
+    
+    @Override
+    public void onAssembly() {
+        this.transitionTank = controller.simulation().fluidTank();
+        waterOutputDirection = getBlockState().get(BlockStates.FACING);
+        world.setBlockState(pos, world.getBlockState(pos).with(PORT_DIRECTION_ENUM_PROPERTY, direction));
+        neighborChanged();
+    }
+    
+    @Override
+    public void onDisassembly() {
+        waterOutputDirection = null;
+        neighborChanged();
     }
 }

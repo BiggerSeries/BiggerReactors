@@ -274,14 +274,6 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         });
     }
     
-    public long extractWater(long maxDrain, boolean simulate) {
-        return simulation.fluidTank().drain(Fluids.WATER, maxDrain, simulate);
-    }
-    
-    public long addSteam(long amount, boolean simulate) {
-        return simulation.fluidTank().fill(FluidIrradiatedSteam.INSTANCE, amount, simulate);
-    }
-    
     public final ArrayList<Vector4i> rotorConfiguration = new ArrayList<>();
     public net.minecraft.util.math.vector.Vector3i rotationAxis = new net.minecraft.util.math.vector.Vector3i(0, 0, 0);
     
@@ -302,10 +294,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         for (TurbinePowerTapTile powerPort : powerTaps) {
             powerPort.updateOutputDirection();
         }
-        for (TurbineCoolantPortTile coolantPort : coolantPorts) {
-            coolantPort.updateOutputDirection();
-        }
-        
+
         Vector3i internalVolume = new Vector3i().add(maxCoord()).sub(minCoord()).sub(1, 1, 1);
         
         
@@ -430,7 +419,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
             if (simulation.fluidTank().liquidAmount() < 0) {
                 break;
             }
-            simulation.fluidTank().drain(Fluids.WATER, coolantPort.pushWater(simulation.fluidTank().liquidAmount()), false);
+            simulation.fluidTank().drain(Fluids.WATER, coolantPort.pushFluid(), false);
         }
         
         if (Phosphophyllite.tickNumber() % 10 == 0) {

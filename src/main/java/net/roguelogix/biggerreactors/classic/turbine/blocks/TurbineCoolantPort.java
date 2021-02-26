@@ -90,4 +90,9 @@ public class TurbineCoolantPort extends TurbineBaseBlock {
             ((TurbineCoolantPortTile) te).neighborChanged();
         }
     }
+    
+    @Override
+    public boolean usesFaceDirection() {
+        return true;
+    }
 }
