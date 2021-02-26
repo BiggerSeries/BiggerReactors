@@ -114,20 +114,19 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
             long maxFill = perSideCapacity - inAmount;
             long toFill = Math.min(amount, maxFill);
             if (!simulate) {
-                if(activeTransition == null){
-                    outFluid = condenser ? transition.liquids.get(0) : transition.gases.get(0);
-                }
                 inFluid = fluid;
-                if(activeTransition != transition){
+                if (activeTransition != transition) {
+                    outFluid = condenser ? transition.liquids.get(0) : transition.gases.get(0);
                     activeTransition = transition;
                     transitionUpdate();
                 }
                 inAmount += toFill;
             }
             return toFill;
-        } else {
+        } else if (inAmount == 0 && outAmount == 0) {
             return fill(fluid, amount, simulate, null);
         }
+        return 0;
     }
     
     @Override
