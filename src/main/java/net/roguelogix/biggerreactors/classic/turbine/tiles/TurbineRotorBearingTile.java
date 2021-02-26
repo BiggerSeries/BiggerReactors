@@ -40,7 +40,7 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
     public SUpdateTileEntityPacket getUpdatePacket() {
         CompoundNBT nbt = new CompoundNBT();
         if (controller != null) {
-            nbt.putDouble("speed", controller.CCgetRotorSpeed());
+            nbt.putDouble("speed", controller.simulation().RPM());
             if (sendFullUpdate) {
                 sendFullUpdate = false;
                 nbt.put("config", getUpdateTag());

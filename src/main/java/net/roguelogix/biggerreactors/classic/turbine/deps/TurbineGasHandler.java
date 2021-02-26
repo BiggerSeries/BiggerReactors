@@ -42,7 +42,7 @@ public class TurbineGasHandler implements IGasHandler{
     @Override
     public GasStack getChemicalInTank(int tank) {
         if(tank == 0 && controllerSupplier.get() != null){
-            steamStack.setAmount(controllerSupplier.get().CCgetInputAmount());
+            steamStack.setAmount(controllerSupplier.get().simulation().fluidTank().vaporAmount());
             return steamStack;
         }
         return GasStack.EMPTY;

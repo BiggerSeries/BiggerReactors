@@ -287,6 +287,10 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     
     ITurbineSimulation simulation = new ClassicTurbineSimulation();
     
+    public ITurbineSimulation simulation() {
+        return simulation;
+    }
+    
     @Override
     protected void onAssembled() {
         onUnpaused();

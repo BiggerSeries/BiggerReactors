@@ -72,7 +72,7 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IEnergyStora
     @Override
     public int getEnergyStored() {
         if (controller != null) {
-            return (int) controller.CCgetEnergyStoredUnscaled();
+            return (int) controller.simulation().battery().stored();
         }
         return 0;
     }
@@ -80,7 +80,7 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IEnergyStora
     @Override
     public int getMaxEnergyStored() {
         if (controller != null) {
-            return (int) controller.CCgetMaxEnergyStored();
+            return (int) controller.simulation().battery().capacity();
         }
         return 0;
     }
