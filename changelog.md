@@ -1,3 +1,23 @@
+# 1.16.5-0.5.0-alpha.1
+The steam is lava, the steam is lava
+
+## Reactor
+ - GUI displays correct fluid
+ - manifolds added (no model/texture yet)
+ - config option to switch between simulations added
+ - modern simulation active cooling mode fixed
+ - modern simulation saves its data
+ - power extraction draws from internal energy correctly
+ - fix fuel level rendering
+
+## Turbine
+ - uses transition registry for fluids
+ - simulation decoupled from multiblock controller 
+ - fix rotor renderer
+
+## Misc
+ - correct handling of transitions with multiple inlet fluids
+
 # 1.16.5-0.5.0-alpha.0
 Boldly go where no reactor has gone before
 
