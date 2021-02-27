@@ -147,6 +147,7 @@ public class ClassicTurbineSimulation implements ITurbineSimulation {
     @Override
     public void setNominalFlowRate(long flowRate) {
         maxFlowRate = flowRate;
+        maxFlowRate = Math.min(maxMaxFlowRate, Math.max(0, flowRate));
     }
     
     @Override
