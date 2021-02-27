@@ -364,7 +364,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         
         long rodPixels = fuelRodsByLevel.size() * 16L;
         long fuelPixels = (simulation.fuelTank().totalStored() * rodPixels) / simulation.fuelTank().capacity();
-        long wastePixels = (simulation.fuelTank().totalStored() * rodPixels) / simulation.fuelTank().capacity();
+        long wastePixels = (simulation.fuelTank().waste() * rodPixels) / simulation.fuelTank().capacity();
         
         if (fuelPixels == currentFuelRenderLevel && wastePixels == currentWasteRenderLevel) {
             return;
