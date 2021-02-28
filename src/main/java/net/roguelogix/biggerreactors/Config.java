@@ -210,7 +210,7 @@ public class Config {
         @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
         public static long TankVolumePerBlock = 1000;
         @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-        public static long SteamCondensationEnergy = 10;
+        public static double LatentHeatMultiplier = 2.5;
         @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
         public static long RotorMassPerPart = 10;
         @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)

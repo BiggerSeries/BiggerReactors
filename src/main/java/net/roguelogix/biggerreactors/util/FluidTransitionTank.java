@@ -206,6 +206,10 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
     protected void transitionUpdate() {
     }
     
+    public FluidTransitionRegistry.FluidTransition activeTransition(){
+        return activeTransition;
+    }
+    
     @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = new CompoundNBT();

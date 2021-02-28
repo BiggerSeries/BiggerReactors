@@ -191,7 +191,7 @@ public class ClassicTurbineSimulation implements ITurbineSimulation {
             if (steamIn > 0) {
                 long steamToProcess = bladeSurfaceArea * Config.Turbine.FluidPerBlade;
                 steamToProcess = Math.min(steamToProcess, steamIn);
-                liftTorque = steamToProcess * Config.Turbine.SteamCondensationEnergy;
+                liftTorque = steamToProcess;
                 
                 if (steamToProcess < steamIn) {
                     steamToProcess = steamIn - steamToProcess;
@@ -201,7 +201,8 @@ public class ClassicTurbineSimulation implements ITurbineSimulation {
                     liftTorque += steamToProcess * bladeEfficiency;
                     
                 }
-                rotorEfficiencyLastTick = liftTorque / (steamIn * Config.Turbine.SteamCondensationEnergy);
+                rotorEfficiencyLastTick = liftTorque / steamIn;
+                liftTorque *= Config.Turbine.LatentHeatMultiplier * fluidTank.activeTransition().latentHeat;
             }
             
             double inductionTorque = coilEngaged ? rotorSpeed * inductorDragCoefficient * coilSize : 0f;
