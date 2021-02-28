@@ -283,6 +283,35 @@ public class ClassicTurbineSimulation implements ITurbineSimulation {
     }
     
     @Override
+    public String debugString() {
+        return "rotorMass: " + rotorMass + "\n" +
+                "bladeSurfaceArea: " + bladeSurfaceArea + "\n" +
+                "coilSize: " + coilSize + "\n" +
+                "inductionEfficiency: " + inductionEfficiency + "\n" +
+                "inductorDragCoefficient: " + inductorDragCoefficient + "\n" +
+                "inductionEnergyExponentBonus: " + inductionEnergyExponentBonus + "\n" +
+                "frictionDrag: " + frictionDrag + "\n" +
+                "bladeDrag: " + bladeDrag + "\n" +
+                "CoilEngaged: " + coilEngaged + " \n" +
+                "VentState: " + ventState + " \n" +
+                "Active: " + active + " \n" +
+                "StoredPower: " + battery.stored() + "\n" +
+                "EnergyCapacity: " + battery.capacity() + "\n" +
+                "CoilEngaged: " + coilEngaged + " \n" +
+                "PowerProduction: " + energyGeneratedLastTick + "\n" +
+                "CoilEfficiency: " + rotorEfficiencyLastTick + "\n" +
+                "VaporAmount: " + fluidTank.vaporAmount() + "\n" +
+                "VaporType: " + fluidTank.vaporType() + "\n" +
+                "LiquidAmount: " + fluidTank.liquidAmount() + "\n" +
+                "LiquidType: " + fluidTank.liquidType() + "\n" +
+                "Flow: " + fluidTank.transitionedLastTick() + "\n" +
+                "RotorEfficiency: " + rotorEfficiencyLastTick + "\n" +
+                "MaxFlow: " + maxFlowRate + "\n" +
+                "RotorRPM: " + RPM() + "\n" +
+                "";
+    }
+    
+    @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = new CompoundNBT();
         nbt.put("fluidTank", fluidTank.serializeNBT());

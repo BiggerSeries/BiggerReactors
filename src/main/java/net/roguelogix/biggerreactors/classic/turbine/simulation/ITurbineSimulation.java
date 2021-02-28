@@ -57,4 +57,6 @@ public interface ITurbineSimulation extends INBTSerializable<CompoundNBT> {
     long rotorMass();
     
     boolean active();
+    
+    String debugString();
 }

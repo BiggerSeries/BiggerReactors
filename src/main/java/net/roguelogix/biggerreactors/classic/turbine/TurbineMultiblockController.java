@@ -541,27 +541,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     @Nonnull
     public String getDebugInfo() {
         return super.getDebugInfo() + "\n" +
-//                "rotorMass: " + rotorMass + "\n" +
-//                "bladeSurfaceArea: " + bladeSurfaceArea + "\n" +
-//                "coilSize: " + coilSize + "\n" +
-//                "inductionEfficiency: " + inductionEfficiency + "\n" +
-//                "inductorDragCoefficient: " + inductorDragCoefficient + "\n" +
-//                "inductionEnergyExponentBonus: " + inductionEnergyExponentBonus + "\n" +
-//                "frictionDrag: " + frictionDrag + "\n" +
-//                "bladeDrag: " + bladeDrag + "\n" +
-//                "CoilEngaged:" + coilEngaged + " \n" +
-//                "VentState:" + ventState + " \n" +
-//                "State:" + turbineActivity.toString() + " \n" +
-//                "StoredPower: " + storedPower + "\n" +
-//                "CoilEngaged: " + coilEngaged + " \n" +
-//                "PowerProduction: " + energyGeneratedLastTick + "\n" +
-//                "CoilEfficiency: " + rotorEfficiencyLastTick + "\n" +
-//                "Steam: " + steam + "\n" +
-//                "Water: " + water + "\n" +
-//                "Flow: " + fluidConsumedLastTick + "\n" +
-//                "RotorEfficiency: " + rotorEfficiencyLastTick + "\n" +
-//                "MaxFlow: " + maxFlowRate + "\n" +
-//                "RotorRPM: " + (rotorBlades.size() > 0 && rotorMass > 0 ? rotorEnergy / (double) (rotorBlades.size() * rotorMass) : 0) + "\n" +
+                simulation.debugString() +
                 "";
     }
     
