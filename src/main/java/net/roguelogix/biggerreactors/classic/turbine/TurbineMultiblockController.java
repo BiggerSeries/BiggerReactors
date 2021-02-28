@@ -530,6 +530,10 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         updateBlockStates();
     }
     
+    public void toggleActive(){
+        setActive(!simulation.active());
+    }
+    
     public void setActive(boolean active) {
         if (simulation.active() != active) {
             simulation.setActive(active);
