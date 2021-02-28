@@ -27,9 +27,6 @@ public class ClassicTurbineSimulation implements ITurbineSimulation {
     private double frictionDrag;
     private double bladeDrag;
     
-    private long storedPower = 0;
-    private long maxStoredPower = 0;
-    
     private double energyGeneratedLastTick;
     private double rotorEfficiencyLastTick;
     
@@ -98,7 +95,7 @@ public class ClassicTurbineSimulation implements ITurbineSimulation {
         bladeDrag = Config.Turbine.BladeDragMultiplier * bladeSurfaceArea;
         
         
-        maxStoredPower = (coilSize + 1) * Config.Turbine.BatterySizePerCoilBlock;
+        battery.setCapacity((coilSize + 1) * Config.Turbine.BatterySizePerCoilBlock);
         
         if (coilSize <= 0) {
             inductionEfficiency = 0;
@@ -231,11 +228,7 @@ public class ClassicTurbineSimulation implements ITurbineSimulation {
                 
                 energyGeneratedLastTick = energyToGenerate;
                 
-                energyToGenerate = Math.min(energyToGenerate, maxStoredPower - storedPower);
-                
-                if (energyToGenerate > 0) {
-                    storedPower += energyToGenerate;
-                }
+                battery.generate((long) energyToGenerate);
             }
             
             rotorEnergy += liftTorque;
@@ -248,7 +241,7 @@ public class ClassicTurbineSimulation implements ITurbineSimulation {
             
             fluidTank.flow(steamIn, ventState != VentState.CLOSED);
             
-            if(ventState == VentState.ALL){
+            if (ventState == VentState.ALL) {
                 fluidTank.dumpLiquid();
             }
         }
@@ -285,12 +278,31 @@ public class ClassicTurbineSimulation implements ITurbineSimulation {
     }
     
     @Override
+    public boolean active() {
+        return active;
+    }
+    
+    @Override
     public CompoundNBT serializeNBT() {
-        return new CompoundNBT();
+        CompoundNBT nbt = new CompoundNBT();
+        nbt.put("fluidTank", fluidTank.serializeNBT());
+        nbt.put("battery", battery.serializeNBT());
+        nbt.putInt("ventState", ventState.toInt());
+        nbt.putDouble("rotorEnergy", rotorEnergy);
+        nbt.putLong("maxFlowRate", maxFlowRate);
+        nbt.putBoolean("coilEngaged", coilEngaged);
+        nbt.putBoolean("active", active);
+        return nbt;
     }
     
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
-    
+        fluidTank.deserializeNBT(nbt.getCompound("fluidTank"));
+        battery.deserializeNBT(nbt.getCompound("battery"));
+        ventState = VentState.fromInt(nbt.getInt("ventState"));
+        rotorEnergy = nbt.getDouble("rotorEnergy");
+        maxFlowRate = nbt.getLong("maxFlowRate");
+        coilEngaged = nbt.getBoolean("coilEngaged");
+        active = nbt.getBoolean("active");
     }
 }

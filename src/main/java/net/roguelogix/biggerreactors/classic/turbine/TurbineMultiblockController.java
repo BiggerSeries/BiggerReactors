@@ -197,8 +197,6 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         });
     }
     
-    private TurbineActivity turbineActivity = TurbineActivity.INACTIVE;
-    
     private final Set<TurbineTerminalTile> terminals = new HashSet<>();
     private final Set<TurbineCoolantPortTile> coolantPorts = new HashSet<>();
     private final Set<TurbineRotorBearingTile> rotorBearings = new HashSet<>();
@@ -269,7 +267,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     
     public void updateBlockStates() {
         terminals.forEach(terminal -> {
-            world.setBlockState(terminal.getPos(), terminal.getBlockState().with(TurbineActivity.TURBINE_STATE_ENUM_PROPERTY, turbineActivity));
+            world.setBlockState(terminal.getPos(), terminal.getBlockState().with(TurbineActivity.TURBINE_STATE_ENUM_PROPERTY, simulation.active() ? TurbineActivity.ACTIVE : TurbineActivity.INACTIVE));
             terminal.markDirty();
         });
     }
@@ -434,7 +432,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     }
     
     public void updateDataPacket(@Nonnull TurbineState turbineState) {
-        turbineState.turbineActivity = turbineActivity;
+        turbineState.turbineActivity = simulation.active() ? TurbineActivity.ACTIVE : TurbineActivity.INACTIVE;
         turbineState.ventState = simulation.ventState();
         turbineState.coilStatus = simulation.coilEngaged();
         
@@ -472,7 +470,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
                 if (!(requestData instanceof Integer)) {
                     return;
                 }
-                setActive(TurbineActivity.fromInt((Integer) requestData));
+                setActive(TurbineActivity.fromInt((Integer) requestData) == TurbineActivity.ACTIVE);
                 return;
             }
             // Change flow rate by value.
@@ -524,58 +522,17 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     
     @Nonnull
     protected CompoundNBT write() {
-        CompoundNBT compound = new CompoundNBT();
-//        {
-//            compound.putLong("steam", steam);
-//            compound.putLong("water", water);
-//            compound.putString("turbineState", turbineActivity.toString());
-//            compound.putDouble("storedPower", storedPower);
-//            compound.putString("ventState", ventState.toString());
-//            compound.putDouble("rotorEnergy", rotorEnergy);
-//            compound.putLong("maxFloatRate", maxFlowRate);
-//            compound.putBoolean("coilEngaged", coilEngaged);
-//        }
-        return compound;
+        return simulation().serializeNBT();
     }
     
     protected void read(@Nonnull CompoundNBT compound) {
-//        if (compound.contains("steam")) {
-//            steam = compound.getLong("steam");
-//        }
-//        if (compound.contains("water")) {
-//            water = compound.getLong("water");
-//        }
-//        if (compound.contains("turbineState")) {
-//            turbineActivity = TurbineActivity.valueOf(compound.getString("turbineState").toUpperCase());
-//        }
-//        if (compound.contains("storedPower")) {
-//            storedPower = compound.getLong("storedPower");
-//        }
-//        if (compound.contains("ventState")) {
-//            //ventState = VentState.toInt(compound.getString("ventState").toUpperCase());
-//            ventState = VentState.fromInt(compound.getInt(compound.getString("ventState")));
-//        }
-//        if (compound.contains("rotorEnergy")) {
-//            rotorEnergy = compound.getDouble("rotorEnergy");
-//        }
-//        if (compound.contains("maxFloatRate")) {
-//            maxFlowRate = compound.getLong("maxFloatRate");
-//        }
-//        if (compound.contains("coilEngaged")) {
-//            coilEngaged = compound.getBoolean("coilEngaged");
-//        }
-        
+        simulation.deserializeNBT(compound);
         updateBlockStates();
     }
     
-    public void toggleActive() {
-        setActive(turbineActivity == TurbineActivity.ACTIVE ? TurbineActivity.INACTIVE : TurbineActivity.ACTIVE);
-    }
-    
-    public void setActive(TurbineActivity newState) {
-        if (turbineActivity != newState) {
-            turbineActivity = newState;
-            simulation.setActive(turbineActivity == TurbineActivity.ACTIVE);
+    public void setActive(boolean active) {
+        if (simulation.active() != active) {
+            simulation.setActive(active);
             updateBlockStates();
         }
     }
@@ -625,7 +582,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     }
     
     public boolean CCgetActive() {
-        return turbineActivity == TurbineActivity.ACTIVE;
+        return simulation.active();
     }
     
     public long CCgetEnergyStored() {
@@ -705,7 +662,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     
     @SuppressWarnings("SpellCheckingInspection")
     public void CCsetActive(boolean active) {
-        setActive(active ? TurbineActivity.ACTIVE : TurbineActivity.INACTIVE);
+        setActive(active);
     }
     
     @SuppressWarnings("SpellCheckingInspection")
