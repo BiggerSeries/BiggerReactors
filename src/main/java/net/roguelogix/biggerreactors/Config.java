@@ -203,24 +203,27 @@ public class Config {
         @PhosphophylliteConfig.Value(range = "[4,256]")
         public static int MaxHeight = 192;
 
-        @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-        public static long FluidPerBlade = 25;
-        @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-        public static long FlowRatePerBlock = 500;
-        @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-        public static long TankVolumePerBlock = 1000;
-        @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-        public static double LatentHeatMultiplier = 2.5;
-        @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-        public static long RotorMassPerPart = 10;
-        @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-        public static double MassDragMultiplier = 0.01;
-        @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-        public static double BladeDragMultiplier = 0.000025;
-        @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-        public static double CoilDragMultiplier = 1;
-        @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-        public static long BatterySizePerCoilBlock = 30_000;
+        @PhosphophylliteConfig
+        public static class Classic {
+            @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+            public static long FluidPerBlade = 25;
+            @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+            public static long FlowRatePerBlock = 500;
+            @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+            public static long TankVolumePerBlock = 1000;
+            @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+            public static double LatentHeatMultiplier = 2.5;
+            @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+            public static long RotorMassPerPart = 10;
+            @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+            public static double MassDragMultiplier = 0.01;
+            @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+            public static double BladeDragMultiplier = 0.000025;
+            @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+            public static double CoilDragMultiplier = 1;
+            @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+            public static long BatterySizePerCoilBlock = 30_000;
+        }
     }
     
     @PhosphophylliteConfig

@@ -6,7 +6,6 @@ import net.roguelogix.biggerreactors.classic.turbine.TurbineCoilRegistry;
 import net.roguelogix.biggerreactors.classic.turbine.simulation.ITurbineBattery;
 import net.roguelogix.biggerreactors.classic.turbine.simulation.ITurbineFluidTank;
 import net.roguelogix.biggerreactors.classic.turbine.simulation.ITurbineSimulation;
-import net.roguelogix.biggerreactors.classic.turbine.state.TurbineActivity;
 import net.roguelogix.biggerreactors.classic.turbine.state.VentState;
 import net.roguelogix.phosphophyllite.repack.org.joml.Vector4i;
 
@@ -44,7 +43,7 @@ public class ClassicTurbineSimulation implements ITurbineSimulation {
     @Override
     public void reset() {
         rotorEnergy = 0;
-        maxFlowRate = Config.Turbine.FluidPerBlade * bladeSurfaceArea;
+        maxFlowRate = Config.Turbine.Classic.FluidPerBlade * bladeSurfaceArea;
     }
     
     @Override
@@ -56,7 +55,7 @@ public class ClassicTurbineSimulation implements ITurbineSimulation {
         inductionEfficiency = 0;
         inductorDragCoefficient = 0;
         inductionEnergyExponentBonus = 0;
-        maxMaxFlowRate = (((long) x * z) - 1 /* bearing*/) * Config.Turbine.FlowRatePerBlock;
+        maxMaxFlowRate = (((long) x * z) - 1 /* bearing*/) * Config.Turbine.Classic.FlowRatePerBlock;
     }
     
     @Override
@@ -71,7 +70,7 @@ public class ClassicTurbineSimulation implements ITurbineSimulation {
         }
         
         rotorMass += bladeSurfaceArea;
-        rotorMass *= Config.Turbine.RotorMassPerPart;
+        rotorMass *= Config.Turbine.Classic.RotorMassPerPart;
         
         rotorShafts = rotorConfiguration.size();
     }
@@ -89,13 +88,13 @@ public class ClassicTurbineSimulation implements ITurbineSimulation {
     @Override
     public void updateInternalValues() {
         
-        inductorDragCoefficient *= Config.Turbine.CoilDragMultiplier;
+        inductorDragCoefficient *= Config.Turbine.Classic.CoilDragMultiplier;
         
-        frictionDrag = rotorMass * Config.Turbine.MassDragMultiplier;
-        bladeDrag = Config.Turbine.BladeDragMultiplier * bladeSurfaceArea;
+        frictionDrag = rotorMass * Config.Turbine.Classic.MassDragMultiplier;
+        bladeDrag = Config.Turbine.Classic.BladeDragMultiplier * bladeSurfaceArea;
         
         
-        battery.setCapacity((coilSize + 1) * Config.Turbine.BatterySizePerCoilBlock);
+        battery.setCapacity((coilSize + 1) * Config.Turbine.Classic.BatterySizePerCoilBlock);
         
         if (coilSize <= 0) {
             inductionEfficiency = 0;
@@ -108,7 +107,7 @@ public class ClassicTurbineSimulation implements ITurbineSimulation {
             inductorDragCoefficient = (inductorDragCoefficient / coilSize);
         }
         
-        fluidTank.perSideCapacity = (((long) x * y * z) - ((long) rotorShafts + coilSize)) * Config.Turbine.TankVolumePerBlock;
+        fluidTank.perSideCapacity = (((long) x * y * z) - ((long) rotorShafts + coilSize)) * Config.Turbine.Classic.TankVolumePerBlock;
     }
     
     @Override
@@ -189,20 +188,20 @@ public class ClassicTurbineSimulation implements ITurbineSimulation {
             
             double liftTorque = 0;
             if (steamIn > 0) {
-                long steamToProcess = bladeSurfaceArea * Config.Turbine.FluidPerBlade;
+                long steamToProcess = bladeSurfaceArea * Config.Turbine.Classic.FluidPerBlade;
                 steamToProcess = Math.min(steamToProcess, steamIn);
                 liftTorque = steamToProcess;
                 
                 if (steamToProcess < steamIn) {
                     steamToProcess = steamIn - steamToProcess;
-                    double neededBlades = steamIn / (double) Config.Turbine.FluidPerBlade;
+                    double neededBlades = steamIn / (double) Config.Turbine.Classic.FluidPerBlade;
                     double missingBlades = neededBlades - bladeSurfaceArea;
                     double bladeEfficiency = 1.0 - missingBlades / neededBlades;
                     liftTorque += steamToProcess * bladeEfficiency;
                     
                 }
                 rotorEfficiencyLastTick = liftTorque / steamIn;
-                liftTorque *= Config.Turbine.LatentHeatMultiplier * fluidTank.activeTransition().latentHeat;
+                liftTorque *= Config.Turbine.Classic.LatentHeatMultiplier * fluidTank.activeTransition().latentHeat;
             }
             
             double inductionTorque = coilEngaged ? rotorSpeed * inductorDragCoefficient * coilSize : 0f;
