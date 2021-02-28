@@ -27,6 +27,7 @@ import net.roguelogix.phosphophyllite.gui.client.elements.Symbol;
 import net.roguelogix.phosphophyllite.gui.client.elements.Tooltip;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 
 public class TurbineTerminalScreen extends ScreenBase<TurbineTerminalContainer> {
 
@@ -265,6 +266,22 @@ public class TurbineTerminalScreen extends ScreenBase<TurbineTerminalContainer> 
                 exhaustTankSymbol.width, exhaustTankSymbol.height,
                 exhaustTankSymbol.u, exhaustTankSymbol.v, exhaustFluid);
         this.addElement(exhaustTankSymbol);
+    }
+
+
+    /**
+     * Tick/update this screen.
+     */
+    @Override
+    public void tick() {
+        // Check if intake type changed.
+        if(!turbineState.intakeResourceLocation.equals(Objects.requireNonNull(intakeFluid.getRegistryName()).toString())) {
+            intakeFluid = Registry.FLUID.getOrDefault(new ResourceLocation(turbineState.intakeResourceLocation));
+        }
+        // Check if exhaust type changed.
+        if(!turbineState.exhaustResourceLocation.equals(Objects.requireNonNull(exhaustFluid.getRegistryName()).toString())) {
+            exhaustFluid = Registry.FLUID.getOrDefault(new ResourceLocation(turbineState.exhaustResourceLocation));
+        }
     }
 
     /**

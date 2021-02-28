@@ -15,6 +15,7 @@ import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.classic.reactor.containers.ReactorTerminalContainer;
 import net.roguelogix.biggerreactors.classic.reactor.state.ReactorActivity;
 import net.roguelogix.biggerreactors.classic.reactor.state.ReactorState;
+import net.roguelogix.biggerreactors.classic.reactor.state.ReactorType;
 import net.roguelogix.biggerreactors.client.CommonRender;
 import net.roguelogix.phosphophyllite.gui.client.RenderHelper;
 import net.roguelogix.phosphophyllite.gui.client.ScreenBase;
@@ -22,6 +23,7 @@ import net.roguelogix.phosphophyllite.gui.client.elements.Symbol;
 import net.roguelogix.phosphophyllite.gui.client.elements.Tooltip;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 
 @OnlyIn(Dist.CLIENT)
 public class ActiveReactorTerminalScreen extends ScreenBase<ReactorTerminalContainer> {
@@ -147,6 +149,18 @@ public class ActiveReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
         // Update reactor state and tick.
         reactorState = (ReactorState) this.getContainer().getGuiPacket();
         super.tick();
+        // Check if reactor type changed.
+        if(reactorState.reactorType != ReactorType.ACTIVE) {
+            this.getMinecraft().displayGuiScreen(new PassiveReactorTerminalScreen(this.container, this.playerInventory, this.title));
+        }
+        // Check if coolant type changed.
+        if(!reactorState.coolantResourceLocation.equals(Objects.requireNonNull(coolantFluid.getRegistryName()).toString())) {
+            coolantFluid = Registry.FLUID.getOrDefault(new ResourceLocation(reactorState.coolantResourceLocation));
+        }
+        // Check if exhaust type changed.
+        if(!reactorState.exhaustResourceLocation.equals(Objects.requireNonNull(exhaustFluid.getRegistryName()).toString())) {
+            exhaustFluid = Registry.FLUID.getOrDefault(new ResourceLocation(reactorState.exhaustResourceLocation));
+        }
     }
 
     /**

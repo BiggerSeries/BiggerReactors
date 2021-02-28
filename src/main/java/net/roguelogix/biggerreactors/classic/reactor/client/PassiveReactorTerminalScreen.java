@@ -11,6 +11,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.classic.reactor.containers.ReactorTerminalContainer;
 import net.roguelogix.biggerreactors.classic.reactor.state.ReactorState;
+import net.roguelogix.biggerreactors.classic.reactor.state.ReactorType;
 import net.roguelogix.biggerreactors.client.CommonRender;
 import net.roguelogix.phosphophyllite.gui.client.RenderHelper;
 import net.roguelogix.phosphophyllite.gui.client.ScreenBase;
@@ -92,6 +93,10 @@ public class PassiveReactorTerminalScreen extends ScreenBase<ReactorTerminalCont
         // Update reactor state and tick.
         reactorState = (ReactorState) this.getContainer().getGuiPacket();
         super.tick();
+        // Check if reactor type changed.
+        if(reactorState.reactorType != ReactorType.PASSIVE) {
+            this.getMinecraft().displayGuiScreen(new ActiveReactorTerminalScreen(this.container, this.playerInventory, this.title));
+        }
     }
 
     /**
