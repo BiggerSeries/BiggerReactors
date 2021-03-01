@@ -197,7 +197,7 @@ public class CommonReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
      */
     public static void renderHeatGauge(@Nonnull MatrixStack mStack, @Nonnull Symbol<ReactorTerminalContainer> symbol, double heatStored, double heatCapacity) {
         // If there's no heat, there's no need to draw.
-        if (heatStored > 0) {
+        if ((heatStored > 0) && (heatCapacity > 0)) {
             // Calculate how much needs to be rendered.
             int renderSize = (int) ((symbol.height * heatStored) / heatCapacity);
             // Render heat.
@@ -222,7 +222,7 @@ public class CommonReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
      */
     public static void renderFuelMixGauge(@Nonnull MatrixStack mStack, @Nonnull Symbol<ReactorTerminalContainer> symbol, double wasteStored, double fuelStored, double fuelCapacity) {
         // If there's no fuel or waste, there's no need to draw.
-        if (wasteStored > 0 || fuelStored > 0) {
+        if ((wasteStored > 0 || fuelStored > 0) && (fuelCapacity > 0)) {
             // Calculate how much needs to be rendered.
             int wasteRenderSize = (int) ((symbol.height * wasteStored) / fuelCapacity);
             int fuelRenderSize = (int) ((symbol.height * fuelStored) / fuelCapacity);

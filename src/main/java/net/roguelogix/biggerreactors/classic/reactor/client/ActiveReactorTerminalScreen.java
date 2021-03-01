@@ -199,7 +199,7 @@ public class ActiveReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
         }
         // If there's no progress, there's no need to draw.
         // This isn't the way I wanted to render this bar, but it's vertical, so funky is as funky does.
-        if (workTime > 0) {
+        if ((workTime > 0) && (workTimeTotal > 0)) {
             // Calculate how much needs to be rendered.
             int renderSize = (int) ((symbol.height * workTime) / workTimeTotal);
             // Render progress.

@@ -108,7 +108,7 @@ public class CyaniteReprocessorScreen extends ScreenBase<CyaniteReprocessorConta
      */
     private static void renderProgressBar(@Nonnull MatrixStack mStack, @Nonnull Symbol<CyaniteReprocessorContainer> symbol, int workTime, int workTimeTotal) {
         // If there's no progress, there's no need to draw.
-        if (workTime > 0) {
+        if ((workTime > 0) && (workTimeTotal > 0)) {
             // Calculate how much needs to be rendered.
             int renderSize = (int) ((symbol.width * workTime) / workTimeTotal);
             // Render progress.

@@ -294,7 +294,7 @@ public class TurbineTerminalScreen extends ScreenBase<TurbineTerminalContainer> 
      */
     public static void renderTachometerGauge(@Nonnull MatrixStack mStack, @Nonnull Symbol<TurbineTerminalContainer> symbol, double currentRPM, double maxRPM) {
         // If there's no heat, there's no need to draw.
-        if (currentRPM > 0) {
+        if ((currentRPM > 0) && (maxRPM > 0)) {
             // Calculate how much needs to be rendered.
             int renderSize = (int) ((symbol.height * currentRPM) / maxRPM);
             // Render heat.

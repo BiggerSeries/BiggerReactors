@@ -37,7 +37,7 @@ public class CommonRender {
         ResourceLocation preservedResource = RenderHelper.getCurrentResource();
         RenderHelper.bindTexture(COMMON_RESOURCE_TEXTURE);
         // If there's no energy, there's no need to draw.
-        if (energyStored > 0) {
+        if (energyCapacity > 0) {
             // Calculate how much needs to be rendered.
             int renderSize = (int) ((symbol.height * energyStored) / energyCapacity);
             // Render energy.
