@@ -101,47 +101,49 @@ public class TurbineMultiblockController extends RectangularMultiblockController
             boolean inCoil = false;
             boolean inBlades = false;
             boolean switched = false;
-            
-            int validCoilBlocks = 0;
+    
+            final int[] validCoilBlocks = {0};
             
             currentPos = bearingPosition;
+            Vector3i sliceMin = new Vector3i(minCoord()).add(1, 1, 1);
+            Vector3i sliceMax = new Vector3i(maxCoord()).sub(1, 1, 1);
+            int axisComponent = marchDirection.getAxis().getCoordinate(0, 1, 2);
+            sliceMin.setComponent(axisComponent, marchDirection.getAxisDirection().getOffset() < 0 ? sliceMax.get(axisComponent) : sliceMin.get(axisComponent));
+            sliceMax.setComponent(axisComponent, sliceMin.get(axisComponent));
+            
+            boolean[] flags = new boolean[2];
+            
             while (true) {
                 currentPos = currentPos.offset(marchDirection);
                 TileEntity te = world.getTileEntity(currentPos);
                 if (!(te instanceof TurbineRotorShaftTile)) {
                     break;
                 }
-                TurbineRotorShaftTile rotorShaft = (TurbineRotorShaftTile) te;
-                boolean isCoilShaft = false;
-                boolean isBladeShaft = false;
-                for (Direction value : Direction.values()) {
-                    if (value == marchDirection || value == marchDirection.getOpposite()) {
-                        continue;
+                
+                flags[0] = false;
+                flags[1] = false;
+                
+                Util.chunkCachedBlockStateIteration(sliceMin, sliceMax, world, (state, pos) -> {
+                    Block block = state.getBlock();
+                    if (block instanceof AirBlock || block instanceof TurbineRotorShaft) {
+                        // shafts and air are ignored
+                        return;
                     }
-                    BlockPos offsetPos = rotorShaft.getPos().offset(value);
-                    net.minecraft.util.math.vector.Vector3i secondaryOffset = value.getDirectionVec().crossProduct(marchDirection.getDirectionVec());
-                    Direction secondaryDirection = Direction.getFacingFromVector(secondaryOffset.getX(), secondaryOffset.getY(), secondaryOffset.getZ());
-                    BlockPos secondaryOffsetPos = offsetPos.offset(secondaryDirection);
-                    
-                    Block primaryBlock = world.getBlockState(offsetPos).getBlock();
-                    Block secondaryBlock = world.getBlockState(secondaryOffsetPos).getBlock();
-                    if (primaryBlock instanceof TurbineRotorBlade) {
-                        isBladeShaft = true;
-                    } else if (!(primaryBlock instanceof AirBlock) && !(primaryBlock instanceof TurbineBaseBlock)) {
-                        isCoilShaft = true;
-                        validCoilBlocks++;
+                    if (block instanceof TurbineRotorBlade) {
+                        // its a blade, so we have blades on this layer
+                        flags[0] = true;
+                        return;
                     }
-                    
-                    if (!(secondaryBlock instanceof AirBlock) && !(secondaryBlock instanceof TurbineBaseBlock)) {
-                        isCoilShaft = true;
-                        validCoilBlocks++;
-                    }
-                    
-                    if (isCoilShaft && isBladeShaft) {
-                        throw new ValidationError("multiblock.error.biggerreactors.turbine.mixed_blades_and_coil");
-                    }
+                    // its not air, its not a shaft, it has to be a coil
+                    flags[1] = true;
+                    validCoilBlocks[0]++;
+                });
+                
+                if(flags[0] && flags[1]){
+                    throw new ValidationError("multiblock.error.biggerreactors.turbine.mixed_blades_and_coil");
                 }
-                if (isCoilShaft) {
+    
+                if (flags[1]) {
                     if (inBlades) {
                         if (switched) {
                             throw new ValidationError("multiblock.error.biggerreactors.turbine.multiple_groups");
@@ -153,7 +155,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
                     }
                     inCoil = true;
                 }
-                if (isBladeShaft) {
+                if (flags[0]) {
                     if (inCoil) {
                         if (switched) {
                             throw new ValidationError("multiblock.error.biggerreactors.turbine.multiple_groups");
@@ -165,6 +167,9 @@ public class TurbineMultiblockController extends RectangularMultiblockController
                     }
                     inBlades = true;
                 }
+    
+                sliceMin.setComponent(axisComponent, sliceMin.get(axisComponent) + marchDirection.getAxisDirection().getOffset());
+                sliceMax.setComponent(axisComponent, sliceMax.get(axisComponent) + marchDirection.getAxisDirection().getOffset());
             }
             if (!switched) {
                 primaryBearing.isRenderBearing = true;
@@ -189,7 +194,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
                 totalCoilBlocks[0]++;
             });
             
-            if (totalCoilBlocks[0] != validCoilBlocks) {
+            if (totalCoilBlocks[0] != validCoilBlocks[0]) {
                 throw new ValidationError("multiblock.error.biggerreactors.turbine.dangling_coil");
             }
             
@@ -292,7 +297,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         for (TurbinePowerTapTile powerPort : powerTaps) {
             powerPort.updateOutputDirection();
         }
-
+        
         Vector3i internalVolume = new Vector3i().add(maxCoord()).sub(minCoord()).sub(1, 1, 1);
         
         
@@ -530,7 +535,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         updateBlockStates();
     }
     
-    public void toggleActive(){
+    public void toggleActive() {
         setActive(!simulation.active());
     }
     

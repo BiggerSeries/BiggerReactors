@@ -79,8 +79,11 @@ public class ClassicTurbineSimulation implements ITurbineSimulation {
     public void setCoilData(int x, int y, TurbineCoilRegistry.CoilData coilData) {
         
         inductionEfficiency += coilData.efficiency;
-        inductorDragCoefficient += coilData.extractionRate;
         inductionEnergyExponentBonus += coilData.bonus;
+        
+        double distance = Math.max(Math.abs(x), Math.abs(y));
+        
+        inductorDragCoefficient += coilData.extractionRate / distance;
         
         coilSize++;
     }
