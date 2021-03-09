@@ -36,7 +36,7 @@ public class Config {
         @PhosphophylliteConfig.Value
         public static boolean EnableYelloriteGeneration = true;
     }
-
+    
     @PhosphophylliteConfig
     public static class Reactor {
         //TODO: remove max, its only there because of the render system
@@ -47,7 +47,7 @@ public class Config {
         public static int MaxWidth = 128;
         @PhosphophylliteConfig.Value(range = "[3,256]")
         public static int MaxHeight = 192;
-
+        
         @PhosphophylliteConfig.Value(range = "(0,)")
         public static float FuelUsageMultiplier = 1;
         @PhosphophylliteConfig.Value(range = "(0,)")
@@ -120,7 +120,7 @@ public class Config {
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static float FuelAbsorptionScalingRateExponentMultiplier = 2.2f;
         }
-    
+        
         @PhosphophylliteConfig
         public static class Modern {
             @PhosphophylliteConfig.Value(range = "[1,)", advanced = true)
@@ -186,14 +186,14 @@ public class Config {
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static float FuelAbsorptionScalingRateExponentMultiplier = 2.2f;
         }
-    
+        
         @PhosphophylliteConfig
         public static class GUI {
             @PhosphophylliteConfig.Value
             public static long HeatDisplayMax = 2000;
         }
     }
-
+    
     @PhosphophylliteConfig
     public static class Turbine {
         @PhosphophylliteConfig.Value(range = "[5,192]")
@@ -202,7 +202,7 @@ public class Config {
         public static int MaxWidth = 32;
         @PhosphophylliteConfig.Value(range = "[4,256]")
         public static int MaxHeight = 192;
-
+        
         @PhosphophylliteConfig
         public static class Classic {
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
@@ -223,6 +223,24 @@ public class Config {
             public static double CoilDragMultiplier = 1;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static long BatterySizePerCoilBlock = 30_000;
+        }
+        
+        @PhosphophylliteConfig
+        public static class Modern {
+            @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+            public static long FlowRatePerBlock = 500;
+            @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+            public static long TankVolumePerBlock = 1000;
+            @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+            public static double FluidPerBladeLinerKilometre = 2;
+            @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+            public static double RotorAxialMassPerShaft = 10;
+            @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+            public static double RotorAxialMassPerBlade = 10;
+            @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+            public static double FrictionDragMultiplier = 0.0001;
+            @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+            public static double AerodynamicDragMultiplier = 0.0001;
         }
     }
     

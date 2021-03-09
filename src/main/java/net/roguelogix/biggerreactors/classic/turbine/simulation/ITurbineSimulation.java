@@ -43,6 +43,7 @@ public interface ITurbineSimulation extends INBTSerializable<CompoundNBT> {
     void tick();
     
     void setActive(boolean active);
+    boolean active();
     
     void setCoilEngaged(boolean engaged);
     
@@ -54,9 +55,7 @@ public interface ITurbineSimulation extends INBTSerializable<CompoundNBT> {
     long bladeSurfaceArea();
     
     @Deprecated
-    long rotorMass();
-    
-    boolean active();
+    double rotorMass();
     
     String debugString();
 }

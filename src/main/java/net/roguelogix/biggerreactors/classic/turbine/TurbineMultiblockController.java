@@ -13,6 +13,7 @@ import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.classic.turbine.blocks.*;
 import net.roguelogix.biggerreactors.classic.turbine.simulation.ITurbineSimulation;
 import net.roguelogix.biggerreactors.classic.turbine.simulation.classic.ClassicTurbineSimulation;
+import net.roguelogix.biggerreactors.classic.turbine.simulation.modern.ModernTurbineSimulation;
 import net.roguelogix.biggerreactors.classic.turbine.state.TurbineActivity;
 import net.roguelogix.biggerreactors.classic.turbine.state.TurbineState;
 import net.roguelogix.biggerreactors.classic.turbine.state.VentState;
@@ -280,7 +281,18 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     public final ArrayList<Vector4i> rotorConfiguration = new ArrayList<>();
     public net.minecraft.util.math.vector.Vector3i rotationAxis = new net.minecraft.util.math.vector.Vector3i(0, 0, 0);
     
-    ITurbineSimulation simulation = new ClassicTurbineSimulation();
+    ITurbineSimulation simulation = createSimulation();
+    
+    private static ITurbineSimulation createSimulation(){
+        switch (Config.mode){
+            case CLASSIC:
+                return new ClassicTurbineSimulation();
+            case MODERN:
+            case EXPERIMENTAL:
+            default:
+                return new ModernTurbineSimulation();
+        }
+    }
     
     public ITurbineSimulation simulation() {
         return simulation;
@@ -642,7 +654,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     }
     
     public long CCgetRotorMass() {
-        return simulation.rotorMass();
+        return (long) simulation.rotorMass();
     }
     
     public boolean CCgetInductorEngaged() {

@@ -276,7 +276,7 @@ public class ClassicTurbineSimulation implements ITurbineSimulation {
     }
     
     @Override
-    public long rotorMass() {
+    public double rotorMass() {
         return rotorMass;
     }
     
