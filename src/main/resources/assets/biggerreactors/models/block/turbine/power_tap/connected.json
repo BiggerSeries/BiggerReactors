@@ -1,6 +1,6 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all" : "biggerreactors:block/turbine_power_tap_connected"
+    "all" : "biggerreactors:block/turbine/power_tap/connected"
   }
 }

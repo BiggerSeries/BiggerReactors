@@ -1,6 +1,6 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all": "biggerreactors:block/turbine_rotor_bearing"
+    "all": "biggerreactors:block/turbine/rotor/bearing"
   }
 }

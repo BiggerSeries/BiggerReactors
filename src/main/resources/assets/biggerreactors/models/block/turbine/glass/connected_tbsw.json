@@ -3,10 +3,10 @@
   "textures": {
     "up" : "phosphophyllite:block/transparent",
     "down" : "phosphophyllite:block/transparent",
-    "north" : "biggerreactors:block/turbine_glass_connected_tbr",
+    "north" : "biggerreactors:block/turbine/glass/connected_tbr",
     "south" : "phosphophyllite:block/transparent",
-    "east" : "biggerreactors:block/turbine_glass_connected_tbl",
+    "east" : "biggerreactors:block/turbine/glass/connected_tbl",
     "west" : "phosphophyllite:block/transparent",
-    "particle": "biggerreactors:block/turbine_glass_connected_none"
+    "particle": "biggerreactors:block/turbine/glass/connected_none"
   }
 }

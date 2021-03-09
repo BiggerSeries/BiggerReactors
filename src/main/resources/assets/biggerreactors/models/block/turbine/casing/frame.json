@@ -1,7 +1,7 @@
 {
   "textures": {
-    "0": "biggerreactors:block/turbine_casing_frame",
-    "particle": "biggerreactors:block/turbine_casing_frame"
+    "0": "biggerreactors:block/turbine/casing/frame",
+    "particle": "biggerreactors:block/turbine/casing/frame"
   },
   "elements": [
     {

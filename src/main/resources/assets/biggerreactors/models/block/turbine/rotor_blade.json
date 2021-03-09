@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"1": "biggerreactors:block/turbine_rotor_blade",
-		"particle": "biggerreactors:block/turbine_rotor_shaft"
+		"1": "biggerreactors:block/turbine/rotor/blade",
+		"particle": "biggerreactors:block/turbine/rotor/shaft"
 	},
 	"elements": [
 		{
