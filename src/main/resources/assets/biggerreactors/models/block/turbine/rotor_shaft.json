@@ -2,7 +2,8 @@
 	"credit": "Made with Blockbench",
 	"textures": {
 		"0": "biggerreactors:block/turbine/rotor/shaft",
-		"particle": "biggerreactors:block/turbine/rotor/shaft"
+		"particle": "biggerreactors:block/turbine/rotor/shaft",
+		"missing": "phosphophyllite:block/transparent"
 	},
 	"elements": [
 		{

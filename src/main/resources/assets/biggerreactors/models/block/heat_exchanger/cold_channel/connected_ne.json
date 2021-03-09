@@ -5,6 +5,7 @@
     "2": "biggerreactors:block/heat_exchanger/cold_channel/90",
     "3": "biggerreactors:block/heat_exchanger/cold_channel/90_internal",
     "4": "biggerreactors:block/heat_exchanger/cold_channel/straight_internal",
+    "missing": "phosphophyllite:block/transparent",
     "particle": "biggerreactors:block/heat_exchanger/cold_channel/straight"
   },
   "elements": [

@@ -3,6 +3,7 @@
   "textures": {
     "0": "biggerreactors:block/heat_exchanger/cold_channel/straight",
     "1": "biggerreactors:block/heat_exchanger/cold_channel/straight_internal",
+    "missing": "phosphophyllite:block/transparent",
     "particle": "biggerreactors:block/heat_exchanger/cold_channel/straight"
   },
   "elements": [
