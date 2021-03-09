@@ -1,6 +1,6 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all": "biggerreactors:block/reactor_casing_face"
+    "all": "biggerreactors:block/reactor/casing/face"
   }
 }

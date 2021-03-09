@@ -1,12 +1,12 @@
 {
   "parent": "block/cube",
   "textures": {
-    "up" : "biggerreactors:block/reactor_glass_connected_all",
-    "down" : "biggerreactors:block/reactor_glass_connected_all",
+    "up" : "biggerreactors:block/reactor/glass/connected_all",
+    "down" : "biggerreactors:block/reactor/glass/connected_all",
     "north" : "phosphophyllite:block/transparent",
     "south" : "phosphophyllite:block/transparent",
     "east" : "phosphophyllite:block/transparent",
     "west" : "phosphophyllite:block/transparent",
-    "particle": "biggerreactors:block/reactor_glass_connected_none"
+    "particle": "biggerreactors:block/reactor/glass/connected_none"
   }
 }

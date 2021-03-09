@@ -5,8 +5,8 @@
     "down" : "phosphophyllite:block/transparent",
     "north" : "phosphophyllite:block/transparent",
     "south" : "phosphophyllite:block/transparent",
-    "east" : "biggerreactors:block/reactor_glass_connected_all",
-    "west" : "biggerreactors:block/reactor_glass_connected_all",
-    "particle": "biggerreactors:block/reactor_glass_connected_none"
+    "east" : "biggerreactors:block/reactor/glass/connected_all",
+    "west" : "biggerreactors:block/reactor/glass/connected_all",
+    "particle": "biggerreactors:block/reactor/glass/connected_none"
   }
 }

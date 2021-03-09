@@ -2,11 +2,11 @@
   "parent": "block/cube",
   "textures": {
     "up" : "phosphophyllite:block/transparent",
-    "down" : "biggerreactors:block/reactor_glass_connected_r",
-    "north" : "biggerreactors:block/reactor_glass_connected_tl",
-    "south" : "biggerreactors:block/reactor_glass_connected_tr",
+    "down" : "biggerreactors:block/reactor/glass/connected_r",
+    "north" : "biggerreactors:block/reactor/glass/connected_tl",
+    "south" : "biggerreactors:block/reactor/glass/connected_tr",
     "east" : "phosphophyllite:block/transparent",
-    "west" : "biggerreactors:block/reactor_glass_connected_t",
-    "particle": "biggerreactors:block/reactor_glass_connected_none"
+    "west" : "biggerreactors:block/reactor/glass/connected_t",
+    "particle": "biggerreactors:block/reactor/glass/connected_none"
   }
 }

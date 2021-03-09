@@ -1,7 +1,7 @@
 {
   "textures": {
-    "0": "biggerreactors:block/reactor_casing_frame",
-    "particle": "biggerreactors:block/reactor_casing_frame"
+    "0": "biggerreactors:block/reactor/casing/frame",
+    "particle": "biggerreactors:block/reactor/casing/frame"
   },
   "elements": [
     {
