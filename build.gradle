@@ -145,7 +145,7 @@ dependencies {
 
     compile project(':Phosphophyllite')
 
-    implementation fg.deobf("org.squiddev:cc-tweaked-${cc_mc_version}:${cc_version}")
+    compileOnly fg.deobf("org.squiddev:cc-tweaked-${cc_mc_version}:${cc_version}")
 
     compileOnly "mekanism:Mekanism:${mekanism_mc_version}-${mekanism_version}:api"
 
