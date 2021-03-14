@@ -19,6 +19,7 @@ import net.roguelogix.biggerreactors.classic.reactor.state.ReactorControlRodStat
 import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockBlock;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.TileSupplier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,6 +29,9 @@ public class ReactorControlRodTile extends ReactorBaseTile implements INamedCont
     
     @RegisterTileEntity.Type
     public static TileEntityType<?> TYPE;
+    
+    @RegisterTileEntity.Supplier
+    public static final TileSupplier SUPPLIER = ReactorControlRodTile::new;
     
     public ReactorControlRodTile() {
         super(TYPE);

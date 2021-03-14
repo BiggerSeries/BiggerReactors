@@ -18,6 +18,7 @@ import net.roguelogix.phosphophyllite.multiblock.generic.IOnAssemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.generic.IOnDisassemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.TileSupplier;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
 import javax.annotation.Nonnull;
@@ -31,6 +32,9 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
     
     @RegisterTileEntity.Type
     public static TileEntityType<?> TYPE;
+    
+    @RegisterTileEntity.Supplier
+    public static final TileSupplier SUPPLIER = HeatExchangerCoolantPortTile::new;
     
     public HeatExchangerCoolantPortTile() {
         super(TYPE);

@@ -7,13 +7,13 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.roguelogix.biggerreactors.classic.machine.blocks.CyaniteReprocessor;
 import net.roguelogix.biggerreactors.classic.machine.tiles.CyaniteReprocessorTile;
 import net.roguelogix.biggerreactors.classic.machine.tiles.impl.CyaniteReprocessorItemHandler;
 import net.roguelogix.phosphophyllite.gui.GuiSync;
+import net.roguelogix.phosphophyllite.registry.ContainerSupplier;
 import net.roguelogix.phosphophyllite.registry.RegisterContainer;
 
 import javax.annotation.Nonnull;
@@ -22,8 +22,10 @@ import javax.annotation.Nullable;
 @RegisterContainer(name = "cyanite_reprocessor")
 public class CyaniteReprocessorContainer extends Container implements GuiSync.IGUIPacketProvider {
     
-    @RegisterContainer.Instance
+    @RegisterContainer.Type
     public static ContainerType<CyaniteReprocessorContainer> INSTANCE;
+    @RegisterContainer.Supplier
+    public static final ContainerSupplier SUPPLIER = CyaniteReprocessorContainer::new;
     
     private PlayerEntity player;
     private CyaniteReprocessorTile tileEntity;

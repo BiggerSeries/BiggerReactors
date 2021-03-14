@@ -11,6 +11,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.phosphophyllite.multiblock.generic.IAssemblyAttemptedTile;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.TileSupplier;
 import net.roguelogix.phosphophyllite.repack.org.joml.Vector4i;
 
 import javax.annotation.Nullable;
@@ -21,6 +22,9 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
     
     @RegisterTileEntity.Type
     public static TileEntityType<TurbineRotorBearingTile> TYPE;
+    
+    @RegisterTileEntity.Supplier
+    public static final TileSupplier SUPPLIER = TurbineRotorBearingTile::new;
     
     public TurbineRotorBearingTile() {
         super(TYPE);

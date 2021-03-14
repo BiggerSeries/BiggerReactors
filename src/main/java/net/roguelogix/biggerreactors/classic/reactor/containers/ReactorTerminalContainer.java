@@ -8,6 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorTerminal;
 import net.roguelogix.biggerreactors.classic.reactor.tiles.ReactorTerminalTile;
 import net.roguelogix.phosphophyllite.gui.GuiSync;
+import net.roguelogix.phosphophyllite.registry.ContainerSupplier;
 import net.roguelogix.phosphophyllite.registry.RegisterContainer;
 
 import javax.annotation.Nonnull;
@@ -16,9 +17,11 @@ import javax.annotation.Nullable;
 @RegisterContainer(name = "reactor_terminal")
 public class ReactorTerminalContainer extends Container implements GuiSync.IGUIPacketProvider {
 
-    @RegisterContainer.Instance
+    @RegisterContainer.Type
     public static ContainerType<ReactorTerminalContainer> INSTANCE;
-
+    @RegisterContainer.Supplier
+    public static final ContainerSupplier SUPPLIER = ReactorTerminalContainer::new;
+    
     private PlayerEntity player;
     private ReactorTerminalTile tileEntity;
 

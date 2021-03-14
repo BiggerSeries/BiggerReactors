@@ -8,6 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorControlRod;
 import net.roguelogix.biggerreactors.classic.reactor.tiles.ReactorControlRodTile;
 import net.roguelogix.phosphophyllite.gui.GuiSync;
+import net.roguelogix.phosphophyllite.registry.ContainerSupplier;
 import net.roguelogix.phosphophyllite.registry.RegisterContainer;
 
 import javax.annotation.Nonnull;
@@ -15,8 +16,10 @@ import javax.annotation.Nonnull;
 @RegisterContainer(name = "reactor_control_rod")
 public class ReactorControlRodContainer extends Container implements GuiSync.IGUIPacketProvider {
 
-    @RegisterContainer.Instance
+    @RegisterContainer.Type
     public static ContainerType<ReactorControlRodContainer> INSTANCE;
+    @RegisterContainer.Supplier
+    public static final ContainerSupplier SUPPLIER = ReactorControlRodContainer::new;
 
     private PlayerEntity player;
     private ReactorControlRodTile tileEntity;

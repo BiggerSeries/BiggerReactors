@@ -23,6 +23,7 @@ import net.roguelogix.biggerreactors.classic.reactor.state.ReactorRedstonePortTr
 import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.multiblock.generic.*;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.TileSupplier;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
 import javax.annotation.Nonnull;
@@ -33,7 +34,10 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements INamedCo
 
     @RegisterTileEntity.Type
     public static TileEntityType<?> TYPE;
-
+    
+    @RegisterTileEntity.Supplier
+    public static final TileSupplier SUPPLIER = ReactorRedstonePortTile::new;
+    
     public final ReactorRedstonePortState reactorRedstonePortState = new ReactorRedstonePortState(this);
 
     public ReactorRedstonePortTile() {

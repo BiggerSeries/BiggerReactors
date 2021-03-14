@@ -13,6 +13,7 @@ import net.roguelogix.phosphophyllite.multiblock.generic.IOnAssemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.generic.IOnDisassemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.TileSupplier;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
 import javax.annotation.Nonnull;
@@ -25,6 +26,9 @@ import static net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorPowerT
 public class ReactorPowerTapTile extends ReactorBaseTile implements IEnergyStorage, IOnAssemblyTile, IOnDisassemblyTile {
     @RegisterTileEntity.Type
     public static TileEntityType<?> TYPE;
+    
+    @RegisterTileEntity.Supplier
+    public static final TileSupplier SUPPLIER = ReactorPowerTapTile::new;
     
     public ReactorPowerTapTile() {
         super(TYPE);

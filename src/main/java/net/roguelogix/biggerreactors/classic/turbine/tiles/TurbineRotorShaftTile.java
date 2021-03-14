@@ -9,6 +9,7 @@ import net.roguelogix.biggerreactors.classic.turbine.blocks.TurbineRotorShaft;
 import net.roguelogix.biggerreactors.classic.turbine.state.TurbineShaftRotationState;
 import net.roguelogix.phosphophyllite.multiblock.generic.IAssemblyAttemptedTile;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.TileSupplier;
 
 import static net.roguelogix.biggerreactors.classic.turbine.blocks.TurbineRotorBlade.BLADE_POSITION;
 import static net.roguelogix.biggerreactors.classic.turbine.state.TurbineShaftRotationState.*;
@@ -18,6 +19,9 @@ public class TurbineRotorShaftTile extends TurbineBaseTile implements IAssemblyA
     
     @RegisterTileEntity.Type
     public static TileEntityType<?> TYPE;
+    
+    @RegisterTileEntity.Supplier
+    public static final TileSupplier SUPPLIER = TurbineRotorShaftTile::new;
     
     public TurbineRotorShaftTile() {
         super(TYPE);

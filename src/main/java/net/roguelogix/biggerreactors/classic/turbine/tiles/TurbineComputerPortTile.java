@@ -8,6 +8,7 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.util.LazyOptional;
 import net.roguelogix.biggerreactors.classic.turbine.deps.TurbinePeripheral;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.TileSupplier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -17,6 +18,9 @@ public class TurbineComputerPortTile extends TurbineBaseTile {
     
     @RegisterTileEntity.Type
     public static TileEntityType<?> TYPE;
+    
+    @RegisterTileEntity.Supplier
+    public static final TileSupplier SUPPLIER = TurbineComputerPortTile::new;
     
     public TurbineComputerPortTile() {
         super(TYPE);

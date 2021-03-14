@@ -8,6 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorCoolantPort;
 import net.roguelogix.biggerreactors.classic.reactor.tiles.ReactorCoolantPortTile;
 import net.roguelogix.phosphophyllite.gui.GuiSync;
+import net.roguelogix.phosphophyllite.registry.ContainerSupplier;
 import net.roguelogix.phosphophyllite.registry.RegisterContainer;
 
 import javax.annotation.Nonnull;
@@ -15,9 +16,11 @@ import javax.annotation.Nonnull;
 @RegisterContainer(name = "reactor_coolant_port")
 public class ReactorCoolantPortContainer extends Container implements GuiSync.IGUIPacketProvider {
 
-    @RegisterContainer.Instance
+    @RegisterContainer.Type
     public static ContainerType<ReactorCoolantPortContainer> INSTANCE;
-
+    @RegisterContainer.Supplier
+    public static final ContainerSupplier SUPPLIER = ReactorCoolantPortContainer::new;
+    
     private PlayerEntity player;
     private ReactorCoolantPortTile tileEntity;
 

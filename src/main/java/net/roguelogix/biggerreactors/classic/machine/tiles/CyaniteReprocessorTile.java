@@ -49,6 +49,7 @@ import net.roguelogix.biggerreactors.items.ingots.BlutoniumIngot;
 import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.items.DebugTool;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.TileSupplier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -59,6 +60,10 @@ public class CyaniteReprocessorTile extends LockableTileEntity implements INamed
     
     @RegisterTileEntity.Type
     public static TileEntityType<CyaniteReprocessorTile> INSTANCE;
+    
+    @RegisterTileEntity.Supplier
+    public static final TileSupplier SUPPLIER = CyaniteReprocessorTile::new;
+    
     /**
      * The (mostly) current state of the machine.
      */

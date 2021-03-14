@@ -35,6 +35,7 @@ import net.roguelogix.phosphophyllite.fluids.PhosphophylliteFluidStack;
 import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.multiblock.generic.*;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.TileSupplier;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
 import javax.annotation.Nonnull;
@@ -49,6 +50,9 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphop
     
     @RegisterTileEntity.Type
     public static TileEntityType<?> TYPE;
+    
+    @RegisterTileEntity.Supplier
+    public static final TileSupplier SUPPLIER = TurbineCoolantPortTile::new;
     
     public TurbineCoolantPortTile() {
         super(TYPE);

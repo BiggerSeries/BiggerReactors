@@ -10,6 +10,7 @@ import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.TileSupplier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,6 +22,9 @@ import static net.roguelogix.biggerreactors.classic.turbine.blocks.TurbinePowerT
 public class TurbinePowerTapTile extends TurbineBaseTile implements IEnergyStorage {
     @RegisterTileEntity.Type
     public static TileEntityType<?> TYPE;
+    
+    @RegisterTileEntity.Supplier
+    public static final TileSupplier SUPPLIER = TurbinePowerTapTile::new;
     
     public TurbinePowerTapTile() {
         super(TYPE);

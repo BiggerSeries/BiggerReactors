@@ -9,7 +9,6 @@ import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.thread.SidedThreadGroups;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppedEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -40,7 +39,7 @@ public class BiggerReactors {
     public static final Logger LOGGER = LogManager.getLogger();
 
     public BiggerReactors() {
-        Registry.onModLoad();
+        new Registry();
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onClientSetup);
         MinecraftForge.EVENT_BUS.addListener(this::onTagsUpdatedEvent);
         MinecraftForge.EVENT_BUS.addListener(this::onAddReloadListenerEvent);
