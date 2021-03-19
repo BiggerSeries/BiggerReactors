@@ -28,6 +28,7 @@ import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorCoolantPort;
 import net.roguelogix.biggerreactors.classic.reactor.containers.ReactorCoolantPortContainer;
 import net.roguelogix.biggerreactors.classic.reactor.simulation.IReactorCoolantTank;
 import net.roguelogix.biggerreactors.classic.reactor.state.ReactorCoolantPortState;
+import net.roguelogix.phosphophyllite.fluids.FluidHandlerWrapper;
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
 import net.roguelogix.phosphophyllite.fluids.MekanismGasWrappers;
 import net.roguelogix.phosphophyllite.fluids.PhosphophylliteFluidStack;
@@ -72,8 +73,6 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
         }
         return super.getCapability(cap, side);
     }
-    
-    private static final PhosphophylliteFluidStack fluidStack = new PhosphophylliteFluidStack();
     
     private IReactorCoolantTank transitionTank;
     
@@ -149,10 +148,12 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
             return 0;
         }
         if (handlerOptional.isPresent()) {
-            fluidStack.setFluid(transitionTank.vaporType());
-            fluidStack.setAmount(transitionTank.drain(fluidStack.getRawFluid(), null, transitionTank.vaporAmount(), true));
-            int filled = handler.fill(fluidStack, FluidAction.EXECUTE);
-            return transitionTank.drain(fluidStack.getRawFluid(), null, filled, false);
+            Fluid fluid = transitionTank.vaporType();
+            long amount = transitionTank.vaporAmount();
+            amount = transitionTank.drain(fluid, null, amount, true);
+            amount = handler.fill(fluid, null, amount, false);
+            amount = transitionTank.drain(fluid, null, amount, false);
+            return amount;
         } else {
             handlerOptional = LazyOptional.empty();
             handler = null;
@@ -165,7 +166,7 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
     Direction steamOutputDirection = null;
     @Nonnull
     LazyOptional<?> handlerOptional = LazyOptional.empty();
-    IFluidHandler handler = null;
+    IPhosphophylliteFluidHandler handler = null;
     FluidTank EMPTY_TANK = new FluidTank(0);
     private ReactorAccessPort.PortDirection direction = INLET;
     public final ReactorCoolantPortState reactorCoolantPortState = new ReactorCoolantPortState(this);
@@ -187,13 +188,10 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
         connected = false;
         LazyOptional<IFluidHandler> fluidOptional = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, steamOutputDirection.getOpposite());
         if (fluidOptional.isPresent()) {
-            // just gonna assume its fine
             connected = true;
             handlerOptional = fluidOptional;
-            handler = fluidOptional.orElse(EMPTY_TANK);
-            return;
-        }
-        if (GAS_HANDLER_CAPABILITY != null) {
+            handler = FluidHandlerWrapper.wrap(fluidOptional.orElse(EMPTY_TANK));
+        } else if (GAS_HANDLER_CAPABILITY != null) {
             LazyOptional<IGasHandler> gasOptional = te.getCapability(GAS_HANDLER_CAPABILITY, steamOutputDirection.getOpposite());
             if (gasOptional.isPresent()) {
                 IGasHandler gasHandler = gasOptional.orElse(MekanismGasWrappers.EMPTY_TANK);
