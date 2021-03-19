@@ -9,6 +9,8 @@ import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.roguelogix.biggerreactors.classic.reactor.ReactorMultiblockController;
+import net.roguelogix.phosphophyllite.energy.EnergyStorageWrapper;
+import net.roguelogix.phosphophyllite.energy.IPhosphophylliteEnergyStorage;
 import net.roguelogix.phosphophyllite.multiblock.generic.IOnAssemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.generic.IOnDisassemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
@@ -57,12 +59,13 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IEnergyStora
         }
     }
     
-    LazyOptional<IEnergyStorage> energyOutput = LazyOptional.empty();
+    @Nonnull
+    LazyOptional<?> outputOptional = LazyOptional.empty();
+    IPhosphophylliteEnergyStorage output;
     
     public long distributePower(long toDistribute, boolean simulate) {
-        IEnergyStorage e = energyOutput.orElse(ENERGY_ZERO);
-        if (e.canReceive()) {
-            return e.receiveEnergy((int) toDistribute, simulate);
+        if (outputOptional.isPresent()) {
+            return output.insertEnergy(toDistribute, simulate);
         }
         return 0;
     }
@@ -105,7 +108,8 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IEnergyStora
     
     @SuppressWarnings("DuplicatedCode")
     public void neighborChanged() {
-        energyOutput = LazyOptional.empty();
+        outputOptional = LazyOptional.empty();
+        output = null;
         if (powerOutputDirection == null) {
             setConnected(false);
             return;
@@ -116,8 +120,12 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IEnergyStora
             setConnected(false);
             return;
         }
-        energyOutput = te.getCapability(CapabilityEnergy.ENERGY, powerOutputDirection.getOpposite());
-        setConnected(energyOutput.isPresent());
+        LazyOptional<IEnergyStorage> energyOptional = te.getCapability(CapabilityEnergy.ENERGY, powerOutputDirection.getOpposite());
+        setConnected(energyOptional.isPresent());
+        if(connected){
+            outputOptional = energyOptional;
+            output = EnergyStorageWrapper.wrap(energyOptional.orElse(ENERGY_ZERO));
+        }
     }
     
     @Override
