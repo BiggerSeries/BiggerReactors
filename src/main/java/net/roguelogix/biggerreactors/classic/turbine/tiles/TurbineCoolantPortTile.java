@@ -14,7 +14,6 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
@@ -24,16 +23,17 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.fml.network.NetworkHooks;
-import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorAccessPort;
-import net.roguelogix.biggerreactors.classic.reactor.deps.ReactorGasHandler;
 import net.roguelogix.biggerreactors.classic.turbine.blocks.TurbineCoolantPort;
 import net.roguelogix.biggerreactors.classic.turbine.containers.TurbineCoolantPortContainer;
 import net.roguelogix.biggerreactors.classic.turbine.simulation.ITurbineFluidTank;
 import net.roguelogix.biggerreactors.classic.turbine.state.TurbineCoolantPortState;
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
+import net.roguelogix.phosphophyllite.fluids.MekanismGasWrappers;
 import net.roguelogix.phosphophyllite.fluids.PhosphophylliteFluidStack;
 import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
-import net.roguelogix.phosphophyllite.multiblock.generic.*;
+import net.roguelogix.phosphophyllite.multiblock.generic.IOnAssemblyTile;
+import net.roguelogix.phosphophyllite.multiblock.generic.IOnDisassemblyTile;
+import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockBlock;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 import net.roguelogix.phosphophyllite.registry.TileSupplier;
 import net.roguelogix.phosphophyllite.util.BlockStates;
@@ -41,9 +41,7 @@ import net.roguelogix.phosphophyllite.util.BlockStates;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static net.roguelogix.biggerreactors.classic.turbine.blocks.TurbineCoolantPort.PortDirection.INLET;
-import static net.roguelogix.biggerreactors.classic.turbine.blocks.TurbineCoolantPort.PortDirection.OUTLET;
-import static net.roguelogix.biggerreactors.classic.turbine.blocks.TurbineCoolantPort.PortDirection.PORT_DIRECTION_ENUM_PROPERTY;
+import static net.roguelogix.biggerreactors.classic.turbine.blocks.TurbineCoolantPort.PortDirection.*;
 
 @RegisterTileEntity(name = "turbine_coolant_port")
 public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphophylliteFluidHandler, INamedContainerProvider, IHasUpdatableState<TurbineCoolantPortState>, IOnAssemblyTile, IOnDisassemblyTile {
@@ -67,9 +65,9 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphop
         if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
             return LazyOptional.of(() -> this).cast();
         }
-//        if (cap == GAS_HANDLER_CAPABILITY) {
-//            return TurbineGasHandler.create(() -> controller).cast();
-//        }
+        if (cap == GAS_HANDLER_CAPABILITY) {
+            return LazyOptional.of(() -> MekanismGasWrappers.wrap(this)).cast();
+        }
         return super.getCapability(cap, side);
     }
     
@@ -147,32 +145,32 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphop
         if (!connected || direction == INLET) {
             return 0;
         }
-        if (waterOutput.isPresent()) {
-            IFluidHandler handler = waterOutput.orElse(EMPTY_TANK);
+        if (handlerOptional.isPresent()) {
             fluidStack.setFluid(transitionTank.liquidType());
             fluidStack.setAmount(transitionTank.drain(fluidStack.getRawFluid(), null, transitionTank.liquidAmount(), true));
             int filled = handler.fill(fluidStack, FluidAction.EXECUTE);
             return transitionTank.drain(fluidStack.getRawFluid(), null, filled, false);
-//        } else if (steamGasOutput != null && steamGasOutput.isPresent()) {
-//            if (!transitionTank.vaporType().getTags().contains(new ResourceLocation("forge:steam"))) {
-//                return 0;
-//            }
-//            IGasHandler output = steamGasOutput.orElse(ReactorGasHandler.EMPTY_TANK);
-//            return ReactorGasHandler.pushSteamToHandler(output, transitionTank.vaporAmount());
+        } else {
+            handlerOptional = LazyOptional.empty();
+            handler = null;
+            connected = false;
         }
         return 0;
     }
     
     private boolean connected = false;
     Direction waterOutputDirection = null;
-    LazyOptional<IFluidHandler> waterOutput = null;
+    @Nonnull
+    LazyOptional<?> handlerOptional = LazyOptional.empty();
+    IFluidHandler handler = null;
     FluidTank EMPTY_TANK = new FluidTank(0);
     private TurbineCoolantPort.PortDirection direction = INLET;
     public final TurbineCoolantPortState coolantPortState = new TurbineCoolantPortState(this);
     
     @SuppressWarnings("DuplicatedCode")
     public void neighborChanged() {
-        waterOutput = LazyOptional.empty();
+        handlerOptional = LazyOptional.empty();
+        handler = null;
         if (waterOutputDirection == null) {
             connected = false;
             return;
@@ -183,8 +181,21 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphop
             connected = false;
             return;
         }
-        waterOutput = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, waterOutputDirection.getOpposite());
-        connected = waterOutput.isPresent();
+        LazyOptional<IFluidHandler> waterOutput = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, waterOutputDirection.getOpposite());
+        if (waterOutput.isPresent()) {
+            connected = true;
+            handlerOptional = waterOutput;
+            handler = waterOutput.orElse(EMPTY_TANK);
+        }
+        if (GAS_HANDLER_CAPABILITY != null) {
+            LazyOptional<IGasHandler> gasOptional = te.getCapability(GAS_HANDLER_CAPABILITY, waterOutputDirection.getOpposite());
+            if (gasOptional.isPresent()) {
+                IGasHandler gasHandler = gasOptional.orElse(MekanismGasWrappers.EMPTY_TANK);
+                connected = true;
+                handlerOptional = gasOptional;
+                handler = MekanismGasWrappers.wrap(gasHandler);
+            }
+        }
     }
     
     public void setDirection(TurbineCoolantPort.PortDirection direction) {

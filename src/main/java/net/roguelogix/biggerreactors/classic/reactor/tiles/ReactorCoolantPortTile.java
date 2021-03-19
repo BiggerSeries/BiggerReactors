@@ -14,7 +14,6 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
@@ -27,13 +26,16 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorAccessPort;
 import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorCoolantPort;
 import net.roguelogix.biggerreactors.classic.reactor.containers.ReactorCoolantPortContainer;
-import net.roguelogix.biggerreactors.classic.reactor.deps.ReactorGasHandler;
 import net.roguelogix.biggerreactors.classic.reactor.simulation.IReactorCoolantTank;
 import net.roguelogix.biggerreactors.classic.reactor.state.ReactorCoolantPortState;
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
+import net.roguelogix.phosphophyllite.fluids.MekanismGasWrappers;
 import net.roguelogix.phosphophyllite.fluids.PhosphophylliteFluidStack;
 import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
-import net.roguelogix.phosphophyllite.multiblock.generic.*;
+import net.roguelogix.phosphophyllite.multiblock.generic.IAssemblyAttemptedTile;
+import net.roguelogix.phosphophyllite.multiblock.generic.IOnAssemblyTile;
+import net.roguelogix.phosphophyllite.multiblock.generic.IOnDisassemblyTile;
+import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockBlock;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 import net.roguelogix.phosphophyllite.registry.TileSupplier;
 import net.roguelogix.phosphophyllite.util.BlockStates;
@@ -66,7 +68,7 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
             return LazyOptional.of(() -> this).cast();
         }
         if (cap == GAS_HANDLER_CAPABILITY) {
-            return ReactorGasHandler.create(() -> transitionTank).cast();
+            return LazyOptional.of(() -> MekanismGasWrappers.wrap(this)).cast();
         }
         return super.getCapability(cap, side);
     }
@@ -146,33 +148,32 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
         if (!connected || direction == INLET) {
             return 0;
         }
-        if (vaporOutput.isPresent()) {
-            IFluidHandler handler = vaporOutput.orElse(EMPTY_TANK);
+        if (handlerOptional.isPresent()) {
             fluidStack.setFluid(transitionTank.vaporType());
-            fluidStack.setAmount(transitionTank.drain(fluidStack.getRawFluid(), transitionTank.vaporAmount(), true));
+            fluidStack.setAmount(transitionTank.drain(fluidStack.getRawFluid(), null, transitionTank.vaporAmount(), true));
             int filled = handler.fill(fluidStack, FluidAction.EXECUTE);
-            return transitionTank.drain(fluidStack.getRawFluid(), filled, false);
-        } else if (steamGasOutput != null && steamGasOutput.isPresent()) {
-            if (!transitionTank.vaporType().getTags().contains(new ResourceLocation("forge:steam"))) {
-                return 0;
-            }
-            IGasHandler output = steamGasOutput.orElse(ReactorGasHandler.EMPTY_TANK);
-            return ReactorGasHandler.pushSteamToHandler(output, transitionTank.vaporAmount());
+            return transitionTank.drain(fluidStack.getRawFluid(), null, filled, false);
+        } else {
+            handlerOptional = LazyOptional.empty();
+            handler = null;
+            connected = false;
         }
         return 0;
     }
     
     private boolean connected = false;
     Direction steamOutputDirection = null;
-    LazyOptional<IFluidHandler> vaporOutput = null;
-    LazyOptional<IGasHandler> steamGasOutput = null;
+    @Nonnull
+    LazyOptional<?> handlerOptional = LazyOptional.empty();
+    IFluidHandler handler = null;
     FluidTank EMPTY_TANK = new FluidTank(0);
     private ReactorAccessPort.PortDirection direction = INLET;
     public final ReactorCoolantPortState reactorCoolantPortState = new ReactorCoolantPortState(this);
     
     @SuppressWarnings("DuplicatedCode")
     public void neighborChanged() {
-        vaporOutput = LazyOptional.empty();
+        handlerOptional = LazyOptional.empty();
+        handler = null;
         if (steamOutputDirection == null) {
             connected = false;
             return;
@@ -184,22 +185,23 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
             return;
         }
         connected = false;
-        vaporOutput = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, steamOutputDirection.getOpposite());
-        if (vaporOutput.isPresent()) {
+        LazyOptional<IFluidHandler> fluidOptional = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, steamOutputDirection.getOpposite());
+        if (fluidOptional.isPresent()) {
             // just gonna assume its fine
             connected = true;
+            handlerOptional = fluidOptional;
+            handler = fluidOptional.orElse(EMPTY_TANK);
+            return;
         }
         if (GAS_HANDLER_CAPABILITY != null) {
-            steamGasOutput = te.getCapability(GAS_HANDLER_CAPABILITY, steamOutputDirection.getOpposite());
-            if (steamGasOutput.isPresent()) {
-                IGasHandler handler = steamGasOutput.orElse(ReactorGasHandler.EMPTY_TANK);
-                if (ReactorGasHandler.isValidHandler(handler)) {
-                    connected = true;
-                }
+            LazyOptional<IGasHandler> gasOptional = te.getCapability(GAS_HANDLER_CAPABILITY, steamOutputDirection.getOpposite());
+            if (gasOptional.isPresent()) {
+                IGasHandler gasHandler = gasOptional.orElse(MekanismGasWrappers.EMPTY_TANK);
+                connected = true;
+                handlerOptional = gasOptional;
+                handler = MekanismGasWrappers.wrap(gasHandler);
             }
         }
-        
-        connected = connected && ((vaporOutput != null && vaporOutput.isPresent()) || (steamGasOutput != null && steamGasOutput.isPresent()));
     }
     
     public void setDirection(ReactorAccessPort.PortDirection direction) {
