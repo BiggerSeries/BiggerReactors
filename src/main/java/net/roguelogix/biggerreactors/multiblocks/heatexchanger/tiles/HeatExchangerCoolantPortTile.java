@@ -50,21 +50,21 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
     }
     
     private IPhosphophylliteFluidHandler HETank;
-
+    
     public void setHETank(IPhosphophylliteFluidHandler HETank) {
         this.HETank = HETank;
     }
-
+    
     private boolean inlet = true;
     private boolean condenser = true;
-
+    
     public void setInlet(boolean inlet) {
         this.inlet = inlet;
         world.setBlockState(this.getPos(), this.getBlockState().with(PORT_DIRECTION, inlet));
         markDirty();
     }
     
-    public void setInletOtherOutlet(boolean inlet){
+    public void setInletOtherOutlet(boolean inlet) {
         controller.setInletPort(this, inlet);
     }
     
@@ -88,7 +88,7 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
         }
         return HETank.tankCount();
     }
-
+    
     @Override
     public long tankCapacity(int tank) {
         if (HETank == null) {
@@ -96,7 +96,7 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
         }
         return HETank.tankCapacity(tank);
     }
-
+    
     @Nonnull
     @Override
     public Fluid fluidTypeInTank(int tank) {
@@ -105,7 +105,16 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
         }
         return HETank.fluidTypeInTank(tank);
     }
-
+    
+    @Nullable
+    @Override
+    public CompoundNBT fluidTagInTank(int tank) {
+        if (HETank == null) {
+            return null;
+        }
+        return HETank.fluidTagInTank(tank);
+    }
+    
     @Override
     public long fluidAmountInTank(int tank) {
         if (HETank == null) {
@@ -113,7 +122,7 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
         }
         return HETank.fluidAmountInTank(tank);
     }
-
+    
     @Override
     public boolean fluidValidForTank(int tank, @Nonnull Fluid fluid) {
         if (HETank == null) {
@@ -121,33 +130,33 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
         }
         return HETank.fluidValidForTank(tank, fluid);
     }
-
+    
     @Override
-    public long fill(@Nonnull Fluid fluid, long amount, boolean simulate) {
+    public long fill(@Nonnull Fluid fluid, @Nullable CompoundNBT tag, long amount, boolean simulate) {
         if (HETank == null || !inlet) {
             return 0;
         }
-        return HETank.fill(fluid, amount, simulate);
+        return HETank.fill(fluid, null, amount, simulate);
     }
-
+    
     @Override
-    public long drain(@Nonnull Fluid fluid, long amount, boolean simulate) {
+    public long drain(@Nonnull Fluid fluid, @Nullable CompoundNBT tag, long amount, boolean simulate) {
         if (HETank == null || inlet) {
             return 0;
         }
-        return HETank.drain(fluid, amount, simulate);
+        return HETank.drain(fluid, null, amount, simulate);
     }
     
     
     private static final PhosphophylliteFluidStack fluidStack = new PhosphophylliteFluidStack();
     
-    public long pushFluid(){
-        if(fluidOutputCapability.isPresent() && !inlet){
+    public long pushFluid() {
+        if (fluidOutputCapability.isPresent() && !inlet) {
             IFluidHandler handler = fluidOutputCapability.orElse(EMPTY_TANK);
             fluidStack.setFluid(HETank.fluidTypeInTank(1));
-            fluidStack.setAmount(HETank.drain(fluidStack.getRawFluid(), HETank.fluidAmountInTank(1), true));
+            fluidStack.setAmount(HETank.drain(fluidStack.getRawFluid(), null, HETank.fluidAmountInTank(1), true));
             int filled = handler.fill(fluidStack, FluidAction.EXECUTE);
-            return HETank.drain(fluidStack.getRawFluid(), filled, false);
+            return HETank.drain(fluidStack.getRawFluid(), null, filled, false);
         }
         return 0;
     }

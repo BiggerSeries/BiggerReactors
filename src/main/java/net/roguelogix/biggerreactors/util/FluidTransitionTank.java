@@ -64,6 +64,12 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
         return Fluids.EMPTY;
     }
     
+    @Nullable
+    @Override
+    public CompoundNBT fluidTagInTank(int tank) {
+        return null;
+    }
+    
     @Override
     public long fluidAmountInTank(int tank) {
         if (tank == IN_TANK) {
@@ -99,7 +105,10 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
     }
     
     @Override
-    public long fill(@Nonnull Fluid fluid, long amount, boolean simulate) {
+    public long fill(@Nonnull Fluid fluid, @Nullable CompoundNBT tag, long amount, boolean simulate) {
+        if (tag != null) {
+            return 0;
+        }
         return fill(fluid, amount, simulate, activeTransition);
     }
     
@@ -130,8 +139,8 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
     }
     
     @Override
-    public long drain(@Nonnull Fluid fluid, long amount, boolean simulate) {
-        if (activeTransition == null) {
+    public long drain(@Nonnull Fluid fluid, @Nullable CompoundNBT tag, long amount, boolean simulate) {
+        if (activeTransition == null || tag != null) {
             return 0;
         }
         if (fluid == outFluid || (condenser ? activeTransition.liquids.contains(fluid) : activeTransition.gases.contains(fluid))) {
@@ -206,7 +215,7 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
     protected void transitionUpdate() {
     }
     
-    public FluidTransitionRegistry.FluidTransition activeTransition(){
+    public FluidTransitionRegistry.FluidTransition activeTransition() {
         return activeTransition;
     }
     

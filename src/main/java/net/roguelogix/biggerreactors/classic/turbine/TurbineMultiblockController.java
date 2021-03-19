@@ -434,7 +434,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
             if (simulation.fluidTank().liquidAmount() < 0) {
                 break;
             }
-            simulation.fluidTank().drain(Fluids.WATER, coolantPort.pushFluid(), false);
+            simulation.fluidTank().drain(Fluids.WATER, null, coolantPort.pushFluid(), false);
         }
         
         if (Phosphophyllite.tickNumber() % 10 == 0) {

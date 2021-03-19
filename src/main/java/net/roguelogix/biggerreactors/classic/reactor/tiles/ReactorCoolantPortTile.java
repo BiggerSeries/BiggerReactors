@@ -100,6 +100,15 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
         return transitionTank.fluidTypeInTank(tank);
     }
     
+    @Nullable
+    @Override
+    public CompoundNBT fluidTagInTank(int tank) {
+        if (transitionTank == null) {
+            return null;
+        }
+        return transitionTank.fluidTagInTank(tank);
+    }
+    
     @Override
     public long fluidAmountInTank(int tank) {
         if (transitionTank == null) {
@@ -117,19 +126,19 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
     }
     
     @Override
-    public long fill(@Nonnull Fluid fluid, long amount, boolean simulate) {
+    public long fill(@Nonnull Fluid fluid, @Nullable CompoundNBT tag, long amount, boolean simulate) {
         if (transitionTank == null || direction != INLET) {
             return 0;
         }
-        return transitionTank.fill(fluid, amount, simulate);
+        return transitionTank.fill(fluid, tag, amount, simulate);
     }
     
     @Override
-    public long drain(@Nonnull Fluid fluid, long amount, boolean simulate) {
+    public long drain(@Nonnull Fluid fluid, @Nullable CompoundNBT tag, long amount, boolean simulate) {
         if (transitionTank == null || direction == INLET) {
             return 0;
         }
-        return transitionTank.drain(fluid, amount, simulate);
+        return transitionTank.drain(fluid, tag, amount, simulate);
     }
     
     

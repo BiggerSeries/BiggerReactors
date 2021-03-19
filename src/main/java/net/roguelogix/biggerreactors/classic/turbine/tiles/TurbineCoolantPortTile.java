@@ -102,6 +102,15 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphop
         return transitionTank.fluidTypeInTank(tank);
     }
     
+    @Nullable
+    @Override
+    public CompoundNBT fluidTagInTank(int tank) {
+        if (transitionTank == null) {
+            return null;
+        }
+        return transitionTank.fluidTagInTank(tank);
+    }
+    
     @Override
     public long fluidAmountInTank(int tank) {
         if (transitionTank == null) {
@@ -119,19 +128,19 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphop
     }
     
     @Override
-    public long fill(@Nonnull Fluid fluid, long amount, boolean simulate) {
+    public long fill(@Nonnull Fluid fluid, @Nullable CompoundNBT tag, long amount, boolean simulate) {
         if (transitionTank == null || direction != INLET) {
             return 0;
         }
-        return transitionTank.fill(fluid, amount, simulate);
+        return transitionTank.fill(fluid, null, amount, simulate);
     }
     
     @Override
-    public long drain(@Nonnull Fluid fluid, long amount, boolean simulate) {
+    public long drain(@Nonnull Fluid fluid, @Nullable CompoundNBT tag, long amount, boolean simulate) {
         if (transitionTank == null || direction == INLET) {
             return 0;
         }
-        return transitionTank.drain(fluid, amount, simulate);
+        return transitionTank.drain(fluid, null, amount, simulate);
     }
     
     public long pushFluid() {
@@ -141,9 +150,9 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphop
         if (waterOutput.isPresent()) {
             IFluidHandler handler = waterOutput.orElse(EMPTY_TANK);
             fluidStack.setFluid(transitionTank.liquidType());
-            fluidStack.setAmount(transitionTank.drain(fluidStack.getRawFluid(), transitionTank.liquidAmount(), true));
+            fluidStack.setAmount(transitionTank.drain(fluidStack.getRawFluid(), null, transitionTank.liquidAmount(), true));
             int filled = handler.fill(fluidStack, FluidAction.EXECUTE);
-            return transitionTank.drain(fluidStack.getRawFluid(), filled, false);
+            return transitionTank.drain(fluidStack.getRawFluid(), null, filled, false);
 //        } else if (steamGasOutput != null && steamGasOutput.isPresent()) {
 //            if (!transitionTank.vaporType().getTags().contains(new ResourceLocation("forge:steam"))) {
 //                return 0;
