@@ -1,5 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles;
 
+import mekanism.api.chemical.gas.IGasHandler;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.CompoundNBT;
@@ -7,16 +8,16 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.roguelogix.phosphophyllite.fluids.FluidHandlerWrapper;
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
-import net.roguelogix.phosphophyllite.fluids.PhosphophylliteFluidStack;
-import net.roguelogix.phosphophyllite.multiblock.generic.IAssemblyAttemptedTile;
+import net.roguelogix.phosphophyllite.fluids.MekanismGasWrappers;
 import net.roguelogix.phosphophyllite.multiblock.generic.IOnAssemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.generic.IOnDisassemblyTile;
-import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 import net.roguelogix.phosphophyllite.registry.TileSupplier;
 import net.roguelogix.phosphophyllite.util.BlockStates;
@@ -24,6 +25,7 @@ import net.roguelogix.phosphophyllite.util.BlockStates;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import static net.roguelogix.biggerreactors.classic.turbine.blocks.TurbineCoolantPort.PortDirection.INLET;
 import static net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.HeatExchangerCoolantPortBlock.CONDENSER;
 import static net.roguelogix.phosphophyllite.util.BlockStates.PORT_DIRECTION;
 
@@ -40,11 +42,17 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
         super(TYPE);
     }
     
+    @CapabilityInject(IGasHandler.class)
+    public static Capability<IGasHandler> GAS_HANDLER_CAPABILITY = null;
+    
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
             return fluidHandlerCapability().cast();
+        }
+        if (cap == GAS_HANDLER_CAPABILITY) {
+            return LazyOptional.of(() -> MekanismGasWrappers.wrap(this)).cast();
         }
         return super.getCapability(cap, side);
     }
@@ -148,27 +156,35 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
     }
     
     
-    private static final PhosphophylliteFluidStack fluidStack = new PhosphophylliteFluidStack();
-    
     public long pushFluid() {
-        if (fluidOutputCapability.isPresent() && !inlet) {
-            IFluidHandler handler = fluidOutputCapability.orElse(EMPTY_TANK);
-            fluidStack.setFluid(HETank.fluidTypeInTank(1));
-            fluidStack.setAmount(HETank.drain(fluidStack.getRawFluid(), null, HETank.fluidAmountInTank(1), true));
-            int filled = handler.fill(fluidStack, FluidAction.EXECUTE);
-            return HETank.drain(fluidStack.getRawFluid(), null, filled, false);
+        if (!connected || inlet) {
+            return 0;
+        }
+        if (handlerOptional.isPresent()) {
+            Fluid fluid = HETank.fluidTypeInTank(1);
+            long amount = HETank.fluidAmountInTank(1);
+            amount = HETank.drain(fluid, null, amount, true);
+            amount = handler.fill(fluid, null, amount, false);
+            amount = HETank.drain(fluid, null, amount, false);
+            return amount;
+        } else {
+            handlerOptional = LazyOptional.empty();
+            handler = null;
+            connected = false;
         }
         return 0;
     }
     
     private boolean connected = false;
     Direction outputDirection = null;
-    LazyOptional<IFluidHandler> fluidOutputCapability = LazyOptional.empty();
+    LazyOptional<?> handlerOptional = LazyOptional.empty();
+    IPhosphophylliteFluidHandler handler = null;
     FluidTank EMPTY_TANK = new FluidTank(0);
     
     @SuppressWarnings("DuplicatedCode")
     public void neighborChanged() {
-        fluidOutputCapability = LazyOptional.empty();
+        handlerOptional = LazyOptional.empty();
+        handler = null;
         if (outputDirection == null) {
             connected = false;
             return;
@@ -180,29 +196,20 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
             return;
         }
         connected = false;
-        fluidOutputCapability = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, outputDirection.getOpposite());
-        if (fluidOutputCapability.isPresent()) {
-            // just gonna assume its fine
+        LazyOptional<IFluidHandler> waterOutput = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, outputDirection.getOpposite());
+        if (waterOutput.isPresent()) {
             connected = true;
-//            IFluidHandler handler = steamOutput.orElse(EMPTY_TANK);
-//            for (int i = 0; i < handler.getTanks(); i++) {
-//                if (handler.isFluidValid(i, steam)) {
-//                    connected = true;
-//                    break;
-//                }
-//            }
+            handlerOptional = waterOutput;
+            handler = FluidHandlerWrapper.wrap(waterOutput.orElse(EMPTY_TANK));
+        } else if (GAS_HANDLER_CAPABILITY != null) {
+            LazyOptional<IGasHandler> gasOptional = te.getCapability(GAS_HANDLER_CAPABILITY, outputDirection.getOpposite());
+            if (gasOptional.isPresent()) {
+                IGasHandler gasHandler = gasOptional.orElse(MekanismGasWrappers.EMPTY_TANK);
+                connected = true;
+                handlerOptional = gasOptional;
+                handler = MekanismGasWrappers.wrap(gasHandler);
+            }
         }
-//        if (GAS_HANDLER_CAPABILITY != null) {
-//            steamGasOutput = te.getCapability(GAS_HANDLER_CAPABILITY, steamOutputDirection.getOpposite());
-//            if (steamGasOutput.isPresent()) {
-//                IGasHandler handler = steamGasOutput.orElse(ReactorGasHandler.EMPTY_TANK);
-//                if (ReactorGasHandler.isValidHandler(handler)) {
-//                    connected = true;
-//                }
-//            }
-//        }
-        
-        connected = connected && ((fluidOutputCapability != null && fluidOutputCapability.isPresent()) /*|| (steamGasOutput != null && steamGasOutput.isPresent())*/);
     }
     
     @Override
