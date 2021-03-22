@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "biggerreactors:block/heat_exchanger/computer_port"
+    }
+  }
+}

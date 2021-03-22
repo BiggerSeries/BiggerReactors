@@ -28,6 +28,8 @@ import javax.annotation.Nonnull;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static net.roguelogix.phosphophyllite.multiblock.generic.ConnectedTextureStates.*;
 
@@ -43,8 +45,8 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         interiorValidator = block -> block instanceof AirBlock;
     }
     
-    private final Set<HeatExchangerCondensorChannelTile> condenserChannels = new LinkedHashSet<>();
-    private final Set<HeatExchangerEvaporatorChannelTile> evaporatorChannels = new LinkedHashSet<>();
+    public final Set<HeatExchangerCondensorChannelTile> condenserChannels = new LinkedHashSet<>();
+    public final Set<HeatExchangerEvaporatorChannelTile> evaporatorChannels = new LinkedHashSet<>();
     private final Set<HeatExchangerCoolantPortTile> coolantPorts = new LinkedHashSet<>();
     
     private boolean validate() {
@@ -157,19 +159,20 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         }
     }
     
-    private final FluidTransitionTank evaporatorTank = new FluidTransitionTank(false);
-    private final FluidTransitionTank condenserTank = new FluidTransitionTank(true);
+    public final ReadWriteLock locks = new ReentrantReadWriteLock();
     
+    public final FluidTransitionTank evaporatorTank = new FluidTransitionTank(false);
+    public final FluidTransitionTank condenserTank = new FluidTransitionTank(true);
     
-    private final HeatBody ambientHeatBody = new HeatBody();
-    private final HeatBody airHeatBody = new HeatBody();
-    private final HeatBody condenserHeatBody = new HeatBody();
-    private final HeatBody evaporatorHeatBody = new HeatBody();
+    public final HeatBody ambientHeatBody = new HeatBody();
+    public final HeatBody airHeatBody = new HeatBody();
+    public final HeatBody condenserHeatBody = new HeatBody();
+    public final HeatBody evaporatorHeatBody = new HeatBody();
     
-    private double channelRFKT;
-    private double evaporatorAirRFKT;
-    private double condenserAirRFKT;
-    private double airAmbientRFKT;
+    public double channelRFKT;
+    public double evaporatorAirRFKT;
+    public double condenserAirRFKT;
+    public double airAmbientRFKT;
     
     @Override
     protected void onAssembled() {
