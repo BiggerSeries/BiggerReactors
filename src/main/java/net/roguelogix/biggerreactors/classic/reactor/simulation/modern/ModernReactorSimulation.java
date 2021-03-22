@@ -151,11 +151,14 @@ public class ModernReactorSimulation implements IReactorSimulation {
         
         casingToCoolantSystemRFKT = 2 * (x * y + x * z + z * y);
         
+        int manifoldCount = 0;
+        
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
                 for (int k = 0; k < z; k++) {
                     ReactorModeratorRegistry.IModeratorProperties properties = moderatorProperties[i][j][k];
                     if (properties instanceof CoolantTank) {
+                        manifoldCount++;
                         // its a manifold here, need to consider its surface area
                         for (Vector3i axisDirection : axisDirections) {
                             int neighborX = i + axisDirection.x;
@@ -188,6 +191,7 @@ public class ModernReactorSimulation implements IReactorSimulation {
             battery.setCapacity((((long) (x + 2) * (y + 2) * (z + 2)) - ((long) x * y * z)) * Config.Reactor.Modern.PassiveBatteryPerExternalBlock);
         } else {
             coolantTank.perSideCapacity = controlRods.size() * y * Config.Reactor.Modern.CoolantTankAmountPerFuelRod;
+            coolantTank.perSideCapacity += manifoldCount * Config.Reactor.Modern.CoolantTankAmountPerFuelRod;
         }
         
         fuelHeat.setRfPerKelvin(controlRods.size() * y * Config.Reactor.Modern.RodFEPerUnitVolumeKelvin);
