@@ -1,282 +1,363 @@
 package net.roguelogix.biggerreactors.classic.reactor.deps;
 
-import dan200.computercraft.api.lua.IArguments;
-import dan200.computercraft.api.lua.ILuaContext;
-import dan200.computercraft.api.lua.LuaException;
-import dan200.computercraft.api.lua.MethodResult;
-import dan200.computercraft.api.peripheral.IComputerAccess;
-import dan200.computercraft.api.peripheral.IDynamicPeripheral;
+import dan200.computercraft.api.lua.LuaFunction;
 import dan200.computercraft.api.peripheral.IPeripheral;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.LazyOptional;
 import net.roguelogix.biggerreactors.classic.reactor.ReactorMultiblockController;
-import net.roguelogix.phosphophyllite.repack.org.joml.Vector3ic;
+import net.roguelogix.biggerreactors.classic.reactor.state.ReactorActivity;
+import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.function.Supplier;
 
-public class ReactorPeripheral implements IDynamicPeripheral {
+public class ReactorPeripheral implements IPeripheral {
     
-    private final Supplier<ReactorMultiblockController> controllerSupplier;
-    
-    public static LazyOptional<Object> create(@Nonnull Supplier<ReactorMultiblockController> controllerSupplier) {
+    public static LazyOptional<ReactorPeripheral> create(@Nonnull Supplier<ReactorMultiblockController> controllerSupplier) {
         return LazyOptional.of(() -> new ReactorPeripheral(controllerSupplier));
     }
     
-    public ReactorPeripheral(@Nonnull Supplier<ReactorMultiblockController> controllerSupplier) {
+    private final Supplier<ReactorMultiblockController> controllerSupplier;
+    
+    private ReactorPeripheral(Supplier<ReactorMultiblockController> controllerSupplier) {
         this.controllerSupplier = controllerSupplier;
+        battery = new Battery(controllerSupplier);
+        coolantTank = new CoolantTank(controllerSupplier);
+        fuelTank = new FuelTank(controllerSupplier);
     }
     
-    private interface ReactorLuaFunc {
-        MethodResult func(@Nullable ReactorMultiblockController reactor, @Nonnull IArguments args) throws LuaException;
-    }
-    
-    private static final HashMap<String, ReactorLuaFunc> methodHandlers;
-    private static final String[] methods;
-    
-    static {
-        methodHandlers = new HashMap<>();
-        {
-            methodHandlers.put("getConnected", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetConnected());
-                }
-                return MethodResult.of(false);
-            });
-            methodHandlers.put("getActive", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetActive());
-                }
-                return MethodResult.of(false);
-            });
-            methodHandlers.put("getNumberOfControlRods", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetNumberOfControlRods());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getEnergyStored", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetEnergyStored());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getEnergyStoredUnscaled", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetEnergyStoredUnscaled());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getMaxEnergyStored", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetMaxEnergyStored());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getFuelTemperature", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetFuelTemperature());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getCasingTemperature", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetCasingTemperature());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getFuelAmount", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetFuelAmount());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getWasteAmount", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetWasteAmount());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getReactantAmount", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetReactantAmount());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getFuelAmountMax", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetFuelAmountMax());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getControlRodName", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetControlRodName(args.getInt(0)));
-                }
-                return MethodResult.of((String) null);
-            });
-            methodHandlers.put("getControlRodLevel", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetControlRodLevel(args.getInt(0)));
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getEnergyProducedLastTick", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetEnergyProducedLastTick());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getHotFluidProducedLastTick", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetHotFluidProducedLastTick());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getMaxHotFluidProducedLastTick", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetMaxHotFluidProducedLastTick());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getCoolantType", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetCoolantType());
-                }
-                return MethodResult.of((String) null);
-            });
-            methodHandlers.put("getCoolantAmount", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetCoolantAmount());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getCoolantAmountMax", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetCoolantAmountMax());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getHotFluidType", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetHotFluidType());
-                }
-                return MethodResult.of((String) null);
-            });
-            methodHandlers.put("getHotFluidAmount", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetHotFluidAmount());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getHotFluidAmountMax", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetHotFluidAmountMax());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getFuelReactivity", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetFuelReactivity());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getFuelConsumedLastTick", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCgetFuelConsumedLastTick());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getMinimumCoordinate", (reactor, args) -> {
-                if (reactor != null) {
-                    Vector3ic coord = reactor.minCoord();
-                    return MethodResult.of(coord.x(), coord.y(), coord.z());
-                }
-                return MethodResult.of(0, 0, 0);
-            });
-            methodHandlers.put("getMaximumCoordinate", (reactor, args) -> {
-                if (reactor != null) {
-                    Vector3ic coord = reactor.maxCoord();
-                    return MethodResult.of(coord.x(), coord.y(), coord.z());
-                }
-                return MethodResult.of(0, 0, 0);
-            });
-            methodHandlers.put("getControlRodLocation", (reactor, args) -> {
-                if (reactor != null) {
-                    BlockPos coord = reactor.CCgetControlRodLocation(args.getInt(0));
-                    return MethodResult.of(coord.getX(), coord.getY(), coord.getZ());
-                }
-                return MethodResult.of(0, 0, 0);
-            });
-            methodHandlers.put("isActivelyCooled", (reactor, args) -> {
-                if (reactor != null) {
-                    return MethodResult.of(reactor.CCisActivelyCooled());
-                }
-                return MethodResult.of(false);
-            });
-            methodHandlers.put("setActive", (reactor, args) -> {
-                if (reactor != null) {
-                    reactor.CCsetActive(args.getBoolean(0));
-                }
-                return MethodResult.of();
-            });
-            methodHandlers.put("setAllControlRodLevels", (reactor, args) -> {
-                if (reactor != null) {
-                    reactor.CCsetAllControlRodLevels(args.getDouble(0));
-                }
-                return MethodResult.of();
-            });
-            methodHandlers.put("setControlRodLevel", (reactor, args) -> {
-                if (reactor != null) {
-                    reactor.CCsetControlRodLevel(args.getDouble(0), args.getInt(1));
-                }
-                return MethodResult.of();
-            });
-            methodHandlers.put("setControlRodName", (reactor, args) -> {
-                if (reactor != null) {
-                    reactor.CCsetControlRodName(args.getInt(0), args.getString(1));
-                }
-                return MethodResult.of();
-            });
-            methodHandlers.put("doEjectWaste", (reactor, args) -> {
-                if (reactor != null) {
-                    reactor.CCdoEjectWaste();
-                }
-                return MethodResult.of();
-            });
-            methodHandlers.put("doEjectFuel", (reactor, args) -> {
-                if (reactor != null) {
-                    reactor.CCdoEjectFuel();
-                }
-                return MethodResult.of();
-            });
+    @LuaFunction
+    public boolean connected() {
+        ReactorMultiblockController controller = controllerSupplier.get();
+        if (controller == null) {
+            return false;
         }
-        methods = methodHandlers.keySet().toArray(new String[0]);
+        return controller.assemblyState() != MultiblockController.AssemblyState.DISASSEMBLED;
     }
     
-    @Nonnull
-    @Override
-    public String[] getMethodNames() {
-        return methods;
-    }
-    
-    @Nonnull
-    @Override
-    public MethodResult callMethod(@Nonnull IComputerAccess computer, @Nonnull ILuaContext context, int method, @Nonnull IArguments arguments) throws LuaException {
-        ReactorLuaFunc func = methodHandlers.get(methods[method]);
-        try {
-            return func.func(controllerSupplier.get(), arguments);
-        } catch (RuntimeException e) {
-            throw new LuaException(e.getMessage());
+    @LuaFunction
+    public boolean active() {
+        ReactorMultiblockController controller = controllerSupplier.get();
+        if (controller == null) {
+            return false;
         }
+        return controller.isActive();
+    }
+    
+    @LuaFunction
+    public void setActive(boolean active) {
+        ReactorMultiblockController controller = controllerSupplier.get();
+        if (controller == null) {
+            return;
+        }
+        controller.setActive(active ? ReactorActivity.ACTIVE : ReactorActivity.INACTIVE);
+    }
+    
+    private static class Battery {
+        
+        private final Supplier<ReactorMultiblockController> controllerSupplier;
+        
+        public Battery(Supplier<ReactorMultiblockController> controllerSupplier) {
+            this.controllerSupplier = controllerSupplier;
+        }
+        
+        @LuaFunction
+        public long stored() {
+            ReactorMultiblockController controller = controllerSupplier.get();
+            if (controller == null) {
+                return 0;
+            }
+            return controller.simulation().battery().stored();
+        }
+        
+        @LuaFunction
+        public long capacity() {
+            ReactorMultiblockController controller = controllerSupplier.get();
+            if (controller == null) {
+                return 0;
+            }
+            return controller.simulation().battery().capacity();
+        }
+        
+        @LuaFunction
+        public long producedLastTick() {
+            ReactorMultiblockController controller = controllerSupplier.get();
+            if (controller == null) {
+                return 0;
+            }
+            return controller.simulation().FEProducedLastTick();
+        }
+    }
+    
+    private final Battery battery;
+    
+    @LuaFunction
+    public Battery battery() {
+        ReactorMultiblockController controller = controllerSupplier.get();
+        if (controller == null) {
+            return null;
+        }
+        if (!controller.simulation().isPassive()) {
+            return null;
+        }
+        return battery;
+    }
+    
+    public static class CoolantTank {
+        
+        private final Supplier<ReactorMultiblockController> controllerSupplier;
+        
+        public CoolantTank(Supplier<ReactorMultiblockController> controllerSupplier) {
+            this.controllerSupplier = controllerSupplier;
+        }
+        
+        @LuaFunction
+        public long coldFluidAmount() {
+            ReactorMultiblockController controller = controllerSupplier.get();
+            if (controller == null) {
+                return 0;
+            }
+            return controller.simulation().coolantTank().liquidAmount();
+        }
+        
+        @LuaFunction
+        public long hotFluidAmount() {
+            ReactorMultiblockController controller = controllerSupplier.get();
+            if (controller == null) {
+                return 0;
+            }
+            return controller.simulation().coolantTank().vaporAmount();
+        }
+        
+        @LuaFunction
+        public long capacity() {
+            ReactorMultiblockController controller = controllerSupplier.get();
+            if (controller == null) {
+                return 0;
+            }
+            return controller.simulation().coolantTank().perSideCapacity();
+        }
+
+//        @LuaFunction
+//        public double transitionPoint(){
+//            ReactorMultiblockController controller = controllerSupplier.get();
+//            if (controller == null) {
+//                return 0;
+//            }
+//            return controller.simulation().coolantTank().
+//        }
+
+//        @LuaFunction
+//        public double transitionEnergy(){
+//            ReactorMultiblockController controller = controllerSupplier.get();
+//            if (controller == null) {
+//                return 0;
+//            }
+//            return controller.simulation().coolantTank().
+//        }
+        
+        @LuaFunction
+        public long transitionedLastTick() {
+            ReactorMultiblockController controller = controllerSupplier.get();
+            if (controller == null) {
+                return 0;
+            }
+            return controller.simulation().MBProducedLastTick();
+        }
+        
+        @LuaFunction
+        public long maxTransitionedLastTick() {
+            ReactorMultiblockController controller = controllerSupplier.get();
+            if (controller == null) {
+                return 0;
+            }
+            return controller.simulation().maxMBProductionLastTick();
+        }
+    }
+    
+    
+    private final CoolantTank coolantTank;
+    
+    @LuaFunction
+    public CoolantTank coolantTank() {
+        ReactorMultiblockController controller = controllerSupplier.get();
+        if (controller == null) {
+            return null;
+        }
+        if (controller.simulation().isPassive()) {
+            return null;
+        }
+        return coolantTank;
+    }
+    
+    public static class FuelTank {
+        private final Supplier<ReactorMultiblockController> controllerSupplier;
+        
+        public FuelTank(Supplier<ReactorMultiblockController> controllerSupplier) {
+            this.controllerSupplier = controllerSupplier;
+        }
+        
+        
+        @LuaFunction
+        public long capacity() {
+            ReactorMultiblockController controller = controllerSupplier.get();
+            if (controller == null) {
+                return 0;
+            }
+            return controller.simulation().fuelTank().capacity();
+        }
+        
+        @LuaFunction
+        public long totalReactant() {
+            ReactorMultiblockController controller = controllerSupplier.get();
+            if (controller == null) {
+                return 0;
+            }
+            return controller.simulation().fuelTank().totalStored();
+        }
+        
+        @LuaFunction
+        public long fuel() {
+            ReactorMultiblockController controller = controllerSupplier.get();
+            if (controller == null) {
+                return 0;
+            }
+            return controller.simulation().fuelTank().fuel();
+        }
+        
+        @LuaFunction
+        public long waste() {
+            ReactorMultiblockController controller = controllerSupplier.get();
+            if (controller == null) {
+                return 0;
+            }
+            return controller.simulation().fuelTank().waste();
+        }
+
+//        @LuaFunction
+//        public void ejectFuel() {
+//            ReactorMultiblockController controller = controllerSupplier.get();
+//            if (controller == null) {
+//                return;
+//            }
+//            controller.ejectFuel();
+//        }
+        
+        @LuaFunction
+        public void ejectWaste() {
+            ReactorMultiblockController controller = controllerSupplier.get();
+            if (controller == null) {
+                return;
+            }
+            controller.ejectWaste();
+        }
+    
+        @LuaFunction
+        public double fuelReactivity() {
+            return controllerSupplier.get().simulation().fertility();
+        }
+    
+        @LuaFunction
+        public double burnedLastTick() {
+            return controllerSupplier.get().simulation().fuelConsumptionLastTick();
+        }
+    }
+    
+    private final FuelTank fuelTank;
+    
+    @LuaFunction
+    public FuelTank fuelTank() {
+        ReactorMultiblockController controller = controllerSupplier.get();
+        if (controller == null) {
+            return null;
+        }
+        return fuelTank;
+    }
+    
+    public static class ControlRod {
+        private final Supplier<ReactorMultiblockController> controllerSupplier;
+        private final int index;
+        private boolean isValid = true;
+        
+        public ControlRod(Supplier<ReactorMultiblockController> controllerSupplier, int index) {
+            this.controllerSupplier = controllerSupplier;
+            this.index = index;
+        }
+        
+        @LuaFunction
+        public int index() {
+            return index;
+        }
+        
+        @LuaFunction
+        public double level() {
+            return controllerSupplier.get().controlRodLevel(index);
+        }
+        
+        @LuaFunction
+        public void setLevel(double newLevel) {
+            controllerSupplier.get().setControlRodLevel(index, newLevel);
+        }
+        
+        @LuaFunction
+        public String name() {
+            return controllerSupplier.get().controlRodName(index);
+        }
+    
+        public void setName(String newName){
+            controllerSupplier.get().setControlRodName(index, newName);
+        }
+        
+        void invalidate() {
+            isValid = false;
+        }
+    }
+    
+    ArrayList<ControlRod> controlRods = new ArrayList<>();
+    
+    @LuaFunction
+    int controlRodCount() {
+        return controlRods.size();
+    }
+    
+    @LuaFunction
+    public ControlRod getControlRod(int index) {
+        return controlRods.get(index);
+    }
+    
+    @LuaFunction
+    public void setALlControlRodLevels(double newLevel){
+        controllerSupplier.get().setAllControlRodLevels(newLevel);
+    }
+    
+    public void rebuildControlRodList() {
+        controlRods.forEach(ControlRod::invalidate);
+        controlRods.clear();
+        for (int i = 0; i < controllerSupplier.get().controlRodCount(); i++) {
+            controlRods.add(new ControlRod(controllerSupplier, i));
+        }
+    }
+    
+    @LuaFunction
+    public double fuelTemperature() {
+        return controllerSupplier.get().simulation().fuelHeat();
+    }
+    
+    @LuaFunction
+    public double casingTemperature() {
+        return controllerSupplier.get().simulation().caseHeat();
+    }
+    
+    @LuaFunction
+    public double ambientTemperature() {
+        return controllerSupplier.get().simulation().ambientTemperature();
     }
     
     @Nonnull
     @Override
     public String getType() {
-        return "bigger-reactor";
+        return "BiggerReactors_Reactor_";
     }
     
     @Override

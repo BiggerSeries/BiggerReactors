@@ -72,7 +72,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
                     throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.no_control_rod_for_fuel_rod", fuelRod.getPos().getX(), fuelRod.getPos().getZ()));
                 }
             }
-    
+            
             for (ReactorManifoldTile manifold : manifolds) {
                 boolean foundNeighbor = false;
                 BlockPos pos = manifold.getPos();
@@ -80,12 +80,12 @@ public class ReactorMultiblockController extends RectangularMultiblockController
                     mutableBlockPos.setPos(pos);
                     mutableBlockPos.move(value);
                     TileEntity entity = blocks.getTile(mutableBlockPos);
-                    if (entity instanceof ReactorManifoldTile || entity instanceof ReactorCasingTile){
+                    if (entity instanceof ReactorManifoldTile || entity instanceof ReactorCasingTile) {
                         foundNeighbor = true;
                         break;
                     }
                 }
-                if(!foundNeighbor){
+                if (!foundNeighbor) {
                     throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.no_manifold_neighbor", pos.getX(), pos.getY(), pos.getZ()));
                 }
             }
@@ -209,6 +209,10 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     
     public void toggleActive() {
         setActive(reactorActivity == ReactorActivity.ACTIVE ? ReactorActivity.INACTIVE : ReactorActivity.ACTIVE);
+    }
+    
+    public boolean isActive() {
+        return reactorActivity == ReactorActivity.ACTIVE;
     }
     
     protected void read(@Nonnull CompoundNBT compound) {
@@ -482,9 +486,9 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             }
             long wastePushed = accessPort.pushWaste((int) simulation.fuelTank().waste(), false);
             forceDirty = simulation.fuelTank().extractWaste(wastePushed, false) > 0;
-        
+            
         }
-    
+        
         // outlets have already taken as much as they can, now just hose it out the inlets too
         // this will only actually do anything with items, so, we only care if there is a full ingot or more
         // if/when fluid fueling is added, only oulets will output it
@@ -548,7 +552,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         reactorState.exhaustResourceLocation = (simulation.coolantTank().vaporType() != null)
                 ? Objects.requireNonNull(simulation.coolantTank().vaporType().getRegistryName()).toString()
                 : Objects.requireNonNull(Fluids.EMPTY.getRegistryName()).toString();
-
+        
         reactorState.caseHeatStored = simulation.caseHeat();
         reactorState.fuelHeatStored = simulation.fuelHeat();
         
@@ -618,7 +622,14 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         }
     }
     
-    public double controlRdoLevel(int index) {
+    public void setControlRodLevel(int index, double newLevel) {
+        synchronized (controlRods) {
+            controlRods.get(index).setInsertion(newLevel);
+            updateControlRodLevels();
+        }
+    }
+    
+    public double controlRodLevel(int index) {
         return controlRods.get(index).getInsertion();
     }
     
@@ -629,187 +640,19 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         });
     }
     
-    // -- Mekanism compat
-    
-    public long getSteamCapacity() {
-        return simulation.coolantTank().perSideCapacity();
-    }
-    
-    public long getSteamAmount() {
-        return simulation.coolantTank().vaporAmount();
-    }
-    
-    // -- ComputerCraft API --
-    
-    public boolean CCgetConnected() {
-        return state != MultiblockController.AssemblyState.DISASSEMBLED;
-    }
-    
-    public boolean CCgetActive() {
-        return reactorActivity == ReactorActivity.ACTIVE;
-    }
-    
-    public int CCgetNumberOfControlRods() {
+    public int controlRodCount() {
         return controlRods.size();
     }
     
-    public long CCgetEnergyStored() {
-        // backwards compatible with the old CC API, which requires this assumption
-        return (simulation.battery().stored() * 10_000_000) / simulation.battery().capacity();
-    }
-    
-    public long CCgetEnergyStoredUnscaled() {
-        return simulation.battery().stored();
-    }
-    
-    public long CCgetMaxEnergyStored() {
-        return simulation.battery().capacity();
-    }
-    
-    public double CCgetFuelTemperature() {
-        return simulation.fuelHeat();
-    }
-    
-    public double CCgetCasingTemperature() {
-        return simulation.caseHeat();
-    }
-    
-    public long CCgetFuelAmount() {
-        return simulation.fuelTank().fuel();
-    }
-    
-    public long CCgetWasteAmount() {
-        return simulation.fuelTank().waste();
-    }
-    
-    public long CCgetReactantAmount() {
-        return simulation.fuelTank().totalStored();
-    }
-    
-    public long CCgetFuelAmountMax() {
-        return simulation.fuelTank().capacity();
-    }
-    
-    @Nonnull
-    public String CCgetControlRodName(int index) {
+    public String controlRodName(int index) {
         synchronized (controlRods) {
-            if (index >= controlRods.size()) {
-                throw new RuntimeException("control rod index out of bounds");
-            }
             return controlRods.get(index).getName();
         }
     }
     
-    public double CCgetControlRodLevel(int index) {
+    public void setControlRodName(int index, String newName){
         synchronized (controlRods) {
-            if (index >= controlRods.size()) {
-                throw new RuntimeException("control rod index out of bounds");
-            }
-            return controlRods.get(index).getInsertion();
+            controlRods.get(index).setName(newName);
         }
-    }
-    
-    public double CCgetEnergyProducedLastTick() {
-        return simulation.outputLastTick();
-    }
-    
-    public double CCgetHotFluidProducedLastTick() {
-        return simulation.MBProducedLastTick();
-    }
-    
-    public double CCgetMaxHotFluidProducedLastTick() {
-        if (simulation.isPassive()) {
-            return 0;
-        }
-        return simulation.maxMBProductionLastTick();
-    }
-    
-    
-    @Nullable
-    public String CCgetCoolantType() {
-        if (simulation.coolantTank().liquidAmount() == 0 || simulation.coolantTank().liquidType() == null) {
-            return null;
-        }
-        return Objects.requireNonNull(simulation.coolantTank().liquidType().getRegistryName()).toString();
-    }
-    
-    public long CCgetCoolantAmount() {
-        return simulation.coolantTank().liquidAmount();
-    }
-    
-    @Nullable
-    public String CCgetHotFluidType() {
-        if (simulation.coolantTank().vaporAmount() == 0 || simulation.coolantTank().vaporType() == null) {
-            return null;
-        }
-        return Objects.requireNonNull(simulation.coolantTank().vaporType().getRegistryName()).toString();
-    }
-    
-    public long CCgetHotFluidAmount() {
-        return simulation.coolantTank().vaporAmount();
-    }
-    
-    public double CCgetFuelReactivity() {
-        return simulation.fertility() * 100;
-    }
-    
-    public double CCgetFuelConsumedLastTick() {
-        return simulation.fuelConsumptionLastTick();
-    }
-    
-    public BlockPos CCgetControlRodLocation(int index) {
-        if (index >= controlRods.size()) {
-            throw new RuntimeException("control rod index out of bounds");
-        }
-        return controlRods.get(index).getPos();
-    }
-    
-    public boolean CCisActivelyCooled() {
-        return !simulation.isPassive();
-    }
-    
-    public void CCsetActive(boolean active) {
-        setActive(active ? ReactorActivity.ACTIVE : ReactorActivity.INACTIVE);
-    }
-    
-    public void CCsetAllControlRodLevels(double insertion) {
-        setAllControlRodLevels(insertion);
-    }
-    
-    public void CCsetControlRodLevel(double insertion, int index) {
-        synchronized (controlRods) {
-            if (index >= controlRods.size()) {
-                throw new RuntimeException("control rod index out of bounds");
-            }
-            controlRods.get(index).setInsertion(insertion);
-            updateControlRodLevels();
-        }
-    }
-    
-    public void CCsetControlRodName(int index, String name) {
-        if (index >= controlRods.size()) {
-            throw new RuntimeException("control rod index out of bounds");
-        }
-        controlRods.get(index).setName(name);
-    }
-    
-    public void CCdoEjectWaste() {
-        synchronized (accessPorts) {
-            ejectWaste();
-        }
-    }
-    
-    public void CCdoEjectFuel() {
-        synchronized (accessPorts) {
-//            ejectWaste();
-        }
-    }
-    
-    public long CCgetCoolantAmountMax() {
-        return simulation.coolantTank().perSideCapacity();
-    }
-    
-    public long CCgetHotFluidAmountMax() {
-        return simulation.coolantTank().perSideCapacity();
     }
 }

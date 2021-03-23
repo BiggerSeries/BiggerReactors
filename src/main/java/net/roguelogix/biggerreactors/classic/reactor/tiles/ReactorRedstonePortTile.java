@@ -101,11 +101,11 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements INamedCo
                     if (!wasPowered && isPowered) {
                         switch (reactorRedstonePortState.triggerMode) {
                             case 0: {
-                                controller.setAllControlRodLevels(controller.controlRdoLevel(0) + mainVal);
+                                controller.setAllControlRodLevels(controller.controlRodLevel(0) + mainVal);
                                 break;
                             }
                             case 1: {
-                                controller.setAllControlRodLevels(controller.controlRdoLevel(0) - mainVal);
+                                controller.setAllControlRodLevels(controller.controlRodLevel(0) - mainVal);
                                 break;
                             }
                             case 2: {
