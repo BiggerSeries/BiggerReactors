@@ -305,6 +305,7 @@ public class ReactorPeripheral implements IPeripheral {
             return controllerSupplier.get().controlRodName(index);
         }
     
+        @LuaFunction
         public void setName(String newName){
             controllerSupplier.get().setControlRodName(index, newName);
         }
@@ -327,7 +328,7 @@ public class ReactorPeripheral implements IPeripheral {
     }
     
     @LuaFunction
-    public void setALlControlRodLevels(double newLevel){
+    public void setAllControlRodLevels(double newLevel){
         controllerSupplier.get().setAllControlRodLevels(newLevel);
     }
     
