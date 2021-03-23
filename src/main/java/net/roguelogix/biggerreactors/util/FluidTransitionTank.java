@@ -33,6 +33,7 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
     protected Fluid outFluid;
     protected long outAmount = 0;
     
+    @Deprecated
     protected long rfTransferredLastTick;
     protected long transitionedLastTick;
     protected long maxTransitionedLastTick;
@@ -89,6 +90,7 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
         return maxTransitionedLastTick;
     }
     
+    @Deprecated
     public long rfTransferredLastTick() {
         return rfTransferredLastTick;
     }
