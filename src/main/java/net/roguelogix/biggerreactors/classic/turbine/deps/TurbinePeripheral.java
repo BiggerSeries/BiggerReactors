@@ -1,23 +1,19 @@
 package net.roguelogix.biggerreactors.classic.turbine.deps;
 
-import dan200.computercraft.api.lua.IArguments;
-import dan200.computercraft.api.lua.ILuaContext;
-import dan200.computercraft.api.lua.LuaException;
-import dan200.computercraft.api.lua.MethodResult;
-import dan200.computercraft.api.peripheral.IComputerAccess;
-import dan200.computercraft.api.peripheral.IDynamicPeripheral;
+import dan200.computercraft.api.lua.LuaFunction;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import net.minecraftforge.common.util.LazyOptional;
 import net.roguelogix.biggerreactors.classic.turbine.TurbineMultiblockController;
-import net.roguelogix.phosphophyllite.repack.org.joml.Vector3ic;
+import net.roguelogix.biggerreactors.classic.turbine.state.VentState;
+import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.HashMap;
 import java.util.function.Supplier;
 
-public class TurbinePeripheral implements IDynamicPeripheral {
+public class TurbinePeripheral implements IPeripheral {
     
+    @Nonnull
     private final Supplier<TurbineMultiblockController> controllerSupplier;
     
     public static LazyOptional<Object> create(@Nonnull Supplier<TurbineMultiblockController> controllerSupplier) {
@@ -26,207 +22,229 @@ public class TurbinePeripheral implements IDynamicPeripheral {
     
     public TurbinePeripheral(@Nonnull Supplier<TurbineMultiblockController> controllerSupplier) {
         this.controllerSupplier = controllerSupplier;
+        battery = new Battery(controllerSupplier);
+        rotor = new Rotor(controllerSupplier);
+        tank = new FluidTank(controllerSupplier);
     }
     
-    private interface TurbineLuaFunc {
-        MethodResult func(@Nullable TurbineMultiblockController Turbine, @Nonnull IArguments args) throws LuaException;
-    }
-    
-    private static final HashMap<String, TurbinePeripheral.TurbineLuaFunc> methodHandlers;
-    private static final String[] methods;
-    
-    static {
-        methodHandlers = new HashMap<>();
-        {
-            methodHandlers.put("getConnected", (turbine, args) -> {
-                if (turbine != null) {
-                    return MethodResult.of(turbine.CCgetConnected());
-                }
-                return MethodResult.of(false);
-            });
-            methodHandlers.put("getActive", (turbine, args) -> {
-                if (turbine != null) {
-                    return MethodResult.of(turbine.CCgetActive());
-                }
-                return MethodResult.of(false);
-            });
-            methodHandlers.put("getEnergyStored", (turbine, args) -> {
-                if (turbine != null) {
-                    return MethodResult.of(turbine.CCgetEnergyStored());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getMaxEnergyStored", (turbine, args) -> {
-                if (turbine != null) {
-                    return MethodResult.of(turbine.CCgetMaxEnergyStored());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("CCgetEnergyStoredUnscaled", (turbine, args) -> {
-                if (turbine != null) {
-                    return MethodResult.of(turbine.CCgetEnergyStoredUnscaled());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getRotorSpeed", (turbine, args) -> {
-                if (turbine != null) {
-                    return MethodResult.of(turbine.CCgetRotorSpeed());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getInputAmount", (turbine, args) -> {
-                if (turbine != null) {
-                    return MethodResult.of(turbine.CCgetInputAmount());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getInputType", (turbine, args) -> {
-                if (turbine != null) {
-                    return MethodResult.of(turbine.CCgetInputType());
-                }
-                return MethodResult.of((String) null);
-            });
-            methodHandlers.put("getOutputAmount", (turbine, args) -> {
-                if (turbine != null) {
-                    return MethodResult.of(turbine.CCgetOutputAmount());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getOutputType", (turbine, args) -> {
-                if (turbine != null) {
-                    return MethodResult.of(turbine.CCgetOutputType());
-                }
-                return MethodResult.of((String) null);
-            });
-            methodHandlers.put("getFluidAmountMax", (turbine, args) -> {
-                if (turbine != null) {
-                    return MethodResult.of(turbine.CCgetFluidAmountMax());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getFluidFlowRate", (turbine, args) -> {
-                if (turbine != null) {
-                    return MethodResult.of(turbine.CCgetFluidFlowRate());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getFluidFlowRateMax", (turbine, args) -> {
-                if (turbine != null) {
-                    return MethodResult.of(turbine.CCgetFluidFlowRateMax());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getFluidFlowRateMaxMax", (turbine, args) -> {
-                if (turbine != null) {
-                    return MethodResult.of(turbine.CCgetFluidFlowRateMaxMax());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getEnergyProducedLastTick", (turbine, args) -> {
-                if (turbine != null) {
-                    return MethodResult.of(turbine.CCgetEnergyProducedLastTick());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getNumberOfBlades", (turbine, args) -> {
-                if (turbine != null) {
-                    return MethodResult.of(turbine.CCgetNumberOfBlades());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getBladeEfficiency", (turbine, args) -> {
-                if (turbine != null) {
-                    return MethodResult.of(turbine.CCgetBladeEfficiency());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getRotorMass", (turbine, args) -> {
-                if (turbine != null) {
-                    return MethodResult.of(turbine.CCgetRotorMass());
-                }
-                return MethodResult.of(0);
-            });
-            methodHandlers.put("getInductorEngaged", (turbine, args) -> {
-                if (turbine != null) {
-                    return MethodResult.of(turbine.CCgetInductorEngaged());
-                }
-                return MethodResult.of(false);
-            });
-            methodHandlers.put("getMinimumCoordinate", (turbine, args) -> {
-                if (turbine != null) {
-                    Vector3ic coord = turbine.minCoord();
-                    return MethodResult.of(coord.x(), coord.y(), coord.z());
-                }
-                return MethodResult.of(0, 0, 0);
-            });
-            methodHandlers.put("getMaximumCoordinate", (turbine, args) -> {
-                if (turbine != null) {
-                    Vector3ic coord = turbine.maxCoord();
-                    return MethodResult.of(coord.x(), coord.y(), coord.z());
-                }
-                return MethodResult.of(0, 0, 0);
-            });
-            methodHandlers.put("setActive", (turbine, args) -> {
-                if (turbine != null) {
-                    turbine.CCsetActive(args.getBoolean(0));
-                }
-                return MethodResult.of();
-            });
-            methodHandlers.put("setFluidFlowRateMax", (turbine, args) -> {
-                if (turbine != null) {
-                    turbine.CCsetFluidFlowRateMax(args.getLong(0));
-                }
-                return MethodResult.of();
-            });
-            methodHandlers.put("setVentNone", (turbine, args) -> {
-                if (turbine != null) {
-                    turbine.CCsetVentNone();
-                }
-                return MethodResult.of();
-            });
-            methodHandlers.put("setVentOverflow", (turbine, args) -> {
-                if (turbine != null) {
-                    turbine.CCsetVentOverflow();
-                }
-                return MethodResult.of();
-            });
-            methodHandlers.put("setVentAll", (turbine, args) -> {
-                if (turbine != null) {
-                    turbine.CCsetVentAll();
-                }
-                return MethodResult.of();
-            });
-            methodHandlers.put("setInductorEngaged", (turbine, args) -> {
-                if (turbine != null) {
-                    turbine.CCsetInductorEngaged(args.getBoolean(0));
-                }
-                return MethodResult.of();
-            });
+    @LuaFunction
+    public boolean getConnected() {
+        if (controllerSupplier.get() == null) {
+            return false;
         }
-        methods = methodHandlers.keySet().toArray(new String[0]);
+        return controllerSupplier.get().assemblyState() == MultiblockController.AssemblyState.ASSEMBLED;
     }
     
-    @Nonnull
-    @Override
-    public String[] getMethodNames() {
-        return methods;
+    
+    @LuaFunction
+    public boolean active() {
+        return controllerSupplier.get().simulation().active();
     }
     
-    @Nonnull
-    @Override
-    public MethodResult callMethod(@Nonnull IComputerAccess computer, @Nonnull ILuaContext context, int method, @Nonnull IArguments arguments) throws LuaException {
-        TurbineLuaFunc func = methodHandlers.get(methods[method]);
-        try {
-            return func.func(controllerSupplier.get(), arguments);
-        } catch (RuntimeException e) {
-            throw new LuaException(e.getMessage());
+    @LuaFunction
+    public void setActive(boolean active) {
+        controllerSupplier.get().setActive(active);
+    }
+    
+    
+    private static class Battery {
+        
+        private final Supplier<TurbineMultiblockController> controllerSupplier;
+        
+        public Battery(Supplier<TurbineMultiblockController> controllerSupplier) {
+            this.controllerSupplier = controllerSupplier;
         }
+        
+        @LuaFunction
+        public long stored() {
+            TurbineMultiblockController controller = controllerSupplier.get();
+            if (controller == null) {
+                return 0;
+            }
+            return controller.simulation().battery().stored();
+        }
+        
+        @LuaFunction
+        public long capacity() {
+            TurbineMultiblockController controller = controllerSupplier.get();
+            if (controller == null) {
+                return 0;
+            }
+            return controller.simulation().battery().capacity();
+        }
+        
+        @LuaFunction
+        public long producedLastTick() {
+            TurbineMultiblockController controller = controllerSupplier.get();
+            if (controller == null) {
+                return 0;
+            }
+            return controller.simulation().FEGeneratedLastTick();
+        }
+    }
+    
+    private final Battery battery;
+    
+    @LuaFunction
+    public Battery battery() {
+        return battery;
+    }
+    
+    
+    public static class Rotor {
+        private final Supplier<TurbineMultiblockController> controllerSupplier;
+        
+        public Rotor(Supplier<TurbineMultiblockController> controllerSupplier) {
+            this.controllerSupplier = controllerSupplier;
+        }
+        
+        @LuaFunction
+        public double RPM() {
+            return controllerSupplier.get().simulation().RPM();
+        }
+        
+        @LuaFunction
+        public double efficiencyLastTick() {
+            return controllerSupplier.get().simulation().bladeEfficiencyLastTick();
+        }
+    }
+    
+    private final Rotor rotor;
+    
+    @LuaFunction
+    public Rotor rotor() {
+        return rotor;
+    }
+    
+    public static class FluidTank {
+        private final Supplier<TurbineMultiblockController> controllerSupplier;
+        
+        final TankFluid input;
+        final TankFluid output;
+        
+        public FluidTank(Supplier<TurbineMultiblockController> controllerSupplier) {
+            this.controllerSupplier = controllerSupplier;
+            input = new TankFluid(controllerSupplier, 0);
+            output = new TankFluid(controllerSupplier, 1);
+        }
+        
+        public static class TankFluid {
+            final Supplier<TurbineMultiblockController> controllerSupplier;
+            final int tankNum;
+            
+            public TankFluid(Supplier<TurbineMultiblockController> controllerSupplier, int tankNum) {
+                this.controllerSupplier = controllerSupplier;
+                this.tankNum = tankNum;
+            }
+            
+            @LuaFunction
+            public String name() {
+                return controllerSupplier.get().simulation().fluidTank().fluidTypeInTank(tankNum).getRegistryName().toString();
+            }
+            
+            @LuaFunction
+            public long amount() {
+                return controllerSupplier.get().simulation().fluidTank().fluidAmountInTank(tankNum);
+            }
+            
+            @LuaFunction
+            public long maxAmount() {
+                return controllerSupplier.get().simulation().fluidTank().perSideCapacity();
+            }
+        }
+        
+        @LuaFunction
+        public TankFluid input() {
+            return input;
+        }
+        
+        @LuaFunction
+        public TankFluid output() {
+            return output;
+        }
+        
+        @LuaFunction
+        public long flowLastTick() {
+            return controllerSupplier.get().simulation().flowLastTick();
+        }
+        
+        @LuaFunction
+        public long nominalFlowRate() {
+            return controllerSupplier.get().simulation().nominalFlowRate();
+        }
+        
+        @LuaFunction
+        public void setNominalFlowRate(long rate) {
+            controllerSupplier.get().simulation().setNominalFlowRate(rate);
+        }
+        
+        
+        @LuaFunction
+        public long flowRateLimit() {
+            return controllerSupplier.get().simulation().flowRateLimit();
+        }
+    }
+    
+    private final FluidTank tank;
+    
+    @LuaFunction
+    public FluidTank fluidTank() {
+        return tank;
+    }
+    
+    public static class Vent {
+        private final Supplier<TurbineMultiblockController> controllerSupplier;
+        
+        public Vent(Supplier<TurbineMultiblockController> controllerSupplier) {
+            this.controllerSupplier = controllerSupplier;
+        }
+        
+        @LuaFunction
+        boolean closed(){
+            return controllerSupplier.get().simulation().ventState() == VentState.CLOSED;
+        }
+    
+        @LuaFunction
+        boolean overflow(){
+            return controllerSupplier.get().simulation().ventState() == VentState.OVERFLOW;
+        }
+    
+        @LuaFunction
+        boolean all(){
+            return controllerSupplier.get().simulation().ventState() == VentState.ALL;
+        }
+    
+        @LuaFunction
+        void setClosed(){
+            controllerSupplier.get().simulation().setVentState(VentState.CLOSED);
+        }
+    
+        @LuaFunction
+        void setOverflow(){
+            controllerSupplier.get().simulation().setVentState(VentState.OVERFLOW);
+        }
+    
+        @LuaFunction
+        void setAll(){
+            controllerSupplier.get().simulation().setVentState(VentState.ALL);
+        }
+    }
+    
+    
+    @LuaFunction
+    boolean coilEngaged(){
+        return controllerSupplier.get().simulation().coilEngaged();
+    }
+    
+    @LuaFunction
+    void setCoilEngaged(boolean engaged){
+        controllerSupplier.get().simulation().setCoilEngaged(engaged);
     }
     
     @Nonnull
     @Override
     public String getType() {
-        return "bigger-turbine";
+        return "BiggerReactors_Turbine_";
     }
     
     @Override
