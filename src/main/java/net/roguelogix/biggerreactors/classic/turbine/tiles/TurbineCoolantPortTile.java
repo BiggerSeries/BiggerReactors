@@ -146,8 +146,8 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphop
         }
         if (handlerOptional.isPresent()) {
     
-            Fluid fluid = transitionTank.vaporType();
-            long amount = transitionTank.vaporAmount();
+            Fluid fluid = transitionTank.liquidType();
+            long amount = transitionTank.liquidAmount();
             amount = transitionTank.drain(fluid, null, amount, true);
             amount = handler.fill(fluid, null, amount, false);
             amount = transitionTank.drain(fluid, null, amount, false);
