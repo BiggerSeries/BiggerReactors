@@ -8,12 +8,10 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
-import net.roguelogix.biggerreactors.classic.reactor.ReactorMultiblockController;
 import net.roguelogix.phosphophyllite.energy.EnergyStorageWrapper;
 import net.roguelogix.phosphophyllite.energy.IPhosphophylliteEnergyStorage;
 import net.roguelogix.phosphophyllite.multiblock.generic.IOnAssemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.generic.IOnDisassemblyTile;
-import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 import net.roguelogix.phosphophyllite.registry.TileSupplier;
 import net.roguelogix.phosphophyllite.util.BlockStates;
@@ -25,7 +23,7 @@ import static net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorPowerT
 
 
 @RegisterTileEntity(name = "reactor_power_tap")
-public class ReactorPowerTapTile extends ReactorBaseTile implements IEnergyStorage, IOnAssemblyTile, IOnDisassemblyTile {
+public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophylliteEnergyStorage, IOnAssemblyTile, IOnDisassemblyTile {
     @RegisterTileEntity.Type
     public static TileEntityType<?> TYPE;
     
@@ -71,39 +69,44 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IEnergyStora
     }
     
     @Override
-    public int receiveEnergy(int maxReceive, boolean simulate) {
+    public long insertEnergy(long maxInsert, boolean simulate) {
         return 0;
     }
     
     @Override
-    public int extractEnergy(int maxExtract, boolean simulate) {
-        return 0;
+    public long extractEnergy(long maxExtract, boolean simulate) {
+        long toExtract = controller.simulation().battery().stored();
+        toExtract = Math.max(maxExtract, toExtract);
+        if (!simulate) {
+            toExtract = controller.simulation().battery().extract(toExtract);
+        }
+        return toExtract;
     }
     
     @Override
-    public int getEnergyStored() {
+    public long energyStored() {
         if (controller != null) {
-            return (int) controller.simulation().battery().stored();
+            return controller.simulation().battery().stored();
         }
         return 0;
     }
     
     @Override
-    public int getMaxEnergyStored() {
+    public long maxEnergyStored() {
         if (controller != null) {
-            return (int) controller.simulation().battery().capacity();
+            return controller.simulation().battery().capacity();
         }
         return 0;
+    }
+    
+    @Override
+    public boolean canInsert() {
+        return false;
     }
     
     @Override
     public boolean canExtract() {
-        return false;
-    }
-    
-    @Override
-    public boolean canReceive() {
-        return false;
+        return true;
     }
     
     @SuppressWarnings("DuplicatedCode")
@@ -122,7 +125,7 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IEnergyStora
         }
         LazyOptional<IEnergyStorage> energyOptional = te.getCapability(CapabilityEnergy.ENERGY, powerOutputDirection.getOpposite());
         setConnected(energyOptional.isPresent());
-        if(connected){
+        if (connected) {
             outputOptional = energyOptional;
             output = EnergyStorageWrapper.wrap(energyOptional.orElse(ENERGY_ZERO));
         }

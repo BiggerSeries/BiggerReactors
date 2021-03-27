@@ -21,7 +21,7 @@ import static net.roguelogix.biggerreactors.classic.turbine.blocks.TurbinePowerT
 
 
 @RegisterTileEntity(name = "turbine_power_tap")
-public class TurbinePowerTapTile extends TurbineBaseTile implements IEnergyStorage {
+public class TurbinePowerTapTile extends TurbineBaseTile implements IPhosphophylliteEnergyStorage {
     @RegisterTileEntity.Type
     public static TileEntityType<?> TYPE;
     
@@ -67,41 +67,45 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IEnergyStora
     }
     
     @Override
-    public int receiveEnergy(int maxReceive, boolean simulate) {
+    public long insertEnergy(long maxInsert, boolean simulate) {
         return 0;
     }
     
     @Override
-    public int extractEnergy(int maxExtract, boolean simulate) {
-        return 0;
+    public long extractEnergy(long maxExtract, boolean simulate) {
+        long toExtract = controller.simulation().battery().stored();
+        toExtract = Math.max(maxExtract, toExtract);
+        if (!simulate) {
+            toExtract = controller.simulation().battery().extract(toExtract);
+        }
+        return toExtract;
     }
     
     @Override
-    public int getEnergyStored() {
+    public long energyStored() {
         if (controller != null) {
-            return (int) controller.simulation().battery().stored();
+            return controller.simulation().battery().stored();
         }
         return 0;
     }
     
     @Override
-    public int getMaxEnergyStored() {
+    public long maxEnergyStored() {
         if (controller != null) {
-            return (int) controller.simulation().battery().capacity();
+            return controller.simulation().battery().capacity();
         }
         return 0;
+    }
+    
+    @Override
+    public boolean canInsert() {
+        return false;
     }
     
     @Override
     public boolean canExtract() {
-        return false;
+        return true;
     }
-    
-    @Override
-    public boolean canReceive() {
-        return false;
-    }
-    
     @SuppressWarnings("DuplicatedCode")
     public void updateOutputDirection() {
         if (controller.assemblyState() == MultiblockController.AssemblyState.DISASSEMBLED) {
