@@ -2,7 +2,6 @@ package net.roguelogix.biggerreactors.registries;
 
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.tags.ITag;
 import net.minecraft.tags.ITagCollection;
 import net.minecraft.util.ResourceLocation;
@@ -21,18 +20,20 @@ public class FluidTransitionRegistry {
     public static class FluidTransition {
         public final List<Fluid> liquids;
         public final List<Fluid> gases;
-        public final long latentHeat;
+        public final double latentHeat;
         public final double boilingPoint;
         public final double liquidRFMKT;
         public final double gasRFMKT;
+        public final double turbineMultiplier;
         
-        public FluidTransition(List<Fluid> liquids, List<Fluid> gases, long latentHeat, double boilingPoint, double liquidRFMKT, double gasRFMKT) {
+        public FluidTransition(List<Fluid> liquids, List<Fluid> gases, double latentHeat, double boilingPoint, double liquidRFMKT, double gasRFMKT, double turbineMultiplier) {
             this.liquids = Collections.unmodifiableList(liquids);
             this.gases = Collections.unmodifiableList(gases);
             this.latentHeat = latentHeat;
             this.boilingPoint = boilingPoint;
             this.liquidRFMKT = liquidRFMKT;
             this.gasRFMKT = gasRFMKT;
+            this.turbineMultiplier = turbineMultiplier;
         }
     }
     
@@ -59,7 +60,7 @@ public class FluidTransitionRegistry {
         public ResourceLocation gas;
         
         @DataLoader.Range("(0,)")
-        public long latentHeat;
+        public double latentHeat;
         
         @DataLoader.Range("(20,)")
         public double boilingPoint;
@@ -69,6 +70,10 @@ public class FluidTransitionRegistry {
         
         @DataLoader.Range("(0,)")
         public double gasThermalConductivity;
+    
+    
+        @DataLoader.Range("[0,)")
+        public double turbineMultiplier;
     }
     
     private static final DataLoader<FluidTransitionJsonData> loader = new DataLoader<>(FluidTransitionJsonData.class);
@@ -134,7 +139,7 @@ public class FluidTransitionRegistry {
                 continue;
             }
             
-            FluidTransition transition = new FluidTransition(liquids, gases, transitionData.latentHeat, transitionData.boilingPoint, transitionData.liquidThermalConductivity, transitionData.gasThermalConductivity);
+            FluidTransition transition = new FluidTransition(liquids, gases, transitionData.latentHeat, transitionData.boilingPoint, transitionData.liquidThermalConductivity, transitionData.gasThermalConductivity, transitionData.turbineMultiplier);
             
             for (Fluid liquid : transition.liquids) {
                 if (liquidTransitions.put(liquid, transition) != null) {

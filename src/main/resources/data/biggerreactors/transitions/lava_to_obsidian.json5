@@ -12,8 +12,9 @@
   // thermal conductivity, in watts per metre-kelvin
   gasThermalConductivity: 1.0,
   // latent heat of vaporization, in rf/mb
-  latentHeat: 1.5,
+  latentHeat: 15,
   // boiling point, in K
   boilingPoint: 1273.15,
-
+  // effect multiplier in a turbine, 0 to disable for a turbine
+  turbineMultiplier: 0,
 }

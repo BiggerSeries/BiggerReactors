@@ -1,7 +1,11 @@
 package net.roguelogix.biggerreactors.classic.turbine.simulation.modern;
 
+import net.minecraft.fluid.Fluid;
 import net.roguelogix.biggerreactors.classic.turbine.simulation.ITurbineFluidTank;
+import net.roguelogix.biggerreactors.registries.FluidTransitionRegistry;
 import net.roguelogix.biggerreactors.util.FluidTransitionTank;
+
+import javax.annotation.Nullable;
 
 public class FluidTank extends FluidTransitionTank implements ITurbineFluidTank {
     public FluidTank() {
@@ -37,5 +41,15 @@ public class FluidTank extends FluidTransitionTank implements ITurbineFluidTank 
         }
         
         return transitionedLastTick;
+    }
+    
+    @Nullable
+    @Override
+    protected FluidTransitionRegistry.FluidTransition selectTransition(Fluid fluid) {
+        FluidTransitionRegistry.FluidTransition transition = super.selectTransition(fluid);
+        if(transition != null && transition.turbineMultiplier == 0){
+            return null;
+        }
+        return transition;
     }
 }

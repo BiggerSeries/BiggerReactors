@@ -202,7 +202,7 @@ public class ModernTurbineSimulation implements ITurbineSimulation {
             
             rotorEfficiencyLastTick = effectiveFlowRate / flowRate;
             
-            rotorEnergy += fluidTank.activeTransition().latentHeat * effectiveFlowRate * 2.5;
+            rotorEnergy += fluidTank.activeTransition().latentHeat * effectiveFlowRate * fluidTank.activeTransition().turbineMultiplier;
             
         } else {
             fluidTank.flow(0, ventState != VentState.CLOSED);

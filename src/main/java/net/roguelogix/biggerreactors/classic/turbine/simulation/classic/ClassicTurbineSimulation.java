@@ -204,7 +204,7 @@ public class ClassicTurbineSimulation implements ITurbineSimulation {
                     
                 }
                 rotorEfficiencyLastTick = liftTorque / steamIn;
-                liftTorque *= Config.Turbine.Classic.LatentHeatMultiplier * fluidTank.activeTransition().latentHeat;
+                liftTorque *= fluidTank.activeTransition().turbineMultiplier * fluidTank.activeTransition().latentHeat;
             }
             
             double inductionTorque = coilEngaged ? rotorSpeed * inductorDragCoefficient * coilSize : 0f;
