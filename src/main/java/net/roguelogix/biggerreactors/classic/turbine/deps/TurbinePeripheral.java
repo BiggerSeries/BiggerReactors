@@ -1,11 +1,14 @@
 package net.roguelogix.biggerreactors.classic.turbine.deps;
 
+import cpw.mods.modlauncher.api.LamdbaExceptionUtils;
+import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.lua.LuaFunction;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import net.minecraftforge.common.util.LazyOptional;
 import net.roguelogix.biggerreactors.classic.turbine.TurbineMultiblockController;
 import net.roguelogix.biggerreactors.classic.turbine.state.VentState;
 import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
+import org.squiddev.cobalt.Lua;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -14,14 +17,17 @@ import java.util.function.Supplier;
 public class TurbinePeripheral implements IPeripheral {
     
     @Nonnull
-    private final Supplier<TurbineMultiblockController> controllerSupplier;
+    private final Supplier<TurbineMultiblockController> rawControllerSupplier;
+    @Nonnull
+    private final LamdbaExceptionUtils.Supplier_WithExceptions<TurbineMultiblockController, LuaException> controllerSupplier;
     
     public static LazyOptional<Object> create(@Nonnull Supplier<TurbineMultiblockController> controllerSupplier) {
         return LazyOptional.of(() -> new TurbinePeripheral(controllerSupplier));
     }
     
-    public TurbinePeripheral(@Nonnull Supplier<TurbineMultiblockController> controllerSupplier) {
-        this.controllerSupplier = controllerSupplier;
+    public TurbinePeripheral(@Nonnull Supplier<TurbineMultiblockController> rawControllerSupplier) {
+        this.rawControllerSupplier = rawControllerSupplier;
+        this.controllerSupplier = this::getController;
         battery = new Battery(controllerSupplier);
         rotor = new Rotor(controllerSupplier);
         tank = new FluidTank(controllerSupplier);
@@ -29,57 +35,53 @@ public class TurbinePeripheral implements IPeripheral {
     
     @LuaFunction
     public boolean getConnected() {
-        if (controllerSupplier.get() == null) {
+        if (rawControllerSupplier.get() == null) {
             return false;
         }
-        return controllerSupplier.get().assemblyState() == MultiblockController.AssemblyState.ASSEMBLED;
+        return rawControllerSupplier.get().assemblyState() == MultiblockController.AssemblyState.ASSEMBLED;
     }
     
+    @Nonnull
+    private TurbineMultiblockController getController() throws LuaException {
+        TurbineMultiblockController controller = rawControllerSupplier.get();
+        if (controller == null || controller.assemblyState() != MultiblockController.AssemblyState.ASSEMBLED) {
+            throw new LuaException("Invalid multiblock controller");
+        }
+        return controller;
+    }
     
     @LuaFunction
-    public boolean active() {
+    public boolean active() throws LuaException {
         return controllerSupplier.get().simulation().active();
     }
     
     @LuaFunction
-    public void setActive(boolean active) {
+    public void setActive(boolean active) throws LuaException {
         controllerSupplier.get().setActive(active);
     }
     
     
     private static class Battery {
         
-        private final Supplier<TurbineMultiblockController> controllerSupplier;
+        private final LamdbaExceptionUtils.Supplier_WithExceptions<TurbineMultiblockController, LuaException> controllerSupplier;
         
-        public Battery(Supplier<TurbineMultiblockController> controllerSupplier) {
+        public Battery(LamdbaExceptionUtils.Supplier_WithExceptions<TurbineMultiblockController, LuaException> controllerSupplier) {
             this.controllerSupplier = controllerSupplier;
         }
         
         @LuaFunction
-        public long stored() {
-            TurbineMultiblockController controller = controllerSupplier.get();
-            if (controller == null) {
-                return 0;
-            }
-            return controller.simulation().battery().stored();
+        public long stored() throws LuaException {
+            return controllerSupplier.get().simulation().battery().stored();
         }
         
         @LuaFunction
-        public long capacity() {
-            TurbineMultiblockController controller = controllerSupplier.get();
-            if (controller == null) {
-                return 0;
-            }
-            return controller.simulation().battery().capacity();
+        public long capacity() throws LuaException {
+            return controllerSupplier.get().simulation().battery().capacity();
         }
         
         @LuaFunction
-        public long producedLastTick() {
-            TurbineMultiblockController controller = controllerSupplier.get();
-            if (controller == null) {
-                return 0;
-            }
-            return controller.simulation().FEGeneratedLastTick();
+        public long producedLastTick() throws LuaException {
+            return controllerSupplier.get().simulation().FEGeneratedLastTick();
         }
     }
     
@@ -92,19 +94,19 @@ public class TurbinePeripheral implements IPeripheral {
     
     
     public static class Rotor {
-        private final Supplier<TurbineMultiblockController> controllerSupplier;
+        private final LamdbaExceptionUtils.Supplier_WithExceptions<TurbineMultiblockController, LuaException> controllerSupplier;
         
-        public Rotor(Supplier<TurbineMultiblockController> controllerSupplier) {
+        public Rotor(LamdbaExceptionUtils.Supplier_WithExceptions<TurbineMultiblockController, LuaException> controllerSupplier) {
             this.controllerSupplier = controllerSupplier;
         }
         
         @LuaFunction
-        public double RPM() {
+        public double RPM() throws LuaException {
             return controllerSupplier.get().simulation().RPM();
         }
         
         @LuaFunction
-        public double efficiencyLastTick() {
+        public double efficiencyLastTick() throws LuaException {
             return controllerSupplier.get().simulation().bladeEfficiencyLastTick();
         }
     }
@@ -117,38 +119,38 @@ public class TurbinePeripheral implements IPeripheral {
     }
     
     public static class FluidTank {
-        private final Supplier<TurbineMultiblockController> controllerSupplier;
+        private final LamdbaExceptionUtils.Supplier_WithExceptions<TurbineMultiblockController, LuaException> controllerSupplier;
         
         final TankFluid input;
         final TankFluid output;
         
-        public FluidTank(Supplier<TurbineMultiblockController> controllerSupplier) {
+        public FluidTank(LamdbaExceptionUtils.Supplier_WithExceptions<TurbineMultiblockController, LuaException> controllerSupplier) {
             this.controllerSupplier = controllerSupplier;
             input = new TankFluid(controllerSupplier, 0);
             output = new TankFluid(controllerSupplier, 1);
         }
         
         public static class TankFluid {
-            final Supplier<TurbineMultiblockController> controllerSupplier;
+            final LamdbaExceptionUtils.Supplier_WithExceptions<TurbineMultiblockController, LuaException> controllerSupplier;
             final int tankNum;
             
-            public TankFluid(Supplier<TurbineMultiblockController> controllerSupplier, int tankNum) {
+            public TankFluid(LamdbaExceptionUtils.Supplier_WithExceptions<TurbineMultiblockController, LuaException> controllerSupplier, int tankNum) {
                 this.controllerSupplier = controllerSupplier;
                 this.tankNum = tankNum;
             }
             
             @LuaFunction
-            public String name() {
+            public String name() throws LuaException {
                 return controllerSupplier.get().simulation().fluidTank().fluidTypeInTank(tankNum).getRegistryName().toString();
             }
             
             @LuaFunction
-            public long amount() {
+            public long amount() throws LuaException {
                 return controllerSupplier.get().simulation().fluidTank().fluidAmountInTank(tankNum);
             }
             
             @LuaFunction
-            public long maxAmount() {
+            public long maxAmount() throws LuaException {
                 return controllerSupplier.get().simulation().fluidTank().perSideCapacity();
             }
         }
@@ -164,23 +166,23 @@ public class TurbinePeripheral implements IPeripheral {
         }
         
         @LuaFunction
-        public long flowLastTick() {
+        public long flowLastTick() throws LuaException {
             return controllerSupplier.get().simulation().flowLastTick();
         }
         
         @LuaFunction
-        public long nominalFlowRate() {
+        public long nominalFlowRate() throws LuaException {
             return controllerSupplier.get().simulation().nominalFlowRate();
         }
         
         @LuaFunction
-        public void setNominalFlowRate(long rate) {
+        public void setNominalFlowRate(long rate) throws LuaException {
             controllerSupplier.get().simulation().setNominalFlowRate(rate);
         }
         
         
         @LuaFunction
-        public long flowRateLimit() {
+        public long flowRateLimit() throws LuaException {
             return controllerSupplier.get().simulation().flowRateLimit();
         }
     }
@@ -193,51 +195,51 @@ public class TurbinePeripheral implements IPeripheral {
     }
     
     public static class Vent {
-        private final Supplier<TurbineMultiblockController> controllerSupplier;
+        private final LamdbaExceptionUtils.Supplier_WithExceptions<TurbineMultiblockController, LuaException> controllerSupplier;
         
-        public Vent(Supplier<TurbineMultiblockController> controllerSupplier) {
+        public Vent(LamdbaExceptionUtils.Supplier_WithExceptions<TurbineMultiblockController, LuaException> controllerSupplier) {
             this.controllerSupplier = controllerSupplier;
         }
         
         @LuaFunction
-        boolean closed(){
+        boolean closed() throws LuaException {
             return controllerSupplier.get().simulation().ventState() == VentState.CLOSED;
         }
-    
+        
         @LuaFunction
-        boolean overflow(){
+        boolean overflow() throws LuaException {
             return controllerSupplier.get().simulation().ventState() == VentState.OVERFLOW;
         }
-    
+        
         @LuaFunction
-        boolean all(){
+        boolean all() throws LuaException {
             return controllerSupplier.get().simulation().ventState() == VentState.ALL;
         }
-    
+        
         @LuaFunction
-        void setClosed(){
+        void setClosed() throws LuaException {
             controllerSupplier.get().simulation().setVentState(VentState.CLOSED);
         }
-    
+        
         @LuaFunction
-        void setOverflow(){
+        void setOverflow() throws LuaException {
             controllerSupplier.get().simulation().setVentState(VentState.OVERFLOW);
         }
-    
+        
         @LuaFunction
-        void setAll(){
+        void setAll() throws LuaException {
             controllerSupplier.get().simulation().setVentState(VentState.ALL);
         }
     }
     
     
     @LuaFunction
-    boolean coilEngaged(){
+    boolean coilEngaged() throws LuaException {
         return controllerSupplier.get().simulation().coilEngaged();
     }
     
     @LuaFunction
-    void setCoilEngaged(boolean engaged){
+    void setCoilEngaged(boolean engaged) throws LuaException {
         controllerSupplier.get().simulation().setCoilEngaged(engaged);
     }
     
@@ -249,11 +251,14 @@ public class TurbinePeripheral implements IPeripheral {
     
     @Override
     public boolean equals(@Nullable IPeripheral other) {
+        if(other == this){
+            return true;
+        }
         if (other instanceof TurbinePeripheral) {
-            if (controllerSupplier.get() == null) {
+            if (rawControllerSupplier.get() == null) {
                 return false;
             }
-            return ((TurbinePeripheral) other).controllerSupplier.get() == controllerSupplier.get();
+            return ((TurbinePeripheral) other).rawControllerSupplier.get() == rawControllerSupplier.get();
         }
         return false;
     }

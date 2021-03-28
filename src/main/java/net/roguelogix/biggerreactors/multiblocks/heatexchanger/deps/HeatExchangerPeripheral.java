@@ -1,10 +1,13 @@
 package net.roguelogix.biggerreactors.multiblocks.heatexchanger.deps;
 
+import cpw.mods.modlauncher.api.LamdbaExceptionUtils;
+import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.lua.LuaFunction;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import net.minecraftforge.common.util.LazyOptional;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.HeatExchangerMultiblockController;
 import net.roguelogix.biggerreactors.util.FluidTransitionTank;
+import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
 import net.roguelogix.phosphophyllite.util.HeatBody;
 
 import javax.annotation.Nonnull;
@@ -14,8 +17,9 @@ import java.util.function.Supplier;
 
 public class HeatExchangerPeripheral implements IPeripheral {
     
-    final Supplier<HeatExchangerMultiblockController> controllerSupplier;
-    final Supplier<Lock> lockSupplier;
+    final Supplier<HeatExchangerMultiblockController> rawControllerSupplier;
+    final LamdbaExceptionUtils.Supplier_WithExceptions<HeatExchangerMultiblockController, LuaException> controllerSupplier;
+    final LamdbaExceptionUtils.Supplier_WithExceptions<Lock, LuaException> lockSupplier;
     
     final Channel condenser;
     final Channel evaporator;
@@ -25,24 +29,37 @@ public class HeatExchangerPeripheral implements IPeripheral {
         return LazyOptional.of(() -> new HeatExchangerPeripheral(controllerSupplier));
     }
     
-    public HeatExchangerPeripheral(Supplier<HeatExchangerMultiblockController> controllerSupplier) {
-        this.controllerSupplier = controllerSupplier;
+    public HeatExchangerPeripheral(Supplier<HeatExchangerMultiblockController> rawControllerSupplier) {
+        this.rawControllerSupplier = rawControllerSupplier;
+        this.controllerSupplier = this::getController;
         lockSupplier = () -> controllerSupplier.get().locks.readLock();
         condenser = new Channel(() -> controllerSupplier.get().condenserHeatBody, () -> controllerSupplier.get().condenserTank, () -> controllerSupplier.get().condenserChannels.size(), lockSupplier);
         evaporator = new Channel(() -> controllerSupplier.get().evaporatorHeatBody, () -> controllerSupplier.get().evaporatorTank, () -> controllerSupplier.get().evaporatorChannels.size(), lockSupplier);
         internalEnvironment = new InternalEnvironment(() -> controllerSupplier.get().airHeatBody);
     }
     
+    
+    @Nonnull
+    private HeatExchangerMultiblockController getController() throws LuaException {
+        HeatExchangerMultiblockController controller = rawControllerSupplier.get();
+        if (controller == null || controller.assemblyState() != MultiblockController.AssemblyState.ASSEMBLED) {
+            throw new LuaException("Invalid multiblock controller");
+        }
+        return controller;
+    }
+    
+    
     public static class Channel {
-        final Supplier<HeatBody> heatBodySupplier;
-        final Supplier<FluidTransitionTank> transitionTankSupplier;
-        final Supplier<Integer> countSupplier;
-        final Supplier<Lock> lockSupplier;
+        final LamdbaExceptionUtils.Supplier_WithExceptions<HeatBody, LuaException> heatBodySupplier;
+        final LamdbaExceptionUtils.Supplier_WithExceptions<FluidTransitionTank, LuaException> transitionTankSupplier;
+        final LamdbaExceptionUtils.Supplier_WithExceptions<Integer, LuaException> countSupplier;
+        final LamdbaExceptionUtils.Supplier_WithExceptions<Lock, LuaException> lockSupplier;
         
         final ChannelFluid inputFluid;
         final ChannelFluid outputFluid;
         
-        Channel(Supplier<HeatBody> heatBodySupplier, Supplier<FluidTransitionTank> transitionTankSupplier, Supplier<Integer> countSupplier, Supplier<Lock> lockSupplier) {
+        Channel(LamdbaExceptionUtils.Supplier_WithExceptions<HeatBody, LuaException> heatBodySupplier, LamdbaExceptionUtils.Supplier_WithExceptions<FluidTransitionTank, LuaException> transitionTankSupplier, 
+                LamdbaExceptionUtils.Supplier_WithExceptions<Integer, LuaException> countSupplier, LamdbaExceptionUtils.Supplier_WithExceptions<Lock, LuaException> lockSupplier) {
             this.heatBodySupplier = heatBodySupplier;
             this.transitionTankSupplier = transitionTankSupplier;
             this.countSupplier = countSupplier;
@@ -52,37 +69,37 @@ public class HeatExchangerPeripheral implements IPeripheral {
         }
         
         public static class ChannelFluid {
-            final Supplier<FluidTransitionTank> transitionTankSupplier;
+            final LamdbaExceptionUtils.Supplier_WithExceptions<FluidTransitionTank, LuaException> transitionTankSupplier;
             final int tankNum;
             
-            public ChannelFluid(Supplier<FluidTransitionTank> transitionTankSupplier, int tankNum) {
+            public ChannelFluid(LamdbaExceptionUtils.Supplier_WithExceptions<FluidTransitionTank, LuaException> transitionTankSupplier, int tankNum) {
                 this.transitionTankSupplier = transitionTankSupplier;
                 this.tankNum = tankNum;
             }
             
             @LuaFunction
-            public String name() {
+            public String name() throws LuaException {
                 return transitionTankSupplier.get().fluidTypeInTank(tankNum).getRegistryName().toString();
             }
             
             @LuaFunction
-            public long amount() {
+            public long amount() throws LuaException {
                 return transitionTankSupplier.get().fluidAmountInTank(tankNum);
             }
             
             @LuaFunction
-            public long maxAmount() {
+            public long maxAmount() throws LuaException {
                 return transitionTankSupplier.get().perSideCapacity;
             }
         }
         
         @LuaFunction
-        public double temperature() {
+        public double temperature() throws LuaException {
             return heatBodySupplier.get().temperature();
         }
         
         @LuaFunction
-        public double rfPerKelvin() {
+        public double rfPerKelvin() throws LuaException {
             return heatBodySupplier.get().rfPerKelvin();
         }
         
@@ -97,17 +114,17 @@ public class HeatExchangerPeripheral implements IPeripheral {
         }
         
         @LuaFunction
-        public long transitionedLastTick() {
+        public long transitionedLastTick() throws LuaException {
             return transitionTankSupplier.get().transitionedLastTick();
         }
         
         @LuaFunction
-        public long maxTransitionedLastTick() {
+        public long maxTransitionedLastTick() throws LuaException {
             return transitionTankSupplier.get().maxTransitionedLastTick();
         }
         
         @LuaFunction
-        public double transitionEnergy() {
+        public double transitionEnergy() throws LuaException {
             return transitionTankSupplier.get().activeTransition().latentHeat;
         }
     }
@@ -123,19 +140,19 @@ public class HeatExchangerPeripheral implements IPeripheral {
     }
     
     public static class InternalEnvironment {
-        final Supplier<HeatBody> heatBodySupplier;
+        final LamdbaExceptionUtils.Supplier_WithExceptions<HeatBody, LuaException> heatBodySupplier;
         
-        public InternalEnvironment(Supplier<HeatBody> heatBodySupplier) {
+        public InternalEnvironment(LamdbaExceptionUtils.Supplier_WithExceptions<HeatBody, LuaException> heatBodySupplier) {
             this.heatBodySupplier = heatBodySupplier;
         }
         
         @LuaFunction
-        public double temperature() {
+        public double temperature() throws LuaException {
             return heatBodySupplier.get().temperature();
         }
         
         @LuaFunction
-        public double rfPerKelvin() {
+        public double rfPerKelvin() throws LuaException {
             return heatBodySupplier.get().rfPerKelvin();
         }
         
@@ -147,27 +164,27 @@ public class HeatExchangerPeripheral implements IPeripheral {
     }
     
     @LuaFunction
-    public double ambientTemperature() {
+    public double ambientTemperature() throws LuaException {
         return controllerSupplier.get().ambientHeatBody.temperature();
     }
     
     @LuaFunction
-    public double ambientInternalRFKT() {
+    public double ambientInternalRFKT() throws LuaException {
         return controllerSupplier.get().airAmbientRFKT;
     }
     
     @LuaFunction
-    public double condenserInternalRFKT() {
+    public double condenserInternalRFKT() throws LuaException {
         return controllerSupplier.get().condenserAirRFKT;
     }
     
     @LuaFunction
-    public double evaporatorInternalRFKT() {
+    public double evaporatorInternalRFKT() throws LuaException {
         return controllerSupplier.get().evaporatorAirRFKT;
     }
     
     @LuaFunction
-    public double condenserEvaporatorRFKT() {
+    public double condenserEvaporatorRFKT() throws LuaException {
         return controllerSupplier.get().channelRFKT;
     }
     
@@ -178,7 +195,16 @@ public class HeatExchangerPeripheral implements IPeripheral {
     }
     
     @Override
-    public boolean equals(@Nullable IPeripheral iPeripheral) {
-        return iPeripheral == this;
+    public boolean equals(@Nullable IPeripheral other) {
+        if(other == this){
+            return true;
+        }
+        if (other instanceof HeatExchangerPeripheral) {
+            if (rawControllerSupplier.get() == null) {
+                return false;
+            }
+            return ((HeatExchangerPeripheral) other).rawControllerSupplier.get() == rawControllerSupplier.get();
+        }
+        return false;
     }
 }
