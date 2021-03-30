@@ -118,7 +118,7 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
             connectedSides += state.get(WEST_CONNECTED_PROPERTY) ? 1 : 0;
             
             if (connectedSides != 2) {
-                throw new ValidationError("all fluid channels must have exactly two connections");
+                throw new ValidationError("all fluid channels must have exactly two connections " + tile.getPos());
             }
         });
     }
