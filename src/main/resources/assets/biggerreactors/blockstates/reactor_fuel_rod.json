@@ -1,5 +1,12 @@
 {
   "multipart": [
+
+    {
+      "apply": {
+        "model": "biggerreactors:block/reactor/fuel_rod"
+      }
+    },
+
     {
       "when": {
         "fuel_level": "1"
@@ -255,12 +262,6 @@
       },
       "apply": {
         "model": "biggerreactors:block/reactor/fuel_rod/waste/level_16"
-      }
-    },
-
-    {
-      "apply": {
-        "model": "biggerreactors:block/reactor/fuel_rod"
       }
     }
   ]
