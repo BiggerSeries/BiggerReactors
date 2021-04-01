@@ -17,10 +17,12 @@ import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchang
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerCoolantPortTile;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerCondensorChannelTile;
 import net.roguelogix.biggerreactors.util.FluidTransitionTank;
+import net.roguelogix.phosphophyllite.Phosphophyllite;
 import net.roguelogix.phosphophyllite.multiblock.generic.ValidationError;
 import net.roguelogix.phosphophyllite.multiblock.generic.Validator;
 import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblockController;
 import net.roguelogix.phosphophyllite.repack.org.joml.Vector3i;
+import net.roguelogix.phosphophyllite.util.BlockStates;
 import net.roguelogix.phosphophyllite.util.HeatBody;
 import net.roguelogix.phosphophyllite.util.Util;
 
@@ -93,6 +95,73 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         
         verifyFluidChannels(condenserChannels);
         verifyFluidChannels(evaporatorChannels);
+    
+        long tick = Phosphophyllite.tickNumber();
+        
+        // *not that i dont have to march them anyway*
+        for (HeatExchangerCoolantPortTile coolantPort : coolantPorts) {
+            if(coolantPort.lastCheckedTick == tick){
+                continue;
+            }
+            mutableBlockPos.setPos(coolantPort.getPos());
+            Direction oldDirection = coolantPort.getBlockState().get(BlockStates.FACING);
+            while (true){
+                mutableBlockPos.move(oldDirection.getOpposite());
+                HeatExchangerBaseTile channelTile = blocks.getTile(mutableBlockPos);
+                if(channelTile instanceof HeatExchangerCoolantPortTile){
+                    break;
+                }
+                if(!(channelTile instanceof HeatExchangerCondensorChannelTile || channelTile instanceof HeatExchangerEvaporatorChannelTile)){
+                   throw new ValidationError("Unknown channel verification error, this shouldn't be possible " + mutableBlockPos);
+                }
+                if(channelTile instanceof HeatExchangerCondensorChannelTile){
+                    ((HeatExchangerCondensorChannelTile) channelTile).lastCheckedTick = tick;
+                }
+                if(channelTile instanceof HeatExchangerEvaporatorChannelTile){
+                    ((HeatExchangerEvaporatorChannelTile) channelTile).lastCheckedTick = tick;
+                }
+                BlockState channelState = channelTile.getBlockState();
+                if(oldDirection != Direction.UP && channelState.get(TOP_CONNECTED_PROPERTY)){
+                    oldDirection = Direction.DOWN;
+                    continue;
+                }
+                if(oldDirection != Direction.DOWN && channelState.get(BOTTOM_CONNECTED_PROPERTY)){
+                    oldDirection = Direction.UP;
+                    continue;
+                }
+    
+                if(oldDirection != Direction.NORTH && channelState.get(NORTH_CONNECTED_PROPERTY)){
+                    oldDirection = Direction.SOUTH;
+                    continue;
+                }
+                if(oldDirection != Direction.SOUTH && channelState.get(SOUTH_CONNECTED_PROPERTY)){
+                    oldDirection = Direction.NORTH;
+                    continue;
+                }
+                
+                if(oldDirection != Direction.EAST && channelState.get(EAST_CONNECTED_PROPERTY)){
+                    oldDirection = Direction.WEST;
+                    continue;
+                }
+                if(oldDirection != Direction.WEST && channelState.get(WEST_CONNECTED_PROPERTY)){
+                    oldDirection = Direction.EAST;
+                    continue;
+                }
+                throw new ValidationError("Unknown channel verification error, this shouldn't be possible " + mutableBlockPos);
+            }
+        }
+    
+        for (HeatExchangerCondensorChannelTile condenserChannel : condenserChannels) {
+            if(condenserChannel.lastCheckedTick != tick){
+                throw new ValidationError("Dangling channel " + condenserChannel.getPos());
+            }
+        }
+    
+        for (HeatExchangerEvaporatorChannelTile evaporatorChannel : evaporatorChannels) {
+            if(evaporatorChannel.lastCheckedTick != tick){
+                throw new ValidationError("Dangling channel " + evaporatorChannel.getPos());
+            }
+        }
         
         Util.chunkCachedBlockStateIteration(minCoord(), maxCoord(), world, (block, pos) -> {
             if (block.getBlock() instanceof ReactorBaseBlock) {

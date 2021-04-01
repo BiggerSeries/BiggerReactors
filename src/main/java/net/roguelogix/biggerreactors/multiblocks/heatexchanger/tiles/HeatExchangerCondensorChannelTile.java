@@ -7,6 +7,8 @@ import net.roguelogix.phosphophyllite.registry.TileSupplier;
 @RegisterTileEntity(name = "heat_exchanger_condenser_channel")
 public class HeatExchangerCondensorChannelTile extends HeatExchangerBaseTile {
     
+    public long lastCheckedTick;
+    
     @RegisterTileEntity.Type
     public static TileEntityType<?> TYPE;
     

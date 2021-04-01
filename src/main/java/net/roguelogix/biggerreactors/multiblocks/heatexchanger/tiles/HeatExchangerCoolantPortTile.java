@@ -32,6 +32,8 @@ import static net.roguelogix.phosphophyllite.util.BlockStates.PORT_DIRECTION;
 @RegisterTileEntity(name = "heat_exchanger_coolant_port")
 public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implements IPhosphophylliteFluidHandler, IOnAssemblyTile, IOnDisassemblyTile {
     
+    public long lastCheckedTick;
+    
     @RegisterTileEntity.Type
     public static TileEntityType<?> TYPE;
     
