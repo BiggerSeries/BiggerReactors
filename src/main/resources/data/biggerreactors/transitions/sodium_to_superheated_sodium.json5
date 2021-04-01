@@ -14,7 +14,7 @@
     // latent heat of vaporization, in rf/mb
     latentHeat: 0.4,
     // boiling point, in K
-    boilingPoint: 373.15,
+    boilingPoint: 473.15,
     // effect multiplier in a turbine, 0 to disable for a turbine
     turbineMultiplier: 0,
 }
