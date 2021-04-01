@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "up" : "biggerreactors:block/reactor/manifold/connected_br",
+    "down" : "phosphophyllite:block/transparent",
+    "north" : "biggerreactors:block/reactor/manifold/connected_bl",
+    "south" : "phosphophyllite:block/transparent",
+    "east" : "phosphophyllite:block/transparent",
+    "west" : "biggerreactors:block/reactor/manifold/connected_br",
+    "particle": "biggerreactors:block/reactor/manifold/connected_none"
+  }
+}
