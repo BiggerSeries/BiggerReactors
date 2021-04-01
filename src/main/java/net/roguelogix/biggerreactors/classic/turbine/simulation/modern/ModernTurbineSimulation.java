@@ -114,9 +114,9 @@ public class ModernTurbineSimulation implements ITurbineSimulation {
     
     @Override
     public void updateInternalValues() {
-        inductorDragCoefficient *= Config.Turbine.Classic.CoilDragMultiplier;
+        inductorDragCoefficient *= Config.Turbine.Modern.CoilDragMultiplier;
         
-        battery.setCapacity((coilSize + 1) * Config.Turbine.Classic.BatterySizePerCoilBlock);
+        battery.setCapacity((coilSize + 1) * Config.Turbine.Modern.BatterySizePerCoilBlock);
         
         if (coilSize <= 0) {
             inductionEfficiency = 0;
@@ -129,7 +129,7 @@ public class ModernTurbineSimulation implements ITurbineSimulation {
             inductorDragCoefficient = (inductorDragCoefficient / coilSize);
         }
         
-        fluidTank.perSideCapacity = (((long) x * y * z) - ((long) rotorShafts + coilSize)) * Config.Turbine.Classic.TankVolumePerBlock;
+        fluidTank.perSideCapacity = (((long) x * y * z) - ((long) rotorShafts + coilSize)) * Config.Turbine.Modern.TankVolumePerBlock;
     }
     
     @Override

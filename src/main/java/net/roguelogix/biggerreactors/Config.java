@@ -241,6 +241,10 @@ public class Config {
             public static double FrictionDragMultiplier = 0.0001;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static double AerodynamicDragMultiplier = 0.0001;
+            @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+            public static double CoilDragMultiplier = 10;
+            @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+            public static long BatterySizePerCoilBlock = 300_000;
         }
     }
     
