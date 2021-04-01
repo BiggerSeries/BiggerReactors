@@ -10,6 +10,9 @@
   "fluid.biggerreactors.fluid_obsidian": "Liquid Obsidian",
   "item.biggerreactors.fluid_obsidian_bucket": "Liquid Obsidian Bucket",
 
+  "fluid.biggerreactors.superheated_sodium": "Liquid Superheated Sodium",
+  "item.biggerreactors.superheated_sodium_bucket": "Liquid Superheated Sodium Bucket",
+
   "block.biggerreactors.yellorite_ore": "Yellorite Ore",
   "block.biggerreactors.yellorium_block": "Yellorium Block",
   "item.biggerreactors.yellorium_dust": "Yellorium Dust",

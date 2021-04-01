@@ -1,0 +1,20 @@
+{
+    // Resource location type
+    liquidType: "registry",
+    // resource location
+    liquid: "mekanism:sodium",
+    // thermal conductivity, in watts per metre-kelvin
+    liquidThermalConductivity: 1.2,
+    // resource location type
+    gasType: "tag",
+    // resource location
+    gas: "forge:superheated_sodium",
+    // thermal conductivity, in watts per metre-kelvin
+    gasThermalConductivity: 1.2,
+    // latent heat of vaporization, in rf/mb
+    latentHeat: 0.4,
+    // boiling point, in K
+    boilingPoint: 373.15,
+    // effect multiplier in a turbine, 0 to disable for a turbine
+    turbineMultiplier: 0,
+}
