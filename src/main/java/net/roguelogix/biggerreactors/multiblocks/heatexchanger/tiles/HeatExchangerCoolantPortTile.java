@@ -236,6 +236,7 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
     @Override
     public void onDisassembly() {
         outputDirection = null;
+        HETank = null;
         neighborChanged();
     }
 }

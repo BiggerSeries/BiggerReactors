@@ -278,6 +278,7 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphop
     @Override
     public void onDisassembly() {
         waterOutputDirection = null;
+        transitionTank = null;
         neighborChanged();
     }
 }

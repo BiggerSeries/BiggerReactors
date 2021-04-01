@@ -285,6 +285,7 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
     @Override
     public void onDisassembly() {
         steamOutputDirection = null;
+        transitionTank = null;
         neighborChanged();
     }
 }
