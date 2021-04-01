@@ -9,7 +9,7 @@ import net.roguelogix.phosphophyllite.registry.RegisterFluid;
 
 import javax.annotation.Nonnull;
 
-@RegisterFluid(name = "fluid_yellorium", registerBucket = true)
+//@RegisterFluid(name = "fluid_yellorium", registerBucket = true)
 public class FluidYellorium extends PhosphophylliteFluid {
     
     @RegisterFluid.Instance
