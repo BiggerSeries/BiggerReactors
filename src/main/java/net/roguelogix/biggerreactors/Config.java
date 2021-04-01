@@ -146,7 +146,7 @@ public class Config {
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static float PassiveCoolingTransferEfficiency = 0.2f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static long CoolantTankAmountPerFuelRod = 100;
+            public static long CoolantTankAmountPerFuelRod = 10_000;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static double RadiationBlocksToLive = 4;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
@@ -156,7 +156,7 @@ public class Config {
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static float FuelReactivity = 1.05f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static double FissionEventsPerFuelUnit = 0.01f;
+            public static double FissionEventsPerFuelUnit = 0.1f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static float FEPerRadiationUnit = 10f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
