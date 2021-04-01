@@ -15,4 +15,6 @@ public class ReactorManifoldTile extends ReactorBaseTile {
     public ReactorManifoldTile() {
         super(TYPE);
     }
+    
+    public long lastCheckedTick = Long.MIN_VALUE;
 }

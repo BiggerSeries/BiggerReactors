@@ -12,6 +12,8 @@ import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorBaseBlock;
 import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorFuelRod;
+import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorGlass;
+import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorManifold;
 import net.roguelogix.biggerreactors.classic.reactor.simulation.IReactorSimulation;
 import net.roguelogix.biggerreactors.classic.reactor.simulation.classic.ClassicReactorSimulation;
 import net.roguelogix.biggerreactors.classic.reactor.simulation.modern.ModernReactorSimulation;
@@ -20,6 +22,7 @@ import net.roguelogix.biggerreactors.classic.reactor.state.ReactorState;
 import net.roguelogix.biggerreactors.classic.reactor.state.ReactorType;
 import net.roguelogix.biggerreactors.classic.reactor.tiles.*;
 import net.roguelogix.phosphophyllite.Phosphophyllite;
+import net.roguelogix.phosphophyllite.multiblock.generic.ConnectedTextureStates;
 import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
 import net.roguelogix.phosphophyllite.multiblock.generic.ValidationError;
 import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblockController;
@@ -73,20 +76,48 @@ public class ReactorMultiblockController extends RectangularMultiblockController
                 }
             }
             
+            ArrayList<ReactorManifoldTile> manifoldsToCheck = new ArrayList<>();
+            
             for (ReactorManifoldTile manifold : manifolds) {
-                boolean foundNeighbor = false;
                 BlockPos pos = manifold.getPos();
-                for (Direction value : Direction.values()) {
-                    mutableBlockPos.setPos(pos);
-                    mutableBlockPos.move(value);
-                    TileEntity entity = blocks.getTile(mutableBlockPos);
-                    if (entity instanceof ReactorManifoldTile || entity instanceof ReactorCasingTile) {
-                        foundNeighbor = true;
-                        break;
+                
+                if (pos.getX() == minCoord().x() + 1 || pos.getX() == maxCoord().x() - 1 ||
+                        pos.getY() == minCoord().y() + 1 || pos.getY() == maxCoord().y() - 1 ||
+                        pos.getZ() == minCoord().z() + 1 || pos.getZ() == maxCoord().z() - 1) {
+                    for (Direction value : Direction.values()) {
+                        mutableBlockPos.setPos(pos);
+                        mutableBlockPos.move(value);
+                        TileEntity edgeTile = blocks.getTile(mutableBlockPos);
+                        if(edgeTile == null){
+                            continue;
+                        }
+                        if(!(edgeTile instanceof ReactorGlassTile) && ((ReactorBaseBlock)edgeTile.getBlockState().getBlock()).isGoodForExterior()){
+                            manifoldsToCheck.add(manifold);
+                            break;
+                        }
                     }
                 }
-                if (!foundNeighbor) {
-                    throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.no_manifold_neighbor", pos.getX(), pos.getY(), pos.getZ()));
+            }
+            
+            while (!manifoldsToCheck.isEmpty()) {
+                ReactorManifoldTile manifoldTile = manifoldsToCheck.remove(manifoldsToCheck.size() - 1);
+                manifoldTile.lastCheckedTick = tick;
+                for (Direction value : Direction.values()) {
+                    mutableBlockPos.setPos(manifoldTile.getPos());
+                    mutableBlockPos.move(value);
+                    ReactorBaseTile tile = blocks.getTile(mutableBlockPos);
+                    if (tile instanceof ReactorManifoldTile) {
+                        if (((ReactorManifoldTile) tile).lastCheckedTick != tick) {
+                            manifoldsToCheck.add((ReactorManifoldTile) tile);
+                        }
+                    }
+                }
+            }
+            
+            for (ReactorManifoldTile manifold : manifolds) {
+                if (manifold.lastCheckedTick != tick) {
+                    BlockPos pos = manifold.getPos();
+                    throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.dangling_manifold", pos.getX(), pos.getY(), pos.getZ()));
                 }
             }
             
@@ -650,7 +681,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         }
     }
     
-    public void setControlRodName(int index, String newName){
+    public void setControlRodName(int index, String newName) {
         synchronized (controlRods) {
             controlRods.get(index).setName(newName);
         }
