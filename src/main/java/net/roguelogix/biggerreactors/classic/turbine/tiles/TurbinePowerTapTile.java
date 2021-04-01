@@ -73,6 +73,9 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IPhosphophyl
     
     @Override
     public long extractEnergy(long maxExtract, boolean simulate) {
+        if(controller == null || controller.assemblyState() != MultiblockController.AssemblyState.ASSEMBLED){
+            return 0;
+        }
         long toExtract = controller.simulation().battery().stored();
         toExtract = Math.max(maxExtract, toExtract);
         if (!simulate) {

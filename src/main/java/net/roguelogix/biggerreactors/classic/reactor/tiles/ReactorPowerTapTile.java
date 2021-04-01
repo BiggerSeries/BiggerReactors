@@ -12,6 +12,7 @@ import net.roguelogix.phosphophyllite.energy.EnergyStorageWrapper;
 import net.roguelogix.phosphophyllite.energy.IPhosphophylliteEnergyStorage;
 import net.roguelogix.phosphophyllite.multiblock.generic.IOnAssemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.generic.IOnDisassemblyTile;
+import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 import net.roguelogix.phosphophyllite.registry.TileSupplier;
 import net.roguelogix.phosphophyllite.util.BlockStates;
@@ -75,6 +76,9 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophyl
     
     @Override
     public long extractEnergy(long maxExtract, boolean simulate) {
+        if(controller == null || controller.assemblyState() != MultiblockController.AssemblyState.ASSEMBLED){
+            return 0;
+        }
         long toExtract = controller.simulation().battery().stored();
         toExtract = Math.max(maxExtract, toExtract);
         if (!simulate) {
