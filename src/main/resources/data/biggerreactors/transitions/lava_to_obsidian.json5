@@ -2,7 +2,7 @@
   // Resource location type
   liquidType: "registry",
   // resource location
-  liquid: "biggerreactors:fluid_obsidian",
+  liquid: "biggerreactors:liquid_obsidian",
   // thermal conductivity, in watts per metre-kelvin
   liquidThermalConductivity: 1.9,
   // resource location type
