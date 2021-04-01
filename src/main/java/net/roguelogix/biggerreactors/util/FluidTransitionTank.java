@@ -173,7 +173,8 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
         
         rfkt *= (condenser ? activeTransition.gasRFMKT : activeTransition.liquidRFMKT);
         
-        rfkt *= (double) inAmount / (double) perSideCapacity;
+        double multiplier = (double) inAmount / (double) perSideCapacity;
+        rfkt *= Math.max(multiplier, 0.01);
         
         double newTemp = body.temperature() - activeTransition.boilingPoint;
         newTemp *= Math.exp(-rfkt / body.rfPerKelvin());
