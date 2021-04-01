@@ -8,7 +8,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.Tags;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.classic.turbine.blocks.*;
 import net.roguelogix.biggerreactors.classic.turbine.simulation.ITurbineSimulation;
@@ -18,9 +17,8 @@ import net.roguelogix.biggerreactors.classic.turbine.state.TurbineActivity;
 import net.roguelogix.biggerreactors.classic.turbine.state.TurbineState;
 import net.roguelogix.biggerreactors.classic.turbine.state.VentState;
 import net.roguelogix.biggerreactors.classic.turbine.tiles.*;
-import net.roguelogix.biggerreactors.fluids.FluidIrradiatedSteam;
+import net.roguelogix.biggerreactors.fluids.Steam;
 import net.roguelogix.phosphophyllite.Phosphophyllite;
-import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
 import net.roguelogix.phosphophyllite.multiblock.generic.ValidationError;
 import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblockController;
 import net.roguelogix.phosphophyllite.repack.org.joml.*;
@@ -468,7 +466,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         turbineState.intakeStored = simulation.fluidTank().vaporAmount();
         turbineState.intakeCapacity = simulation.fluidTank().perSideCapacity();
         //turbineState.intakeResourceLocation = <some fluid here, such as steam>;
-        turbineState.intakeResourceLocation = FluidIrradiatedSteam.INSTANCE.getRegistryName().toString();
+        turbineState.intakeResourceLocation = Steam.INSTANCE.getRegistryName().toString();
         
         turbineState.exhaustStored = simulation.fluidTank().liquidAmount();
         turbineState.exhaustCapacity = simulation.fluidTank().perSideCapacity();
