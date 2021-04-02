@@ -7,8 +7,8 @@
   "item.biggerreactors.fluid_yellorium_bucket": "Liquid Yellorium Bucket",
   "fluid.biggerreactors.fluid_irradiated_steam": "Irradiated Steam",
   "item.biggerreactors.fluid_irradiated_steam_bucket": "Irradiated Steam Bucket",
-  "fluid.biggerreactors.fluid_obsidian": "Liquid Obsidian",
-  "item.biggerreactors.fluid_obsidian_bucket": "Liquid Obsidian Bucket",
+  "fluid.biggerreactors.liquid_obsidian": "Liquid Obsidian",
+  "item.biggerreactors.liquid_obsidian_bucket": "Liquid Obsidian Bucket",
 
   "fluid.biggerreactors.superheated_sodium": "Liquid Superheated Sodium",
   "item.biggerreactors.superheated_sodium_bucket": "Liquid Superheated Sodium Bucket",
