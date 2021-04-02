@@ -228,11 +228,11 @@ public class Config {
         @PhosphophylliteConfig
         public static class Modern {
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static long FlowRatePerBlock = 500;
+            public static long FlowRatePerBlock = 5000;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static long TankVolumePerBlock = 1000;
+            public static long TankVolumePerBlock = 10000;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static double FluidPerBladeLinerKilometre = 2;
+            public static double FluidPerBladeLinerKilometre = 20;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static double RotorAxialMassPerShaft = 10;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
