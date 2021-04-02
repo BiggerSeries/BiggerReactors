@@ -231,6 +231,7 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
     @Override
     public void onAssembly() {
         outputDirection = getBlockState().get(BlockStates.FACING);
+        neighborChanged();
     }
     
     @Override
