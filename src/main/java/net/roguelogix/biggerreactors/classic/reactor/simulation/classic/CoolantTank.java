@@ -1,6 +1,7 @@
 package net.roguelogix.biggerreactors.classic.reactor.simulation.classic;
 
 import net.minecraft.block.Blocks;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.CompoundNBT;
 import net.roguelogix.biggerreactors.classic.reactor.ReactorModeratorRegistry;
 import net.roguelogix.biggerreactors.classic.reactor.simulation.IReactorCoolantTank;
@@ -13,6 +14,7 @@ public class CoolantTank extends FluidTransitionTank implements IReactorCoolantT
     public CoolantTank() {
         // always an evaporator here
         super(false);
+        transitionUpdate();
     }
     
     double absorbHeat(double rfTransferred) {
@@ -79,22 +81,30 @@ public class CoolantTank extends FluidTransitionTank implements IReactorCoolantT
     @Override
     protected void transitionUpdate() {
         airProperties = ReactorModeratorRegistry.blockModeratorProperties(Blocks.AIR);
-        if(airProperties == null){
+        if (airProperties == null) {
             airProperties = ReactorModeratorRegistry.EMPTY_MODERATOR;
         }
-        liquidProperties = ReactorModeratorRegistry.blockModeratorProperties(inFluid.getFluid().getDefaultState().getBlockState().getBlock());
-        if(liquidProperties == null){
-            liquidProperties = airProperties;
+        liquidProperties = airProperties;
+        vaporProperties = airProperties;
+        Fluid liquid = inFluid;
+        if (liquid != null) {
+            liquidProperties = ReactorModeratorRegistry.blockModeratorProperties(liquid.getDefaultState().getBlockState().getBlock());
+            if (liquidProperties == null) {
+                liquidProperties = airProperties;
+            }
         }
-        vaporProperties = ReactorModeratorRegistry.blockModeratorProperties(outFluid.getFluid().getDefaultState().getBlockState().getBlock());
-        if(vaporProperties == null){
-            vaporProperties = airProperties;
+        Fluid vapor = inFluid;
+        if (vapor != null) {
+            vaporProperties = ReactorModeratorRegistry.blockModeratorProperties(vapor.getDefaultState().getBlockState().getBlock());
+            if (vaporProperties == null) {
+                vaporProperties = airProperties;
+            }
         }
     }
     
     @Override
     public double absorption() {
-        if(perSideCapacity == 0){
+        if (perSideCapacity == 0) {
             return airProperties.absorption();
         }
         double absorption = 0;
@@ -107,7 +117,7 @@ public class CoolantTank extends FluidTransitionTank implements IReactorCoolantT
     
     @Override
     public double heatEfficiency() {
-        if(perSideCapacity == 0){
+        if (perSideCapacity == 0) {
             return airProperties.heatEfficiency();
         }
         double heatEfficiency = 0;
@@ -120,7 +130,7 @@ public class CoolantTank extends FluidTransitionTank implements IReactorCoolantT
     
     @Override
     public double moderation() {
-        if(perSideCapacity == 0){
+        if (perSideCapacity == 0) {
             return airProperties.moderation();
         }
         double moderation = 0;
@@ -133,7 +143,7 @@ public class CoolantTank extends FluidTransitionTank implements IReactorCoolantT
     
     @Override
     public double heatConductivity() {
-        if(perSideCapacity == 0){
+        if (perSideCapacity == 0) {
             return airProperties.heatConductivity();
         }
         double heatConductivity = 0;
