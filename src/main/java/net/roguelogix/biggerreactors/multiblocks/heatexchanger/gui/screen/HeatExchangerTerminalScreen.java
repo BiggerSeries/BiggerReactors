@@ -82,13 +82,13 @@ public class HeatExchangerTerminalScreen extends ScreenBase<HeatExchangerTermina
         // (Top) Condenser intake gauge tooltip:
         this.addElement(new Tooltip<>(this, 86, 17, 16, 16, new TranslationTextComponent("screen.biggerreactors.heat_exchanger_terminal.intake_gauge.condenser.tooltip")));
 
-        // (Top) Evaporator intake gauge tooltip:
+        // (Top) Condenser exhaust gauge tooltip:
         this.addElement(new Tooltip<>(this, 108, 17, 16, 16, new TranslationTextComponent("screen.biggerreactors.heat_exchanger_terminal.exhaust_gauge.condenser.tooltip")));
 
         // (Top) Heat exchanger temperature tooltip:
         this.addElement(new Tooltip<>(this, 130, 17, 16, 16, new TranslationTextComponent("screen.biggerreactors.heat_exchanger_terminal.heat_gauge.tooltip")));
 
-        // (Top) Condenser exhaust gauge tooltip:
+        // (Top) Evaporator intake gauge tooltip:
         this.addElement(new Tooltip<>(this, 152, 17, 16, 16, new TranslationTextComponent("screen.biggerreactors.heat_exchanger_terminal.intake_gauge.evaporator.tooltip")));
 
         // (Top) Evaporator exhaust gauge tooltip:
