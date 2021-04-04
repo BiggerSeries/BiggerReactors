@@ -14,8 +14,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import net.roguelogix.biggerreactors.BiggerReactors;
-import net.roguelogix.biggerreactors.classic.reactor.ReactorModeratorRegistry;
-import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorTerminal;
+import net.roguelogix.biggerreactors.multiblocks.reactor.ReactorModeratorRegistry;
+import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorTerminal;
 
 import java.awt.*;
 

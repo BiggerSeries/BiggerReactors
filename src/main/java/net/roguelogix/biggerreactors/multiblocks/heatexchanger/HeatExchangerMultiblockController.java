@@ -9,25 +9,22 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.roguelogix.biggerreactors.Config;
-import net.roguelogix.biggerreactors.classic.reactor.blocks.ReactorBaseBlock;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.HeatExchangerBaseBlock;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.HeatExchangerCasingBlock;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerBaseTile;
-import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerEvaporatorChannelTile;
-import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerCoolantPortTile;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerCondensorChannelTile;
+import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerCoolantPortTile;
+import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerEvaporatorChannelTile;
 import net.roguelogix.biggerreactors.util.FluidTransitionTank;
 import net.roguelogix.phosphophyllite.Phosphophyllite;
 import net.roguelogix.phosphophyllite.multiblock.generic.ValidationError;
 import net.roguelogix.phosphophyllite.multiblock.generic.Validator;
 import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblockController;
 import net.roguelogix.phosphophyllite.repack.org.joml.Vector3i;
-import net.roguelogix.phosphophyllite.util.BlockStates;
 import net.roguelogix.phosphophyllite.util.HeatBody;
 import net.roguelogix.phosphophyllite.util.Util;
 
 import javax.annotation.Nonnull;
-
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -176,7 +173,7 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         }
         
         Util.chunkCachedBlockStateIteration(minCoord(), maxCoord(), world, (block, pos) -> {
-            if (block.getBlock() instanceof ReactorBaseBlock) {
+            if (block.getBlock() instanceof HeatExchangerBaseBlock) {
                 mutableBlockPos.setPos(pos.x, pos.y, pos.z);
                 if (!blocks.containsPos(mutableBlockPos)) {
                     throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.dangling_internal_part", pos.x, pos.y, pos.z));

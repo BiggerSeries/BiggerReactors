@@ -13,8 +13,8 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.roguelogix.biggerreactors.BiggerReactors;
-import net.roguelogix.biggerreactors.classic.turbine.TurbineCoilRegistry;
-import net.roguelogix.biggerreactors.classic.turbine.blocks.TurbineTerminal;
+import net.roguelogix.biggerreactors.multiblocks.turbine.TurbineCoilRegistry;
+import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineTerminal;
 
 import java.awt.*;
 

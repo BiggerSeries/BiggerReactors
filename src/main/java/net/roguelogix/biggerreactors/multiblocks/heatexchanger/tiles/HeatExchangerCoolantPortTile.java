@@ -25,7 +25,6 @@ import net.roguelogix.phosphophyllite.util.BlockStates;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static net.roguelogix.biggerreactors.classic.turbine.blocks.TurbineCoolantPort.PortDirection.INLET;
 import static net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.HeatExchangerCoolantPortBlock.CONDENSER;
 import static net.roguelogix.phosphophyllite.util.BlockStates.PORT_DIRECTION;
 
