@@ -103,10 +103,22 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
             if(coolantPort.lastCheckedTick == tick){
                 continue;
             }
+            Direction nextDirection = null;
+            for (Direction value : Direction.values()) {
+                mutableBlockPos.setPos(coolantPort.getPos());
+                mutableBlockPos.move(value);
+                HeatExchangerBaseTile tile = blocks.getTile(mutableBlockPos);
+                if(tile instanceof HeatExchangerCondensorChannelTile || tile instanceof HeatExchangerEvaporatorChannelTile){
+                    nextDirection = value;
+                    break;
+                }
+            }
             mutableBlockPos.setPos(coolantPort.getPos());
-            Direction oldDirection = coolantPort.getBlockState().get(BlockStates.FACING);
+            if(nextDirection == null){
+                throw new ValidationError("Unknown channel verification error, this shouldn't be possible " + mutableBlockPos);
+            }
             while (true){
-                mutableBlockPos.move(oldDirection.getOpposite());
+                mutableBlockPos.move(nextDirection);
                 HeatExchangerBaseTile channelTile = blocks.getTile(mutableBlockPos);
                 if(channelTile instanceof HeatExchangerCoolantPortTile){
                     break;
@@ -121,30 +133,30 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
                     ((HeatExchangerEvaporatorChannelTile) channelTile).lastCheckedTick = tick;
                 }
                 BlockState channelState = channelTile.getBlockState();
-                if(oldDirection != Direction.UP && channelState.get(TOP_CONNECTED_PROPERTY)){
-                    oldDirection = Direction.DOWN;
+                if(nextDirection != Direction.DOWN && channelState.get(TOP_CONNECTED_PROPERTY)){
+                    nextDirection = Direction.UP;
                     continue;
                 }
-                if(oldDirection != Direction.DOWN && channelState.get(BOTTOM_CONNECTED_PROPERTY)){
-                    oldDirection = Direction.UP;
+                if(nextDirection != Direction.UP && channelState.get(BOTTOM_CONNECTED_PROPERTY)){
+                    nextDirection = Direction.DOWN;
                     continue;
                 }
     
-                if(oldDirection != Direction.NORTH && channelState.get(NORTH_CONNECTED_PROPERTY)){
-                    oldDirection = Direction.SOUTH;
+                if(nextDirection != Direction.SOUTH && channelState.get(NORTH_CONNECTED_PROPERTY)){
+                    nextDirection = Direction.NORTH;
                     continue;
                 }
-                if(oldDirection != Direction.SOUTH && channelState.get(SOUTH_CONNECTED_PROPERTY)){
-                    oldDirection = Direction.NORTH;
+                if(nextDirection != Direction.NORTH && channelState.get(SOUTH_CONNECTED_PROPERTY)){
+                    nextDirection = Direction.SOUTH;
                     continue;
                 }
                 
-                if(oldDirection != Direction.EAST && channelState.get(EAST_CONNECTED_PROPERTY)){
-                    oldDirection = Direction.WEST;
+                if(nextDirection != Direction.WEST && channelState.get(EAST_CONNECTED_PROPERTY)){
+                    nextDirection = Direction.EAST;
                     continue;
                 }
-                if(oldDirection != Direction.WEST && channelState.get(WEST_CONNECTED_PROPERTY)){
-                    oldDirection = Direction.EAST;
+                if(nextDirection != Direction.EAST && channelState.get(WEST_CONNECTED_PROPERTY)){
+                    nextDirection = Direction.WEST;
                     continue;
                 }
                 throw new ValidationError("Unknown channel verification error, this shouldn't be possible " + mutableBlockPos);
