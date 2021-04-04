@@ -251,19 +251,21 @@ public class Config {
     @PhosphophylliteConfig
     public static class HeatExchanger {
         @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-        public static long ChannelTankVolumePerBlock = 1000;
+        public static long ChannelTankVolumePerBlock = 10000;
         @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
         public static double ChannelToChannelHeatConductivityMultiplier = 0.5;
         @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-        public static double ChannelFEPerKelvinUnitVolume = 100.0f;
+        public static double ChannelFEPerKelvinUnitVolume = 1000.0f;
         @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
         public static double ChannelFEPerKelvinMetreSquared = 50.0f;
         @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+        public static double ChannelInternalSurfaceArea = 80;
+        @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
         public static double AirFEPerKelvinUnitVolume = 10.0f;
         @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-        public static double AirFEPerKelvinMetreSquared = 0.01f;
+        public static double AirFEPerKelvinMetreSquared = 0.5f;
         @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-        public static double AmbientFEPerKelvinMetreSquared = 0.01f;
+        public static double AmbientFEPerKelvinMetreSquared = 0.2f;
     }
     
     

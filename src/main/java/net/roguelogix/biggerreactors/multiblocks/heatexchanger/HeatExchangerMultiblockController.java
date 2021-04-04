@@ -352,11 +352,11 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
     
     @Override
     public void tick() {
-        condenserTank.transferWith(condenserHeatBody, condenserChannels.size() * 4);
+        condenserTank.transferWith(condenserHeatBody, condenserChannels.size() * Config.HeatExchanger.ChannelInternalSurfaceArea);
         condenserHeatBody.transferWith(airHeatBody, condenserAirRFKT);
         condenserHeatBody.transferWith(evaporatorHeatBody, channelRFKT);
         evaporatorHeatBody.transferWith(airHeatBody, evaporatorAirRFKT);
-        evaporatorTank.transferWith(evaporatorHeatBody, evaporatorChannels.size() * 4);
+        evaporatorTank.transferWith(evaporatorHeatBody, evaporatorChannels.size() * Config.HeatExchanger.ChannelInternalSurfaceArea);
         airHeatBody.transferWith(ambientHeatBody, airAmbientRFKT);
         coolantPorts.forEach(HeatExchangerCoolantPortTile::pushFluid);
     }
