@@ -41,7 +41,7 @@ public class TurbineTerminalScreen extends ScreenBase<TurbineTerminalContainer> 
     public TurbineTerminalScreen(TurbineTerminalContainer container, PlayerInventory playerInventory, ITextComponent title) {
         super(container, playerInventory, new TranslationTextComponent("screen.biggerreactors.turbine_terminal"), DEFAULT_TEXTURE, 176, 152);
 
-        // Initialize reactor state.
+        // Initialize turbine state.
         turbineState = (TurbineState) this.getContainer().getGuiPacket();
         intakeFluid = Registry.FLUID.getOrDefault(new ResourceLocation(turbineState.intakeResourceLocation));
         exhaustFluid = Registry.FLUID.getOrDefault(new ResourceLocation(turbineState.exhaustResourceLocation));

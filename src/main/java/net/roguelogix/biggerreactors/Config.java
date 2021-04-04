@@ -15,7 +15,7 @@ public class Config {
     public enum Modes {
         // classic BR, if available
         CLASSIC,
-        // Modern BiR, familer yet different
+        // Modern BiR, familiar yet different
         MODERN,
         // Mechanics of modern, usually, may be unstable, may be more resource intensive, may not even run
         // if not applicable to multiblock, defaults to modern
@@ -266,6 +266,15 @@ public class Config {
         public static double AirFEPerKelvinMetreSquared = 0.5f;
         @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
         public static double AmbientFEPerKelvinMetreSquared = 0.2f;
+
+        @PhosphophylliteConfig.Value(range = "(0,)", comment = "Max fluid tank capacity.")
+        public static int FluidTankCapacity = 5000;
+
+        @PhosphophylliteConfig
+        public static class GUI {
+            @PhosphophylliteConfig.Value
+            public static long HeatDisplayMax = 2000;
+        }
     }
     
     

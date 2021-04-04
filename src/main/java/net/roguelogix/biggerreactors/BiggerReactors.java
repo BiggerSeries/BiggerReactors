@@ -15,6 +15,10 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.roguelogix.biggerreactors.machine.client.CyaniteReprocessorScreen;
 import net.roguelogix.biggerreactors.machine.containers.CyaniteReprocessorContainer;
+import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.HeatExchangerTerminalContainer;
+import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.screen.HeatExchangerCoolantPortScreen;
+import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.HeatExchangerCoolantPortContainer;
+import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.screen.HeatExchangerTerminalScreen;
 import net.roguelogix.biggerreactors.multiblocks.reactor.ReactorModeratorRegistry;
 import net.roguelogix.biggerreactors.multiblocks.reactor.client.*;
 import net.roguelogix.biggerreactors.multiblocks.reactor.containers.*;
@@ -88,6 +92,10 @@ public class BiggerReactors {
                 TurbineTerminalScreen::new);
         ScreenManager.registerFactory(TurbineCoolantPortContainer.INSTANCE,
                 TurbineCoolantPortScreen::new);
+        ScreenManager.registerFactory(HeatExchangerTerminalContainer.INSTANCE,
+                HeatExchangerTerminalScreen::new);
+        ScreenManager.registerFactory(HeatExchangerCoolantPortContainer.INSTANCE,
+                HeatExchangerCoolantPortScreen::new);
 
         ClientRegistry.bindTileEntityRenderer(TurbineRotorBearingTile.TYPE, BladeRenderer::new);
     }

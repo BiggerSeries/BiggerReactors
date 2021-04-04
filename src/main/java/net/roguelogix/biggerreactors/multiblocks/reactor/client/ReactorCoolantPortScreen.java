@@ -24,7 +24,7 @@ public class ReactorCoolantPortScreen extends ScreenBase<ReactorCoolantPortConta
     private ReactorCoolantPortState reactorCoolantPortState;
 
     public ReactorCoolantPortScreen(ReactorCoolantPortContainer container, PlayerInventory playerInventory, ITextComponent title) {
-        super(container, playerInventory, title, DEFAULT_TEXTURE, 142, 72);
+        super(container, playerInventory, title, DEFAULT_TEXTURE, 142, 40);
 
         // Initialize access port state.
         reactorCoolantPortState = (ReactorCoolantPortState) this.getContainer().getGuiPacket();

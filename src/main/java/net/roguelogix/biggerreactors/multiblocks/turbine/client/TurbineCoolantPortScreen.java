@@ -24,7 +24,7 @@ public class TurbineCoolantPortScreen extends ScreenBase<TurbineCoolantPortConta
     private TurbineCoolantPortState turbineCoolantPortState;
 
     public TurbineCoolantPortScreen(TurbineCoolantPortContainer container, PlayerInventory playerInventory, ITextComponent title) {
-        super(container, playerInventory, title, DEFAULT_TEXTURE, 142, 72);
+        super(container, playerInventory, title, DEFAULT_TEXTURE, 142, 40);
 
         // Initialize access port state.
         turbineCoolantPortState = (TurbineCoolantPortState) this.getContainer().getGuiPacket();

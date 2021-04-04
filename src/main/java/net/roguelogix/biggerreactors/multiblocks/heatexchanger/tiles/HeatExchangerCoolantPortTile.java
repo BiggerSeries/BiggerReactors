@@ -1,23 +1,40 @@
 package net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles;
 
 import mekanism.api.chemical.gas.IGasHandler;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.minecraftforge.fml.network.NetworkHooks;
+import net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.HeatExchangerCoolantPortBlock;
+import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.HeatExchangerCoolantPortContainer;
+import net.roguelogix.biggerreactors.multiblocks.heatexchanger.state.HeatExchangerCoolantPortState;
+import net.roguelogix.biggerreactors.multiblocks.heatexchanger.state.HeatExchangerState;
+import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorTerminal;
 import net.roguelogix.phosphophyllite.fluids.FluidHandlerWrapper;
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
 import net.roguelogix.phosphophyllite.fluids.MekanismGasWrappers;
+import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.multiblock.generic.IOnAssemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.generic.IOnDisassemblyTile;
+import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockBlock;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 import net.roguelogix.phosphophyllite.registry.TileSupplier;
 import net.roguelogix.phosphophyllite.util.BlockStates;
@@ -29,7 +46,7 @@ import static net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.Hea
 import static net.roguelogix.phosphophyllite.util.BlockStates.PORT_DIRECTION;
 
 @RegisterTileEntity(name = "heat_exchanger_coolant_port")
-public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implements IPhosphophylliteFluidHandler, IOnAssemblyTile, IOnDisassemblyTile {
+public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implements IPhosphophylliteFluidHandler, IOnAssemblyTile, IOnDisassemblyTile, INamedContainerProvider, IHasUpdatableState<HeatExchangerCoolantPortState> {
     
     public long lastCheckedTick;
     
@@ -238,5 +255,46 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
         outputDirection = null;
         HETank = null;
         neighborChanged();
+    }
+
+    @Nonnull
+    @Override
+    public HeatExchangerCoolantPortState getState() {
+        // TODO: populate with actual values
+        HeatExchangerCoolantPortState state = new HeatExchangerCoolantPortState(this);
+
+        state.direction = true;
+        state.condenser = false;
+
+        return state;
+    }
+
+    @Override
+    public void updateState() {
+        // TODO: trigger an actual update
+    }
+
+    @Override
+    @Nonnull
+    public ActionResultType onBlockActivated(@Nonnull PlayerEntity player, @Nonnull Hand handIn) {
+        assert world != null;
+        if (world.getBlockState(pos).get(MultiblockBlock.ASSEMBLED)) {
+            if (!world.isRemote) {
+                NetworkHooks.openGui((ServerPlayerEntity) player, this, this.getPos());
+            }
+            return ActionResultType.SUCCESS;
+        }
+        return super.onBlockActivated(player, handIn);
+    }
+
+    @Override
+    public ITextComponent getDisplayName() {
+        return new TranslationTextComponent(HeatExchangerCoolantPortBlock.INSTANCE.getTranslationKey());
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu(int windowId, @Nonnull PlayerInventory playerInventory, @Nonnull PlayerEntity player) {
+        return new HeatExchangerCoolantPortContainer(windowId, this.pos, player);
     }
 }

@@ -32,7 +32,7 @@ public class CommonReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
     
     public CommonReactorTerminalScreen(ReactorTerminalContainer container, PlayerInventory playerInventory, ITextComponent title) {
         // We override whatever Minecraft wants to set the title to. It wants "Reactor Terminal," but that's too long.
-        super(container, playerInventory, new TranslationTextComponent("screen.biggerreactors.reactor_terminal"), RenderHelper.getBlankResource(), 176, 152);
+        super(container, playerInventory, new TranslationTextComponent("screen.biggerreactors.reactor_terminal"), RenderHelper.getBlankTextureResource(), 176, 152);
         
         // Initialize reactor terminal state.
         initialState = (ReactorState) this.getContainer().getGuiPacket();
