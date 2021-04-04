@@ -1,7 +1,7 @@
 {
     "textures": {
-        "0": "biggerreactors:block/fuel_rod/fuel",
-        "1": "biggerreactors:block/fuel_rod/fuel_still"
+        "0": "biggerreactors:fluid/fluid_yellorium_flowing",
+        "1": "biggerreactors:fluid/fluid_yellorium_still"
     },
     "elements": [
         {

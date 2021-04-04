@@ -1,7 +1,7 @@
 {
     "textures": {
-        "0": "biggerreactors:block/fuel_rod/waste",
-        "1": "biggerreactors:block/fuel_rod/waste_still"
+        "0": "biggerreactors:fluid/fluid_cyanite_flowing",
+        "1": "biggerreactors:fluid/fluid_cyanite_still"
     },
     "elements": [
         {

@@ -1,7 +1,7 @@
 {
     "textures": {
-        "0": "biggerreactors:block/fuel_rod/fuel",
-        "1": "biggerreactors:block/fuel_rod/fuel_still"
+        "0": "biggerreactors:fluid/fluid_yellorium_flowing",
+        "1": "biggerreactors:fluid/fluid_yellorium_still"
     },
     "elements": [
         {
@@ -13,8 +13,8 @@
                 "east": {"uv": [0, 0, 16, 11], "texture": "#0"},
                 "south": {"uv": [0, 0, 16, 11], "texture": "#0"},
                 "west": {"uv": [0, 0, 16, 11], "texture": "#0"},
-                "up": {"uv": [0, 0, 16, 16], "texture": "#0"},
-                "down": {"uv": [0, 0, 16, 16], "texture": "#0"}
+                "up": {"uv": [0, 0, 16, 16], "texture": "#1"},
+                "down": {"uv": [0, 0, 16, 16], "texture": "#1"}
             }
         }
     ],
