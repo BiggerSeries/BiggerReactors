@@ -56,10 +56,10 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
     @Nonnull
     @Override
     public Fluid fluidTypeInTank(int tank) {
-        if (tank == IN_TANK) {
+        if (tank == IN_TANK && inFluid != null) {
             return inFluid;
         }
-        if (tank == OUT_TANK) {
+        if (tank == OUT_TANK && outFluid != null) {
             return outFluid;
         }
         return Fluids.EMPTY;
