@@ -35,11 +35,11 @@ public class HeatExchangerTerminalTile extends HeatExchangerBaseTile implements 
     
     @RegisterTileEntity.Supplier
     public static final TileSupplier SUPPLIER = HeatExchangerTerminalTile::new;
-
+    
     public HeatExchangerTerminalTile() {
         super(TYPE);
     }
-
+    
     @Override
     @Nonnull
     public ActionResultType onBlockActivated(@Nonnull PlayerEntity player, @Nonnull Hand handIn) {
@@ -52,38 +52,47 @@ public class HeatExchangerTerminalTile extends HeatExchangerBaseTile implements 
         }
         return super.onBlockActivated(player, handIn);
     }
-
+    
+    HeatExchangerState state = new HeatExchangerState(this);
+    
     @Nonnull
     @Override
     public HeatExchangerState getState() {
-        // TODO: populate with actual values
-        HeatExchangerState state = new HeatExchangerState(this);
-        state.condenserIntakeFluid = Fluids.LAVA.getRegistryName().toString();
-        state.condenserIntakeFluidAmount = 1000;
-
-        state.condenserExhaustFluid = LiquidObsidian.INSTANCE.getFluid().getRegistryName().toString();
-        state.condenserExhaustFluidAmount = 1000;
-
-        state.evaporatorIntakeFluid = Fluids.WATER.getRegistryName().toString();
-        state.evaporatorIntakeFluidAmount = 2000;
-
-        state.evaporatorExhaustFluid = Steam.INSTANCE.getFluid().getRegistryName().toString();
-        state.evaporatorExhaustFluidAmount = 2000;
-
-        state.heatStored = 1500;
         return state;
     }
-
+    
     @Override
     public void updateState() {
         // TODO: trigger an actual update
+        if (controller == null) {
+            return;
+        }
+        state.condenserIntakeFluid = controller.condenserTank.fluidTypeInTank(0).getRegistryName().toString();
+        state.condenserIntakeFluidAmount = controller.condenserTank.fluidAmountInTank(0);
+        
+        state.condenserExhaustFluid = controller.condenserTank.fluidTypeInTank(1).getRegistryName().toString();
+        state.condenserExhaustFluidAmount = controller.condenserTank.fluidAmountInTank(1);
+        
+        state.evaporatorIntakeFluid = controller.evaporatorTank.fluidTypeInTank(0).getRegistryName().toString();
+        state.evaporatorIntakeFluidAmount = controller.evaporatorTank.fluidAmountInTank(0);
+        
+        state.evaporatorExhaustFluid = controller.evaporatorTank.fluidTypeInTank(1).getRegistryName().toString();
+        state.evaporatorExhaustFluidAmount = controller.evaporatorTank.fluidAmountInTank(1);
+        
+        state.heatStored = controller.evaporatorHeatBody.temperature();
+        
+        state.condenserChannelTemperature = controller.condenserHeatBody.temperature();
+        state.condenserChannelFlowRate = controller.condenserTank.transitionedLastTick();
+        
+        state.evaporatorChannelTemperature = controller.evaporatorHeatBody.temperature();
+        state.evaporatorChannelFlowRate = controller.evaporatorTank.transitionedLastTick();
     }
-
+    
     @Override
     public ITextComponent getDisplayName() {
         return new TranslationTextComponent(HeatExchangerTerminalBlock.INSTANCE.getTranslationKey());
     }
-
+    
     @Nullable
     @Override
     public Container createMenu(int windowId, @Nonnull PlayerInventory playerInventory, @Nonnull PlayerEntity player) {
