@@ -234,9 +234,9 @@ public class Config {
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static double FluidPerBladeLinerKilometre = 20;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static double RotorAxialMassPerShaft = 10;
+            public static double RotorAxialMassPerShaft = 100;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static double RotorAxialMassPerBlade = 10;
+            public static double RotorAxialMassPerBlade = 100;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static double FrictionDragMultiplier = 0.0001;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
