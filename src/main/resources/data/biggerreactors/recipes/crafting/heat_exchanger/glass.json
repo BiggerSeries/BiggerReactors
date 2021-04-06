@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+      "GCG"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "C": {
+      "item": "biggerreactors:heat_exchanger_casing"
+    }
+  },
+  "result": {
+    "item": "biggerreactors:heat_exchanger_glass"
+  }
+}
