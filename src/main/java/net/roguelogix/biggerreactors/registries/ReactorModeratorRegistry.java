@@ -1,4 +1,4 @@
-package net.roguelogix.biggerreactors.multiblocks.reactor;
+package net.roguelogix.biggerreactors.registries;
 
 import net.minecraft.block.Block;
 import net.minecraft.tags.ITag;

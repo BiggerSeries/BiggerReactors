@@ -2,7 +2,7 @@ package net.roguelogix.biggerreactors.multiblocks.turbine.simulation.modern;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.roguelogix.biggerreactors.Config;
-import net.roguelogix.biggerreactors.multiblocks.turbine.TurbineCoilRegistry;
+import net.roguelogix.biggerreactors.registries.TurbineCoilRegistry;
 import net.roguelogix.biggerreactors.multiblocks.turbine.simulation.ITurbineBattery;
 import net.roguelogix.biggerreactors.multiblocks.turbine.simulation.ITurbineFluidTank;
 import net.roguelogix.biggerreactors.multiblocks.turbine.simulation.ITurbineSimulation;

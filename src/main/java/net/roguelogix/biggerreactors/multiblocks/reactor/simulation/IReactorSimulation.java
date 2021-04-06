@@ -2,7 +2,7 @@ package net.roguelogix.biggerreactors.multiblocks.reactor.simulation;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
-import net.roguelogix.biggerreactors.multiblocks.reactor.ReactorModeratorRegistry;
+import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
 
 public interface IReactorSimulation extends INBTSerializable<CompoundNBT> {
     

@@ -18,6 +18,7 @@ import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineState;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.VentState;
 import net.roguelogix.biggerreactors.multiblocks.turbine.tiles.*;
 import net.roguelogix.biggerreactors.fluids.Steam;
+import net.roguelogix.biggerreactors.registries.TurbineCoilRegistry;
 import net.roguelogix.phosphophyllite.Phosphophyllite;
 import net.roguelogix.phosphophyllite.multiblock.generic.ValidationError;
 import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblockController;

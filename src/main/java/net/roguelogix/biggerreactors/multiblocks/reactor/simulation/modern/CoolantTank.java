@@ -2,7 +2,7 @@ package net.roguelogix.biggerreactors.multiblocks.reactor.simulation.modern;
 
 import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluid;
-import net.roguelogix.biggerreactors.multiblocks.reactor.ReactorModeratorRegistry;
+import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorCoolantTank;
 import net.roguelogix.biggerreactors.util.FluidTransitionTank;
 

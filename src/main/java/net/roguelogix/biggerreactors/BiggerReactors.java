@@ -19,10 +19,10 @@ import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.Hea
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.screen.HeatExchangerCoolantPortScreen;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.HeatExchangerCoolantPortContainer;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.screen.HeatExchangerTerminalScreen;
-import net.roguelogix.biggerreactors.multiblocks.reactor.ReactorModeratorRegistry;
+import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
 import net.roguelogix.biggerreactors.multiblocks.reactor.client.*;
 import net.roguelogix.biggerreactors.multiblocks.reactor.containers.*;
-import net.roguelogix.biggerreactors.multiblocks.turbine.TurbineCoilRegistry;
+import net.roguelogix.biggerreactors.registries.TurbineCoilRegistry;
 import net.roguelogix.biggerreactors.multiblocks.turbine.client.BladeRenderer;
 import net.roguelogix.biggerreactors.multiblocks.turbine.client.TurbineCoolantPortScreen;
 import net.roguelogix.biggerreactors.multiblocks.turbine.client.TurbineTerminalScreen;

@@ -13,7 +13,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.roguelogix.biggerreactors.BiggerReactors;
-import net.roguelogix.biggerreactors.multiblocks.reactor.ReactorModeratorRegistry;
+import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorTerminal;
 
 import java.awt.*;
