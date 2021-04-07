@@ -459,20 +459,13 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         turbineState.currentRPM = simulation.RPM();
         turbineState.maxRPM = 2200.0;
         
-        // TODO: populate intakeResourceLocation and exhaustResourceLocation. Next 3 lines are an example from the reactor:
-        //reactorState.coolantResourceLocation = (simulation.coolantTank().liquidType() != null)
-        //                ? Objects.requireNonNull(simulation.coolantTank().liquidType().getRegistryName()).toString()
-        //                : Objects.requireNonNull(Fluids.EMPTY.getRegistryName()).toString();
-        
         turbineState.intakeStored = simulation.fluidTank().vaporAmount();
         turbineState.intakeCapacity = simulation.fluidTank().perSideCapacity();
-        //turbineState.intakeResourceLocation = <some fluid here, such as steam>;
-        turbineState.intakeResourceLocation = Steam.INSTANCE.getRegistryName().toString();
+        turbineState.intakeResourceLocation = simulation().fluidTank().vaporType().getRegistryName().toString();
         
         turbineState.exhaustStored = simulation.fluidTank().liquidAmount();
         turbineState.exhaustCapacity = simulation.fluidTank().perSideCapacity();
-        //turbineState.exhaustResourceLocation = <some fluid here, such as water>;
-        turbineState.exhaustResourceLocation = Fluids.WATER.getRegistryName().toString();
+        turbineState.exhaustResourceLocation = simulation().fluidTank().liquidType().getRegistryName().toString();
         
         turbineState.energyStored = simulation.battery().stored();
         turbineState.energyCapacity = simulation.battery().capacity();
