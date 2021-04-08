@@ -3,8 +3,8 @@
 
   "item.biggerreactors.wrench": "Reactor Wrench",
 
-  "fluid.biggerreactors.fluid_yellorium": "Liquid Yellorium",
-  "item.biggerreactors.fluid_yellorium_bucket": "Liquid Yellorium Bucket",
+  "fluid.biggerreactors.fluid_yellorium": "Liquid Uranium",
+  "item.biggerreactors.fluid_yellorium_bucket": "Liquid Uranium Bucket",
   "fluid.biggerreactors.fluid_irradiated_steam": "Irradiated Steam",
   "item.biggerreactors.fluid_irradiated_steam_bucket": "Irradiated Steam Bucket",
   "fluid.biggerreactors.liquid_obsidian": "Liquid Obsidian",
@@ -13,10 +13,10 @@
   "fluid.biggerreactors.superheated_sodium": "Liquid Superheated Sodium",
   "item.biggerreactors.superheated_sodium_bucket": "Liquid Superheated Sodium Bucket",
 
-  "block.biggerreactors.yellorite_ore": "Yellorite Ore",
-  "block.biggerreactors.yellorium_block": "Yellorium Block",
-  "item.biggerreactors.yellorium_dust": "Yellorium Dust",
-  "item.biggerreactors.yellorium_ingot": "Yellorium Ingot",
+  "block.biggerreactors.yellorite_ore": "Uranium Ore",
+  "block.biggerreactors.yellorium_block": "Uranium Block",
+  "item.biggerreactors.yellorium_dust": "Uranium Dust",
+  "item.biggerreactors.yellorium_ingot": "Uranium Ingot",
 
   "block.biggerreactors.blutonium_block": "Blutonium Block",
   "item.biggerreactors.blutonium_dust": "Blutonium Dust",
