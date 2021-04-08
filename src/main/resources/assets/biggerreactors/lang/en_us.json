@@ -211,6 +211,7 @@
   "multiblock.error.biggerreactors.heat_exchanger.missing_channel_type": "At least one evaporator and one condenser channel are required.",
 
 
+  "block.biggerreactors.heat_exchanger_computer_port": "Heat Exchanger Computer Port",
   "block.biggerreactors.heat_exchanger_coolant_port": "Heat Exchanger Coolant Port",
   "screen.biggerreactors.heat_exchanger_coolant_port": "Heat Exchanger Coolant Port",
   "screen.biggerreactors.heat_exchanger_coolant_port.channel_type.condenser": "Channel Connection: §cCondenser",
@@ -229,5 +230,5 @@
   "jei.biggerreactors.classic.reactor_moderator_moderation": "Moderation: %s",
   "jei.biggerreactors.classic.reactor_moderator_absorption": "Absorption: %s",
   "jei.biggerreactors.classic.reactor_moderator_conductivity": "Heat Conductivity: %s",
-  "jei.biggerreactors.classic.reactor_moderator_efficiency": "Heat Efficiency: %s",
+  "jei.biggerreactors.classic.reactor_moderator_efficiency": "Heat Efficiency: %s"
 }
