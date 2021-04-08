@@ -52,11 +52,11 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         //TODO lang file the errors
         
         if (condenserChannels.isEmpty() || evaporatorChannels.isEmpty()) {
-            throw new ValidationError("at least one of each coolant channel type is required //TODO lang file this");
+            throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.heat_exchanger.missing_channel_type"));
         }
         
         if (coolantPorts.size() != 4) {
-            throw new ValidationError("heat exchangers require exactly 4 coolant ports //TODO lang file this");
+            throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.heat_exchanger.invalid_port_count"));
         }
         
         BlockPos.Mutable mutableBlockPos = new BlockPos.Mutable();
@@ -82,12 +82,12 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
                 }
             }
             if (!channelFound) {
-                throw new ValidationError("all coolant ports must be connected to a coolant channel //TODO lang file this");
+                throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.heat_exchanger.coolant_port_unconnected", portPos.getX(), portPos.getY(), portPos.getZ()));
             }
         }
         if (condenserPorts != 2 || evaporatorPorts != 2) {
             // technically this isn't the problem im checking, but this is a secondary check that happens, without having to march the channels
-            throw new ValidationError("all coolant channels must terminate at a coolant port //TODO lang file this");
+            throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.heat_exchanger.duplicate_port_types"));
         }
         
         verifyFluidChannels(condenserChannels);
@@ -162,13 +162,14 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
     
         for (HeatExchangerCondensorChannelTile condenserChannel : condenserChannels) {
             if(condenserChannel.lastCheckedTick != tick){
-                throw new ValidationError("Dangling channel " + condenserChannel.getPos());
-            }
+                BlockPos channelPos = condenserChannel.getPos();
+                throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.heat_exchanger.dangling_channel", channelPos.getX(), channelPos.getY(), channelPos.getZ()));            }
         }
     
         for (HeatExchangerEvaporatorChannelTile evaporatorChannel : evaporatorChannels) {
             if(evaporatorChannel.lastCheckedTick != tick){
-                throw new ValidationError("Dangling channel " + evaporatorChannel.getPos());
+                BlockPos channelPos = evaporatorChannel.getPos();
+                throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.heat_exchanger.dangling_channel", channelPos.getX(), channelPos.getY(), channelPos.getZ()));
             }
         }
         
@@ -176,7 +177,7 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
             if (block.getBlock() instanceof HeatExchangerBaseBlock) {
                 mutableBlockPos.setPos(pos.x, pos.y, pos.z);
                 if (!blocks.containsPos(mutableBlockPos)) {
-                    throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.dangling_internal_part", pos.x, pos.y, pos.z));
+                    throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.heat_exchanger.dangling_internal_part", pos.x, pos.y, pos.z));
                 }
             }
         });
