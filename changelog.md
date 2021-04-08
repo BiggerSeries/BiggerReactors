@@ -1,3 +1,49 @@
+# 1.16.5-0.5.0-beta
+Still april fools, right? no? That was last week? *well fuck.*
+
+## Reactor
+ - FissionEventsPerFuelUnit increased by 10x for modern simulation
+ - Tank size increased by 100x for modern simulation
+ - Mekanism gas handling re-dded, handles all gases with valid fluid, not just steam
+ - Manifold model/texture added, modified/corrected assembly behavior
+ - GUIs switch on the fly, no longer requiring re-opening to switch type
+ - New OOP CC API to match new simulation, works for old one as well (subject to race conditions)
+
+## Heat Exchanger
+ - Increase tank size
+ - Increase internal surface area
+ - Increase conductivities
+ - Increase channel heat capacity
+ - Terminal added (GUI still needs work)
+ - Computer port added, CC API that matches new OOP based ones for reactor/turbine
+ - Manifolds add to tank capacity
+ - Allow power to be pulled from power taps
+ - New fuel rendering textures (thx Ridanisaurus)
+ - Errors in lang file
+
+## Turbine
+ - New modern simulation
+    - Drag is squared, not linear/fixed
+    - Rotor speed responds quicker
+    - Rotor speed not coupled to blade area directly
+    - Rotor fluid capacity tied to rotor RPM, faster rotor more capacity
+ - Increase steam capacity per blade by 10x for modern simulation
+   - Also increase coil drag and rotor mass by 10x, so, turbines are 10x denser now
+ - Support for multiple coil layers (exact behavior may change)
+ - New OOP CC API to match new simulation, works for old one as well (subject to race conditions)
+ - Selective transition selection, so only steam, other stuff in the heat exchanger
+ - State saves
+ - Allow power to be pulled from power taps
+ - GUI displays correct fluid being used
+
+## Misc
+ - GUIs retextured (thx Ridanisaurus)
+ - Bucket textures added (#2) (thx Ridanisaurus)
+ - Textures rearranged, texture packs may need to update
+ - Yellorium renamed to Uranium, lang file only, ID kept the same
+ - Uranium bucket no longer registered
+ - Add superheated_sodium fluid for mekanism sodium compatibility
+
 # 1.16.5-0.5.0-alpha.1
 The steam is lava, the steam is lava
 
