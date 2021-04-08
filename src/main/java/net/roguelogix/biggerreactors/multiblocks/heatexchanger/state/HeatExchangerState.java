@@ -14,7 +14,7 @@ public class HeatExchangerState implements GuiSync.IGUIPacket {
      * The fluid entering the condenser channels. This should match the value of the fluid's ResourceLocation.
      * This fluid should be hot; its cold (output) variant should match condenserExhaustFluid.
      */
-    public String condenserIntakeFluid = "empty";
+    public String condenserIntakeFluid = "minecraft:empty";
 
     /**
      * How much hot (input) fluid is stored in the condenser.
@@ -25,7 +25,7 @@ public class HeatExchangerState implements GuiSync.IGUIPacket {
      * The fluid exiting the condenser channels. This should match the value of the fluid's ResourceLocation.
      * This fluid should be cold; its hot (input) variant should match condenserIntakeFluid.
      */
-    public String condenserExhaustFluid = "empty";
+    public String condenserExhaustFluid = "minecraft:empty";
 
     /**
      * How much cold (output) fluid is stored in the condenser.
@@ -46,7 +46,7 @@ public class HeatExchangerState implements GuiSync.IGUIPacket {
      * The fluid entering the evaporator channels. This should match the value of the fluid's ResourceLocation.
      * This fluid should be cold; its hot (output) variant should match evaporatorExhaustFluid.
      */
-    public String evaporatorIntakeFluid = "empty";
+    public String evaporatorIntakeFluid = "minecraft:empty";
 
     /**
      * How much cold (input) fluid is stored in the evaporator.
@@ -57,7 +57,7 @@ public class HeatExchangerState implements GuiSync.IGUIPacket {
      * The fluid exiting the evaporator channels. This should match the value of the fluid's ResourceLocation.
      * This fluid should be hot; its cold (input) variant should match evaporatorIntakeFluid.
      */
-    public String evaporatorExhaustFluid = "empty";
+    public String evaporatorExhaustFluid = "minecraft:empty";
 
     /**
      * How much hot (output) fluid is stored in the evaporator.
@@ -73,11 +73,6 @@ public class HeatExchangerState implements GuiSync.IGUIPacket {
      * Flow rate for the evaporator channels.
      */
     public double evaporatorChannelFlowRate = 0;
-
-    /**
-     * The temperature of the heat exchanger.
-     */
-    public double heatStored = 0;
 
     /**
      * The tile whose information this belongs to.
@@ -108,8 +103,6 @@ public class HeatExchangerState implements GuiSync.IGUIPacket {
 
         this.evaporatorChannelTemperature = (Double) data.get("evaporatorChannelTemperature");
         this.evaporatorChannelFlowRate = (Double) data.get("evaporatorChannelFlowRate");
-
-        this.heatStored = (Double) data.get("heatStored");
     }
 
     @Nullable
@@ -135,8 +128,6 @@ public class HeatExchangerState implements GuiSync.IGUIPacket {
 
         data.put("evaporatorChannelTemperature", this.evaporatorChannelTemperature);
         data.put("evaporatorChannelFlowRate", this.evaporatorChannelFlowRate);
-
-        data.put("heatStored", this.heatStored);
         return data;
     }
 }

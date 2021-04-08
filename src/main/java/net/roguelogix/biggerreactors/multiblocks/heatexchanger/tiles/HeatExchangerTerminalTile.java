@@ -69,21 +69,19 @@ public class HeatExchangerTerminalTile extends HeatExchangerBaseTile implements 
         }
         state.condenserIntakeFluid = controller.condenserTank.fluidTypeInTank(0).getRegistryName().toString();
         state.condenserIntakeFluidAmount = controller.condenserTank.fluidAmountInTank(0);
-        
+
         state.condenserExhaustFluid = controller.condenserTank.fluidTypeInTank(1).getRegistryName().toString();
         state.condenserExhaustFluidAmount = controller.condenserTank.fluidAmountInTank(1);
-        
+
         state.evaporatorIntakeFluid = controller.evaporatorTank.fluidTypeInTank(0).getRegistryName().toString();
         state.evaporatorIntakeFluidAmount = controller.evaporatorTank.fluidAmountInTank(0);
-        
+
         state.evaporatorExhaustFluid = controller.evaporatorTank.fluidTypeInTank(1).getRegistryName().toString();
         state.evaporatorExhaustFluidAmount = controller.evaporatorTank.fluidAmountInTank(1);
-        
-        state.heatStored = controller.evaporatorHeatBody.temperature();
-        
+
         state.condenserChannelTemperature = controller.condenserHeatBody.temperature();
         state.condenserChannelFlowRate = controller.condenserTank.transitionedLastTick();
-        
+
         state.evaporatorChannelTemperature = controller.evaporatorHeatBody.temperature();
         state.evaporatorChannelFlowRate = controller.evaporatorTank.transitionedLastTick();
     }
