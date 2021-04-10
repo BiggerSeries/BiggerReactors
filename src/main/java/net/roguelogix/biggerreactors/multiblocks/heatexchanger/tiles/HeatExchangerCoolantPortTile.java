@@ -256,22 +256,19 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
         HETank = null;
         neighborChanged();
     }
-
+    
+    private final HeatExchangerCoolantPortState state = new HeatExchangerCoolantPortState(this);
+    
     @Nonnull
     @Override
     public HeatExchangerCoolantPortState getState() {
-        // TODO: populate with actual values
-        HeatExchangerCoolantPortState state = new HeatExchangerCoolantPortState(this);
-
-        state.direction = true;
-        state.condenser = false;
-
         return state;
     }
 
     @Override
     public void updateState() {
-        // TODO: trigger an actual update
+        state.direction = isInlet();
+        state.condenser = isCondenser();
     }
 
     @Override
@@ -296,5 +293,12 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
     @Override
     public Container createMenu(int windowId, @Nonnull PlayerInventory playerInventory, @Nonnull PlayerEntity player) {
         return new HeatExchangerCoolantPortContainer(windowId, this.pos, player);
+    }
+    
+    public void runRequest(String requestName, Object requestData) {
+        if(requestName.equals("setDirection")){
+            int direction = (Integer)requestData;
+            setInletOtherOutlet(direction == 0);
+        }
     }
 }

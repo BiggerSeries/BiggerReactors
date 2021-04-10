@@ -15,22 +15,22 @@ import javax.annotation.Nonnull;
 
 @RegisterContainer(name = "heat_exchanger_coolant_port")
 public class HeatExchangerCoolantPortContainer extends Container implements GuiSync.IGUIPacketProvider {
-
+    
     @RegisterContainer.Type
     public static ContainerType<HeatExchangerCoolantPortContainer> INSTANCE;
     @RegisterContainer.Supplier
     public static final ContainerSupplier SUPPLIER = HeatExchangerCoolantPortContainer::new;
-
+    
     private PlayerEntity player;
     private HeatExchangerCoolantPortTile tileEntity;
-
+    
     public HeatExchangerCoolantPortContainer(int windowId, BlockPos blockPos, PlayerEntity player) {
         super(INSTANCE, windowId);
         this.player = player;
         this.tileEntity = (HeatExchangerCoolantPortTile) player.world.getTileEntity(blockPos);
         this.getGuiPacket();
     }
-
+    
     /**
      * @return The current state of the machine.
      */
@@ -38,14 +38,14 @@ public class HeatExchangerCoolantPortContainer extends Container implements GuiS
     public GuiSync.IGUIPacket getGuiPacket() {
         return this.tileEntity.getState();
     }
-
+    
     @Override
     public boolean canInteractWith(@Nonnull PlayerEntity player) {
         assert tileEntity.getWorld() != null;
         return isWithinUsableDistance(IWorldPosCallable.of(tileEntity.getWorld(), tileEntity.getPos()),
                 player, HeatExchangerCoolantPortBlock.INSTANCE);
     }
-
+    
     @Override
     public void executeRequest(String requestName, Object requestData) {
         assert tileEntity.getWorld() != null;
@@ -54,7 +54,6 @@ public class HeatExchangerCoolantPortContainer extends Container implements GuiS
             return;
         }
 
-        // TODO: rogue, uncomment this line when HeatExchangerBaseTile is able to handle requests from the GUI
-        //tileEntity.runRequest(requestName, requestData);
+        tileEntity.runRequest(requestName, requestData);
     }
 }
