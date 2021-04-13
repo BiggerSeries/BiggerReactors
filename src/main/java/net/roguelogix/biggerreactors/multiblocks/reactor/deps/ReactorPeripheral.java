@@ -61,7 +61,7 @@ public class ReactorPeripheral implements IPeripheral {
         controllerSupplier.get().setActive(active ? ReactorActivity.ACTIVE : ReactorActivity.INACTIVE);
     }
     
-    private static class Battery {
+    public static class Battery {
         
         private final LamdbaExceptionUtils.Supplier_WithExceptions<ReactorMultiblockController, LuaException> controllerSupplier;
         
