@@ -82,7 +82,7 @@ public class ModernTurbineSimulation implements ITurbineSimulation {
         rotorCapacityPerRPM *= 2 * Math.PI;
         
         rotorMass *= Config.Turbine.Modern.RotorAxialMassPerBlade;
-        rotorMass += (double)rotorShafts * Config.Turbine.Modern.RotorAxialMassPerShaft;
+        rotorMass += (double) rotorShafts * Config.Turbine.Modern.RotorAxialMassPerShaft;
         
         if (maxFlowRate == -1) {
             setNominalFlowRate((long) (rotorCapacityPerRPM * 1800));
@@ -200,7 +200,11 @@ public class ModernTurbineSimulation implements ITurbineSimulation {
                 effectiveFlowRate = rotorCapacity + excessFLow * excessEfficiency;
             }
             
-            rotorEfficiencyLastTick = effectiveFlowRate / flowRate;
+            if (flowRate != 0) {
+                rotorEfficiencyLastTick = effectiveFlowRate / flowRate;
+            } else {
+                rotorEfficiencyLastTick = 0;
+            }
             
             if (effectiveFlowRate > 0) {
                 rotorEnergy += fluidTank.activeTransition().latentHeat * effectiveFlowRate * fluidTank.activeTransition().turbineMultiplier;
@@ -208,7 +212,7 @@ public class ModernTurbineSimulation implements ITurbineSimulation {
             
         } else {
             fluidTank.flow(0, ventState != VentState.CLOSED);
-            rotorEfficiencyLastTick = 1;
+            rotorEfficiencyLastTick = 0;
         }
         
         if (ventState == VentState.ALL) {
