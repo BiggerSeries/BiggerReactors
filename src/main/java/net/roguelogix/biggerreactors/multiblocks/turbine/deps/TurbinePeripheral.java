@@ -245,7 +245,7 @@ public class TurbinePeripheral implements IPeripheral {
     @Nonnull
     @Override
     public String getType() {
-        return "BiggerReactors_Turbine_";
+        return "BiggerReactors_Turbine";
     }
     
     @Override

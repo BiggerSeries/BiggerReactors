@@ -191,7 +191,7 @@ public class HeatExchangerPeripheral implements IPeripheral {
     @Nonnull
     @Override
     public String getType() {
-        return "BiggerReactors_Heat-Exchanger_";
+        return "BiggerReactors_Heat-Exchanger";
     }
     
     @Override

@@ -324,7 +324,7 @@ public class ReactorPeripheral implements IPeripheral {
     @Nonnull
     @Override
     public String getType() {
-        return "BiggerReactors_Reactor_";
+        return "BiggerReactors_Reactor";
     }
     
     @Override
