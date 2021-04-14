@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IGI",
+    "G G",
+    "IGI"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "G": {
+      "tag": "minecraft:glass"
+    }
+  },
+  "result": {
+    "item": "biggerreactors:reactor_manifold",
+    "count": 4
+  }
+}
