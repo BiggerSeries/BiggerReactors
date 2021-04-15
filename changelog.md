@@ -1,3 +1,24 @@
+# 1.16.5-0.5.0-beta.1
+99 little bugs in the code, 99 little bugs. \
+Take one down, patch it around, 127 little bugs in the code...
+
+## Reactor
+ - Fix CC battery function
+ - Remove extra underscore from CC peripheral name
+ - Add manifold crafting recipe
+
+## Turbine
+ - Fixed NPE crash
+ - Fixed displaying NaN efficiency in some cases
+ - Remove extra underscore from CC peripheral name
+
+## Heat Exchanger
+ - Updated the GUI to better reflect internal workings
+ - Remove extra underscore from CC peripheral name
+
+## Misc
+ - Correct itemgroup key in lang file
+
 # 1.16.5-0.5.0-beta
 Still april fools, right? no? That was last week? *well fuck.*
 
