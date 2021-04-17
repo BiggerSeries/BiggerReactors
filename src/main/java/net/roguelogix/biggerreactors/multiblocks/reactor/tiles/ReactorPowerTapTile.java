@@ -80,7 +80,7 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophyl
             return 0;
         }
         long toExtract = controller.simulation().battery().stored();
-        toExtract = Math.max(maxExtract, toExtract);
+        toExtract = Math.min(maxExtract, toExtract);
         if (!simulate) {
             toExtract = controller.simulation().battery().extract(toExtract);
         }
