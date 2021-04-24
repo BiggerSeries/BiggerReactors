@@ -49,14 +49,6 @@ public class ReactorComputerPortTile extends ReactorBaseTile implements IOnAssem
     }
     
     @Override
-    protected void invalidateCaps() {
-        super.invalidateCaps();
-        if(peripheralCapability != null){
-            peripheralCapability.invalidate();
-        }
-    }
-    
-    @Override
     public void onAssembly() {
         // class loading BS, dont remove this if
         if (CAPABILITY_PERIPHERAL != null) {
