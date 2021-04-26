@@ -280,7 +280,7 @@ public class ReactorPeripheral implements IPeripheral {
     ArrayList<ControlRod> controlRods = new ArrayList<>();
     
     @LuaFunction
-    int controlRodCount() {
+    public int controlRodCount() {
         return controlRods.size();
     }
     

@@ -60,7 +60,7 @@ public class TurbinePeripheral implements IPeripheral {
     }
     
     
-    private static class Battery {
+    public static class Battery {
         
         private final LamdbaExceptionUtils.Supplier_WithExceptions<TurbineMultiblockController, LuaException> controllerSupplier;
         
@@ -201,44 +201,44 @@ public class TurbinePeripheral implements IPeripheral {
         }
         
         @LuaFunction
-        boolean closed() throws LuaException {
+        public boolean closed() throws LuaException {
             return controllerSupplier.get().simulation().ventState() == VentState.CLOSED;
         }
         
         @LuaFunction
-        boolean overflow() throws LuaException {
+        public boolean overflow() throws LuaException {
             return controllerSupplier.get().simulation().ventState() == VentState.OVERFLOW;
         }
         
         @LuaFunction
-        boolean all() throws LuaException {
+        public boolean all() throws LuaException {
             return controllerSupplier.get().simulation().ventState() == VentState.ALL;
         }
         
         @LuaFunction
-        void setClosed() throws LuaException {
+        public void setClosed() throws LuaException {
             controllerSupplier.get().simulation().setVentState(VentState.CLOSED);
         }
         
         @LuaFunction
-        void setOverflow() throws LuaException {
+        public void setOverflow() throws LuaException {
             controllerSupplier.get().simulation().setVentState(VentState.OVERFLOW);
         }
         
         @LuaFunction
-        void setAll() throws LuaException {
+        public void setAll() throws LuaException {
             controllerSupplier.get().simulation().setVentState(VentState.ALL);
         }
     }
     
     
     @LuaFunction
-    boolean coilEngaged() throws LuaException {
+    public boolean coilEngaged() throws LuaException {
         return controllerSupplier.get().simulation().coilEngaged();
     }
     
     @LuaFunction
-    void setCoilEngaged(boolean engaged) throws LuaException {
+    public void setCoilEngaged(boolean engaged) throws LuaException {
         controllerSupplier.get().simulation().setCoilEngaged(engaged);
     }
     
