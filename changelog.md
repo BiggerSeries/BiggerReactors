@@ -1,3 +1,16 @@
+# 1.16.5-0.5.0-beta.2
+
+# Reactor
+ - Fix negative power bug
+ - Keep CC modem connected on reload
+ - fix controlRodCount CC function
+
+# Turbine
+ - Fix negative power bug
+ - fix CC battery function
+ - fix CC vent controls
+ - fix CC coil controls
+
 # 1.16.5-0.5.0-beta.1
 99 little bugs in the code, 99 little bugs. \
 Take one down, patch it around, 127 little bugs in the code...
