@@ -12,6 +12,8 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.roguelogix.biggerreactors.BiggerReactors;
+import net.roguelogix.biggerreactors.multiblocks.reactor.containers.ReactorTerminalContainer;
+import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorState;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.VentState;
 import net.roguelogix.biggerreactors.multiblocks.turbine.containers.TurbineTerminalContainer;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineActivity;
@@ -274,6 +276,9 @@ public class TurbineTerminalScreen extends ScreenBase<TurbineTerminalContainer> 
      */
     @Override
     public void tick() {
+        // Update turbine state and tick.
+        turbineState = (TurbineState) this.getContainer().getGuiPacket();
+        super.tick();
         // Check if intake type changed.
         if(!turbineState.intakeResourceLocation.equals(Objects.requireNonNull(intakeFluid.getRegistryName()).toString())) {
             intakeFluid = Registry.FLUID.getOrDefault(new ResourceLocation(turbineState.intakeResourceLocation));
