@@ -90,6 +90,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
                         }
                         if(!(edgeTile instanceof ReactorGlassTile) && ((ReactorBaseBlock)edgeTile.getBlockState().getBlock()).isGoodForExterior()){
                             manifoldsToCheck.add(manifold);
+                            manifold.lastCheckedTick = tick;
                             break;
                         }
                     }
@@ -97,6 +98,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             }
             
             while (!manifoldsToCheck.isEmpty()) {
+                // done like this to avoid array shuffling
                 ReactorManifoldTile manifoldTile = manifoldsToCheck.remove(manifoldsToCheck.size() - 1);
                 manifoldTile.lastCheckedTick = tick;
                 for (Direction value : Direction.values()) {
