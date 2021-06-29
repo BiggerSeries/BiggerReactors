@@ -1,0 +1,8 @@
+{
+    type: "fluid",
+    location: "allthemodium:molten_unobtainium",
+    absorption: 0.95,
+    efficiency: 0.82,
+    moderation: 2,
+    conductivity: 5
+}

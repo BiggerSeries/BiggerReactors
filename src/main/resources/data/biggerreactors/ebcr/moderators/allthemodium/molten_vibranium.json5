@@ -1,0 +1,8 @@
+{
+    type: "fluid",
+    location: "allthemodium:molten_vibranium",
+    absorption: 0.15,
+    efficiency: 0.75,
+    moderation: 8,
+    conductivity: 4
+}

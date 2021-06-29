@@ -1,0 +1,20 @@
+{
+    // Resource location type
+    liquidType: "registry",
+    // resource location
+    liquid: "allthemodium:molten_allthemodium",
+    // thermal conductivity, in watts per metre-kelvin
+    liquidThermalConductivity: 5,
+    // resource location type
+    gasType: "registry",
+    // resource location
+    gas: "allthemodium:vapor_allthemodium",
+    // thermal conductivity, in watts per metre-kelvin
+    gasThermalConductivity: 5,
+    // latent heat of vaporization, in rf/mb
+    latentHeat: 40,
+    // boiling point, in K
+    boilingPoint: 1773.15,
+    // effect multiplier in a turbine, 0 to disable for a turbine
+    turbineMultiplier: 0,
+}
