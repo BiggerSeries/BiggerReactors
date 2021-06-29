@@ -1,3 +1,18 @@
+# 1.16.5-0.5.0-beta.3
+
+# Reactor
+ - fix manifold recipe
+ - Add allthemodium/vibranium/unobtainium fluid/vapor moderator support
+ - Add moderator values for superheated sodium, lava, and liquid obsidian
+ - Add fluid support to moderator registry
+ - Have manifold only consider cold side for dynamic moderator properties
+
+# Heat Exchanger
+ - Use correct tank sizes in GUI
+
+# Misc
+ - Add allthemodium/vibranium/unobtainium fluid/vapor transitions
+
 # 1.16.5-0.5.0-beta.2
 
 # Reactor
