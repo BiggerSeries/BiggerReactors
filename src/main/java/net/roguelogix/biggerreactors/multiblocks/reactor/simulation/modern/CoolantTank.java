@@ -24,7 +24,6 @@ public class CoolantTank extends FluidTransitionTank implements IReactorCoolantT
     
     private ReactorModeratorRegistry.IModeratorProperties airProperties = ReactorModeratorRegistry.EMPTY_MODERATOR;
     private ReactorModeratorRegistry.IModeratorProperties liquidProperties = ReactorModeratorRegistry.EMPTY_MODERATOR;
-    private ReactorModeratorRegistry.IModeratorProperties vaporProperties = ReactorModeratorRegistry.EMPTY_MODERATOR;
     
     @Override
     protected void transitionUpdate() {
@@ -33,19 +32,11 @@ public class CoolantTank extends FluidTransitionTank implements IReactorCoolantT
             airProperties = ReactorModeratorRegistry.EMPTY_MODERATOR;
         }
         liquidProperties = airProperties;
-        vaporProperties = airProperties;
         Fluid liquid = inFluid;
         if (liquid != null) {
             liquidProperties = ReactorModeratorRegistry.blockModeratorProperties(liquid.getDefaultState().getBlockState().getBlock());
             if (liquidProperties == null) {
                 liquidProperties = airProperties;
-            }
-        }
-        Fluid vapor = inFluid;
-        if (vapor != null) {
-            vaporProperties = ReactorModeratorRegistry.blockModeratorProperties(vapor.getDefaultState().getBlockState().getBlock());
-            if (vaporProperties == null) {
-                vaporProperties = airProperties;
             }
         }
     }
@@ -56,10 +47,9 @@ public class CoolantTank extends FluidTransitionTank implements IReactorCoolantT
             return airProperties.absorption();
         }
         double absorption = 0;
-        absorption += airProperties.absorption() * ((perSideCapacity * 2) - (inAmount + outAmount));
+        absorption += airProperties.absorption() * ((perSideCapacity) - (inAmount));
         absorption += liquidProperties.absorption() * inAmount;
-        absorption += vaporProperties.absorption() * outAmount;
-        absorption /= perSideCapacity * 2;
+        absorption /= perSideCapacity;
         return absorption;
     }
     
@@ -69,10 +59,9 @@ public class CoolantTank extends FluidTransitionTank implements IReactorCoolantT
             return airProperties.heatEfficiency();
         }
         double heatEfficiency = 0;
-        heatEfficiency += airProperties.heatEfficiency() * ((perSideCapacity * 2) - (inAmount + outAmount));
+        heatEfficiency += airProperties.heatEfficiency() * ((perSideCapacity) - (inAmount));
         heatEfficiency += liquidProperties.heatEfficiency() * inAmount;
-        heatEfficiency += vaporProperties.heatEfficiency() * outAmount;
-        heatEfficiency /= perSideCapacity * 2;
+        heatEfficiency /= perSideCapacity;
         return heatEfficiency;
     }
     
@@ -82,10 +71,9 @@ public class CoolantTank extends FluidTransitionTank implements IReactorCoolantT
             return airProperties.moderation();
         }
         double moderation = 0;
-        moderation += airProperties.moderation() * ((perSideCapacity * 2) - (inAmount + outAmount));
+        moderation += airProperties.moderation() * ((perSideCapacity) - (inAmount));
         moderation += liquidProperties.moderation() * inAmount;
-        moderation += vaporProperties.moderation() * outAmount;
-        moderation /= perSideCapacity * 2;
+        moderation /= perSideCapacity;
         return moderation;
     }
     
@@ -95,10 +83,9 @@ public class CoolantTank extends FluidTransitionTank implements IReactorCoolantT
             return airProperties.heatConductivity();
         }
         double heatConductivity = 0;
-        heatConductivity += airProperties.heatConductivity() * ((perSideCapacity * 2) - (inAmount + outAmount));
+        heatConductivity += airProperties.heatConductivity() * ((perSideCapacity) - (inAmount));
         heatConductivity += liquidProperties.heatConductivity() * inAmount;
-        heatConductivity += vaporProperties.heatConductivity() * outAmount;
-        heatConductivity /= perSideCapacity * 2;
+        heatConductivity /= perSideCapacity;
         return heatConductivity;
     }
 }
