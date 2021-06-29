@@ -267,9 +267,6 @@ public class Config {
         @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
         public static double AmbientFEPerKelvinMetreSquared = 0.2f;
 
-        @PhosphophylliteConfig.Value(range = "(0,)", comment = "Max fluid tank capacity.")
-        public static int FluidTankCapacity = 5000;
-
         @PhosphophylliteConfig
         public static class GUI {
             @PhosphophylliteConfig.Value

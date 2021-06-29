@@ -106,13 +106,13 @@ public class HeatExchangerTerminalScreen extends ScreenBase<HeatExchangerTermina
         // (Top) Condenser intake tank:
         Symbol<HeatExchangerTerminalContainer> condenserIntakeTank = new Symbol<>(this, 8, 36, 18, 64, 0, 144, StringTextComponent.EMPTY);
         condenserIntakeTank.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> CommonRender.renderFluidGauge(mS,
-                condenserIntakeTank, heatExchangerState.condenserIntakeFluidAmount, Config.HeatExchanger.FluidTankCapacity, this.condenserIntakeFluid);
+                condenserIntakeTank, heatExchangerState.condenserIntakeFluidAmount, heatExchangerState.condenserTankSize, this.condenserIntakeFluid);
         this.addElement(condenserIntakeTank);
 
         // (Top) Evaporator intake tank:
         Symbol<HeatExchangerTerminalContainer> evaporatorIntakeTank = new Symbol<>(this, 30, 36, 18, 64, 0, 144, StringTextComponent.EMPTY);
         evaporatorIntakeTank.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> CommonRender.renderFluidGauge(mS,
-                evaporatorIntakeTank, heatExchangerState.evaporatorIntakeFluidAmount, Config.HeatExchanger.FluidTankCapacity, this.evaporatorIntakeFluid);
+                evaporatorIntakeTank, heatExchangerState.evaporatorIntakeFluidAmount, heatExchangerState.evaporatorTankSize, this.evaporatorIntakeFluid);
         this.addElement(evaporatorIntakeTank);
 
         // (Top) Condenser heat gauge:
@@ -128,13 +128,13 @@ public class HeatExchangerTerminalScreen extends ScreenBase<HeatExchangerTermina
         // (Top) Condenser exhaust tank:
         Symbol<HeatExchangerTerminalContainer> condenserExhaustTank = new Symbol<>(this, 96, 36, 18, 64, 0, 144, StringTextComponent.EMPTY);
         condenserExhaustTank.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> CommonRender.renderFluidGauge(mS,
-                condenserExhaustTank, heatExchangerState.condenserExhaustFluidAmount, Config.HeatExchanger.FluidTankCapacity, this.condenserExhaustFluid);
+                condenserExhaustTank, heatExchangerState.condenserExhaustFluidAmount, heatExchangerState.condenserTankSize, this.condenserExhaustFluid);
         this.addElement(condenserExhaustTank);
 
         // (Top) Evaporator exhaust tank:
         Symbol<HeatExchangerTerminalContainer> evaporatorExhaustTank = new Symbol<>(this, 118, 36, 18, 64, 0, 144, StringTextComponent.EMPTY);
         evaporatorExhaustTank.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> CommonRender.renderFluidGauge(mS,
-                evaporatorExhaustTank, heatExchangerState.evaporatorExhaustFluidAmount, Config.HeatExchanger.FluidTankCapacity, this.evaporatorExhaustFluid);
+                evaporatorExhaustTank, heatExchangerState.evaporatorExhaustFluidAmount, heatExchangerState.evaporatorTankSize, this.evaporatorExhaustFluid);
         this.addElement(evaporatorExhaustTank);
     }
 
