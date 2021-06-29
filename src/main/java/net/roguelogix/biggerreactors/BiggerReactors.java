@@ -68,7 +68,7 @@ public class BiggerReactors {
         if(dataPackRegistries == null){
             return;
         }
-        ReactorModeratorRegistry.loadRegistry(tagsUpdatedEvent.getTagManager().getBlockTags());
+        ReactorModeratorRegistry.loadRegistry(tagsUpdatedEvent.getTagManager());
         TurbineCoilRegistry.loadRegistry(tagsUpdatedEvent.getTagManager().getBlockTags());
         FluidTransitionRegistry.loadRegistry(tagsUpdatedEvent.getTagManager().getFluidTags());
     }

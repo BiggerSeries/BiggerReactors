@@ -1,8 +1,10 @@
 package net.roguelogix.biggerreactors.registries;
 
 import net.minecraft.block.Block;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.tags.ITag;
 import net.minecraft.tags.ITagCollection;
+import net.minecraft.tags.ITagCollectionSupplier;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
@@ -98,7 +100,7 @@ public class ReactorModeratorRegistry {
     
     private static class ReactorModeratorJsonData {
         
-        @DataLoader.Values({"tag", "registry"})
+        @DataLoader.Values({"tag", "registry", "fluidtag", "fluid"})
         String type;
         
         ResourceLocation location;
@@ -118,7 +120,10 @@ public class ReactorModeratorRegistry {
     
     private static final DataLoader<ReactorModeratorJsonData> dataLoader = new DataLoader<>(ReactorModeratorJsonData.class);
     
-    public static void loadRegistry(ITagCollection<Block> blockTags) {
+    public static void loadRegistry(ITagCollectionSupplier tags) {
+        
+        ITagCollection<Block> blockTags = tags.getBlockTags();
+        ITagCollection<Fluid> fluidTags = tags.getFluidTags();
         
         BiggerReactors.LOGGER.info("Loading reactor moderators");
         registry.clear();
@@ -129,22 +134,48 @@ public class ReactorModeratorRegistry {
         for (ReactorModeratorJsonData moderatorData : data) {
             
             ModeratorProperties properties = new ModeratorProperties(moderatorData.absorption, moderatorData.efficiency, moderatorData.moderation, moderatorData.conductivity);
-            
-            if (moderatorData.type.equals("tag")) {
-                ITag<Block> blockTag = blockTags.get(moderatorData.location);
-                if (blockTag == null) {
-                    continue;
+    
+            switch (moderatorData.type) {
+                case "tag": {
+                    ITag<Block> blockTag = blockTags.get(moderatorData.location);
+                    if (blockTag == null) {
+                        continue;
+                    }
+                    for (Block element : blockTag.getAllElements()) {
+                        registry.put(element, properties);
+                        BiggerReactors.LOGGER.debug("Loaded moderator " + element.getRegistryName().toString());
+                    }
+                    break;
                 }
-                for (Block element : blockTag.getAllElements()) {
-                    registry.put(element, properties);
-                    BiggerReactors.LOGGER.debug("Loaded moderator " + element.getRegistryName().toString());
+                case "registry":
+                    // cant check against air, because air is a valid thing to load
+                    if (ForgeRegistries.BLOCKS.containsKey(moderatorData.location)) {
+                        registry.put(ForgeRegistries.BLOCKS.getValue(moderatorData.location), properties);
+                        BiggerReactors.LOGGER.debug("Loaded moderator " + moderatorData.location);
+                    }
+                    break;
+                case "fluidtag": {
+                    ITag<Fluid> blockTag = fluidTags.get(moderatorData.location);
+                    if (blockTag == null) {
+                        continue;
+                    }
+                    for (Fluid element : blockTag.getAllElements()) {
+                        Block elementBlock = element.getDefaultState().getBlockState().getBlock();
+                        registry.put(elementBlock, properties);
+                        BiggerReactors.LOGGER.debug("Loaded moderator " + element.getRegistryName().toString());
+                    }
+                    break;
                 }
-            } else {
-                // cant check against air, because air is a valid thing to load
-                if (ForgeRegistries.BLOCKS.containsKey(moderatorData.location)) {
-                    registry.put(ForgeRegistries.BLOCKS.getValue(moderatorData.location), properties);
-                    BiggerReactors.LOGGER.debug("Loaded moderator " + moderatorData.location);
-                }
+                case "fluid":
+                    // cant check against air, because air is a valid thing to load
+                    if (ForgeRegistries.FLUIDS.containsKey(moderatorData.location)) {
+                        Fluid fluid = ForgeRegistries.FLUIDS.getValue(moderatorData.location);
+                        assert fluid != null;
+                        Block block = fluid.getDefaultState().getBlockState().getBlock();
+                        registry.put(block, properties);
+                        BiggerReactors.LOGGER.debug("Loaded moderator " + moderatorData.location);
+                    }
+                    break;
             }
         }
         BiggerReactors.LOGGER.info("Loaded " + registry.size() + " moderator entries");
