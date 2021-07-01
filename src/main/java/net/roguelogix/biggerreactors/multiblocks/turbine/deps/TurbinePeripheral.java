@@ -33,7 +33,7 @@ public class TurbinePeripheral implements IPeripheral {
     }
     
     @LuaFunction
-    public boolean getConnected() {
+    public boolean connected() {
         if (rawControllerSupplier.get() == null) {
             return false;
         }
