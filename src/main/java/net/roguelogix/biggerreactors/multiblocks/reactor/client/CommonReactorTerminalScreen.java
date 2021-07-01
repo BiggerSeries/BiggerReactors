@@ -238,7 +238,7 @@ public class CommonReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
         // Update tooltip.
         symbol.tooltip = new StringTextComponent(String.format(
                 new TranslationTextComponent("screen.biggerreactors.reactor_terminal.fuel_mix_gauge.tooltip").getString(),
-                RenderHelper.formatValue((fuelStored + wasteStored) / 1000.0, null, true),
+                RenderHelper.formatValue((fuelStored + wasteStored) / 1000.0, "B", true),
                 RenderHelper.formatValue(fuelCapacity / 1000.0, "B", true),
                 RenderHelper.formatValue(fuelStored / 1000.0, "B", true),
                 RenderHelper.formatValue(wasteStored / 1000.0, "B", true)));

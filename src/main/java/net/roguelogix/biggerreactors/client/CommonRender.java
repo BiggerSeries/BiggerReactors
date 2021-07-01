@@ -49,7 +49,7 @@ public class CommonRender {
         symbol.blit(mStack, 0, 0);
         // Update tooltip.
         symbol.tooltip = new StringTextComponent(String.format("%s/%s",
-                RenderHelper.formatValue(energyStored, null),
+                RenderHelper.formatValue(energyStored, "RF"),
                 RenderHelper.formatValue(energyCapacity, "RF")));
         // Reset color and restore the previously bound texture.
         RenderHelper.clearRenderColor();
@@ -86,7 +86,7 @@ public class CommonRender {
         symbol.blit(mStack, 72, 0);
         // Update tooltip.
         symbol.tooltip = new StringTextComponent(String.format("%s/%s of %s",
-                RenderHelper.formatValue((fluidStored / 1000.0), null, true),
+                RenderHelper.formatValue((fluidStored / 1000.0), "B", true),
                 RenderHelper.formatValue((fluidCapacity / 1000.0), "B", true),
                 new FluidStack(fluid, 1).getDisplayName().getString().toLowerCase()));
         // Reset color and restore the previously bound texture.
