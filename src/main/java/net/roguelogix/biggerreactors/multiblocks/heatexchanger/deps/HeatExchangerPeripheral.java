@@ -6,6 +6,7 @@ import dan200.computercraft.api.lua.LuaFunction;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import net.minecraftforge.common.util.LazyOptional;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.HeatExchangerMultiblockController;
+import net.roguelogix.biggerreactors.multiblocks.reactor.ReactorMultiblockController;
 import net.roguelogix.biggerreactors.util.FluidTransitionTank;
 import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
 import net.roguelogix.phosphophyllite.util.HeatBody;
@@ -38,6 +39,15 @@ public class HeatExchangerPeripheral implements IPeripheral {
         internalEnvironment = new InternalEnvironment(() -> controllerSupplier.get().airHeatBody);
     }
     
+    
+    @LuaFunction
+    public boolean connected() {
+        HeatExchangerMultiblockController controller = rawControllerSupplier.get();
+        if (controller == null) {
+            return false;
+        }
+        return controller.assemblyState() == MultiblockController.AssemblyState.ASSEMBLED;
+    }
     
     @Nonnull
     private HeatExchangerMultiblockController getController() throws LuaException {
