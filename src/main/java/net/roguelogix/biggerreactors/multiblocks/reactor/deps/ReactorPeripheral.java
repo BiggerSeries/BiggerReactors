@@ -39,7 +39,7 @@ public class ReactorPeripheral implements IPeripheral {
         if (controller == null) {
             return false;
         }
-        return controller.assemblyState() != MultiblockController.AssemblyState.DISASSEMBLED;
+        return controller.assemblyState() == MultiblockController.AssemblyState.ASSEMBLED;
     }
     
     @Nonnull
