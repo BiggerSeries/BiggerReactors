@@ -85,10 +85,10 @@ public class ReactorMultiblockController extends RectangularMultiblockController
                         mutableBlockPos.setPos(pos);
                         mutableBlockPos.move(value);
                         TileEntity edgeTile = blocks.getTile(mutableBlockPos);
-                        if(edgeTile == null){
+                        if (edgeTile == null) {
                             continue;
                         }
-                        if(!(edgeTile instanceof ReactorGlassTile) && ((ReactorBaseBlock)edgeTile.getBlockState().getBlock()).isGoodForExterior()){
+                        if (!(edgeTile instanceof ReactorGlassTile) && ((ReactorBaseBlock) edgeTile.getBlockState().getBlock()).isGoodForExterior()) {
                             manifoldsToCheck.add(manifold);
                             manifold.lastCheckedTick = tick;
                             break;
@@ -151,15 +151,13 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     
     
     @Override
-    protected void onPartAttached(@Nonnull ReactorBaseTile tile) {
+    protected synchronized void onPartAttached(@Nonnull ReactorBaseTile tile) {
         if (tile instanceof ReactorTerminalTile) {
             terminals.add((ReactorTerminalTile) tile);
         }
         if (tile instanceof ReactorControlRodTile) {
-            synchronized (controlRods) {
-                if (!controlRods.contains(tile)) {
-                    controlRods.add((ReactorControlRodTile) tile);
-                }
+            if (!controlRods.contains(tile)) {
+                controlRods.add((ReactorControlRodTile) tile);
             }
         }
         if (tile instanceof ReactorFuelRodTile) {
@@ -169,9 +167,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             powerPorts.add((ReactorPowerTapTile) tile);
         }
         if (tile instanceof ReactorAccessPortTile) {
-            synchronized (accessPorts) {
-                accessPorts.add((ReactorAccessPortTile) tile);
-            }
+            accessPorts.add((ReactorAccessPortTile) tile);
         }
         if (tile instanceof ReactorCoolantPortTile) {
             coolantPorts.add((ReactorCoolantPortTile) tile);
@@ -187,20 +183,18 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     }
     
     @Override
-    protected void onPartDetached(@Nonnull ReactorBaseTile tile) {
+    protected synchronized void onPartDetached(@Nonnull ReactorBaseTile tile) {
         if (tile instanceof ReactorTerminalTile) {
             terminals.remove(tile);
         }
         if (tile instanceof ReactorControlRodTile) {
-            synchronized (controlRods) {
-                // because order doesnt matter after a reactor is disassembled
-                // should help with chunk unload times
-                // yes this is specific to the arraylist
-                int index = controlRods.indexOf(tile);
-                if (index != -1) {
-                    controlRods.set(index, controlRods.get(controlRods.size() - 1));
-                    controlRods.remove(controlRods.size() - 1);
-                }
+            // because order doesnt matter after a reactor is disassembled
+            // should help with chunk unload times
+            // yes this is specific to the arraylist
+            int index = controlRods.indexOf(tile);
+            if (index != -1) {
+                controlRods.set(index, controlRods.get(controlRods.size() - 1));
+                controlRods.remove(controlRods.size() - 1);
             }
         }
         if (tile instanceof ReactorFuelRodTile) {
@@ -210,9 +204,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             powerPorts.remove(tile);
         }
         if (tile instanceof ReactorAccessPortTile) {
-            synchronized (accessPorts) {
-                accessPorts.remove(tile);
-            }
+            accessPorts.remove(tile);
         }
         if (tile instanceof ReactorCoolantPortTile) {
             coolantPorts.remove(tile);
@@ -349,7 +341,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     private boolean forceDirty = false;
     
     @Override
-    public void tick() {
+    public synchronized void tick() {
         
         simulation.tick();
         if (autoEjectWaste) {
@@ -509,7 +501,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     
     private boolean autoEjectWaste = true;
     
-    public void ejectWaste() {
+    public synchronized void ejectWaste() {
         for (ReactorAccessPortTile accessPort : accessPorts) {
             if (accessPort.isInlet()) {
                 continue;
@@ -530,7 +522,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         }
     }
     
-    public long extractWaste(long mb, boolean simulated) {
+    public synchronized long extractWaste(long mb, boolean simulated) {
         if (assemblyState() != AssemblyState.ASSEMBLED) {
             return 0;
         }
@@ -539,7 +531,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         return wasteExtracted;
     }
     
-    public long extractFuel(long mb, boolean simulated) {
+    public synchronized long extractFuel(long mb, boolean simulated) {
         if (assemblyState() != AssemblyState.ASSEMBLED) {
             return 0;
         }
@@ -548,7 +540,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         return fuelExtracted;
     }
     
-    public long refuel(long mb, boolean simulated) {
+    public synchronized long refuel(long mb, boolean simulated) {
         if (assemblyState() != AssemblyState.ASSEMBLED) {
             return 0;
         }
@@ -643,20 +635,16 @@ public class ReactorMultiblockController extends RectangularMultiblockController
                 "";
     }
     
-    public void setAllControlRodLevels(double newLevel) {
-        synchronized (controlRods) {
-            controlRods.forEach(rod -> {
-                rod.setInsertion(newLevel);
-            });
-            updateControlRodLevels();
-        }
+    public synchronized void setAllControlRodLevels(double newLevel) {
+        controlRods.forEach(rod -> {
+            rod.setInsertion(newLevel);
+        });
+        updateControlRodLevels();
     }
     
-    public void setControlRodLevel(int index, double newLevel) {
-        synchronized (controlRods) {
-            controlRods.get(index).setInsertion(newLevel);
-            updateControlRodLevels();
-        }
+    public synchronized void setControlRodLevel(int index, double newLevel) {
+        controlRods.get(index).setInsertion(newLevel);
+        updateControlRodLevels();
     }
     
     public double controlRodLevel(int index) {
