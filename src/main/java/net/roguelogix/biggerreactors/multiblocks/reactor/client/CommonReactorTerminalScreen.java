@@ -64,7 +64,7 @@ public class CommonReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
         // (Left) Temperature readout tooltip:
         Tooltip<ReactorTerminalContainer> temperatureReadoutTooltip = new Tooltip<>(screen, 26, 19, 53, 16, StringTextComponent.EMPTY);
         temperatureReadoutTooltip.onTick = () -> {
-            temperatureReadoutTooltip.tooltip = new StringTextComponent(String.format("%.3f \u00B0C", reactorState.caseHeatStored));
+            temperatureReadoutTooltip.tooltip = new StringTextComponent(String.format("%.3f \u00B0C", reactorState.fuelHeatStored));
         };
         screen.addElement(temperatureReadoutTooltip);
         
