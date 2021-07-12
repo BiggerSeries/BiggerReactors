@@ -113,7 +113,7 @@ public class PassiveReactorTerminalScreen extends ScreenBase<ReactorTerminalCont
 
         // Render the other text:
         CommonReactorTerminalScreen.renderStatusText(mStack, this, reactorState.reactorActivity, reactorState.doAutoEject,
-                reactorState.caseHeatStored, reactorState.fuelUsageRate, reactorState.reactivityRate);
+                reactorState.fuelHeatStored, reactorState.fuelUsageRate, reactorState.reactivityRate);
 
         // Render text for output rate:
         this.getFont().drawString(mStack, RenderHelper.formatValue(reactorState.reactorOutputRate, "RF/t"), this.getGuiLeft() + 27, this.getGuiTop() + 42, 4210752);
