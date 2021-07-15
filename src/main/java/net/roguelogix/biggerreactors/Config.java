@@ -49,76 +49,76 @@ public class Config {
         public static int MaxHeight = 192;
         
         @PhosphophylliteConfig.Value(range = "(0,)")
-        public static float FuelUsageMultiplier = 1;
+        public static double FuelUsageMultiplier = 1;
         @PhosphophylliteConfig.Value(range = "(0,)")
-        public static float OutputMultiplier = 1.0f;
+        public static double OutputMultiplier = 1.0f;
         @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-        public static float PassiveOutputMultiplier = 0.5f;
+        public static double PassiveOutputMultiplier = 0.5f;
         @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-        public static float ActiveOutputMultiplier = 1.0f;
+        public static double ActiveOutputMultiplier = 1.0f;
         @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
         public static long FuelMBPerIngot = 1000;
         
         @PhosphophylliteConfig
         public static class Classic {
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float AmbientTemperature = 20.0f;
+            public static double AmbientTemperature = 20.0f;
             @PhosphophylliteConfig.Value(range = "[1,)", advanced = true)
             public static long PerFuelRodCapacity = 4000;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float FuelFertilityMinimumDecay = 0.1f;
+            public static double FuelFertilityMinimumDecay = 0.1f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float FuelFertilityDecayDenominator = 20;
+            public static double FuelFertilityDecayDenominator = 20;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float FuelFertilityDecayDenominatorInactiveMultiplier = 200;
+            public static double FuelFertilityDecayDenominatorInactiveMultiplier = 200;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float FuelReactivity = 1.05f;
+            public static double FuelReactivity = 1.05f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static double FissionEventsPerFuelUnit = 0.01f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float FEPerRadiationUnit = 10f;
+            public static double FEPerRadiationUnit = 10f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float FuelPerRadiationUnit = 0.0007f;
+            public static double FuelPerRadiationUnit = 0.0007f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static long IrradiationDistance = 4;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float FuelHardnessDivisor = 1f;
+            public static double FuelHardnessDivisor = 1f;
             @PhosphophylliteConfig.Value(range = "[0,1]", advanced = true)
-            public static float FuelAbsorptionCoefficient = 0.5f;
+            public static double FuelAbsorptionCoefficient = 0.5f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float FuelModerationFactor = 1.5f;
+            public static double FuelModerationFactor = 1.5f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static double FEPerCentigradePerUnitVolume = 10.0f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float FuelToCasingTransferCoefficientMultiplier = 1.0f;
+            public static double FuelToCasingTransferCoefficientMultiplier = 1.0f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float CasingToCoolantSystemCoefficientMultiplier = 0.6f;
+            public static double CasingToCoolantSystemCoefficientMultiplier = 0.6f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float HeatLossCoefficientMultiplier = 0.001f;
+            public static double HeatLossCoefficientMultiplier = 0.001f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float PassiveCoolingTransferEfficiency = 0.2f;
+            public static double PassiveCoolingTransferEfficiency = 0.2f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float CasingHeatTransferCoefficient = 0.6f;
+            public static double CasingHeatTransferCoefficient = 0.6f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static long PassiveBatteryPerExternalBlock = 10_000;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static long CoolantTankAmountPerExternalBlock = 100;
             @PhosphophylliteConfig.Value(range = "(0,1]", advanced = true)
-            public static float RadIntensityScalingMultiplier = 0.95f;
+            public static double RadIntensityScalingMultiplier = 0.95f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float RadIntensityScalingRateExponentMultiplier = 1.2f;
+            public static double RadIntensityScalingRateExponentMultiplier = 1.2f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float RadIntensityScalingShiftMultiplier = 1f;
+            public static double RadIntensityScalingShiftMultiplier = 1f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float RadPenaltyShiftMultiplier = 15f;
+            public static double RadPenaltyShiftMultiplier = 15f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float RadPenaltyRateMultiplier = 2.5f;
+            public static double RadPenaltyRateMultiplier = 2.5f;
             @PhosphophylliteConfig.Value(range = "(0,1]", advanced = true)
-            public static float FuelAbsorptionScalingMultiplier = 0.95f;
+            public static double FuelAbsorptionScalingMultiplier = 0.95f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float FuelAbsorptionScalingShiftMultiplier = 1f;
+            public static double FuelAbsorptionScalingShiftMultiplier = 1f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float FuelAbsorptionScalingRateExponentMultiplier = 2.2f;
+            public static double FuelAbsorptionScalingRateExponentMultiplier = 2.2f;
         }
         
         @PhosphophylliteConfig
@@ -126,11 +126,11 @@ public class Config {
             @PhosphophylliteConfig.Value(range = "[1,)", advanced = true)
             public static long PerFuelRodCapacity = 4000;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float FuelFertilityMinimumDecay = 0.1f;
+            public static double FuelFertilityMinimumDecay = 0.1f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float FuelFertilityDecayDenominator = 20;
+            public static double FuelFertilityDecayDenominator = 20;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float FuelFertilityDecayDenominatorInactiveMultiplier = 200;
+            public static double FuelFertilityDecayDenominatorInactiveMultiplier = 200;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static int RayCount = 32;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
@@ -144,7 +144,7 @@ public class Config {
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static long PassiveBatteryPerExternalBlock = 10_000;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float PassiveCoolingTransferEfficiency = 0.2f;
+            public static double PassiveCoolingTransferEfficiency = 0.2f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static long CoolantTankAmountPerFuelRod = 10_000;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
@@ -154,37 +154,37 @@ public class Config {
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static double RodFEPerUnitVolumeKelvin = 10;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float FuelReactivity = 1.05f;
+            public static double FuelReactivity = 1.05f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static double FissionEventsPerFuelUnit = 0.1f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float FEPerRadiationUnit = 10f;
+            public static double FEPerRadiationUnit = 10f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float FuelPerRadiationUnit = 0.0007f;
+            public static double FuelPerRadiationUnit = 0.0007f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static long IrradiationDistance = 4;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float FuelHardnessDivisor = 1f;
+            public static double FuelHardnessDivisor = 1f;
             @PhosphophylliteConfig.Value(range = "[0,1]", advanced = true)
-            public static float FuelAbsorptionCoefficient = 0.5f;
+            public static double FuelAbsorptionCoefficient = 0.5f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float FuelModerationFactor = 1.5f;
+            public static double FuelModerationFactor = 1.5f;
             @PhosphophylliteConfig.Value(range = "(0,1]", advanced = true)
-            public static float RadIntensityScalingMultiplier = 0.95f;
+            public static double RadIntensityScalingMultiplier = 0.95f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float RadIntensityScalingRateExponentMultiplier = 1.2f;
+            public static double RadIntensityScalingRateExponentMultiplier = 1.2f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float RadIntensityScalingShiftMultiplier = 1f;
+            public static double RadIntensityScalingShiftMultiplier = 1f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float RadPenaltyShiftMultiplier = 15f;
+            public static double RadPenaltyShiftMultiplier = 15f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float RadPenaltyRateMultiplier = 2.5f;
+            public static double RadPenaltyRateMultiplier = 2.5f;
             @PhosphophylliteConfig.Value(range = "(0,1]", advanced = true)
-            public static float FuelAbsorptionScalingMultiplier = 0.95f;
+            public static double FuelAbsorptionScalingMultiplier = 0.95f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float FuelAbsorptionScalingShiftMultiplier = 1f;
+            public static double FuelAbsorptionScalingShiftMultiplier = 1f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static float FuelAbsorptionScalingRateExponentMultiplier = 2.2f;
+            public static double FuelAbsorptionScalingRateExponentMultiplier = 2.2f;
         }
         
         @PhosphophylliteConfig
