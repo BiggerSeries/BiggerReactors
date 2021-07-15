@@ -11,6 +11,7 @@ import net.roguelogix.phosphophyllite.registry.OnModLoad;
 import net.roguelogix.phosphophyllite.repack.org.joml.*;
 import net.roguelogix.phosphophyllite.util.HeatBody;
 
+import javax.annotation.Nullable;
 import java.lang.Math;
 import java.util.ArrayList;
 
@@ -79,7 +80,7 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
         }
     }
     
-    private static final ArrayList<ArrayList<RayStep>> rays = new ArrayList<>();
+    private static final ArrayList<ArrayList<RayStep>> raySteps = new ArrayList<>();
     
     private static final Vector3dc[] rayDirections = new Vector3dc[]{
             new Vector3d(+1, 0, 0),
@@ -105,6 +106,99 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
             new Vector3d(+1, 0, -1),
             new Vector3d(-1, 0, -1),
     };
+    
+    
+    private static final class Ray {
+        final int blocks;
+        
+        final ControlRod stepOneRod;
+        final double stepOneAbsorption;
+        final double stepOneHeatEfficiency;
+        final double stepOneModeration;
+        final double stepOneMultiplier;
+        
+        final ControlRod stepTwoRod;
+        final double stepTwoAbsorption;
+        final double stepTwoHeatEfficiency;
+        final double stepTwoModeration;
+        final double stepTwoMultiplier;
+        
+        final ControlRod stepThreeRod;
+        final double stepThreeAbsorption;
+        final double stepThreeHeatEfficiency;
+        final double stepThreeModeration;
+        final double stepThreeMultiplier;
+        
+        final ControlRod stepFourRod;
+        final double stepFourAbsorption;
+        final double stepFourHeatEfficiency;
+        final double stepFourModeration;
+        final double stepFourMultiplier;
+        
+        Ray(int blocks,
+            @Nullable ReactorModeratorRegistry.IModeratorProperties stepOne, @Nullable ReactorModeratorRegistry.IModeratorProperties stepTwo, @Nullable ReactorModeratorRegistry.IModeratorProperties stepThree, @Nullable ReactorModeratorRegistry.IModeratorProperties stepFour,
+            @Nullable ControlRod stepOneRod, @Nullable ControlRod stepTwoRod, @Nullable ControlRod stepThreeRod, @Nullable ControlRod stepFourRod,
+            double stepOneMultiplier, double stepTwoMultiplier, double stepThreeMultiplier, double stepFourMultiplier
+        ) {
+            this.blocks = blocks;
+            
+            this.stepOneMultiplier = stepOneMultiplier;
+            this.stepTwoMultiplier = stepTwoMultiplier;
+            this.stepThreeMultiplier = stepThreeMultiplier;
+            this.stepFourMultiplier = stepFourMultiplier;
+            
+            if (stepOne == null) {
+                this.stepOneRod = stepOneRod;
+                stepOneAbsorption = 0;
+                stepOneHeatEfficiency = 0;
+                stepOneModeration = 0;
+            } else {
+                this.stepOneRod = null;
+                stepOneAbsorption = stepOne.absorption();
+                stepOneHeatEfficiency = stepOne.heatEfficiency();
+                stepOneModeration = stepOne.moderation();
+            }
+            
+            if (stepTwo == null) {
+                this.stepTwoRod = stepTwoRod;
+                stepTwoAbsorption = 0;
+                stepTwoHeatEfficiency = 0;
+                stepTwoModeration = 0;
+            } else {
+                this.stepTwoRod = null;
+                stepTwoAbsorption = stepTwo.absorption();
+                stepTwoHeatEfficiency = stepTwo.heatEfficiency();
+                stepTwoModeration = stepTwo.moderation();
+            }
+            
+            if (stepThree == null) {
+                this.stepThreeRod = stepThreeRod;
+                stepThreeAbsorption = 0;
+                stepThreeHeatEfficiency = 0;
+                stepThreeModeration = 0;
+            } else {
+                this.stepThreeRod = null;
+                stepThreeAbsorption = stepThree.absorption();
+                stepThreeHeatEfficiency = stepThree.heatEfficiency();
+                stepThreeModeration = stepThree.moderation();
+            }
+            
+            if (stepFour == null) {
+                this.stepFourRod = stepFourRod;
+                stepFourAbsorption = 0;
+                stepFourHeatEfficiency = 0;
+                stepFourModeration = 0;
+            } else {
+                this.stepFourRod = null;
+                stepFourAbsorption = stepFour.absorption();
+                stepFourHeatEfficiency = stepFour.heatEfficiency();
+                stepFourModeration = stepFour.moderation();
+            }
+        }
+    }
+    
+    private final ArrayList<ArrayList<Ray>> rodRays = new ArrayList<>();
+    
     
     @OnModLoad
     private static void onModLoad() {
@@ -198,7 +292,7 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
                 
                 currentSegmentStart.set(currentSegmentEnd);
             }
-            rays.add(raySteps);
+            ExperimentalReactorSimulation.raySteps.add(raySteps);
         }
     }
     
@@ -328,6 +422,57 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
         
         fuelHeat.setRfPerKelvin(controlRods.size() * y * Config.Reactor.Modern.RodFEPerUnitVolumeKelvin);
         caseHeat.setRfPerKelvin(x * y * z * Config.Reactor.Modern.RodFEPerUnitVolumeKelvin);
+        
+        rodRays.clear();
+        ReactorModeratorRegistry.IModeratorProperties[] moderatorProperties = new ReactorModeratorRegistry.IModeratorProperties[4];
+        ControlRod[] controlRods = new ControlRod[4];
+        double[] stepMultipliers = new double[4];
+        for (ControlRod rod : this.controlRods) {
+            ArrayList<Ray> rays = new ArrayList<>();
+            rodRays.add(rays);
+            for (ArrayList<RayStep> steps : raySteps) {
+                for (int i = 0; i < y; i++) {
+                    moderatorProperties[0] = null;
+                    moderatorProperties[1] = null;
+                    moderatorProperties[2] = null;
+                    moderatorProperties[3] = null;
+                    controlRods[0] = null;
+                    controlRods[1] = null;
+                    controlRods[2] = null;
+                    controlRods[3] = null;
+                    stepMultipliers[0] = 0;
+                    stepMultipliers[1] = 0;
+                    stepMultipliers[2] = 0;
+                    stepMultipliers[3] = 0;
+                    
+                    for (int j = 0; j < steps.size(); j++) {
+                        RayStep rayStep = steps.get(j);
+                        int currentX = rod.x + rayStep.offset.x;
+                        int currentY = i + rayStep.offset.y;
+                        int currentZ = rod.z + rayStep.offset.z;
+                        int shouldBreak = 0;
+                        shouldBreak |= currentX;
+                        shouldBreak |= currentY;
+                        shouldBreak |= currentZ;
+                        shouldBreak |= (x - currentX - 1);
+                        shouldBreak |= (y - currentY - 1);
+                        shouldBreak |= (z - currentZ - 1);
+                        if (shouldBreak < 0) {
+                            break;
+                        }
+                        moderatorProperties[j] = this.moderatorProperties[currentX][currentY][currentZ];
+                        controlRods[j] = this.controlRodsXZ[currentX][currentZ];
+                        stepMultipliers[j] = rayStep.length;
+                    }
+                    
+                    rays.add(new Ray(steps.size(),
+                            moderatorProperties[0], moderatorProperties[1], moderatorProperties[2], moderatorProperties[3],
+                            controlRods[0], controlRods[1], controlRods[2], controlRods[3],
+                            stepMultipliers[0], stepMultipliers[1], stepMultipliers[2], stepMultipliers[3]
+                    ));
+                }
+            }
+        }
     }
     
     @Override
@@ -388,6 +533,10 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
         // This will make radiation harder and harder to capture.
         final double initialHardness = 0.2f + (0.8 * radiationPenaltyBase);
         
+        double rawIntensity = (1f + (-Config.Reactor.Modern.RadIntensityScalingMultiplier * Math.exp(-10f * Config.Reactor.Modern.RadIntensityScalingShiftMultiplier * Math.exp(-0.001f * Config.Reactor.Modern.RadIntensityScalingRateExponentMultiplier * (fuelHeat.temperature() - 273.15)))));
+        double fuelAbsorptionTemperatureCoefficient = (1.0 - (Config.Reactor.Modern.FuelAbsorptionScalingMultiplier * Math.exp(-10 * Config.Reactor.Modern.FuelAbsorptionScalingShiftMultiplier * Math.exp(-0.001 * Config.Reactor.Modern.FuelAbsorptionScalingRateExponentMultiplier * (fuelHeat.temperature() - 273.15)))));
+        double fuelHardnessMultiplier = 1 / Config.Reactor.Modern.FuelHardnessDivisor;
+        
         double rawFuelUsage = 0;
         
         fuelRFAdded = 0;
@@ -403,33 +552,24 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
             double effectiveRawRadIntensity = rawRadIntensity * controlRodModifier;
             
             // Now nerf actual radiation production based on heat.
-            double initialIntensity = effectiveRadIntensity * (1f + (-Config.Reactor.Modern.RadIntensityScalingMultiplier * Math.exp(-10f * Config.Reactor.Modern.RadIntensityScalingShiftMultiplier * Math.exp(-0.001f * Config.Reactor.Modern.RadIntensityScalingRateExponentMultiplier * (fuelHeat.temperature() - 273.15)))));
+            double initialIntensity = effectiveRadIntensity * rawIntensity;
             
             // Calculate based on propagation-to-self
             rawFuelUsage += (Config.Reactor.Modern.FuelPerRadiationUnit * effectiveRawRadIntensity / fertility()) * Config.Reactor.FuelUsageMultiplier; // Not a typo. Fuel usage is thus penalized at high heats.
             fuelRFAdded += Config.Reactor.Modern.FEPerRadiationUnit * initialIntensity;
             
-            double rayMultiplier = 1.0 / (double) (rays.size() * y);
+            double rayMultiplier = 1.0 / (double) (raySteps.size() * y);
             
-            for (int i = 0; i < y; i++) {
-                for (int j = 0; j < rays.size(); j++) {
-                    ArrayList<RayStep> raySteps = rays.get(j);
-                    neutronHardness = initialHardness;
-                    neutronIntensity = initialIntensity * rayMultiplier;
-                    for (int k = 0; k < raySteps.size(); k++) {
-                        RayStep rayStep = raySteps.get(k);
-                        currentPosition.set(rod.x, i, rod.z);
-                        currentPosition.add(rayStep.offset);
-                        if (
-                                currentPosition.x < 0 || currentPosition.x >= x ||
-                                        currentPosition.y < 0 || currentPosition.y >= y ||
-                                        currentPosition.z < 0 || currentPosition.z >= z
-                        ) {
-                            break;
-                        }
-                        performIrradiation(currentPosition.x, currentPosition.z, moderatorProperties[currentPosition.x][currentPosition.y][currentPosition.z], rayStep.length);
-                    }
-                }
+            ArrayList<Ray> rays = rodRays.get(r);
+            
+            for (int i = 0; i < rays.size(); i++) {
+                Ray ray = rays.get(i);
+                neutronHardness = initialHardness;
+                neutronIntensity = initialIntensity * rayMultiplier;
+                performIrradiation(ray.stepOneRod, ray.stepOneAbsorption, ray.stepOneHeatEfficiency, ray.stepOneModeration, ray.stepOneMultiplier, fuelAbsorptionTemperatureCoefficient, fuelHardnessMultiplier);
+                performIrradiation(ray.stepTwoRod, ray.stepTwoAbsorption, ray.stepTwoHeatEfficiency, ray.stepTwoModeration, ray.stepTwoMultiplier, fuelAbsorptionTemperatureCoefficient, fuelHardnessMultiplier);
+                performIrradiation(ray.stepThreeRod, ray.stepThreeAbsorption, ray.stepThreeHeatEfficiency, ray.stepThreeModeration, ray.stepThreeMultiplier, fuelAbsorptionTemperatureCoefficient, fuelHardnessMultiplier);
+                performIrradiation(ray.stepFourRod, ray.stepFourAbsorption, ray.stepFourHeatEfficiency, ray.stepFourModeration, ray.stepFourMultiplier, fuelAbsorptionTemperatureCoefficient, fuelHardnessMultiplier);
             }
         }
         rawFuelUsage /= controlRods.size();
@@ -449,26 +589,26 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
         fuelConsumedLastTick = fuelTank.burn(rawFuelUsage);
     }
     
-    void performIrradiation(int x, int z, ReactorModeratorRegistry.IModeratorProperties properties, double effectMultiplier) {
+    void performIrradiation(ControlRod rod, double absorption, double heatEfficiency, double moderation, double effectMultiplier, double fuelAbsorptionTemperatureCoefficient, double fuelHardnessMultiplier) {
         // TODO, use exponentials for the effect multiplier, linear doesnt describe it perfectly
-        if (properties != null) {
-            double radiationAbsorbed = neutronIntensity * properties.absorption() * (1f - neutronHardness) * effectMultiplier;
-            neutronIntensity = Math.max(0f, neutronIntensity - radiationAbsorbed);
-            neutronHardness = neutronHardness / (((properties.moderation() - 1.0) * effectMultiplier) + 1.0);
-            caseRFAdded += properties.heatEfficiency() * radiationAbsorbed * Config.Reactor.Modern.FEPerRadiationUnit;
+        if (rod == null) {
+            double radiationAbsorbed = neutronIntensity * absorption * (1f - neutronHardness) * effectMultiplier;
+            neutronIntensity = Math.max(0, neutronIntensity - radiationAbsorbed);
+            neutronHardness = neutronHardness / (((moderation - 1.0) * effectMultiplier) + 1.0);
+            caseRFAdded += heatEfficiency * radiationAbsorbed * Config.Reactor.Modern.FEPerRadiationUnit;
         } else {
             // its a fuel rod!
             
             // Scale control rod insertion 0..1
-            double controlRodInsertion = Math.min(1f, Math.max(0f, controlRodsXZ[x][z].insertion / 100f));
+            double controlRodInsertion = rod.insertion * .001;
             
             // Fuel absorptiveness is determined by control rod + a heat modifier.
             // Starts at 1 and decays towards 0.05, reaching 0.6 at 1000 and just under 0.2 at 2000. Inflection point at about 500-600.
             // Harder radiation makes absorption more difficult.
-            double baseAbsorption = (1.0 - (Config.Reactor.Modern.FuelAbsorptionScalingMultiplier * Math.exp(-10 * Config.Reactor.Modern.FuelAbsorptionScalingShiftMultiplier * Math.exp(-0.001 * Config.Reactor.Modern.FuelAbsorptionScalingRateExponentMultiplier * (fuelHeat.temperature() - 273.15))))) * (1f - (neutronHardness / Config.Reactor.Modern.FuelHardnessDivisor));
+            double baseAbsorption = fuelAbsorptionTemperatureCoefficient * (1f - (neutronHardness * fuelHardnessMultiplier));
             
             // Some fuels are better at absorbing radiation than others
-            double scaledAbsorption = Math.min(1f, baseAbsorption * Config.Reactor.Modern.FuelAbsorptionCoefficient) * effectMultiplier;
+            double scaledAbsorption = baseAbsorption * Config.Reactor.Modern.FuelAbsorptionCoefficient * effectMultiplier;
             
             // Control rods increase total neutron absorption, but decrease the total neutrons which fertilize the fuel
             // Absorb up to 50% better with control rods inserted.
@@ -481,7 +621,7 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
             double fuelModerationFactor = Config.Reactor.Modern.FuelModerationFactor;
             fuelModerationFactor += fuelModerationFactor * controlRodInsertion + controlRodInsertion; // Full insertion doubles the moderation factor of the fuel as well as adding its own level
             
-            neutronIntensity = Math.max(0f, neutronIntensity - (radiationAbsorbed));
+            neutronIntensity = Math.max(0, neutronIntensity - (radiationAbsorbed));
             neutronHardness = neutronHardness / (((fuelModerationFactor - 1.0) * effectMultiplier) + 1.0);
             
             // Being irradiated both heats up the fuel and also enhances its fertility
@@ -489,7 +629,6 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
             fuelRadAdded += fertilityAbsorbed;
         }
     }
-    
     @Override
     public IReactorBattery battery() {
         return battery;
