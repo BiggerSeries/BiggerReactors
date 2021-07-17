@@ -152,6 +152,9 @@ dependencies {
     // compile against the JEI API but do not include it at runtime
     compileOnly fg.deobf("mezz.jei:jei-${jei_mc_version}:${jei_version}:api")
 
+    compile group: 'org.tensorflow', name: 'tensorflow-core-api', version: '0.3.1'
+    compile group: 'org.tensorflow', name: 'tensorflow-core-platform', version: '0.3.1'
+
 //    runtime ""
 //    runtime fg.deobf('flux-networks:FluxNetworks-1.15.2:5.0.1:2')
 //    runtime fg.deobf('curse.maven:thermalexpansion:3053266')
