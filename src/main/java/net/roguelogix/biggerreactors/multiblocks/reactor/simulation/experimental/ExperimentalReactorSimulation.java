@@ -366,8 +366,6 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
     private double fuelRadAdded;
     private double caseRFAdded;
     
-    private final Vector3i currentPosition = new Vector3i();
-    
     private void radiate() {
         
         // Base value for radiation production penalties. 0-1, caps at about 3000C;
@@ -437,7 +435,7 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
                         if (shouldBreak < 0) {
                             break;
                         }
-                        performIrradiation(currentPosition.x, currentPosition.z, moderatorProperties[currentPosition.x][currentPosition.y][currentPosition.z], rayStep.length, fuelAbsorptionTemperatureCoefficient, fuelHardnessMultiplier);
+                        performIrradiation(currentX, currentZ, moderatorProperties[currentX][currentY][currentZ], rayStep.length, fuelAbsorptionTemperatureCoefficient, fuelHardnessMultiplier);
                     }
                 }
             }
