@@ -360,12 +360,6 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
         caseHeat.transferWith(ambientHeat, casingToAmbientRFKT);
     }
     
-    private double neutronIntensity;
-    private double neutronHardness;
-    private double fuelRFAdded;
-    private double fuelRadAdded;
-    private double caseRFAdded;
-    
     private void radiate() {
         
         // Base value for radiation production penalties. 0-1, caps at about 3000C;
@@ -384,18 +378,18 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
         
         // Radiation hardness starts at 20% and asymptotically approaches 100% as heat rises.
         // This will make radiation harder and harder to capture.
-        final double initialHardness = 0.2f + (0.8 * radiationPenaltyBase);
+        final double initialHardness = Math.min(1.0, 0.2f + (0.8 * radiationPenaltyBase));
         
         double rawIntensity = (1f + (-Config.Reactor.Modern.RadIntensityScalingMultiplier * Math.exp(-10f * Config.Reactor.Modern.RadIntensityScalingShiftMultiplier * Math.exp(-0.001f * Config.Reactor.Modern.RadIntensityScalingRateExponentMultiplier * (fuelHeat.temperature() - 273.15)))));
         double fuelAbsorptionTemperatureCoefficient = (1.0 - (Config.Reactor.Modern.FuelAbsorptionScalingMultiplier * Math.exp(-10 * Config.Reactor.Modern.FuelAbsorptionScalingShiftMultiplier * Math.exp(-0.001 * Config.Reactor.Modern.FuelAbsorptionScalingRateExponentMultiplier * (fuelHeat.temperature() - 273.15)))));
         double fuelHardnessMultiplier = 1 / Config.Reactor.Modern.FuelHardnessDivisor;
     
         double rawFuelUsage = 0;
-        
-        fuelRFAdded = 0;
-        fuelRadAdded = 0;
-        caseRFAdded = 0;
-        
+    
+        double fuelRFAdded = 0;
+        double fuelRadAdded = 0;
+        double caseRFAdded = 0;
+    
         for (int r = 0; r < controlRods.size(); r++) {
             ControlRod rod = controlRods.get(r);
             
@@ -413,29 +407,59 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
             
             double rayMultiplier = 1.0 / (double) (rays.size() * y);
             
-            int currentX, currentY, currentZ;
-            
             for (int i = 0; i < y; i++) {
                 for (int j = 0; j < rays.size(); j++) {
                     ArrayList<RayStep> raySteps = rays.get(j);
-                    neutronHardness = initialHardness;
-                    neutronIntensity = initialIntensity * rayMultiplier;
+                    double neutronHardness = initialHardness;
+                    double neutronIntensity = initialIntensity * rayMultiplier;
                     for (int k = 0; k < raySteps.size(); k++) {
                         RayStep rayStep = raySteps.get(k);
-                        currentX = rod.x + rayStep.offset.x;
-                        currentY = i + rayStep.offset.y;
-                        currentZ = rod.z + rayStep.offset.z;
-                        int shouldBreak = 0;
-                        shouldBreak |= currentX;
-                        shouldBreak |= currentY;
-                        shouldBreak |= currentZ;
-                        shouldBreak |= (x - currentX - 1);
-                        shouldBreak |= (y - currentY - 1);
-                        shouldBreak |= (z - currentZ - 1);
-                        if (shouldBreak < 0) {
+                        int currentX = rod.x + rayStep.offset.x;
+                        int currentY = i + rayStep.offset.y;
+                        int currentZ = rod.z + rayStep.offset.z;
+                        if (currentX < 0 || currentX >= this.x ||
+                                currentY < 0 || currentY >= this.y ||
+                                currentZ < 0|| currentZ >= this.z) {
                             break;
                         }
-                        performIrradiation(currentX, currentZ, moderatorProperties[currentX][currentY][currentZ], rayStep.length, fuelAbsorptionTemperatureCoefficient, fuelHardnessMultiplier);
+                        ReactorModeratorRegistry.IModeratorProperties properties = moderatorProperties[currentX][currentY][currentZ];
+                        if (properties != null) {
+                            double radiationAbsorbed = neutronIntensity * properties.absorption() * (1f - neutronHardness) * rayStep.length;
+                            neutronIntensity = Math.max(0, neutronIntensity - radiationAbsorbed);
+                            neutronHardness = neutronHardness / (((properties.moderation() - 1.0) * rayStep.length) + 1.0);
+                            caseRFAdded += properties.heatEfficiency() * radiationAbsorbed * Config.Reactor.Modern.FEPerRadiationUnit;
+                        } else {
+                            // its a fuel rod!
+        
+                            // Scale control rod insertion 0..1
+                            double controlRodInsertion = controlRodsXZ[currentX][currentZ].insertion * .001;
+        
+                            // Fuel absorptiveness is determined by control rod + a heat modifier.
+                            // Starts at 1 and decays towards 0.05, reaching 0.6 at 1000 and just under 0.2 at 2000. Inflection point at about 500-600.
+                            // Harder radiation makes absorption more difficult.
+                            double baseAbsorption = fuelAbsorptionTemperatureCoefficient * (1f - (neutronHardness / Config.Reactor.Modern.FuelHardnessDivisor));
+        
+                            // Some fuels are better at absorbing radiation than others
+                            double scaledAbsorption = baseAbsorption * Config.Reactor.Modern.FuelAbsorptionCoefficient * rayStep.length;
+        
+                            // Control rods increase total neutron absorption, but decrease the total neutrons which fertilize the fuel
+                            // Absorb up to 50% better with control rods inserted.
+                            double controlRodBonus = (1f - scaledAbsorption) * controlRodInsertion * 0.5f;
+                            double controlRodPenalty = scaledAbsorption * controlRodInsertion * 0.5f;
+        
+                            double radiationAbsorbed = (scaledAbsorption + controlRodBonus) * neutronIntensity;
+                            double fertilityAbsorbed = (scaledAbsorption - controlRodPenalty) * neutronIntensity;
+        
+                            double fuelModerationFactor = Config.Reactor.Modern.FuelModerationFactor;
+                            fuelModerationFactor += fuelModerationFactor * controlRodInsertion + controlRodInsertion; // Full insertion doubles the moderation factor of the fuel as well as adding its own level
+        
+                            neutronIntensity = Math.max(0, neutronIntensity - (radiationAbsorbed));
+                            neutronHardness = neutronHardness / (((fuelModerationFactor - 1.0) * rayStep.length) + 1.0);
+        
+                            // Being irradiated both heats up the fuel and also enhances its fertility
+                            fuelRFAdded += radiationAbsorbed * Config.Reactor.Modern.FEPerRadiationUnit;
+                            fuelRadAdded += fertilityAbsorbed;
+                        }
                     }
                 }
             }
@@ -455,47 +479,6 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
             caseHeat.absorbRF(caseRFAdded);
         }
         fuelConsumedLastTick = fuelTank.burn(rawFuelUsage);
-    }
-    
-    void performIrradiation(int x, int z, ReactorModeratorRegistry.IModeratorProperties properties, double effectMultiplier, double fuelAbsorptionTemperatureCoefficient, double fuelHardnessMultiplier) {
-        // TODO, use exponentials for the effect multiplier, linear doesnt describe it perfectly
-        if (properties != null) {
-            double radiationAbsorbed = neutronIntensity * properties.absorption() * (1f - neutronHardness) * effectMultiplier;
-            neutronIntensity = Math.max(0, neutronIntensity - radiationAbsorbed);
-            neutronHardness = neutronHardness / (((properties.moderation() - 1.0) * effectMultiplier) + 1.0);
-            caseRFAdded += properties.heatEfficiency() * radiationAbsorbed * Config.Reactor.Modern.FEPerRadiationUnit;
-        } else {
-            // its a fuel rod!
-            
-            // Scale control rod insertion 0..1
-            double controlRodInsertion = controlRodsXZ[x][z].insertion * .001;
-            
-            // Fuel absorptiveness is determined by control rod + a heat modifier.
-            // Starts at 1 and decays towards 0.05, reaching 0.6 at 1000 and just under 0.2 at 2000. Inflection point at about 500-600.
-            // Harder radiation makes absorption more difficult.
-            double baseAbsorption = fuelAbsorptionTemperatureCoefficient * (1f - (neutronHardness * fuelHardnessMultiplier));
-            
-            // Some fuels are better at absorbing radiation than others
-            double scaledAbsorption = baseAbsorption * Config.Reactor.Modern.FuelAbsorptionCoefficient * effectMultiplier;
-            
-            // Control rods increase total neutron absorption, but decrease the total neutrons which fertilize the fuel
-            // Absorb up to 50% better with control rods inserted.
-            double controlRodBonus = (1f - scaledAbsorption) * controlRodInsertion * 0.5f;
-            double controlRodPenalty = scaledAbsorption * controlRodInsertion * 0.5f;
-            
-            double radiationAbsorbed = (scaledAbsorption + controlRodBonus) * neutronIntensity;
-            double fertilityAbsorbed = (scaledAbsorption - controlRodPenalty) * neutronIntensity;
-            
-            double fuelModerationFactor = Config.Reactor.Modern.FuelModerationFactor;
-            fuelModerationFactor += fuelModerationFactor * controlRodInsertion + controlRodInsertion; // Full insertion doubles the moderation factor of the fuel as well as adding its own level
-            
-            neutronIntensity = Math.max(0, neutronIntensity - (radiationAbsorbed));
-            neutronHardness = neutronHardness / (((fuelModerationFactor - 1.0) * effectMultiplier) + 1.0);
-            
-            // Being irradiated both heats up the fuel and also enhances its fertility
-            fuelRFAdded += radiationAbsorbed * Config.Reactor.Modern.FEPerRadiationUnit;
-            fuelRadAdded += fertilityAbsorbed;
-        }
     }
     
     @Override
