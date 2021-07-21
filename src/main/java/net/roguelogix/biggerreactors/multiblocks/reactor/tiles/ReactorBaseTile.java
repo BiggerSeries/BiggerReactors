@@ -1,5 +1,7 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.tiles;
 
+import net.minecraft.block.BlockState;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
 import net.roguelogix.biggerreactors.multiblocks.reactor.ReactorMultiblockController;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorBaseBlock;
@@ -31,5 +33,14 @@ public class ReactorBaseTile extends RectangularMultiblockTile<ReactorMultiblock
     
     public boolean isCurrentController(@Nullable ReactorMultiblockController reactorMultiblockController) {
         return controller == reactorMultiblockController;
+    }
+    
+    @Override
+    public CompoundNBT getUpdateTag() {
+        return new CompoundNBT();
+    }
+    
+    @Override
+    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
     }
 }
