@@ -142,7 +142,7 @@ public class Config {
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static double CasingToAmbientRFMKT = 0.001;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
-            public static long PassiveBatteryPerExternalBlock = 10_000;
+            public static long PassiveBatteryPerExternalBlock = 100_000;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static double PassiveCoolingTransferEfficiency = 0.2f;
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
