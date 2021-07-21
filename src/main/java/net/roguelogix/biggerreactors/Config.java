@@ -186,6 +186,12 @@ public class Config {
             @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
             public static double FuelAbsorptionScalingRateExponentMultiplier = 2.2f;
         }
+    
+        @PhosphophylliteConfig
+        public static class Experimental {
+            @PhosphophylliteConfig.Value(range = "(0,)", advanced = true)
+            public static int RodBatchSize = 4096;
+        }
         
         @PhosphophylliteConfig
         public static class GUI {

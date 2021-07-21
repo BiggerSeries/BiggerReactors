@@ -344,7 +344,7 @@ public class MultithreadedReactorSimulation implements IReactorSimulation {
             }
         }
         
-        final int BATCH_SIZE = 1024;
+        final int BATCH_SIZE = Config.Reactor.Experimental.RodBatchSize;
         
         batches.clear();
         int handledRods = 0;
