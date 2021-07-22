@@ -1,26 +1,43 @@
+# 1.16.5-0.5.0
+That's all folks!
+
+Next stop, 1.17!
+
+## Reactor
+ - Add experimental reactor simulation
+   - cripples servers on all cores, not recommended for normal use
+ - GUI displays fuel heat instead of casing heat
+ - Sync CC functions properly
+ - Increase internal battery size
+
+## Misc
+ - Animated terminal textures (thx Ridanisaurus)
+ - All parts of a tooltip will give their denomination
+ - Reduce tile update size, avoids chunkbaning when building large reactors/etc
+
 # 1.16.5-0.5.0-beta.3
 
-# Reactor
+## Reactor
  - fix manifold recipe
  - Add allthemodium/vibranium/unobtainium fluid/vapor moderator support
  - Add moderator values for superheated sodium, lava, and liquid obsidian
  - Add fluid support to moderator registry
  - Have manifold only consider cold side for dynamic moderator properties
 
-# Heat Exchanger
+## Heat Exchanger
  - Use correct tank sizes in GUI
 
-# Misc
+## Misc
  - Add allthemodium/vibranium/unobtainium fluid/vapor transitions
 
 # 1.16.5-0.5.0-beta.2
 
-# Reactor
+## Reactor
  - Fix negative power bug
  - Keep CC modem connected on reload
  - fix controlRodCount CC function
 
-# Turbine
+## Turbine
  - Fix negative power bug
  - fix CC battery function
  - fix CC vent controls
