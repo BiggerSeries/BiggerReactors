@@ -1,9 +1,9 @@
 package net.roguelogix.biggerreactors.multiblocks.turbine.state;
 
-import net.minecraft.state.EnumProperty;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 
-public enum TurbineShaftRotationState implements IStringSerializable {
+public enum TurbineShaftRotationState implements StringRepresentable {
     X,
     Y,
     Z;
@@ -12,7 +12,7 @@ public enum TurbineShaftRotationState implements IStringSerializable {
     public static final EnumProperty<TurbineShaftRotationState> TURBINE_SHAFT_ROTATION_STATE_ENUM_PROPERTY = EnumProperty.create("turbineshaftrotation", TurbineShaftRotationState.class);
     
     @Override
-    public String getString() {
+    public String getSerializedName() {
         return toString().toLowerCase();
     }
 }

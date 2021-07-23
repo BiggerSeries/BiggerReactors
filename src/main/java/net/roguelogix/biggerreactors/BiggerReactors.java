@@ -1,28 +1,26 @@
 package net.roguelogix.biggerreactors;
 
-import net.minecraft.client.gui.ScreenManager;
-import net.minecraft.resources.DataPackRegistries;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.server.ServerResources;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.TagsUpdatedEvent;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.server.FMLServerStoppedEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.fmlserverevents.FMLServerStoppedEvent;
 import net.roguelogix.biggerreactors.machine.client.CyaniteReprocessorScreen;
 import net.roguelogix.biggerreactors.machine.containers.CyaniteReprocessorContainer;
+import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.HeatExchangerCoolantPortContainer;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.HeatExchangerTerminalContainer;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.screen.HeatExchangerCoolantPortScreen;
-import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.HeatExchangerCoolantPortContainer;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.screen.HeatExchangerTerminalScreen;
-import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
 import net.roguelogix.biggerreactors.multiblocks.reactor.client.*;
 import net.roguelogix.biggerreactors.multiblocks.reactor.containers.*;
-import net.roguelogix.biggerreactors.registries.TurbineCoilRegistry;
 import net.roguelogix.biggerreactors.multiblocks.turbine.client.BladeRenderer;
 import net.roguelogix.biggerreactors.multiblocks.turbine.client.TurbineCoolantPortScreen;
 import net.roguelogix.biggerreactors.multiblocks.turbine.client.TurbineTerminalScreen;
@@ -30,6 +28,8 @@ import net.roguelogix.biggerreactors.multiblocks.turbine.containers.TurbineCoola
 import net.roguelogix.biggerreactors.multiblocks.turbine.containers.TurbineTerminalContainer;
 import net.roguelogix.biggerreactors.multiblocks.turbine.tiles.TurbineRotorBearingTile;
 import net.roguelogix.biggerreactors.registries.FluidTransitionRegistry;
+import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
+import net.roguelogix.biggerreactors.registries.TurbineCoilRegistry;
 import net.roguelogix.phosphophyllite.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,7 +54,7 @@ public class BiggerReactors {
 
     }
 
-    public static DataPackRegistries dataPackRegistries;
+    public static ServerResources dataPackRegistries;
 
     public void onAddReloadListenerEvent(AddReloadListenerEvent reloadListenerEvent) {
         dataPackRegistries = reloadListenerEvent.getDataPackRegistries();
@@ -69,35 +69,36 @@ public class BiggerReactors {
             return;
         }
         ReactorModeratorRegistry.loadRegistry(tagsUpdatedEvent.getTagManager());
-        TurbineCoilRegistry.loadRegistry(tagsUpdatedEvent.getTagManager().getBlockTags());
-        FluidTransitionRegistry.loadRegistry(tagsUpdatedEvent.getTagManager().getFluidTags());
+        TurbineCoilRegistry.loadRegistry(tagsUpdatedEvent.getTagManager().getOrEmpty(net.minecraft.core.Registry.BLOCK_REGISTRY));
+        FluidTransitionRegistry.loadRegistry(tagsUpdatedEvent.getTagManager().getOrEmpty(net.minecraft.core.Registry.FLUID_REGISTRY));
     }
 
     public void onClientSetup(final FMLClientSetupEvent e) {
         // TODO: 6/28/20 Registry.
         //  Since I already have the comment here, also need to do a capability registry. I have a somewhat dumb capability to register.
-        ScreenManager.registerFactory(CyaniteReprocessorContainer.INSTANCE,
+        MenuScreens.register(CyaniteReprocessorContainer.INSTANCE,
                 CyaniteReprocessorScreen::new);
-        ScreenManager.registerFactory(ReactorTerminalContainer.INSTANCE,
+        MenuScreens.register(ReactorTerminalContainer.INSTANCE,
                 CommonReactorTerminalScreen::new);
-        ScreenManager.registerFactory(ReactorCoolantPortContainer.INSTANCE,
+        MenuScreens.register(ReactorCoolantPortContainer.INSTANCE,
                 ReactorCoolantPortScreen::new);
-        ScreenManager.registerFactory(ReactorAccessPortContainer.INSTANCE,
+        MenuScreens.register(ReactorAccessPortContainer.INSTANCE,
                 ReactorAccessPortScreen::new);
-        ScreenManager.registerFactory(ReactorControlRodContainer.INSTANCE,
+        MenuScreens.register(ReactorControlRodContainer.INSTANCE,
                 ReactorControlRodScreen::new);
-        ScreenManager.registerFactory(ReactorRedstonePortContainer.INSTANCE,
+        MenuScreens.register(ReactorRedstonePortContainer.INSTANCE,
                 ReactorRedstonePortScreen::new);
-        ScreenManager.registerFactory(TurbineTerminalContainer.INSTANCE,
+        MenuScreens.register(TurbineTerminalContainer.INSTANCE,
                 TurbineTerminalScreen::new);
-        ScreenManager.registerFactory(TurbineCoolantPortContainer.INSTANCE,
+        MenuScreens.register(TurbineCoolantPortContainer.INSTANCE,
                 TurbineCoolantPortScreen::new);
-        ScreenManager.registerFactory(HeatExchangerTerminalContainer.INSTANCE,
+        MenuScreens.register(HeatExchangerTerminalContainer.INSTANCE,
                 HeatExchangerTerminalScreen::new);
-        ScreenManager.registerFactory(HeatExchangerCoolantPortContainer.INSTANCE,
+        MenuScreens.register(HeatExchangerCoolantPortContainer.INSTANCE,
                 HeatExchangerCoolantPortScreen::new);
-
-        ClientRegistry.bindTileEntityRenderer(TurbineRotorBearingTile.TYPE, BladeRenderer::new);
+    
+    
+        BlockEntityRenderers.register(TurbineRotorBearingTile.TYPE, BladeRenderer::new);
     }
 
     public static long lastRenderTime = 0;

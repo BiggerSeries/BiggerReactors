@@ -1,11 +1,11 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.BiggerReactors;
@@ -25,11 +25,11 @@ public class ReactorAccessPortScreen extends ScreenBase<ReactorAccessPortContain
 
     private ReactorAccessPortState reactorAccessPortState;
 
-    public ReactorAccessPortScreen(ReactorAccessPortContainer container, PlayerInventory playerInventory, ITextComponent title) {
+    public ReactorAccessPortScreen(ReactorAccessPortContainer container, Inventory playerInventory, Component title) {
         super(container, playerInventory, title, DEFAULT_TEXTURE, 142, 72);
 
         // Initialize access port state.
-        reactorAccessPortState = (ReactorAccessPortState) this.getContainer().getGuiPacket();
+        reactorAccessPortState = (ReactorAccessPortState) this.getMenu().getGuiPacket();
     }
 
     /**
@@ -40,7 +40,7 @@ public class ReactorAccessPortScreen extends ScreenBase<ReactorAccessPortContain
         super.init();
 
         // Set title to be drawn in the center.
-        this.titleX = (this.getWidth() / 2) - (this.getFont().getStringPropertyWidth(this.getTitle()) / 2);
+        this.titleLabelX = (this.getWidth() / 2) - (this.getFont().width(this.getTitle()) / 2);
 
         // Initialize tooltips:
 
@@ -57,21 +57,21 @@ public class ReactorAccessPortScreen extends ScreenBase<ReactorAccessPortContain
      */
     public void initControls() {
         // (Left) Direction toggle:
-        Biselector<ReactorAccessPortContainer> directionToggle = new Biselector<>(this, 8, 18, new TranslationTextComponent("screen.biggerreactors.reactor_access_port.direction_toggle.tooltip"),
+        Biselector<ReactorAccessPortContainer> directionToggle = new Biselector<>(this, 8, 18, new TranslatableComponent("screen.biggerreactors.reactor_access_port.direction_toggle.tooltip"),
                 () -> reactorAccessPortState.direction ? 0 : 1, SelectorColors.YELLOW, SelectorColors.BLUE);
         directionToggle.onMouseReleased = (mX, mY, btn) -> {
             // Click logic.
-            this.getContainer().executeRequest("setDirection", directionToggle.getState() == 0 ? 1 : 0);
+            this.getMenu().executeRequest("setDirection", directionToggle.getState() == 0 ? 1 : 0);
             return true;
         };
         this.addElement(directionToggle);
 
         // (Left) Fuel mode toggle:
-        Biselector<ReactorAccessPortContainer> fuelModeToggle = new Biselector<>(this, 8, 34, new TranslationTextComponent("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.tooltip"),
+        Biselector<ReactorAccessPortContainer> fuelModeToggle = new Biselector<>(this, 8, 34, new TranslatableComponent("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.tooltip"),
                 () -> reactorAccessPortState.fuelMode ? 1 : 0, SelectorColors.CYAN, SelectorColors.YELLOW);
         fuelModeToggle.onMouseReleased = (mX, mY, btn) -> {
             // Click logic.
-            this.getContainer().executeRequest("setFuelMode", fuelModeToggle.getState() == 0 ? 1 : 0);
+            this.getMenu().executeRequest("setFuelMode", fuelModeToggle.getState() == 0 ? 1 : 0);
             return true;
         };
         fuelModeToggle.onTick = () -> {
@@ -81,12 +81,12 @@ public class ReactorAccessPortScreen extends ScreenBase<ReactorAccessPortContain
         this.addElement(fuelModeToggle);
 
         // (Left) Manual eject button:
-        Button<ReactorAccessPortContainer> manualEjectButton = new Button<>(this, 8, 50, 15, 15, 226, 0, new TranslationTextComponent("screen.biggerreactors.reactor_access_port.manual_eject.tooltip"));
+        Button<ReactorAccessPortContainer> manualEjectButton = new Button<>(this, 8, 50, 15, 15, 226, 0, new TranslatableComponent("screen.biggerreactors.reactor_access_port.manual_eject.tooltip"));
         manualEjectButton.onMouseReleased = (mX, mY, btn) -> {
             // Click logic. Extra check necessary since this is an "in-class" button.
             if (manualEjectButton.isMouseOver(mX, mY)) {
                 // Mouse is hovering, do the thing.
-                this.getContainer().executeRequest("ejectWaste", true);
+                this.getMenu().executeRequest("ejectWaste", true);
                 // Play the selection sound.
                 manualEjectButton.playSound(SoundEvents.UI_BUTTON_CLICK);
                 return true;
@@ -117,17 +117,17 @@ public class ReactorAccessPortScreen extends ScreenBase<ReactorAccessPortContain
      * @param partialTicks Partial ticks.
      */
     @Override
-    public void render(@Nonnull MatrixStack mStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(@Nonnull PoseStack mStack, int mouseX, int mouseY, float partialTicks) {
         super.render(mStack, mouseX, mouseY, partialTicks);
 
         // Render text for input/output direction:
         if (reactorAccessPortState.direction) {
             // Text for an inlet:
-            this.getFont().drawString(mStack, new TranslationTextComponent("screen.biggerreactors.reactor_access_port.direction_toggle.input").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
+            this.getFont().draw(mStack, new TranslatableComponent("screen.biggerreactors.reactor_access_port.direction_toggle.input").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
 
         } else {
             // Text for an outlet:
-            this.getFont().drawString(mStack, new TranslationTextComponent("screen.biggerreactors.reactor_access_port.direction_toggle.output").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
+            this.getFont().draw(mStack, new TranslatableComponent("screen.biggerreactors.reactor_access_port.direction_toggle.output").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
         }
 
         // Check if we render output type:
@@ -135,18 +135,18 @@ public class ReactorAccessPortScreen extends ScreenBase<ReactorAccessPortContain
             // Render text for fuel/waste mode:
             if (reactorAccessPortState.fuelMode) {
                 // Text for an inlet:
-                this.getFont().drawString(mStack, new TranslationTextComponent("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.fuel").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 38, 4210752);
+                this.getFont().draw(mStack, new TranslatableComponent("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.fuel").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 38, 4210752);
 
             } else {
                 // Text for an outlet:
-                this.getFont().drawString(mStack, new TranslationTextComponent("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.waste").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 38, 4210752);
+                this.getFont().draw(mStack, new TranslatableComponent("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.waste").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 38, 4210752);
             }
         } else {
             // Text for no output:
-            this.getFont().drawString(mStack, new TranslationTextComponent("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.nope").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 38, 4210752);
+            this.getFont().draw(mStack, new TranslatableComponent("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.nope").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 38, 4210752);
         }
 
         // Render text for manual waste eject:
-        this.getFont().drawString(mStack, new TranslationTextComponent("screen.biggerreactors.reactor_access_port.manual_eject").getString(), this.getGuiLeft() + 26, this.getGuiTop() + 54, 4210752);
+        this.getFont().draw(mStack, new TranslatableComponent("screen.biggerreactors.reactor_access_port.manual_eject").getString(), this.getGuiLeft() + 26, this.getGuiTop() + 54, 4210752);
     }
 }

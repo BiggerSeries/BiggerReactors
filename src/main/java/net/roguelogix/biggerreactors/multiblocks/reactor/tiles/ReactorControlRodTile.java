@@ -1,18 +1,20 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.tiles;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorControlRod;
 import net.roguelogix.biggerreactors.multiblocks.reactor.containers.ReactorControlRodContainer;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorControlRodState;
@@ -25,16 +27,16 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @RegisterTileEntity(name = "reactor_control_rod")
-public class ReactorControlRodTile extends ReactorBaseTile implements INamedContainerProvider, IHasUpdatableState<ReactorControlRodState> {
+public class ReactorControlRodTile extends ReactorBaseTile implements MenuProvider, IHasUpdatableState<ReactorControlRodState> {
     
     @RegisterTileEntity.Type
-    public static TileEntityType<?> TYPE;
+    public static BlockEntityType<?> TYPE;
     
     @RegisterTileEntity.Supplier
     public static final TileSupplier SUPPLIER = ReactorControlRodTile::new;
     
-    public ReactorControlRodTile() {
-        super(TYPE);
+    public ReactorControlRodTile(BlockPos pos, BlockState state) {
+        super(TYPE, pos, state);
     }
     
     public final ReactorControlRodState reactorControlRodState = new ReactorControlRodState(this);
@@ -54,27 +56,27 @@ public class ReactorControlRodTile extends ReactorBaseTile implements INamedCont
     
     @Override
     @Nonnull
-    public ActionResultType onBlockActivated(@Nonnull PlayerEntity player, @Nonnull Hand handIn) {
-        assert world != null;
-        if (world.getBlockState(pos).get(MultiblockBlock.ASSEMBLED)) {
-            if (!world.isRemote) {
-                NetworkHooks.openGui((ServerPlayerEntity) player, this, this.getPos());
+    public InteractionResult onBlockActivated(@Nonnull Player player, @Nonnull InteractionHand handIn) {
+        assert level != null;
+        if (level.getBlockState(worldPosition).getValue(MultiblockBlock.ASSEMBLED)) {
+            if (!level.isClientSide) {
+                NetworkHooks.openGui((ServerPlayer) player, this, this.getBlockPos());
             }
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
         return super.onBlockActivated(player, handIn);
     }
     
     @Override
     @Nonnull
-    public ITextComponent getDisplayName() {
-        return new TranslationTextComponent(ReactorControlRod.INSTANCE.getTranslationKey());
+    public Component getDisplayName() {
+        return new TranslatableComponent(ReactorControlRod.INSTANCE.getDescriptionId());
     }
     
     @Nullable
     @Override
-    public Container createMenu(int windowId, @Nonnull PlayerInventory playerInventory, @Nonnull PlayerEntity player) {
-        return new ReactorControlRodContainer(windowId, this.pos, player);
+    public AbstractContainerMenu createMenu(int windowId, @Nonnull Inventory playerInventory, @Nonnull Player player) {
+        return new ReactorControlRodContainer(windowId, this.worldPosition, player);
     }
     
     @SuppressWarnings("unchecked")
@@ -138,15 +140,15 @@ public class ReactorControlRodTile extends ReactorBaseTile implements INamedCont
     
     @Override
     @Nonnull
-    protected CompoundNBT writeNBT() {
-        CompoundNBT compound = super.writeNBT();
+    protected CompoundTag writeNBT() {
+        CompoundTag compound = super.writeNBT();
         compound.putDouble("insertion", insertion);
         compound.putString("name", name);
         return compound;
     }
     
     @Override
-    protected void readNBT(@Nonnull CompoundNBT compound) {
+    protected void readNBT(@Nonnull CompoundTag compound) {
         super.readNBT(compound);
         if (compound.contains("insertion")) {
             insertion = compound.getDouble("insertion");

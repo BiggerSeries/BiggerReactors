@@ -1,6 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.simulation.classic;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorBattery;
 
 public class Battery implements IReactorBattery {
@@ -49,15 +49,15 @@ public class Battery implements IReactorBattery {
     }
     
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = new CompoundNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = new CompoundTag();
         nbt.putLong("storedPower", storedPower);
         nbt.putLong("maxStoredPower", maxStoredPower);
         return nbt;
     }
     
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         storedPower = nbt.getLong("storedPower");
         maxStoredPower = nbt.getLong("maxStoredPower");
     }

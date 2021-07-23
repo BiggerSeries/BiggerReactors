@@ -1,23 +1,25 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.tiles;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.EmptyHandler;
@@ -41,10 +43,10 @@ import javax.annotation.Nullable;
 import static net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorAccessPort.PortDirection.*;
 
 @RegisterTileEntity(name = "reactor_access_port")
-public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandler, INamedContainerProvider, IHasUpdatableState<ReactorAccessPortState>, IOnAssemblyTile, IOnDisassemblyTile {
+public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandler, MenuProvider, IHasUpdatableState<ReactorAccessPortState>, IOnAssemblyTile, IOnDisassemblyTile {
     
     @RegisterTileEntity.Type
-    public static TileEntityType<?> TYPE;
+    public static BlockEntityType<?> TYPE;
     
     @RegisterTileEntity.Supplier
     public static final TileSupplier SUPPLIER = ReactorAccessPortTile::new;
@@ -58,8 +60,8 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     public static final int WASTE_SLOT = 1;
     public static final int FUEL_INSERT_SLOT = 2;
     
-    public ReactorAccessPortTile() {
-        super(TYPE);
+    public ReactorAccessPortTile(BlockPos pos, BlockState state) {
+        super(TYPE, pos, state);
     }
     
     private ReactorAccessPort.PortDirection direction = INLET;
@@ -71,7 +73,7 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     
     public void setDirection(ReactorAccessPort.PortDirection direction) {
         this.direction = direction;
-        this.markDirty();
+        this.setChanged();
     }
     
     @Override
@@ -80,7 +82,7 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     }
     
     @Override
-    protected void readNBT(@Nonnull CompoundNBT compound) {
+    protected void readNBT(@Nonnull CompoundTag compound) {
         if (compound.contains("direction")) {
             direction = ReactorAccessPort.PortDirection.valueOf(compound.getString("direction"));
         }
@@ -91,8 +93,8 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     
     @Override
     @Nonnull
-    protected CompoundNBT writeNBT() {
-        CompoundNBT NBT = new CompoundNBT();
+    protected CompoundTag writeNBT() {
+        CompoundTag NBT = new CompoundTag();
         NBT.putString("direction", String.valueOf(direction));
         NBT.putBoolean("fuelMode", fuelMode);
         return NBT;
@@ -106,9 +108,9 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     
     @Override
     public void onAssembly() {
-        assert world != null;
-        world.setBlockState(pos, getBlockState().with(PORT_DIRECTION_ENUM_PROPERTY, direction));
-        itemOutputDirection = getBlockState().get(BlockStates.FACING);
+        assert level != null;
+        level.setBlock(worldPosition, getBlockState().setValue(PORT_DIRECTION_ENUM_PROPERTY, direction), 3);
+        itemOutputDirection = getBlockState().getValue(BlockStates.FACING);
         neighborChanged();
     }
     
@@ -278,8 +280,8 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
             connected = false;
             return;
         }
-        assert world != null;
-        TileEntity te = world.getTileEntity(pos.offset(itemOutputDirection));
+        assert level != null;
+        BlockEntity te = level.getBlockEntity(worldPosition.relative(itemOutputDirection));
         if (te == null) {
             connected = false;
             return;
@@ -290,13 +292,13 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     
     @Override
     @Nonnull
-    public ActionResultType onBlockActivated(@Nonnull PlayerEntity player, @Nonnull Hand handIn) {
-        assert world != null;
-        if (world.getBlockState(pos).get(MultiblockBlock.ASSEMBLED)) {
-            if (!world.isRemote) {
-                NetworkHooks.openGui((ServerPlayerEntity) player, this, this.getPos());
+    public InteractionResult onBlockActivated(@Nonnull Player player, @Nonnull InteractionHand handIn) {
+        assert level != null;
+        if (level.getBlockState(worldPosition).getValue(MultiblockBlock.ASSEMBLED)) {
+            if (!level.isClientSide) {
+                NetworkHooks.openGui((ServerPlayer) player, this, this.getBlockPos());
             }
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
         return super.onBlockActivated(player, handIn);
     }
@@ -311,7 +313,7 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
         // Change IO direction.
         if (requestName.equals("setDirection")) {
             this.setDirection(((Integer) requestData != 0) ? OUTLET : INLET);
-            world.setBlockState(this.pos, this.getBlockState().with(PORT_DIRECTION_ENUM_PROPERTY, direction));
+            level.setBlockAndUpdate(this.worldPosition, this.getBlockState().setValue(PORT_DIRECTION_ENUM_PROPERTY, direction));
             return;
         }
         
@@ -334,14 +336,14 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     }
     
     @Override
-    public ITextComponent getDisplayName() {
-        return new TranslationTextComponent(ReactorAccessPort.INSTANCE.getTranslationKey());
+    public Component getDisplayName() {
+        return new TranslatableComponent(ReactorAccessPort.INSTANCE.getDescriptionId());
     }
     
     @Nullable
     @Override
-    public Container createMenu(int windowId, @Nonnull PlayerInventory playerInventory, @Nonnull PlayerEntity player) {
-        return new ReactorAccessPortContainer(windowId, this.pos, player);
+    public AbstractContainerMenu createMenu(int windowId, @Nonnull Inventory playerInventory, @Nonnull Player player) {
+        return new ReactorAccessPortContainer(windowId, this.worldPosition, player);
     }
     
     @Nullable

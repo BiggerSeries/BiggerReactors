@@ -1,9 +1,9 @@
 package net.roguelogix.biggerreactors.registries;
 
-import net.minecraft.block.Block;
-import net.minecraft.tags.ITag;
-import net.minecraft.tags.ITagCollection;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagCollection;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.phosphophyllite.data.DataLoader;
@@ -57,7 +57,7 @@ public class TurbineCoilRegistry {
     
     private static final DataLoader<TurbineCoilJsonData> dataLoader = new DataLoader<>(TurbineCoilJsonData.class);
     
-    public static void loadRegistry(ITagCollection<Block> blockTags) {
+    public static void loadRegistry(TagCollection<Block> blockTags) {
         BiggerReactors.LOGGER.info("Loading turbine coils");
         registry.clear();
         
@@ -69,11 +69,11 @@ public class TurbineCoilRegistry {
             CoilData properties = new CoilData(coilData.efficiency, coilData.bonus, coilData.extractionRate);
             
             if (coilData.type.equals("tag")) {
-                ITag<Block> blockTag = blockTags.get(coilData.location);
+                Tag<Block> blockTag = blockTags.getTag(coilData.location);
                 if (blockTag == null) {
                     continue;
                 }
-                for (Block element : blockTag.getAllElements()) {
+                for (Block element : blockTag.getValues()) {
                     registry.put(element, properties);
                     BiggerReactors.LOGGER.debug("Loaded coil " + element.getRegistryName().toString());
                 }

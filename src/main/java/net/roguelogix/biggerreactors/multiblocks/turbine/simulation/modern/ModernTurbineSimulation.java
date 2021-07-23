@@ -1,6 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.turbine.simulation.modern;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.registries.TurbineCoilRegistry;
 import net.roguelogix.biggerreactors.multiblocks.turbine.simulation.ITurbineBattery;
@@ -302,8 +302,8 @@ public class ModernTurbineSimulation implements ITurbineSimulation {
     }
     
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = new CompoundNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = new CompoundTag();
         nbt.put("fluidTank", fluidTank.serializeNBT());
         nbt.put("battery", battery.serializeNBT());
         nbt.putInt("ventState", ventState.toInt());
@@ -315,7 +315,7 @@ public class ModernTurbineSimulation implements ITurbineSimulation {
     }
     
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         fluidTank.deserializeNBT(nbt.getCompound("fluidTank"));
         battery.deserializeNBT(nbt.getCompound("battery"));
         ventState = VentState.fromInt(nbt.getInt("ventState"));

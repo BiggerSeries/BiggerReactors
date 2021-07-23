@@ -1,11 +1,11 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.simulation;
 
-import net.minecraft.fluid.Fluid;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
 
-public interface IReactorCoolantTank extends INBTSerializable<CompoundNBT>, IPhosphophylliteFluidHandler {
+public interface IReactorCoolantTank extends INBTSerializable<CompoundTag>, IPhosphophylliteFluidHandler {
     
     default long perSideCapacity(){
         return getTankCapacity(0);

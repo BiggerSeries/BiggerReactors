@@ -1,8 +1,8 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.simulation.classic;
 
-import net.minecraft.block.Blocks;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.Fluid;
 import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorCoolantTank;
 import net.roguelogix.biggerreactors.util.FluidTransitionTank;
@@ -51,14 +51,14 @@ public class CoolantTank extends FluidTransitionTank implements IReactorCoolantT
     
     @Override
     @Nonnull
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = super.serializeNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = super.serializeNBT();
         nbt.putLong("perSideCapacity", perSideCapacity);
         return nbt;
     }
     
     @Override
-    public void deserializeNBT(@Nonnull CompoundNBT nbt) {
+    public void deserializeNBT(@Nonnull CompoundTag nbt) {
         super.deserializeNBT(nbt);
         perSideCapacity = nbt.getLong("perSideCapacity");
     }
@@ -88,14 +88,14 @@ public class CoolantTank extends FluidTransitionTank implements IReactorCoolantT
         vaporProperties = airProperties;
         Fluid liquid = inFluid;
         if (liquid != null) {
-            liquidProperties = ReactorModeratorRegistry.blockModeratorProperties(liquid.getDefaultState().getBlockState().getBlock());
+            liquidProperties = ReactorModeratorRegistry.blockModeratorProperties(liquid.defaultFluidState().createLegacyBlock().getBlock());
             if (liquidProperties == null) {
                 liquidProperties = airProperties;
             }
         }
         Fluid vapor = inFluid;
         if (vapor != null) {
-            vaporProperties = ReactorModeratorRegistry.blockModeratorProperties(vapor.getDefaultState().getBlockState().getBlock());
+            vaporProperties = ReactorModeratorRegistry.blockModeratorProperties(vapor.defaultFluidState().createLegacyBlock().getBlock());
             if (vaporProperties == null) {
                 vaporProperties = airProperties;
             }

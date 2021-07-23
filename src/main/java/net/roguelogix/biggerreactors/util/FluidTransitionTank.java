@@ -1,10 +1,10 @@
 package net.roguelogix.biggerreactors.util;
 
-import mcp.MethodsReturnNonnullByDefault;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.registries.FluidTransitionRegistry;
@@ -18,7 +18,7 @@ import java.util.List;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFluidHandler, INBTSerializable<CompoundNBT> {
+public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFluidHandler, INBTSerializable<CompoundTag> {
     
     public final boolean condenser;
     
@@ -67,7 +67,7 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
     
     @Nullable
     @Override
-    public CompoundNBT fluidTagInTank(int tank) {
+    public CompoundTag fluidTagInTank(int tank) {
         return null;
     }
     
@@ -107,7 +107,7 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
     }
     
     @Override
-    public long fill(@Nonnull Fluid fluid, @Nullable CompoundNBT tag, long amount, boolean simulate) {
+    public long fill(@Nonnull Fluid fluid, @Nullable CompoundTag tag, long amount, boolean simulate) {
         if (tag != null) {
             return 0;
         }
@@ -141,7 +141,7 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
     }
     
     @Override
-    public long drain(@Nonnull Fluid fluid, @Nullable CompoundNBT tag, long amount, boolean simulate) {
+    public long drain(@Nonnull Fluid fluid, @Nullable CompoundTag tag, long amount, boolean simulate) {
         if (activeTransition == null || tag != null) {
             return 0;
         }
@@ -223,8 +223,8 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
     }
     
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = new CompoundNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = new CompoundTag();
         if (inFluid != null) {
             nbt.putString("inFluid", inFluid.getRegistryName().toString());
             nbt.putLong("inAmount", inAmount);
@@ -235,7 +235,7 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
     }
     
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         if (!nbt.contains("inFluid")) {
             return;
         }

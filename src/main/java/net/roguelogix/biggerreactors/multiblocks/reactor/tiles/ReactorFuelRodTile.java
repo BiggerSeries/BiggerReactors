@@ -1,7 +1,9 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.tiles;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 import net.roguelogix.phosphophyllite.registry.TileSupplier;
 
@@ -11,13 +13,13 @@ import javax.annotation.Nonnull;
 public class ReactorFuelRodTile extends ReactorBaseTile {
     
     @RegisterTileEntity.Type
-    public static TileEntityType<?> TYPE;
+    public static BlockEntityType<?> TYPE;
     
     @RegisterTileEntity.Supplier
     public static final TileSupplier SUPPLIER = ReactorFuelRodTile::new;
     
-    public ReactorFuelRodTile() {
-        super(TYPE);
+    public ReactorFuelRodTile(BlockPos pos, BlockState state) {
+        super(TYPE, pos, state);
     }
     
     public long lastCheckedTick = 0;
@@ -26,7 +28,7 @@ public class ReactorFuelRodTile extends ReactorBaseTile {
     public long waste = 0;
     
     @Override
-    protected void readNBT(@Nonnull CompoundNBT compound) {
+    protected void readNBT(@Nonnull CompoundTag compound) {
         super.readNBT(compound);
         fuel = compound.getLong("fuel");
         waste = compound.getLong("waste");
@@ -34,8 +36,8 @@ public class ReactorFuelRodTile extends ReactorBaseTile {
     
     @Override
     @Nonnull
-    protected CompoundNBT writeNBT() {
-        CompoundNBT compound = super.writeNBT();
+    protected CompoundTag writeNBT() {
+        CompoundTag compound = super.writeNBT();
         compound.putLong("fuel", fuel);
         compound.putLong("waste", waste);
         return compound;

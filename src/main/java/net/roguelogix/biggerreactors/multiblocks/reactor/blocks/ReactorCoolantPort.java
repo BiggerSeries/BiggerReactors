@@ -1,18 +1,17 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.blocks;
 
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.phys.BlockHitResult;
 import net.roguelogix.biggerreactors.multiblocks.reactor.tiles.ReactorCoolantPortTile;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
@@ -30,48 +29,48 @@ public class ReactorCoolantPort extends ReactorBaseBlock {
     
     public ReactorCoolantPort() {
         super();
-        setDefaultState(getDefaultState().with(PORT_DIRECTION_ENUM_PROPERTY, INLET));
+        registerDefaultState(defaultBlockState().setValue(PORT_DIRECTION_ENUM_PROPERTY, INLET));
     }
     
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new ReactorCoolantPortTile();
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new ReactorCoolantPortTile(pos, state);
     }
     
     @Override
-    protected void fillStateContainer(@Nonnull StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(PORT_DIRECTION_ENUM_PROPERTY);
     }
     
     @Nonnull
     @Override
-    public ActionResultType onBlockActivated(@Nonnull BlockState state, World worldIn, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, @Nonnull Hand handIn, @Nonnull BlockRayTraceResult hit) {
-        if (handIn == Hand.MAIN_HAND) {
-            Set<ResourceLocation> tags = player.getHeldItemMainhand().getItem().getTags();
+    public InteractionResult use(@Nonnull BlockState state, Level worldIn, @Nonnull BlockPos pos, @Nonnull Player player, @Nonnull InteractionHand handIn, @Nonnull BlockHitResult hit) {
+        if (handIn == InteractionHand.MAIN_HAND) {
+            Set<ResourceLocation> tags = player.getMainHandItem().getItem().getTags();
             if (tags.contains(new ResourceLocation("forge:tools/wrench")) || tags.contains(new ResourceLocation("forge:wrenches"))) {
-                ReactorAccessPort.PortDirection direction = state.get(PORT_DIRECTION_ENUM_PROPERTY);
+                ReactorAccessPort.PortDirection direction = state.getValue(PORT_DIRECTION_ENUM_PROPERTY);
                 direction = direction == INLET ? OUTLET : INLET;
-                state = state.with(PORT_DIRECTION_ENUM_PROPERTY, direction);
-                worldIn.setBlockState(pos, state);
-                if (!worldIn.isRemote()) {
-                    TileEntity te = worldIn.getTileEntity(pos);
+                state = state.setValue(PORT_DIRECTION_ENUM_PROPERTY, direction);
+                worldIn.setBlockAndUpdate(pos, state);
+                if (!worldIn.isClientSide()) {
+                    BlockEntity te = worldIn.getBlockEntity(pos);
                     if (te instanceof ReactorCoolantPortTile) {
                         ((ReactorCoolantPortTile) te).setDirection(direction);
                     }
                 }
-                return ActionResultType.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
         }
-        return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
+        return super.use(state, worldIn, pos, player, handIn, hit);
     }
     
     
     @Override
-    public void neighborChanged(@Nonnull BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull Block blockIn, @Nonnull BlockPos fromPos, boolean isMoving) {
+    public void neighborChanged(@Nonnull BlockState state, @Nonnull Level worldIn, @Nonnull BlockPos pos, @Nonnull Block blockIn, @Nonnull BlockPos fromPos, boolean isMoving) {
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
-        TileEntity te = worldIn.getTileEntity(pos);
+        BlockEntity te = worldIn.getBlockEntity(pos);
         if (te instanceof ReactorCoolantPortTile) {
             ((ReactorCoolantPortTile) te).neighborChanged();
         }

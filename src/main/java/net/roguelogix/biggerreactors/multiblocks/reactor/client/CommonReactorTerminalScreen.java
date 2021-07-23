@@ -1,12 +1,12 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.Config;
@@ -30,12 +30,12 @@ public class CommonReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
     // This state is used once, and as such can be final. Most other states should NOT be final.
     private final ReactorState initialState;
     
-    public CommonReactorTerminalScreen(ReactorTerminalContainer container, PlayerInventory playerInventory, ITextComponent title) {
+    public CommonReactorTerminalScreen(ReactorTerminalContainer container, Inventory playerInventory, Component title) {
         // We override whatever Minecraft wants to set the title to. It wants "Reactor Terminal," but that's too long.
-        super(container, playerInventory, new TranslationTextComponent("screen.biggerreactors.reactor_terminal"), RenderHelper.getBlankTextureResource(), 176, 152);
+        super(container, playerInventory, new TranslatableComponent("screen.biggerreactors.reactor_terminal"), RenderHelper.getBlankTextureResource(), 176, 152);
         
         // Initialize reactor terminal state.
-        initialState = (ReactorState) this.getContainer().getGuiPacket();
+        initialState = (ReactorState) this.getMenu().getGuiPacket();
     }
     
     /**
@@ -45,10 +45,10 @@ public class CommonReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
     public void init() {
         if (initialState.reactorType == ReactorType.ACTIVE) {
             // Initialize an actively-cooled reactor screen.
-            this.getMinecraft().displayGuiScreen(new ActiveReactorTerminalScreen(this.container, this.playerInventory, this.title));
+            this.getMinecraft().setScreen(new ActiveReactorTerminalScreen(this.menu, this.inventory, this.title));
         } else {
             // Initialize a passively-cooled reactor screen.
-            this.getMinecraft().displayGuiScreen(new PassiveReactorTerminalScreen(this.container, this.playerInventory, this.title));
+            this.getMinecraft().setScreen(new PassiveReactorTerminalScreen(this.menu, this.inventory, this.title));
         }
     }
     
@@ -59,43 +59,43 @@ public class CommonReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
      */
     public static void initTooltips(@Nonnull ScreenBase<ReactorTerminalContainer> screen, ReactorState reactorState) {
         // (Left) Temperature tooltip:
-        screen.addElement(new Tooltip<>(screen, 8, 19, 16, 16, new TranslationTextComponent("screen.biggerreactors.reactor_terminal.temperature.tooltip")));
+        screen.addElement(new Tooltip<>(screen, 8, 19, 16, 16, new TranslatableComponent("screen.biggerreactors.reactor_terminal.temperature.tooltip")));
         
         // (Left) Temperature readout tooltip:
-        Tooltip<ReactorTerminalContainer> temperatureReadoutTooltip = new Tooltip<>(screen, 26, 19, 53, 16, StringTextComponent.EMPTY);
+        Tooltip<ReactorTerminalContainer> temperatureReadoutTooltip = new Tooltip<>(screen, 26, 19, 53, 16, TextComponent.EMPTY);
         temperatureReadoutTooltip.onTick = () -> {
-            temperatureReadoutTooltip.tooltip = new StringTextComponent(String.format("%.3f \u00B0C", reactorState.fuelHeatStored));
+            temperatureReadoutTooltip.tooltip = new TextComponent(String.format("%.3f \u00B0C", reactorState.fuelHeatStored));
         };
         screen.addElement(temperatureReadoutTooltip);
         
         // (Left) Fuel consumption rate tooltip:
-        screen.addElement(new Tooltip<>(screen, 8, 57, 16, 16, new TranslationTextComponent("screen.biggerreactors.reactor_terminal.fuel_usage_rate.tooltip")));
+        screen.addElement(new Tooltip<>(screen, 8, 57, 16, 16, new TranslatableComponent("screen.biggerreactors.reactor_terminal.fuel_usage_rate.tooltip")));
         
         // (Left) Fuel consumption readout tooltip:
-        Tooltip<ReactorTerminalContainer> fuelConsumptionReadoutTooltip = new Tooltip<>(screen, 26, 57, 53, 16, StringTextComponent.EMPTY);
+        Tooltip<ReactorTerminalContainer> fuelConsumptionReadoutTooltip = new Tooltip<>(screen, 26, 57, 53, 16, TextComponent.EMPTY);
         fuelConsumptionReadoutTooltip.onTick = () -> {
-            fuelConsumptionReadoutTooltip.tooltip = new StringTextComponent(String.format("%.3f mB/t", reactorState.fuelUsageRate));
+            fuelConsumptionReadoutTooltip.tooltip = new TextComponent(String.format("%.3f mB/t", reactorState.fuelUsageRate));
         };
         screen.addElement(fuelConsumptionReadoutTooltip);
         
         // (Left) Reactivity rate tooltip:
-        screen.addElement(new Tooltip<>(screen, 8, 76, 16, 16, new TranslationTextComponent("screen.biggerreactors.reactor_terminal.reactivity_rate.tooltip")));
+        screen.addElement(new Tooltip<>(screen, 8, 76, 16, 16, new TranslatableComponent("screen.biggerreactors.reactor_terminal.reactivity_rate.tooltip")));
         
         // (Left) Reactivity rate readout tooltip:
-        Tooltip<ReactorTerminalContainer> reactivityRateTooltip = new Tooltip<>(screen, 26, 76, 53, 16, StringTextComponent.EMPTY);
+        Tooltip<ReactorTerminalContainer> reactivityRateTooltip = new Tooltip<>(screen, 26, 76, 53, 16, TextComponent.EMPTY);
         reactivityRateTooltip.onTick = () -> {
-            reactivityRateTooltip.tooltip = new StringTextComponent(String.format("%.1f%%", (reactorState.reactivityRate * 100.0)));
+            reactivityRateTooltip.tooltip = new TextComponent(String.format("%.1f%%", (reactorState.reactivityRate * 100.0)));
         };
         screen.addElement(reactivityRateTooltip);
         
         // (Top) Fuel mix gauge tooltip:
-        screen.addElement(new Tooltip<>(screen, 86, 6, 16, 16, new TranslationTextComponent("screen.biggerreactors.reactor_terminal.fuel_mix.tooltip")));
+        screen.addElement(new Tooltip<>(screen, 86, 6, 16, 16, new TranslatableComponent("screen.biggerreactors.reactor_terminal.fuel_mix.tooltip")));
         
         // (Top) Case heat gauge tooltip:
-        screen.addElement(new Tooltip<>(screen, 108, 6, 16, 16, new TranslationTextComponent("screen.biggerreactors.reactor_terminal.case_heat.tooltip")));
+        screen.addElement(new Tooltip<>(screen, 108, 6, 16, 16, new TranslatableComponent("screen.biggerreactors.reactor_terminal.case_heat.tooltip")));
         
         // (Top) Fuel heat gauge tooltip:
-        screen.addElement(new Tooltip<>(screen, 130, 6, 16, 16, new TranslationTextComponent("screen.biggerreactors.reactor_terminal.fuel_heat.tooltip")));
+        screen.addElement(new Tooltip<>(screen, 130, 6, 16, 16, new TranslatableComponent("screen.biggerreactors.reactor_terminal.fuel_heat.tooltip")));
     }
     
     /**
@@ -105,34 +105,34 @@ public class CommonReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
      */
     public static void initControls(@Nonnull ScreenBase<ReactorTerminalContainer> screen, ReactorState reactorState) {
         // (Left) Activity toggle:
-        Biselector<ReactorTerminalContainer> activityToggle = new Biselector<>(screen, 8, 98, new TranslationTextComponent("screen.biggerreactors.reactor_terminal.activity_toggle.tooltip"),
+        Biselector<ReactorTerminalContainer> activityToggle = new Biselector<>(screen, 8, 98, new TranslatableComponent("screen.biggerreactors.reactor_terminal.activity_toggle.tooltip"),
                 () -> reactorState.reactorActivity.toInt(), SelectorColors.RED, SelectorColors.GREEN);
         activityToggle.onMouseReleased = (mX, mY, btn) -> {
             // Click logic.
-            screen.getContainer().executeRequest("setActive", activityToggle.getState() == 0 ? 1 : 0);
+            screen.getMenu().executeRequest("setActive", activityToggle.getState() == 0 ? 1 : 0);
             return true;
         };
         screen.addElement(activityToggle);
         
         // (Left) Auto-eject toggle:
-        Biselector<ReactorTerminalContainer> autoEjectToggle = new Biselector<>(screen, 8, 114, new TranslationTextComponent("screen.biggerreactors.reactor_terminal.auto_eject_toggle.tooltip"),
+        Biselector<ReactorTerminalContainer> autoEjectToggle = new Biselector<>(screen, 8, 114, new TranslatableComponent("screen.biggerreactors.reactor_terminal.auto_eject_toggle.tooltip"),
                 () -> reactorState.doAutoEject ? 1 : 0, SelectorColors.RED, SelectorColors.CYAN);
         autoEjectToggle.onMouseReleased = (mX, mY, btn) -> {
             // Click logic.
-            screen.getContainer().executeRequest("setAutoEject", autoEjectToggle.getState() == 0 ? 1 : 0);
+            screen.getMenu().executeRequest("setAutoEject", autoEjectToggle.getState() == 0 ? 1 : 0);
             return true;
         };
         screen.addElement(autoEjectToggle);
         
         // (Left) Manual eject button:
-        Button<ReactorTerminalContainer> manualEjectButton = new Button<>(screen, 8, 130, 15, 15, 226, 0, new TranslationTextComponent("screen.biggerreactors.reactor_terminal.manual_eject.tooltip"));
+        Button<ReactorTerminalContainer> manualEjectButton = new Button<>(screen, 8, 130, 15, 15, 226, 0, new TranslatableComponent("screen.biggerreactors.reactor_terminal.manual_eject.tooltip"));
         manualEjectButton.onMouseReleased = (mX, mY, btn) -> {
             // Click logic. Extra check necessary since this is an "in-class" button.
             if (manualEjectButton.isMouseOver(mX, mY)) {
                 // Mouse is hovering, do the thing.
                 //screen.getContainer().executeRequest("ejectWaste", true);
-                Minecraft.getInstance().player.sendChatMessage("No effect. This button will be removed in the future.");
-                Minecraft.getInstance().player.sendChatMessage("Use the access ports to eject waste!");
+                Minecraft.getInstance().player.chat("No effect. This button will be removed in the future.");
+                Minecraft.getInstance().player.chat("Use the access ports to eject waste!");
                 // Play the selection sound.
                 manualEjectButton.playSound(SoundEvents.UI_BUTTON_CLICK);
                 return true;
@@ -163,18 +163,18 @@ public class CommonReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
      */
     public static void initGauges(@Nonnull ScreenBase<ReactorTerminalContainer> screen, ReactorState reactorState) {
         // (Top) Fuel mix gauge:
-        Symbol<ReactorTerminalContainer> fuelMixGauge = new Symbol<>(screen, 85, 25, 18, 64, 0, 152, StringTextComponent.EMPTY);
-        fuelMixGauge.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> CommonReactorTerminalScreen.renderFuelMixGauge(mS, fuelMixGauge, reactorState.wasteStored, reactorState.fuelStored, reactorState.fuelCapacity);
+        Symbol<ReactorTerminalContainer> fuelMixGauge = new Symbol<>(screen, 85, 25, 18, 64, 0, 152, TextComponent.EMPTY);
+        fuelMixGauge.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonReactorTerminalScreen.renderFuelMixGauge(mS, fuelMixGauge, reactorState.wasteStored, reactorState.fuelStored, reactorState.fuelCapacity);
         screen.addElement(fuelMixGauge);
         
         // (Top) Case heat gauge:
-        Symbol<ReactorTerminalContainer> caseHeatGauge = new Symbol<>(screen, 107, 25, 18, 64, 0, 152, StringTextComponent.EMPTY);
-        caseHeatGauge.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> CommonReactorTerminalScreen.renderHeatGauge(mS, caseHeatGauge, reactorState.caseHeatStored, Config.Reactor.GUI.HeatDisplayMax);
+        Symbol<ReactorTerminalContainer> caseHeatGauge = new Symbol<>(screen, 107, 25, 18, 64, 0, 152, TextComponent.EMPTY);
+        caseHeatGauge.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonReactorTerminalScreen.renderHeatGauge(mS, caseHeatGauge, reactorState.caseHeatStored, Config.Reactor.GUI.HeatDisplayMax);
         screen.addElement(caseHeatGauge);
         
         // (Top) Fuel heat gauge:
-        Symbol<ReactorTerminalContainer> fuelHeatGauge = new Symbol<>(screen, 129, 25, 18, 64, 0, 152, StringTextComponent.EMPTY);
-        fuelHeatGauge.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> CommonReactorTerminalScreen.renderHeatGauge(mS, fuelHeatGauge, reactorState.fuelHeatStored, Config.Reactor.GUI.HeatDisplayMax);
+        Symbol<ReactorTerminalContainer> fuelHeatGauge = new Symbol<>(screen, 129, 25, 18, 64, 0, 152, TextComponent.EMPTY);
+        fuelHeatGauge.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonReactorTerminalScreen.renderHeatGauge(mS, fuelHeatGauge, reactorState.fuelHeatStored, Config.Reactor.GUI.HeatDisplayMax);
         screen.addElement(fuelHeatGauge);
     }
     
@@ -195,7 +195,7 @@ public class CommonReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
      * @param heatStored   The heat value to draw.
      * @param heatCapacity The max heat capacity this gauge can display.
      */
-    public static void renderHeatGauge(@Nonnull MatrixStack mStack, @Nonnull Symbol<ReactorTerminalContainer> symbol, double heatStored, double heatCapacity) {
+    public static void renderHeatGauge(@Nonnull PoseStack mStack, @Nonnull Symbol<ReactorTerminalContainer> symbol, double heatStored, double heatCapacity) {
         // If there's no heat, there's no need to draw.
         if ((heatStored > 0) && (heatCapacity > 0)) {
             // Calculate how much needs to be rendered.
@@ -208,7 +208,7 @@ public class CommonReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
         // Draw frame.
         symbol.blit(mStack);
         // Update tooltip.
-        symbol.tooltip = new StringTextComponent(String.format("%.1f/%.1f \u00B0C", heatStored, heatCapacity));
+        symbol.tooltip = new TextComponent(String.format("%.1f/%.1f \u00B0C", heatStored, heatCapacity));
     }
     
     /**
@@ -220,7 +220,7 @@ public class CommonReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
      * @param fuelStored   The fuel value to draw.
      * @param fuelCapacity The max fuel capacity this gauge can display.
      */
-    public static void renderFuelMixGauge(@Nonnull MatrixStack mStack, @Nonnull Symbol<ReactorTerminalContainer> symbol, double wasteStored, double fuelStored, double fuelCapacity) {
+    public static void renderFuelMixGauge(@Nonnull PoseStack mStack, @Nonnull Symbol<ReactorTerminalContainer> symbol, double wasteStored, double fuelStored, double fuelCapacity) {
         // If there's no fuel or waste, there's no need to draw.
         if ((wasteStored > 0 || fuelStored > 0) && (fuelCapacity > 0)) {
             // Calculate how much needs to be rendered.
@@ -236,8 +236,8 @@ public class CommonReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
         // Draw frame.
         symbol.blit(mStack);
         // Update tooltip.
-        symbol.tooltip = new StringTextComponent(String.format(
-                new TranslationTextComponent("screen.biggerreactors.reactor_terminal.fuel_mix_gauge.tooltip").getString(),
+        symbol.tooltip = new TextComponent(String.format(
+                new TranslatableComponent("screen.biggerreactors.reactor_terminal.fuel_mix_gauge.tooltip").getString(),
                 RenderHelper.formatValue((fuelStored + wasteStored) / 1000.0, "B", true),
                 RenderHelper.formatValue(fuelCapacity / 1000.0, "B", true),
                 RenderHelper.formatValue(fuelStored / 1000.0, "B", true),
@@ -255,37 +255,37 @@ public class CommonReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
      * @param reactivityRate  The reactivity rate to draw.
      * @implNote Output rate is not rendered by this function, since it changes depending on reactor type. Do that yourself.
      */
-    public static void renderStatusText(@Nonnull MatrixStack mStack, @Nonnull ScreenBase<ReactorTerminalContainer> screen, ReactorActivity reactorActivity, boolean doAutoEject, double heatStored, double fuelUsageRate, double reactivityRate) {
+    public static void renderStatusText(@Nonnull PoseStack mStack, @Nonnull ScreenBase<ReactorTerminalContainer> screen, ReactorActivity reactorActivity, boolean doAutoEject, double heatStored, double fuelUsageRate, double reactivityRate) {
         // Render text for reactor temperature (no fancy suffix for Celsius):
-        screen.getFont().drawString(mStack, String.format("%.0f \u00B0C", heatStored), screen.getGuiLeft() + 27, screen.getGuiTop() + 23, 4210752);
+        screen.getFont().draw(mStack, String.format("%.0f \u00B0C", heatStored), screen.getGuiLeft() + 27, screen.getGuiTop() + 23, 4210752);
         
         // Render text for fuel consumption rate:
-        screen.getFont().drawString(mStack, RenderHelper.formatValue((fuelUsageRate / 1000.0), 3, "B/t", true), screen.getGuiLeft() + 27, screen.getGuiTop() + 61, 4210752);
+        screen.getFont().draw(mStack, RenderHelper.formatValue((fuelUsageRate / 1000.0), 3, "B/t", true), screen.getGuiLeft() + 27, screen.getGuiTop() + 61, 4210752);
         
         // Render text for reactivity rate (no fancy suffix for percentages):
-        screen.getFont().drawString(mStack, String.format("%.1f%%", (reactivityRate * 100.0)), screen.getGuiLeft() + 27, screen.getGuiTop() + 80, 4210752);
+        screen.getFont().draw(mStack, String.format("%.1f%%", (reactivityRate * 100.0)), screen.getGuiLeft() + 27, screen.getGuiTop() + 80, 4210752);
         
         // Render text for online/offline status:
         if (reactorActivity == ReactorActivity.ACTIVE) {
             // Text for an online reactor:
-            screen.getFont().drawString(mStack, new TranslationTextComponent("screen.biggerreactors.reactor_terminal.activity_toggle.online").getString(), screen.getGuiLeft() + 42, screen.getGuiTop() + 102, 4210752);
+            screen.getFont().draw(mStack, new TranslatableComponent("screen.biggerreactors.reactor_terminal.activity_toggle.online").getString(), screen.getGuiLeft() + 42, screen.getGuiTop() + 102, 4210752);
             
         } else {
             // Text for an offline reactor:
-            screen.getFont().drawString(mStack, new TranslationTextComponent("screen.biggerreactors.reactor_terminal.activity_toggle.offline").getString(), screen.getGuiLeft() + 42, screen.getGuiTop() + 102, 4210752);
+            screen.getFont().draw(mStack, new TranslatableComponent("screen.biggerreactors.reactor_terminal.activity_toggle.offline").getString(), screen.getGuiLeft() + 42, screen.getGuiTop() + 102, 4210752);
         }
         
         // Render text for auto-eject status:
         if (doAutoEject) {
             // Text for enabled auto-ejection:
-            screen.getFont().drawString(mStack, new TranslationTextComponent("screen.biggerreactors.reactor_terminal.auto_eject_toggle.enabled").getString(), screen.getGuiLeft() + 42, screen.getGuiTop() + 118, 4210752);
+            screen.getFont().draw(mStack, new TranslatableComponent("screen.biggerreactors.reactor_terminal.auto_eject_toggle.enabled").getString(), screen.getGuiLeft() + 42, screen.getGuiTop() + 118, 4210752);
         } else {
             // Text for disabled auto-ejection:
-            screen.getFont().drawString(mStack, new TranslationTextComponent("screen.biggerreactors.reactor_terminal.auto_eject_toggle.disabled").getString(), screen.getGuiLeft() + 42, screen.getGuiTop() + 118, 4210752);
+            screen.getFont().draw(mStack, new TranslatableComponent("screen.biggerreactors.reactor_terminal.auto_eject_toggle.disabled").getString(), screen.getGuiLeft() + 42, screen.getGuiTop() + 118, 4210752);
         }
         
         // Render text for manual eject button:
         // TODO: Remove with reactor manual eject.
-        //screen.getFont().drawString(mStack, new TranslationTextComponent("screen.biggerreactors.reactor_terminal.manual_eject").getString(), screen.getGuiLeft() + 26, screen.getGuiTop() + 134, 4210752);
+        //screen.getFont().drawString(mStack, new TranslatableComponent("screen.biggerreactors.reactor_terminal.manual_eject").getString(), screen.getGuiLeft() + 26, screen.getGuiTop() + 134, 4210752);
     }
 }

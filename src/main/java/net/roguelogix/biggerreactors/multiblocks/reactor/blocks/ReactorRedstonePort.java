@@ -1,14 +1,14 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.blocks;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.roguelogix.biggerreactors.multiblocks.reactor.tiles.ReactorRedstonePortTile;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
@@ -22,41 +22,41 @@ public class ReactorRedstonePort extends ReactorBaseBlock {
     
     public ReactorRedstonePort() {
         super();
-        setDefaultState(getDefaultState().with(IS_LIT_BOOLEAN_PROPERTY, false));
+        registerDefaultState(defaultBlockState().setValue(IS_LIT_BOOLEAN_PROPERTY, false));
     }
     
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new ReactorRedstonePortTile();
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new ReactorRedstonePortTile(pos, state);
     }
     
     @Override
-    public boolean canProvidePower(@Nonnull BlockState stateate) {
+    public boolean isSignalSource(BlockState p_60457_) {
         return true;
     }
     
     @Override
-    public int getWeakPower(@Nonnull BlockState blockState, @Nonnull IBlockReader blockAccess, @Nonnull BlockPos pos, @Nonnull Direction side) {
-        TileEntity tile = blockAccess.getTileEntity(pos);
+    public int getSignal(@Nonnull BlockState blockState, @Nonnull BlockGetter blockAccess, @Nonnull BlockPos pos, @Nonnull Direction side) {
+        BlockEntity tile = blockAccess.getBlockEntity(pos);
         if (tile instanceof ReactorRedstonePortTile) {
             return ((ReactorRedstonePortTile) tile).isEmitting(side) ? 15 : 0;
         }
-        return super.getWeakPower(blockState, blockAccess, pos, side);
+        return super.getSignal(blockState, blockAccess, pos, side);
     }
     
     @Override
-    public int getStrongPower(@Nonnull BlockState blockState, @Nonnull IBlockReader blockAccess, @Nonnull BlockPos pos, @Nonnull Direction side) {
-        TileEntity tile = blockAccess.getTileEntity(pos);
+    public int getDirectSignal(@Nonnull BlockState blockState, @Nonnull BlockGetter blockAccess, @Nonnull BlockPos pos, @Nonnull Direction side) {
+        BlockEntity tile = blockAccess.getBlockEntity(pos);
         if (tile instanceof ReactorRedstonePortTile) {
             return ((ReactorRedstonePortTile) tile).isEmitting(side) ? 15 : 0;
         }
-        return super.getWeakPower(blockState, blockAccess, pos, side);
+        return super.getDirectSignal(blockState, blockAccess, pos, side);
     }
     
     @Override
-    public void neighborChanged(@Nonnull BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull Block blockIn, @Nonnull BlockPos fromPos, boolean isMoving) {
-        TileEntity tile = worldIn.getTileEntity(pos);
+    public void neighborChanged(@Nonnull BlockState state, @Nonnull Level worldIn, @Nonnull BlockPos pos, @Nonnull Block blockIn, @Nonnull BlockPos fromPos, boolean isMoving) {
+        BlockEntity tile = worldIn.getBlockEntity(pos);
         if (tile instanceof ReactorRedstonePortTile) {
             ((ReactorRedstonePortTile) tile).updatePowered();
         }
@@ -70,8 +70,8 @@ public class ReactorRedstonePort extends ReactorBaseBlock {
     public static BooleanProperty IS_LIT_BOOLEAN_PROPERTY = BooleanProperty.create("is_lit");
     
     @Override
-    protected void fillStateContainer(@Nonnull StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(IS_LIT_BOOLEAN_PROPERTY);
-        super.fillStateContainer(builder);
+        super.createBlockStateDefinition(builder);
     }
 }

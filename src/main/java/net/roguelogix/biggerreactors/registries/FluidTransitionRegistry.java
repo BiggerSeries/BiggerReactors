@@ -1,10 +1,10 @@
 package net.roguelogix.biggerreactors.registries;
 
-import mcp.MethodsReturnNonnullByDefault;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.tags.ITag;
-import net.minecraft.tags.ITagCollection;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagCollection;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.phosphophyllite.data.DataLoader;
@@ -78,7 +78,7 @@ public class FluidTransitionRegistry {
     
     private static final DataLoader<FluidTransitionJsonData> loader = new DataLoader<>(FluidTransitionJsonData.class);
     
-    public static void loadRegistry(ITagCollection<Fluid> fluidTags) {
+    public static void loadRegistry(TagCollection<Fluid> fluidTags) {
         BiggerReactors.LOGGER.info("Loading fluid transitions");
         liquidTransitions.clear();
         gasTransitions.clear();
@@ -90,14 +90,14 @@ public class FluidTransitionRegistry {
             List<Fluid> liquids = new ArrayList<>();
             
             if (transitionData.liquidType.equals("tag")) {
-                ITag<Fluid> tag = fluidTags.get(transitionData.liquid);
+                Tag<Fluid> tag = fluidTags.getTag(transitionData.liquid);
                 
                 if (tag == null) {
                     continue;
                 }
                 
-                for (Fluid fluid : tag.getAllElements()) {
-                    if (fluid.isSource(fluid.getDefaultState())) {
+                for (Fluid fluid : tag.getValues()) {
+                    if (fluid.isSource(fluid.defaultFluidState())) {
                         liquids.add(fluid);
                     }
                 }
@@ -116,14 +116,14 @@ public class FluidTransitionRegistry {
             List<Fluid> gases = new ArrayList<>();
             
             if (transitionData.gasType.equals("tag")) {
-                ITag<Fluid> tag = fluidTags.get(transitionData.gas);
+                Tag<Fluid> tag = fluidTags.getTag(transitionData.gas);
                 
                 if (tag == null) {
                     continue;
                 }
                 
-                for (Fluid fluid : tag.getAllElements()) {
-                    if (fluid.isSource(fluid.getDefaultState())) {
+                for (Fluid fluid : tag.getValues()) {
+                    if (fluid.isSource(fluid.defaultFluidState())) {
                         gases.add(fluid);
                     }
                 }

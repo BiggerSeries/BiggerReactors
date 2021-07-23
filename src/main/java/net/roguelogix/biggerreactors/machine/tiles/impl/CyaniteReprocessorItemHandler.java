@@ -1,6 +1,6 @@
 package net.roguelogix.biggerreactors.machine.tiles.impl;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.roguelogix.biggerreactors.items.ingots.BlutoniumIngot;

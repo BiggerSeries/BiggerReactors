@@ -1,7 +1,7 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.simulation.experimental;
 
-import net.minecraft.block.Blocks;
-import net.minecraft.fluid.Fluid;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.Fluid;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorCoolantTank;
 import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
 import net.roguelogix.biggerreactors.util.FluidTransitionTank;
@@ -34,7 +34,7 @@ public class CoolantTank extends FluidTransitionTank implements IReactorCoolantT
         liquidProperties = airProperties;
         Fluid liquid = inFluid;
         if (liquid != null) {
-            liquidProperties = ReactorModeratorRegistry.blockModeratorProperties(liquid.getDefaultState().getBlockState().getBlock());
+            liquidProperties = ReactorModeratorRegistry.blockModeratorProperties(liquid.defaultFluidState().createLegacyBlock().getBlock());
             if (liquidProperties == null) {
                 liquidProperties = airProperties;
             }

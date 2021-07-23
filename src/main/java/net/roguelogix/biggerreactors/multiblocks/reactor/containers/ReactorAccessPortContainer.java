@@ -1,10 +1,10 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.containers;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.util.IWorldPosCallable;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.MenuType;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorAccessPort;
 import net.roguelogix.biggerreactors.multiblocks.reactor.tiles.ReactorAccessPortTile;
 import net.roguelogix.phosphophyllite.gui.GuiSync;
@@ -14,20 +14,20 @@ import net.roguelogix.phosphophyllite.registry.RegisterContainer;
 import javax.annotation.Nonnull;
 
 @RegisterContainer(name = "reactor_access_port")
-public class ReactorAccessPortContainer extends Container implements GuiSync.IGUIPacketProvider {
+public class ReactorAccessPortContainer extends AbstractContainerMenu implements GuiSync.IGUIPacketProvider {
 
     @RegisterContainer.Type
-    public static ContainerType<ReactorAccessPortContainer> INSTANCE;
+    public static MenuType<ReactorAccessPortContainer> INSTANCE;
     @RegisterContainer.Supplier
     public static final ContainerSupplier SUPPLIER = ReactorAccessPortContainer::new;
     
-    private PlayerEntity player;
+    private Player player;
     private ReactorAccessPortTile tileEntity;
 
-    public ReactorAccessPortContainer(int windowId, BlockPos blockPos, PlayerEntity player) {
+    public ReactorAccessPortContainer(int windowId, BlockPos blockPos, Player player) {
         super(INSTANCE, windowId);
         this.player = player;
-        this.tileEntity = (ReactorAccessPortTile) player.world.getTileEntity(blockPos);
+        this.tileEntity = (ReactorAccessPortTile) player.level.getBlockEntity(blockPos);
         this.getGuiPacket();
     }
 
@@ -40,16 +40,16 @@ public class ReactorAccessPortContainer extends Container implements GuiSync.IGU
     }
 
     @Override
-    public boolean canInteractWith(@Nonnull PlayerEntity player) {
-        assert tileEntity.getWorld() != null;
-        return isWithinUsableDistance(IWorldPosCallable.of(tileEntity.getWorld(), tileEntity.getPos()),
+    public boolean stillValid(@Nonnull Player player) {
+        assert tileEntity.getLevel() != null;
+        return stillValid(ContainerLevelAccess.create(tileEntity.getLevel(), tileEntity.getBlockPos()),
                 player, ReactorAccessPort.INSTANCE);
     }
 
     @Override
     public void executeRequest(String requestName, Object requestData) {
-        assert tileEntity.getWorld() != null;
-        if (tileEntity.getWorld().isRemote) {
+        assert tileEntity.getLevel() != null;
+        if (tileEntity.getLevel().isClientSide) {
             runRequest(requestName, requestData);
             return;
         }

@@ -1,14 +1,14 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.core.Registry;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.BiggerReactors;
@@ -38,13 +38,13 @@ public class ActiveReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
     private Fluid coolantFluid = Fluids.EMPTY;
     private Fluid exhaustFluid = Fluids.EMPTY;
 
-    public ActiveReactorTerminalScreen(ReactorTerminalContainer container, PlayerInventory playerInventory, ITextComponent title) {
+    public ActiveReactorTerminalScreen(ReactorTerminalContainer container, Inventory playerInventory, Component title) {
         super(container, playerInventory, title, DEFAULT_TEXTURE, 198, 152);
 
         // Initialize reactor state.
-        reactorState = (ReactorState) this.getContainer().getGuiPacket();
-        coolantFluid = Registry.FLUID.getOrDefault(new ResourceLocation(reactorState.coolantResourceLocation));
-        exhaustFluid = Registry.FLUID.getOrDefault(new ResourceLocation(reactorState.exhaustResourceLocation));
+        reactorState = (ReactorState) this.getMenu().getGuiPacket();
+        coolantFluid = Registry.FLUID.get(new ResourceLocation(reactorState.coolantResourceLocation));
+        exhaustFluid = Registry.FLUID.get(new ResourceLocation(reactorState.exhaustResourceLocation));
     }
 
     /**
@@ -75,9 +75,9 @@ public class ActiveReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
      */
     private void initTooltips() {
         // (Left) Exhaust generation readout tooltip:
-        Tooltip<ReactorTerminalContainer> generationRateReadoutTooltip = new Tooltip<>(this, 26, 38, 53, 16, StringTextComponent.EMPTY);
+        Tooltip<ReactorTerminalContainer> generationRateReadoutTooltip = new Tooltip<>(this, 26, 38, 53, 16, TextComponent.EMPTY);
         generationRateReadoutTooltip.onTick = () -> {
-            generationRateReadoutTooltip.tooltip = new StringTextComponent(String.format("%.3f mB/t", this.reactorState.reactorOutputRate));
+            generationRateReadoutTooltip.tooltip = new TextComponent(String.format("%.3f mB/t", this.reactorState.reactorOutputRate));
         };
         this.addElement(generationRateReadoutTooltip);
     }
@@ -87,20 +87,20 @@ public class ActiveReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
      */
     private void initGauges() {
         // (Top) Coolant intake tank:
-        Symbol<ReactorTerminalContainer> coolantIntakeTank = new Symbol<>(this, 151, 25, 18, 64, 0, 152, StringTextComponent.EMPTY);
-        coolantIntakeTank.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> CommonRender.renderFluidGauge(mS,
+        Symbol<ReactorTerminalContainer> coolantIntakeTank = new Symbol<>(this, 151, 25, 18, 64, 0, 152, TextComponent.EMPTY);
+        coolantIntakeTank.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonRender.renderFluidGauge(mS,
                 coolantIntakeTank, reactorState.coolantStored, reactorState.coolantCapacity, coolantFluid);
         this.addElement(coolantIntakeTank);
 
         // (Top) Hot exhaust tank:
-        Symbol<ReactorTerminalContainer> hotExhaustTank = new Symbol<>(this, 173, 25, 18, 64, 0, 152, StringTextComponent.EMPTY);
-        hotExhaustTank.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> CommonRender.renderFluidGauge(mS,
+        Symbol<ReactorTerminalContainer> hotExhaustTank = new Symbol<>(this, 173, 25, 18, 64, 0, 152, TextComponent.EMPTY);
+        hotExhaustTank.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonRender.renderFluidGauge(mS,
                 hotExhaustTank, reactorState.exhaustStored, reactorState.exhaustCapacity, exhaustFluid);
         this.addElement(hotExhaustTank);
 
         // (Bottom) Progress bar:
         Symbol<ReactorTerminalContainer> progressBar = new Symbol<>(this, 173, 90, 18, 26, 90, 152, null);
-        progressBar.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> {
+        progressBar.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> {
             // Custom rendering.
             if (reactorState.coolantStored > 0) {
                 ActiveReactorTerminalScreen.renderProgressBar(mS, progressBar, reactorState.reactorActivity, screenWorkTime++, screenWorkTimeTotal, coolantFluid);
@@ -117,24 +117,24 @@ public class ActiveReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
      */
     private void initSymbols() {
         // (Top) Coolant intake tank symbol:
-        Symbol<ReactorTerminalContainer> coolantIntakeTankSymbol = new Symbol<>(this, 152, 6, 16, 16, 174, 152, new TranslationTextComponent("screen.biggerreactors.reactor_terminal.coolant_intake_tank.tooltip"));
-        coolantIntakeTankSymbol.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> RenderHelper.drawMaskedFluid(mS,
+        Symbol<ReactorTerminalContainer> coolantIntakeTankSymbol = new Symbol<>(this, 152, 6, 16, 16, 174, 152, new TranslatableComponent("screen.biggerreactors.reactor_terminal.coolant_intake_tank.tooltip"));
+        coolantIntakeTankSymbol.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> RenderHelper.drawMaskedFluid(mS,
                 coolantIntakeTankSymbol.x, coolantIntakeTankSymbol.y, this.getBlitOffset(),
                 coolantIntakeTankSymbol.width, coolantIntakeTankSymbol.height,
                 coolantIntakeTankSymbol.u, coolantIntakeTankSymbol.v, coolantFluid);
         this.addElement(coolantIntakeTankSymbol);
 
         // (Top) Hot exhaust tank symbol:
-        Symbol<ReactorTerminalContainer> hotExhaustTankSymbol = new Symbol<>(this, 174, 6, 16, 16, 158, 152, new TranslationTextComponent("screen.biggerreactors.reactor_terminal.exhaust_tank.tooltip"));
-        hotExhaustTankSymbol.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> RenderHelper.drawMaskedFluid(mS,
+        Symbol<ReactorTerminalContainer> hotExhaustTankSymbol = new Symbol<>(this, 174, 6, 16, 16, 158, 152, new TranslatableComponent("screen.biggerreactors.reactor_terminal.exhaust_tank.tooltip"));
+        hotExhaustTankSymbol.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> RenderHelper.drawMaskedFluid(mS,
                 hotExhaustTankSymbol.x, hotExhaustTankSymbol.y, this.getBlitOffset(),
                 hotExhaustTankSymbol.width, hotExhaustTankSymbol.height,
                 hotExhaustTankSymbol.u, hotExhaustTankSymbol.v, exhaustFluid);
         this.addElement(hotExhaustTankSymbol);
 
         // (Left) Exhaust generation rate symbol:
-        Symbol<ReactorTerminalContainer> exhaustGenerationRateSymbol = new Symbol<>(this, 8, 38, 16, 16, 142, 152, new TranslationTextComponent("screen.biggerreactors.reactor_terminal.exhaust_generation_rate.tooltip"));
-        exhaustGenerationRateSymbol.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> RenderHelper.drawMaskedFluid(mS,
+        Symbol<ReactorTerminalContainer> exhaustGenerationRateSymbol = new Symbol<>(this, 8, 38, 16, 16, 142, 152, new TranslatableComponent("screen.biggerreactors.reactor_terminal.exhaust_generation_rate.tooltip"));
+        exhaustGenerationRateSymbol.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> RenderHelper.drawMaskedFluid(mS,
                 exhaustGenerationRateSymbol.x, exhaustGenerationRateSymbol.y, this.getBlitOffset(),
                 exhaustGenerationRateSymbol.width, exhaustGenerationRateSymbol.height,
                 exhaustGenerationRateSymbol.u, exhaustGenerationRateSymbol.v, exhaustFluid);
@@ -145,21 +145,21 @@ public class ActiveReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
      * Tick/update this screen.
      */
     @Override
-    public void tick() {
+    public void containerTick() {
         // Update reactor state and tick.
-        reactorState = (ReactorState) this.getContainer().getGuiPacket();
-        super.tick();
+        reactorState = (ReactorState) this.getMenu().getGuiPacket();
+        super.containerTick();
         // Check if reactor type changed.
         if(reactorState.reactorType != ReactorType.ACTIVE) {
-            this.getMinecraft().displayGuiScreen(new PassiveReactorTerminalScreen(this.container, this.playerInventory, this.title));
+            this.getMinecraft().setScreen(new PassiveReactorTerminalScreen(this.menu, this.inventory, this.title));
         }
         // Check if coolant type changed.
         if(!reactorState.coolantResourceLocation.equals(Objects.requireNonNull(coolantFluid.getRegistryName()).toString())) {
-            coolantFluid = Registry.FLUID.getOrDefault(new ResourceLocation(reactorState.coolantResourceLocation));
+            coolantFluid = Registry.FLUID.get(new ResourceLocation(reactorState.coolantResourceLocation));
         }
         // Check if exhaust type changed.
         if(!reactorState.exhaustResourceLocation.equals(Objects.requireNonNull(exhaustFluid.getRegistryName()).toString())) {
-            exhaustFluid = Registry.FLUID.getOrDefault(new ResourceLocation(reactorState.exhaustResourceLocation));
+            exhaustFluid = Registry.FLUID.get(new ResourceLocation(reactorState.exhaustResourceLocation));
         }
     }
 
@@ -172,7 +172,7 @@ public class ActiveReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
      * @param partialTicks Partial ticks.
      */
     @Override
-    public void render(@Nonnull MatrixStack mStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(@Nonnull PoseStack mStack, int mouseX, int mouseY, float partialTicks) {
         super.render(mStack, mouseX, mouseY, partialTicks);
 
         // Render the other text:
@@ -180,7 +180,7 @@ public class ActiveReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
                 reactorState.fuelHeatStored, reactorState.fuelUsageRate, reactorState.reactivityRate);
 
         // Render text for output rate:
-        this.getFont().drawString(mStack, RenderHelper.formatValue((reactorState.reactorOutputRate / 1000.0), "B/t"), this.getGuiLeft() + 27, this.getGuiTop() + 42, 4210752);
+        this.getFont().draw(mStack, RenderHelper.formatValue((reactorState.reactorOutputRate / 1000.0), "B/t"), this.getGuiLeft() + 27, this.getGuiTop() + 42, 4210752);
     }
 
     /**
@@ -192,7 +192,7 @@ public class ActiveReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
      * @param workTime        The time the machine has been working.
      * @param workTimeTotal   The total time needed for completion.
      */
-    private static void renderProgressBar(@Nonnull MatrixStack mStack, @Nonnull Symbol<ReactorTerminalContainer> symbol, ReactorActivity reactorActivity, int workTime, int workTimeTotal, Fluid coolant) {
+    private static void renderProgressBar(@Nonnull PoseStack mStack, @Nonnull Symbol<ReactorTerminalContainer> symbol, ReactorActivity reactorActivity, int workTime, int workTimeTotal, Fluid coolant) {
         // Check that the reactor is active. If not, reset work time.
         if (reactorActivity != ReactorActivity.ACTIVE) {
             workTime = 0;

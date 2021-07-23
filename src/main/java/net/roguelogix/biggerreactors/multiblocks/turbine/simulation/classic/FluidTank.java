@@ -1,7 +1,7 @@
 package net.roguelogix.biggerreactors.multiblocks.turbine.simulation.classic;
 
-import net.minecraft.fluid.Fluid;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.material.Fluid;
 import net.roguelogix.biggerreactors.multiblocks.turbine.simulation.ITurbineFluidTank;
 import net.roguelogix.biggerreactors.registries.FluidTransitionRegistry;
 import net.roguelogix.biggerreactors.util.FluidTransitionTank;

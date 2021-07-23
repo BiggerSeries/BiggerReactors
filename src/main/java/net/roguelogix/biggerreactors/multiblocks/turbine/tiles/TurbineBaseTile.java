@@ -1,8 +1,9 @@
 package net.roguelogix.biggerreactors.multiblocks.turbine.tiles;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.roguelogix.biggerreactors.multiblocks.turbine.TurbineMultiblockController;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineBaseBlock;
 import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblockTile;
@@ -10,14 +11,14 @@ import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblo
 import javax.annotation.Nonnull;
 
 public class TurbineBaseTile extends RectangularMultiblockTile<TurbineMultiblockController, TurbineBaseTile, TurbineBaseBlock> {
-    public TurbineBaseTile(TileEntityType<?> tileEntityTypeIn) {
-        super(tileEntityTypeIn);
+    public TurbineBaseTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
     }
     
     @Nonnull
     @Override
     public final TurbineMultiblockController createController() {
-        return new TurbineMultiblockController(world);
+        return new TurbineMultiblockController(level);
     }
     
     public void runRequest(String requestName, Object requestData) {
@@ -32,11 +33,11 @@ public class TurbineBaseTile extends RectangularMultiblockTile<TurbineMultiblock
     
     
     @Override
-    public CompoundNBT getUpdateTag() {
-        return new CompoundNBT();
+    public CompoundTag getUpdateTag() {
+        return new CompoundTag();
     }
     
     @Override
-    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
+    public void handleUpdateTag(CompoundTag tag) {
     }
 }

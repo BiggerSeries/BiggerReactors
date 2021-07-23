@@ -1,13 +1,13 @@
 package net.roguelogix.biggerreactors.multiblocks.heatexchanger;
 
-import net.minecraft.block.AirBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.AirBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.HeatExchangerBaseBlock;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.HeatExchangerCasingBlock;
@@ -34,7 +34,7 @@ import static net.roguelogix.phosphophyllite.multiblock.generic.ConnectedTexture
 
 public class HeatExchangerMultiblockController extends RectangularMultiblockController<HeatExchangerMultiblockController, HeatExchangerBaseTile, HeatExchangerBaseBlock> {
     
-    public HeatExchangerMultiblockController(@Nonnull World world) {
+    public HeatExchangerMultiblockController(@Nonnull Level world) {
         super(world, tile -> tile instanceof HeatExchangerBaseTile, block -> block instanceof HeatExchangerBaseBlock);
         minSize.set(4, 3, 3);
         maxSize.set(-1, -1, -1);
@@ -52,25 +52,25 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         //TODO lang file the errors
         
         if (condenserChannels.isEmpty() || evaporatorChannels.isEmpty()) {
-            throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.heat_exchanger.missing_channel_type"));
+            throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.heat_exchanger.missing_channel_type"));
         }
         
         if (coolantPorts.size() != 4) {
-            throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.heat_exchanger.invalid_port_count"));
+            throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.heat_exchanger.invalid_port_count"));
         }
         
-        BlockPos.Mutable mutableBlockPos = new BlockPos.Mutable();
+        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         
         int condenserPorts = 0;
         int evaporatorPorts = 0;
         
         for (HeatExchangerCoolantPortTile coolantPort : coolantPorts) {
-            BlockPos portPos = coolantPort.getPos();
+            BlockPos portPos = coolantPort.getBlockPos();
             boolean channelFound = false;
             for (Direction value : Direction.values()) {
-                mutableBlockPos.setPos(portPos);
+                mutableBlockPos.set(portPos);
                 mutableBlockPos.move(value);
-                TileEntity tile = blocks.getTile(mutableBlockPos);
+                BlockEntity tile = blocks.getTile(mutableBlockPos);
                 if (tile instanceof HeatExchangerEvaporatorChannelTile) {
                     evaporatorPorts++;
                     channelFound = true;
@@ -82,12 +82,12 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
                 }
             }
             if (!channelFound) {
-                throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.heat_exchanger.coolant_port_unconnected", portPos.getX(), portPos.getY(), portPos.getZ()));
+                throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.heat_exchanger.coolant_port_unconnected", portPos.getX(), portPos.getY(), portPos.getZ()));
             }
         }
         if (condenserPorts != 2 || evaporatorPorts != 2) {
             // technically this isn't the problem im checking, but this is a secondary check that happens, without having to march the channels
-            throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.heat_exchanger.duplicate_port_types"));
+            throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.heat_exchanger.duplicate_port_types"));
         }
         
         verifyFluidChannels(condenserChannels);
@@ -102,7 +102,7 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
             }
             Direction nextDirection = null;
             for (Direction value : Direction.values()) {
-                mutableBlockPos.setPos(coolantPort.getPos());
+                mutableBlockPos.set(coolantPort.getBlockPos());
                 mutableBlockPos.move(value);
                 HeatExchangerBaseTile tile = blocks.getTile(mutableBlockPos);
                 if(tile instanceof HeatExchangerCondensorChannelTile || tile instanceof HeatExchangerEvaporatorChannelTile){
@@ -110,7 +110,7 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
                     break;
                 }
             }
-            mutableBlockPos.setPos(coolantPort.getPos());
+            mutableBlockPos.set(coolantPort.getBlockPos());
             if(nextDirection == null){
                 throw new ValidationError("Unknown channel verification error, this shouldn't be possible " + mutableBlockPos);
             }
@@ -130,29 +130,29 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
                     ((HeatExchangerEvaporatorChannelTile) channelTile).lastCheckedTick = tick;
                 }
                 BlockState channelState = channelTile.getBlockState();
-                if(nextDirection != Direction.DOWN && channelState.get(TOP_CONNECTED_PROPERTY)){
+                if(nextDirection != Direction.DOWN && channelState.getValue(TOP_CONNECTED_PROPERTY)){
                     nextDirection = Direction.UP;
                     continue;
                 }
-                if(nextDirection != Direction.UP && channelState.get(BOTTOM_CONNECTED_PROPERTY)){
+                if(nextDirection != Direction.UP && channelState.getValue(BOTTOM_CONNECTED_PROPERTY)){
                     nextDirection = Direction.DOWN;
                     continue;
                 }
     
-                if(nextDirection != Direction.SOUTH && channelState.get(NORTH_CONNECTED_PROPERTY)){
+                if(nextDirection != Direction.SOUTH && channelState.getValue(NORTH_CONNECTED_PROPERTY)){
                     nextDirection = Direction.NORTH;
                     continue;
                 }
-                if(nextDirection != Direction.NORTH && channelState.get(SOUTH_CONNECTED_PROPERTY)){
+                if(nextDirection != Direction.NORTH && channelState.getValue(SOUTH_CONNECTED_PROPERTY)){
                     nextDirection = Direction.SOUTH;
                     continue;
                 }
                 
-                if(nextDirection != Direction.WEST && channelState.get(EAST_CONNECTED_PROPERTY)){
+                if(nextDirection != Direction.WEST && channelState.getValue(EAST_CONNECTED_PROPERTY)){
                     nextDirection = Direction.EAST;
                     continue;
                 }
-                if(nextDirection != Direction.EAST && channelState.get(WEST_CONNECTED_PROPERTY)){
+                if(nextDirection != Direction.EAST && channelState.getValue(WEST_CONNECTED_PROPERTY)){
                     nextDirection = Direction.WEST;
                     continue;
                 }
@@ -162,22 +162,22 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
     
         for (HeatExchangerCondensorChannelTile condenserChannel : condenserChannels) {
             if(condenserChannel.lastCheckedTick != tick){
-                BlockPos channelPos = condenserChannel.getPos();
-                throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.heat_exchanger.dangling_channel", channelPos.getX(), channelPos.getY(), channelPos.getZ()));            }
+                BlockPos channelPos = condenserChannel.getBlockPos();
+                throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.heat_exchanger.dangling_channel", channelPos.getX(), channelPos.getY(), channelPos.getZ()));            }
         }
     
         for (HeatExchangerEvaporatorChannelTile evaporatorChannel : evaporatorChannels) {
             if(evaporatorChannel.lastCheckedTick != tick){
-                BlockPos channelPos = evaporatorChannel.getPos();
-                throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.heat_exchanger.dangling_channel", channelPos.getX(), channelPos.getY(), channelPos.getZ()));
+                BlockPos channelPos = evaporatorChannel.getBlockPos();
+                throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.heat_exchanger.dangling_channel", channelPos.getX(), channelPos.getY(), channelPos.getZ()));
             }
         }
         
         Util.chunkCachedBlockStateIteration(minCoord(), maxCoord(), world, (block, pos) -> {
             if (block.getBlock() instanceof HeatExchangerBaseBlock) {
-                mutableBlockPos.setPos(pos.x, pos.y, pos.z);
+                mutableBlockPos.set(pos.x, pos.y, pos.z);
                 if (!blocks.containsPos(mutableBlockPos)) {
-                    throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.heat_exchanger.dangling_internal_part", pos.x, pos.y, pos.z));
+                    throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.heat_exchanger.dangling_internal_part", pos.x, pos.y, pos.z));
                 }
             }
         });
@@ -189,15 +189,15 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         channels.forEach(tile -> {
             BlockState state = tile.getBlockState();
             int connectedSides = 0;
-            connectedSides += state.get(TOP_CONNECTED_PROPERTY) ? 1 : 0;
-            connectedSides += state.get(BOTTOM_CONNECTED_PROPERTY) ? 1 : 0;
-            connectedSides += state.get(NORTH_CONNECTED_PROPERTY) ? 1 : 0;
-            connectedSides += state.get(SOUTH_CONNECTED_PROPERTY) ? 1 : 0;
-            connectedSides += state.get(EAST_CONNECTED_PROPERTY) ? 1 : 0;
-            connectedSides += state.get(WEST_CONNECTED_PROPERTY) ? 1 : 0;
+            connectedSides += state.getValue(TOP_CONNECTED_PROPERTY) ? 1 : 0;
+            connectedSides += state.getValue(BOTTOM_CONNECTED_PROPERTY) ? 1 : 0;
+            connectedSides += state.getValue(NORTH_CONNECTED_PROPERTY) ? 1 : 0;
+            connectedSides += state.getValue(SOUTH_CONNECTED_PROPERTY) ? 1 : 0;
+            connectedSides += state.getValue(EAST_CONNECTED_PROPERTY) ? 1 : 0;
+            connectedSides += state.getValue(WEST_CONNECTED_PROPERTY) ? 1 : 0;
             
             if (connectedSides != 2) {
-                throw new ValidationError("all fluid channels must have exactly two connections " + tile.getPos());
+                throw new ValidationError("all fluid channels must have exactly two connections " + tile.getBlockPos());
             }
         });
     }
@@ -257,7 +257,7 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
     protected void onAssembled() {
         onUnpaused();
         // its in kelvin, 150C and 20C
-        double ambientTemperature = world.getDimensionType().isUltrawarm() ? 423.15 : 293.15; // TODO config these, also the end
+        double ambientTemperature = world.dimensionType().ultraWarm() ? 423.15 : 293.15; // TODO config these, also the end
         ambientHeatBody.setTemperature(ambientTemperature);
         airHeatBody.setTemperature(ambientTemperature);
         condenserHeatBody.setTemperature(ambientTemperature);
@@ -266,7 +266,7 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
     
     @Override
     protected void onUnpaused() {
-        BlockPos.Mutable mutableBlockPos = new BlockPos.Mutable();
+        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         
         condenserHeatBody.setRfPerKelvin(condenserChannels.size() * Config.HeatExchanger.ChannelFEPerKelvinUnitVolume);
         evaporatorHeatBody.setRfPerKelvin(evaporatorChannels.size() * Config.HeatExchanger.ChannelFEPerKelvinUnitVolume);
@@ -287,7 +287,7 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         
         for (HeatExchangerCondensorChannelTile condenserChannel : condenserChannels) {
             for (Direction value : Direction.values()) {
-                mutableBlockPos.setPos(condenserChannel.getPos());
+                mutableBlockPos.set(condenserChannel.getBlockPos());
                 mutableBlockPos.move(value);
                 HeatExchangerBaseTile tile = blocks.getTile(mutableBlockPos);
                 if (tile instanceof HeatExchangerEvaporatorChannelTile) {
@@ -300,7 +300,7 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         
         for (HeatExchangerEvaporatorChannelTile condenserChannel : evaporatorChannels) {
             for (Direction value : Direction.values()) {
-                mutableBlockPos.setPos(condenserChannel.getPos());
+                mutableBlockPos.set(condenserChannel.getBlockPos());
                 mutableBlockPos.move(value);
                 HeatExchangerBaseTile tile = blocks.getTile(mutableBlockPos);
                 if (!(tile instanceof HeatExchangerCondensorChannelTile) && !(tile instanceof HeatExchangerEvaporatorChannelTile)) {
@@ -318,11 +318,11 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         airAmbientRFKT = airAmbientContactArea * Config.HeatExchanger.AmbientFEPerKelvinMetreSquared;
         
         for (HeatExchangerCoolantPortTile coolantPort : coolantPorts) {
-            BlockPos portPos = coolantPort.getPos();
+            BlockPos portPos = coolantPort.getBlockPos();
             for (Direction value : Direction.values()) {
-                mutableBlockPos.setPos(portPos);
+                mutableBlockPos.set(portPos);
                 mutableBlockPos.move(value);
-                TileEntity tile = blocks.getTile(mutableBlockPos);
+                BlockEntity tile = blocks.getTile(mutableBlockPos);
                 if (tile instanceof HeatExchangerEvaporatorChannelTile) {
                     coolantPort.setHETank(evaporatorTank);
                     coolantPort.setCondenser(false);
@@ -361,7 +361,7 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
     
     
     @Override
-    protected void read(@Nonnull CompoundNBT nbt) {
+    protected void read(@Nonnull CompoundTag nbt) {
         super.read(nbt);
         condenserTank.deserializeNBT(nbt.getCompound("condenserTank"));
         evaporatorTank.deserializeNBT(nbt.getCompound("evaporatorTank"));
@@ -377,8 +377,8 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
     
     @Nonnull
     @Override
-    protected CompoundNBT write() {
-        CompoundNBT nbt = super.write();
+    protected CompoundTag write() {
+        CompoundTag nbt = super.write();
         nbt.put("condenserTank", condenserTank.serializeNBT());
         nbt.put("evaporatorTank", evaporatorTank.serializeNBT());
         nbt.putDouble("ambientHeatBody", ambientHeatBody.temperature());

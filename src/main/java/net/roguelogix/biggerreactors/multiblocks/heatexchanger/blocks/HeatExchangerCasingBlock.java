@@ -1,9 +1,9 @@
 package net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks;
 
 
-import net.minecraft.block.BlockState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerCasingTile;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
@@ -15,12 +15,6 @@ public class HeatExchangerCasingBlock extends HeatExchangerBaseBlock {
     @RegisterBlock.Instance
     public static HeatExchangerCasingBlock INSTANCE;
     
-    @Nullable
-    @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new HeatExchangerCasingTile();
-    }
-    
     @Override
     public boolean usesAxisPositions() {
         return true;
@@ -29,5 +23,11 @@ public class HeatExchangerCasingBlock extends HeatExchangerBaseBlock {
     @Override
     public boolean isGoodForFrame() {
         return true;
+    }
+    
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new HeatExchangerCasingTile(pos, state);
     }
 }

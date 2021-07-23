@@ -1,28 +1,29 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.tiles;
 
-import mekanism.api.chemical.gas.IGasHandler;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorAccessPort;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorCoolantPort;
 import net.roguelogix.biggerreactors.multiblocks.reactor.containers.ReactorCoolantPortContainer;
@@ -30,7 +31,6 @@ import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorCool
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorCoolantPortState;
 import net.roguelogix.phosphophyllite.fluids.FluidHandlerWrapper;
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
-import net.roguelogix.phosphophyllite.fluids.MekanismGasWrappers;
 import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.multiblock.generic.IAssemblyAttemptedTile;
 import net.roguelogix.phosphophyllite.multiblock.generic.IOnAssemblyTile;
@@ -46,20 +46,20 @@ import javax.annotation.Nullable;
 import static net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorAccessPort.PortDirection.*;
 
 @RegisterTileEntity(name = "reactor_coolant_port")
-public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphophylliteFluidHandler, INamedContainerProvider, IHasUpdatableState<ReactorCoolantPortState>, IAssemblyAttemptedTile, IOnAssemblyTile, IOnDisassemblyTile {
+public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphophylliteFluidHandler, MenuProvider, IHasUpdatableState<ReactorCoolantPortState>, IAssemblyAttemptedTile, IOnAssemblyTile, IOnDisassemblyTile {
     
     @RegisterTileEntity.Type
-    public static TileEntityType<?> TYPE;
+    public static BlockEntityType<?> TYPE;
     
     @RegisterTileEntity.Supplier
     public static final TileSupplier SUPPLIER = ReactorCoolantPortTile::new;
     
-    public ReactorCoolantPortTile() {
-        super(TYPE);
+    public ReactorCoolantPortTile(BlockPos pos, BlockState state) {
+        super(TYPE, pos, state);
     }
     
-    @CapabilityInject(IGasHandler.class)
-    public static Capability<IGasHandler> GAS_HANDLER_CAPABILITY = null;
+//    @CapabilityInject(IGasHandler.class)
+//    public static Capability<IGasHandler> GAS_HANDLER_CAPABILITY = null;
     
     @Nonnull
     @Override
@@ -67,9 +67,9 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
         if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
             return LazyOptional.of(() -> this).cast();
         }
-        if (cap == GAS_HANDLER_CAPABILITY) {
-            return LazyOptional.of(() -> MekanismGasWrappers.wrap(this)).cast();
-        }
+//        if (cap == GAS_HANDLER_CAPABILITY) {
+//            return LazyOptional.of(() -> MekanismGasWrappers.wrap(this)).cast();
+//        }
         return super.getCapability(cap, side);
     }
     
@@ -102,7 +102,7 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
     
     @Nullable
     @Override
-    public CompoundNBT fluidTagInTank(int tank) {
+    public CompoundTag fluidTagInTank(int tank) {
         if (transitionTank == null) {
             return null;
         }
@@ -126,7 +126,7 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
     }
     
     @Override
-    public long fill(@Nonnull Fluid fluid, @Nullable CompoundNBT tag, long amount, boolean simulate) {
+    public long fill(@Nonnull Fluid fluid, @Nullable CompoundTag tag, long amount, boolean simulate) {
         if (transitionTank == null || direction != INLET) {
             return 0;
         }
@@ -134,7 +134,7 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
     }
     
     @Override
-    public long drain(@Nonnull Fluid fluid, @Nullable CompoundNBT tag, long amount, boolean simulate) {
+    public long drain(@Nonnull Fluid fluid, @Nullable CompoundTag tag, long amount, boolean simulate) {
         if (transitionTank == null || direction == INLET) {
             return 0;
         }
@@ -178,8 +178,8 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
             connected = false;
             return;
         }
-        assert world != null;
-        TileEntity te = world.getTileEntity(pos.offset(steamOutputDirection));
+        assert level != null;
+        BlockEntity te = level.getBlockEntity(worldPosition.relative(steamOutputDirection));
         if (te == null) {
             connected = false;
             return;
@@ -190,24 +190,24 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
             connected = true;
             handlerOptional = fluidOptional;
             handler = FluidHandlerWrapper.wrap(fluidOptional.orElse(EMPTY_TANK));
-        } else if (GAS_HANDLER_CAPABILITY != null) {
-            LazyOptional<IGasHandler> gasOptional = te.getCapability(GAS_HANDLER_CAPABILITY, steamOutputDirection.getOpposite());
-            if (gasOptional.isPresent()) {
-                IGasHandler gasHandler = gasOptional.orElse(MekanismGasWrappers.EMPTY_TANK);
-                connected = true;
-                handlerOptional = gasOptional;
-                handler = MekanismGasWrappers.wrap(gasHandler);
-            }
+//        } else if (GAS_HANDLER_CAPABILITY != null) {
+//            LazyOptional<IGasHandler> gasOptional = te.getCapability(GAS_HANDLER_CAPABILITY, steamOutputDirection.getOpposite());
+//            if (gasOptional.isPresent()) {
+//                IGasHandler gasHandler = gasOptional.orElse(MekanismGasWrappers.EMPTY_TANK);
+//                connected = true;
+//                handlerOptional = gasOptional;
+//                handler = MekanismGasWrappers.wrap(gasHandler);
+//            }
         }
     }
     
     public void setDirection(ReactorAccessPort.PortDirection direction) {
         this.direction = direction;
-        this.markDirty();
+        this.setChanged();
     }
     
     @Override
-    protected void readNBT(@Nonnull CompoundNBT compound) {
+    protected void readNBT(@Nonnull CompoundTag compound) {
         if (compound.contains("direction")) {
             direction = ReactorAccessPort.PortDirection.valueOf(compound.getString("direction"));
         }
@@ -215,27 +215,27 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
     
     @Override
     @Nonnull
-    protected CompoundNBT writeNBT() {
-        CompoundNBT NBT = new CompoundNBT();
+    protected CompoundTag writeNBT() {
+        CompoundTag NBT = new CompoundTag();
         NBT.putString("direction", String.valueOf(direction));
         return NBT;
     }
     
     @Override
     public void onAssemblyAttempted() {
-        assert world != null;
-        world.setBlockState(pos, world.getBlockState(pos).with(PORT_DIRECTION_ENUM_PROPERTY, direction));
+        assert level != null;
+        level.setBlock(worldPosition, level.getBlockState(worldPosition).setValue(PORT_DIRECTION_ENUM_PROPERTY, direction), 3);
     }
     
     @Override
     @Nonnull
-    public ActionResultType onBlockActivated(@Nonnull PlayerEntity player, @Nonnull Hand handIn) {
-        assert world != null;
-        if (world.getBlockState(pos).get(MultiblockBlock.ASSEMBLED)) {
-            if (!world.isRemote) {
-                NetworkHooks.openGui((ServerPlayerEntity) player, this, this.getPos());
+    public InteractionResult onBlockActivated(@Nonnull Player player, @Nonnull InteractionHand handIn) {
+        assert level != null;
+        if (level.getBlockState(worldPosition).getValue(MultiblockBlock.ASSEMBLED)) {
+            if (!level.isClientSide) {
+                NetworkHooks.openGui((ServerPlayer) player, this, this.getBlockPos());
             }
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
         return super.onBlockActivated(player, handIn);
     }
@@ -245,21 +245,21 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
         // Change IO direction.
         if (requestName.equals("setDirection")) {
             this.setDirection(((Integer) requestData != 0) ? OUTLET : INLET);
-            world.setBlockState(this.pos, this.getBlockState().with(PORT_DIRECTION_ENUM_PROPERTY, direction));
+            level.setBlock(this.worldPosition, this.getBlockState().setValue(PORT_DIRECTION_ENUM_PROPERTY, direction), 3);
         }
         
         super.runRequest(requestName, requestData);
     }
     
     @Override
-    public ITextComponent getDisplayName() {
-        return new TranslationTextComponent(ReactorCoolantPort.INSTANCE.getTranslationKey());
+    public Component getDisplayName() {
+        return new TranslatableComponent(ReactorCoolantPort.INSTANCE.getDescriptionId());
     }
     
     @Nullable
     @Override
-    public Container createMenu(int windowId, @Nonnull PlayerInventory playerInventory, @Nonnull PlayerEntity player) {
-        return new ReactorCoolantPortContainer(windowId, this.pos, player);
+    public AbstractContainerMenu createMenu(int windowId, @Nonnull Inventory playerInventory, @Nonnull Player player) {
+        return new ReactorCoolantPortContainer(windowId, this.worldPosition, player);
     }
     
     @Override
@@ -277,7 +277,7 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
     @Override
     public void onAssembly() {
         this.transitionTank = controller.simulation().coolantTank();
-        steamOutputDirection = getBlockState().get(BlockStates.FACING);
+        steamOutputDirection = getBlockState().getValue(BlockStates.FACING);
         neighborChanged();
     }
     

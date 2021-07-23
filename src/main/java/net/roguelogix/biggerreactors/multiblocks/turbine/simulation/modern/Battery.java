@@ -1,7 +1,7 @@
 package net.roguelogix.biggerreactors.multiblocks.turbine.simulation.modern;
 
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.roguelogix.biggerreactors.multiblocks.turbine.simulation.ITurbineBattery;
 
 public class Battery implements ITurbineBattery {
@@ -40,14 +40,14 @@ public class Battery implements ITurbineBattery {
     }
     
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = new CompoundNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = new CompoundTag();
         nbt.putLong("storedPower", stored);
         return nbt;
     }
     
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         stored = nbt.getLong("storedPower");
     }
 }

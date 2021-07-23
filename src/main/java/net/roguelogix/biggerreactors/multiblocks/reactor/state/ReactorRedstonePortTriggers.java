@@ -1,10 +1,10 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.state;
 
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 
 import javax.annotation.Nonnull;
 
-public enum  ReactorRedstonePortTriggers implements IStringSerializable {
+public enum  ReactorRedstonePortTriggers implements StringRepresentable {
     PULSE_OR_ABOVE(false),
     SIGNAL_OR_BELOW(true);
 
@@ -16,7 +16,7 @@ public enum  ReactorRedstonePortTriggers implements IStringSerializable {
 
     @Override
     @Nonnull
-    public String getString() {
+    public String getSerializedName() {
         return toString().toLowerCase();
     }
 

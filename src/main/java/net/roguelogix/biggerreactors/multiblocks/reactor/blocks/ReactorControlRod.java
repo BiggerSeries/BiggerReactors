@@ -1,8 +1,8 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.blocks;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.roguelogix.biggerreactors.multiblocks.reactor.tiles.ReactorControlRodTile;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
@@ -16,7 +16,7 @@ public class ReactorControlRod extends ReactorBaseBlock {
     
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new ReactorControlRodTile();
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new ReactorControlRodTile(pos, state);
     }
 }

@@ -1,13 +1,13 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorBaseBlock;
@@ -33,7 +33,7 @@ import java.util.*;
 
 public class ReactorMultiblockController extends RectangularMultiblockController<ReactorMultiblockController, ReactorBaseTile, ReactorBaseBlock> {
     
-    public ReactorMultiblockController(@Nonnull World world) {
+    public ReactorMultiblockController(@Nonnull Level world) {
         super(world, tile -> tile instanceof ReactorBaseTile, block -> block instanceof ReactorBaseBlock);
         
         minSize.set(3);
@@ -49,20 +49,20 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             if (!powerPorts.isEmpty() && !coolantPorts.isEmpty()) {
                 throw new ValidationError("multiblock.error.biggerreactors.coolant_and_power_ports");
             }
-            BlockPos.Mutable mutableBlockPos = new BlockPos.Mutable();
+            BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
             
             long tick = Phosphophyllite.tickNumber();
             
             for (ReactorControlRodTile controlRod : controlRods) {
-                mutableBlockPos.setPos(controlRod.getPos());
+                mutableBlockPos.set(controlRod.getBlockPos());
                 if (mutableBlockPos.getY() != maxCoord().y()) {
-                    throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.control_rod_not_on_top", controlRod.getPos().getX(), controlRod.getPos().getY(), controlRod.getPos().getZ()));
+                    throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.control_rod_not_on_top", controlRod.getBlockPos().getX(), controlRod.getBlockPos().getY(), controlRod.getBlockPos().getZ()));
                 }
                 for (int i = 0; i < maxCoord().y() - minCoord().y() - 1; i++) {
                     mutableBlockPos.move(0, -1, 0);
                     ReactorBaseTile tile = blocks.getTile(mutableBlockPos);
                     if (!(tile instanceof ReactorFuelRodTile)) {
-                        throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.fuel_rod_gap", controlRod.getPos().getX(), controlRod.getPos().getY() + (-1 - i), controlRod.getPos().getZ()));
+                        throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.fuel_rod_gap", controlRod.getBlockPos().getX(), controlRod.getBlockPos().getY() + (-1 - i), controlRod.getBlockPos().getZ()));
                     }
                     ((ReactorFuelRodTile) tile).lastCheckedTick = tick;
                 }
@@ -70,22 +70,22 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             
             for (ReactorFuelRodTile fuelRod : fuelRods) {
                 if (fuelRod.lastCheckedTick != tick) {
-                    throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.no_control_rod_for_fuel_rod", fuelRod.getPos().getX(), fuelRod.getPos().getZ()));
+                    throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.no_control_rod_for_fuel_rod", fuelRod.getBlockPos().getX(), fuelRod.getBlockPos().getZ()));
                 }
             }
             
             ArrayList<ReactorManifoldTile> manifoldsToCheck = new ArrayList<>();
             
             for (ReactorManifoldTile manifold : manifolds) {
-                BlockPos pos = manifold.getPos();
+                BlockPos pos = manifold.getBlockPos();
                 
                 if (pos.getX() == minCoord().x() + 1 || pos.getX() == maxCoord().x() - 1 ||
                         pos.getY() == minCoord().y() + 1 || pos.getY() == maxCoord().y() - 1 ||
                         pos.getZ() == minCoord().z() + 1 || pos.getZ() == maxCoord().z() - 1) {
                     for (Direction value : Direction.values()) {
-                        mutableBlockPos.setPos(pos);
+                        mutableBlockPos.set(pos);
                         mutableBlockPos.move(value);
-                        TileEntity edgeTile = blocks.getTile(mutableBlockPos);
+                        BlockEntity edgeTile = blocks.getTile(mutableBlockPos);
                         if (edgeTile == null) {
                             continue;
                         }
@@ -103,7 +103,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
                 ReactorManifoldTile manifoldTile = manifoldsToCheck.remove(manifoldsToCheck.size() - 1);
                 manifoldTile.lastCheckedTick = tick;
                 for (Direction value : Direction.values()) {
-                    mutableBlockPos.setPos(manifoldTile.getPos());
+                    mutableBlockPos.set(manifoldTile.getBlockPos());
                     mutableBlockPos.move(value);
                     ReactorBaseTile tile = blocks.getTile(mutableBlockPos);
                     if (tile instanceof ReactorManifoldTile) {
@@ -116,16 +116,16 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             
             for (ReactorManifoldTile manifold : manifolds) {
                 if (manifold.lastCheckedTick != tick) {
-                    BlockPos pos = manifold.getPos();
-                    throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.dangling_manifold", pos.getX(), pos.getY(), pos.getZ()));
+                    BlockPos pos = manifold.getBlockPos();
+                    throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.dangling_manifold", pos.getX(), pos.getY(), pos.getZ()));
                 }
             }
             
             Util.chunkCachedBlockStateIteration(minCoord(), maxCoord(), world, (block, pos) -> {
                 if (block.getBlock() instanceof ReactorBaseBlock) {
-                    mutableBlockPos.setPos(pos.x, pos.y, pos.z);
+                    mutableBlockPos.set(pos.x, pos.y, pos.z);
                     if (!blocks.containsPos(mutableBlockPos)) {
-                        throw new ValidationError(new TranslationTextComponent("multiblock.error.biggerreactors.dangling_internal_part", pos.x, pos.y, pos.z));
+                        throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.dangling_internal_part", pos.x, pos.y, pos.z));
                     }
                 }
             });
@@ -217,8 +217,8 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     
     public void updateBlockStates() {
         terminals.forEach(terminal -> {
-            world.setBlockState(terminal.getPos(), terminal.getBlockState().with(ReactorActivity.REACTOR_ACTIVITY_ENUM_PROPERTY, reactorActivity));
-            terminal.markDirty();
+            world.setBlock(terminal.getBlockPos(), terminal.getBlockState().setValue(ReactorActivity.REACTOR_ACTIVITY_ENUM_PROPERTY, reactorActivity), 3);
+            terminal.setChanged();
         });
     }
     
@@ -238,7 +238,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         return reactorActivity == ReactorActivity.ACTIVE;
     }
     
-    protected void read(@Nonnull CompoundNBT compound) {
+    protected void read(@Nonnull CompoundTag compound) {
         if (compound.contains("reactorState")) {
             reactorActivity = ReactorActivity.valueOf(compound.getString("reactorState").toUpperCase());
             simulation.setActive(reactorActivity == ReactorActivity.ACTIVE);
@@ -252,8 +252,8 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     }
     
     @Nonnull
-    protected CompoundNBT write() {
-        CompoundNBT compound = new CompoundNBT();
+    protected CompoundTag write() {
+        CompoundTag compound = new CompoundTag();
         {
             compound.putString("reactorState", reactorActivity.toString());
             compound.put("simulationData", simulation.serializeNBT());
@@ -281,11 +281,11 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             }
         });
         for (ReactorManifoldTile manifold : manifolds) {
-            BlockPos manifoldPos = manifold.getPos();
+            BlockPos manifoldPos = manifold.getBlockPos();
             simulation.setManifold(manifoldPos.getX() - start.x, manifoldPos.getY() - start.y, manifoldPos.getZ() - start.z);
         }
         for (ReactorControlRodTile controlRod : controlRods) {
-            BlockPos rodPos = controlRod.getPos();
+            BlockPos rodPos = controlRod.getBlockPos();
             simulation.setControlRod(rodPos.getX() - start.x, rodPos.getZ() - start.z);
         }
         simulation.setPassivelyCooled(coolantPorts.isEmpty());
@@ -301,7 +301,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         }
         
         fuelRods.forEach(rod -> {
-            int rodLevel = rod.getPos().getY();
+            int rodLevel = rod.getBlockPos().getY();
             rodLevel -= this.minCoord().y();
             rodLevel -= 1;
             fuelRodsByLevel.get(rodLevel).add(rod);
@@ -425,10 +425,11 @@ public class ReactorMultiblockController extends RectangularMultiblockController
                 
                 for (ReactorFuelRodTile reactorFuelRodTile : fuelRodsByLevel.get((int) i)) {
                     BlockState state = reactorFuelRodTile.getBlockState();
-                    BlockState newState = state.with(ReactorFuelRod.FUEL_HEIGHT_PROPERTY, levelFuelPixel);
+                    BlockState newState = state.setValue(ReactorFuelRod.FUEL_HEIGHT_PROPERTY, levelFuelPixel);
                     if (newState != state) {
-                        newStates.put(reactorFuelRodTile.getPos(), newState);
+                        newStates.put(reactorFuelRodTile.getBlockPos(), newState);
                         updatedLevels[(int) i] = true;
+                        reactorFuelRodTile.setBlockState(newState);
                     }
                 }
                 
@@ -442,12 +443,13 @@ public class ReactorMultiblockController extends RectangularMultiblockController
                 
                 for (ReactorFuelRodTile reactorFuelRodTile : fuelRodsByLevel.get((int) i)) {
                     BlockState state = reactorFuelRodTile.getBlockState();
-                    BlockState newState = state.with(ReactorFuelRod.WASTE_HEIGHT_PROPERTY, levelWastePixel);
+                    BlockState newState = state.setValue(ReactorFuelRod.WASTE_HEIGHT_PROPERTY, levelWastePixel);
                     if (newState != state) {
-                        state = newStates.getOrDefault(reactorFuelRodTile.getPos(), state);
-                        newState = state.with(ReactorFuelRod.WASTE_HEIGHT_PROPERTY, levelWastePixel);
-                        newStates.put(reactorFuelRodTile.getPos(), newState);
+                        state = newStates.getOrDefault(reactorFuelRodTile.getBlockPos(), state);
+                        newState = state.setValue(ReactorFuelRod.WASTE_HEIGHT_PROPERTY, levelWastePixel);
+                        newStates.put(reactorFuelRodTile.getBlockPos(), newState);
                         updatedLevels[(int) i] = true;
+                        reactorFuelRodTile.setBlockState(newState);
                     }
                 }
                 
@@ -455,15 +457,6 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         }
         
         Util.setBlockStates(newStates, world);
-        
-        for (int i = 0; i < updatedLevels.length; i++) {
-            if (!updatedLevels[i]) {
-                continue;
-            }
-            for (ReactorFuelRodTile reactorFuelRodTile : fuelRodsByLevel.get(i)) {
-                reactorFuelRodTile.updateContainingBlockInfo();
-            }
-        }
         
         currentFuelRenderLevel = fuelPixels;
         currentWasteRenderLevel = wastePixels;
@@ -492,7 +485,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             fuelRod.fuel -= simulation.fuelTank().insertFuel(fuelRod.fuel, false);
             fuelRod.waste -= simulation.fuelTank().insertWaste(fuelRod.waste, false);
             if (fuelRod.fuel != 0 || fuelRod.waste != 0) {
-                BiggerReactors.LOGGER.warn("Reactor overfilled with fuel at " + fuelRod.getPos().toString());
+                BiggerReactors.LOGGER.warn("Reactor overfilled with fuel at " + fuelRod.getBlockPos().toString());
                 // for now, just void the fuel
                 fuelRod.fuel = 0;
                 fuelRod.waste = 0;
@@ -655,7 +648,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     
     public void updateControlRodLevels() {
         controlRods.forEach(rod -> {
-            BlockPos pos = rod.getPos();
+            BlockPos pos = rod.getBlockPos();
             simulation.setControlRodInsertion(pos.getX() - minCoord().x() - 1, pos.getZ() - minCoord().z() - 1, rod.getInsertion());
         });
     }

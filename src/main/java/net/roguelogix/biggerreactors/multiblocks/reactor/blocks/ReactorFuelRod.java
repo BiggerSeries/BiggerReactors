@@ -1,13 +1,13 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.blocks;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.state.IntegerProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.multiblocks.reactor.tiles.ReactorFuelRodTile;
@@ -24,27 +24,28 @@ public class ReactorFuelRod extends ReactorBaseBlock {
     
     public ReactorFuelRod() {
         super(false);
-        this.setDefaultState(this.getDefaultState().with(FUEL_HEIGHT_PROPERTY, 0).with(WASTE_HEIGHT_PROPERTY, 0));
+        this.registerDefaultState(this.defaultBlockState().setValue(FUEL_HEIGHT_PROPERTY, 0).setValue(WASTE_HEIGHT_PROPERTY, 0));
     }
     
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new ReactorFuelRodTile();
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new ReactorFuelRodTile(pos, state);
     }
     
     @OnlyIn(Dist.CLIENT)
     @RegisterBlock.RenderLayer
     RenderType renderLayer() {
-        return RenderType.getCutout();
+        return RenderType.cutout();
     }
     
-    @OnlyIn(Dist.CLIENT)
-    public float getAmbientOcclusionLightValue(@Nonnull BlockState state, @Nonnull IBlockReader worldIn, @Nonnull BlockPos pos) {
-        return 1.0F;
+    @SuppressWarnings("deprecation")
+    @Override
+    public float getShadeBrightness(BlockState p_60472_, BlockGetter p_60473_, BlockPos p_60474_) {
+        return 1.0f;
     }
     
-    public boolean propagatesSkylightDown(@Nonnull BlockState state, @Nonnull IBlockReader reader, @Nonnull BlockPos pos) {
+    public boolean propagatesSkylightDown(@Nonnull BlockState state, @Nonnull BlockGetter reader, @Nonnull BlockPos pos) {
         return true;
     }
     
@@ -52,8 +53,8 @@ public class ReactorFuelRod extends ReactorBaseBlock {
     public static IntegerProperty WASTE_HEIGHT_PROPERTY = IntegerProperty.create("waste_level", 0, 16);
     
     @Override
-    protected void fillStateContainer(@Nonnull StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(FUEL_HEIGHT_PROPERTY);
         builder.add(WASTE_HEIGHT_PROPERTY);
     }

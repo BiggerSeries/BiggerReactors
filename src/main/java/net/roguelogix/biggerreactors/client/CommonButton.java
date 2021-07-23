@@ -1,11 +1,10 @@
 package net.roguelogix.biggerreactors.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.phosphophyllite.gui.client.RenderHelper;
@@ -16,7 +15,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @OnlyIn(Dist.CLIENT)
-public class CommonButton<T extends Container> extends Button<T> {
+public class CommonButton<T extends AbstractContainerMenu> extends Button<T> {
 
     /**
      * Default constructor.
@@ -30,7 +29,7 @@ public class CommonButton<T extends Container> extends Button<T> {
      * @param v       The v offset to use when rendering this element (starting from the top, and moving down).
      * @param tooltip      The tooltip for this element. If null, a tooltip will not render. If you set a tooltip later, use StringTextComponent.EMPTY.
      */
-    public CommonButton(@Nonnull ScreenBase<T> parent, int x, int y, int width, int height, int u, int v, @Nullable ITextComponent tooltip) {
+    public CommonButton(@Nonnull ScreenBase<T> parent, int x, int y, int width, int height, int u, int v, @Nullable Component tooltip) {
         super(parent, x, y, width, height, u, v, tooltip);
     }
 
@@ -42,7 +41,7 @@ public class CommonButton<T extends Container> extends Button<T> {
      * @param mouseY The y position of the mouse.
      */
     @Override
-    public void render(@Nonnull MatrixStack mStack, int mouseX, int mouseY) {
+    public void render(@Nonnull PoseStack mStack, int mouseX, int mouseY) {
         // Check conditions.
         if (this.renderEnable) {
             // Preserve the previously selected texture and bind the common texture.

@@ -1,6 +1,8 @@
 package net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles;
 
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 import net.roguelogix.phosphophyllite.registry.TileSupplier;
 
@@ -10,12 +12,12 @@ public class HeatExchangerEvaporatorChannelTile extends HeatExchangerBaseTile {
     public long lastCheckedTick;
     
     @RegisterTileEntity.Type
-    public static TileEntityType<?> TYPE;
+    public static BlockEntityType<?> TYPE;
     
     @RegisterTileEntity.Supplier
     public static final TileSupplier SUPPLIER = HeatExchangerEvaporatorChannelTile::new;
     
-    public HeatExchangerEvaporatorChannelTile() {
-        super(TYPE);
+    public HeatExchangerEvaporatorChannelTile(BlockPos pos, BlockState state) {
+        super(TYPE, pos, state);
     }
 }

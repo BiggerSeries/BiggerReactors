@@ -1,96 +1,101 @@
 package net.roguelogix.biggerreactors.machine.blocks;
 
-import net.minecraft.block.*;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.DirectionProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.ToolType;
 import net.roguelogix.biggerreactors.machine.tiles.CyaniteReprocessorTile;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Properties;
 
 @RegisterBlock(name = "cyanite_reprocessor", tileEntityClass = CyaniteReprocessorTile.class)
-public class CyaniteReprocessor extends ContainerBlock {
+public class CyaniteReprocessor extends BaseEntityBlock implements EntityBlock{
     
-    public static final DirectionProperty FACING = HorizontalBlock.HORIZONTAL_FACING;
+    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty ENABLED = BlockStateProperties.ENABLED;
     
     @RegisterBlock.Instance
     public static CyaniteReprocessor INSTANCE;
     
     public CyaniteReprocessor() {
-        super(Properties.create(Material.IRON)
+        super(Properties.of(Material.METAL)
                 .sound(SoundType.STONE)
-                .hardnessAndResistance(1.0F)
+                .destroyTime(1.0F)
+                .explosionResistance(1.0F)
                 .harvestTool(ToolType.PICKAXE));
-        this.setDefaultState(this.getStateContainer().getBaseState()
-                .with(FACING, Direction.NORTH)
-                .with(ENABLED, Boolean.FALSE));
+        this.registerDefaultState(this.getStateDefinition().any()
+                .setValue(FACING, Direction.NORTH)
+                .setValue(ENABLED, Boolean.FALSE));
     }
     
     public static Direction getFacingFromEntity(BlockPos clickedBlockPos, LivingEntity entity) {
-        return Direction.getFacingFromVector((float) (entity.getPosX() - clickedBlockPos.getX()), 0.0F, (float) (entity.getPosZ() - clickedBlockPos.getZ()));
+        return Direction.getNearest((float) (entity.getX() - clickedBlockPos.getX()), 0.0F, (float) (entity.getZ() - clickedBlockPos.getZ()));
     }
     
     @Nonnull
     @Override
-    public BlockRenderType getRenderType(@Nonnull BlockState blockState) {
-        return BlockRenderType.MODEL;
+    public RenderShape getRenderShape(@Nonnull BlockState blockState) {
+        return RenderShape.MODEL;
     }
     
     @Nullable
     @Override
-    public TileEntity createNewTileEntity(IBlockReader world) {
-        return new CyaniteReprocessorTile();
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new CyaniteReprocessorTile(pos, state);
     }
-    
+
     @Override
-    public void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+    public void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING).add(ENABLED);
     }
     
     @Nonnull
     @Override
-    public ActionResultType onBlockActivated(@Nonnull BlockState blockState, World world, @Nonnull BlockPos blockPos, @Nonnull PlayerEntity player, @Nonnull Hand hand, @Nonnull BlockRayTraceResult trace) {
-        TileEntity tile = world.getTileEntity(blockPos);
+    public InteractionResult use(@Nonnull BlockState blockState, Level world, @Nonnull BlockPos blockPos, @Nonnull Player player, @Nonnull InteractionHand hand, @Nonnull BlockHitResult trace) {
+        BlockEntity tile = world.getBlockEntity(blockPos);
         if (tile instanceof CyaniteReprocessorTile) {
             return ((CyaniteReprocessorTile) tile).onBlockActivated(blockState, world, blockPos, player, hand, trace);
         }
-        return ActionResultType.FAIL;
+        return InteractionResult.FAIL;
     }
     
+    
+    
     @Override
-    public void onReplaced(BlockState blockState, World world, BlockPos blockPos, BlockState newBlockState, boolean isMoving) {
+    public void onRemove(BlockState blockState, Level world, BlockPos blockPos, BlockState newBlockState, boolean isMoving) {
         if (blockState.getBlock() != newBlockState.getBlock()) {
-            TileEntity tile = world.getTileEntity(blockPos);
+            BlockEntity tile = world.getBlockEntity(blockPos);
             if (tile instanceof CyaniteReprocessorTile) {
                 ((CyaniteReprocessorTile) tile).onReplaced(blockState, world, blockPos, newBlockState, isMoving);
             }
-            super.onReplaced(blockState, world, blockPos, newBlockState, isMoving);
+            super.onRemove(blockState, world, blockPos, newBlockState, isMoving);
         }
     }
     
     @Override
-    public void onBlockPlacedBy(@Nonnull World world, @Nonnull BlockPos blockPos, @Nonnull BlockState blockState, @Nullable LivingEntity entity, @Nonnull ItemStack stack) {
+    public void setPlacedBy(@Nonnull Level world, @Nonnull BlockPos blockPos, @Nonnull BlockState blockState, @Nullable LivingEntity entity, @Nonnull ItemStack stack) {
         if (entity != null) {
-            world.setBlockState(blockPos, blockState
-                    .with(FACING, getFacingFromEntity(blockPos, entity))
-                    .with(ENABLED, false), 2);
+            world.setBlock(blockPos, blockState
+                    .setValue(FACING, getFacingFromEntity(blockPos, entity))
+                    .setValue(ENABLED, false), 2);
         }
     }
 }

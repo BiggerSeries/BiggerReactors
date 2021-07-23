@@ -1,7 +1,5 @@
 package net.roguelogix.biggerreactors.fluids;
 
-import net.minecraft.util.ResourceLocation;
-import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.phosphophyllite.registry.PhosphophylliteFluid;
 import net.roguelogix.phosphophyllite.registry.RegisterFluid;
 

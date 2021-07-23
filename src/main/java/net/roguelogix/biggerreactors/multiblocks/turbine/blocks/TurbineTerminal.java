@@ -1,8 +1,8 @@
 package net.roguelogix.biggerreactors.multiblocks.turbine.blocks;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.roguelogix.biggerreactors.multiblocks.turbine.tiles.TurbineTerminalTile;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
@@ -20,8 +20,8 @@ public class TurbineTerminal extends TurbineBaseBlock {
     
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new TurbineTerminalTile();
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new TurbineTerminalTile(pos, state);
     }
     
     @Override

@@ -1,8 +1,8 @@
 package net.roguelogix.biggerreactors.blocks.materials;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.phosphophyllite.registry.IPhosphophylliteOre;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
@@ -17,9 +17,9 @@ public class YelloriteOre extends Block implements IPhosphophylliteOre {
     
     public YelloriteOre() {
         super(
-                Properties.create(Material.ROCK)
+                Properties.of(Material.METAL)
                         .sound(SoundType.STONE)
-                        .hardnessAndResistance(1.0F)
+                        .explosionResistance(1.0F)
         );
     }
     

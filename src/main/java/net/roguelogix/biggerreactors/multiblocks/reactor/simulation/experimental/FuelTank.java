@@ -1,6 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.simulation.experimental;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorFuelTank;
 
 public class FuelTank implements IReactorFuelTank {
@@ -107,8 +107,8 @@ public class FuelTank implements IReactorFuelTank {
     }
     
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = new CompoundNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = new CompoundTag();
         nbt.putLong("capacity", capacity);
         nbt.putLong("fuel", fuel);
         nbt.putLong("waste", waste);
@@ -117,7 +117,7 @@ public class FuelTank implements IReactorFuelTank {
     }
     
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         capacity = nbt.getLong("capacity");
         fuel = nbt.getLong("fuel");
         waste = nbt.getLong("waste");

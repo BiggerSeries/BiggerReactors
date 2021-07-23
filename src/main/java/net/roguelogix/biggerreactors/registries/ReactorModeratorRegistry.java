@@ -1,11 +1,12 @@
 package net.roguelogix.biggerreactors.registries;
 
-import net.minecraft.block.Block;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.tags.ITag;
-import net.minecraft.tags.ITagCollection;
-import net.minecraft.tags.ITagCollectionSupplier;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagCollection;
+import net.minecraft.tags.TagContainer;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.phosphophyllite.data.DataLoader;
@@ -120,10 +121,10 @@ public class ReactorModeratorRegistry {
     
     private static final DataLoader<ReactorModeratorJsonData> dataLoader = new DataLoader<>(ReactorModeratorJsonData.class);
     
-    public static void loadRegistry(ITagCollectionSupplier tags) {
+    public static void loadRegistry(TagContainer tags) {
         
-        ITagCollection<Block> blockTags = tags.getBlockTags();
-        ITagCollection<Fluid> fluidTags = tags.getFluidTags();
+        TagCollection<Block> blockTags = tags.getOrEmpty(net.minecraft.core.Registry.BLOCK_REGISTRY);
+        TagCollection<Fluid> fluidTags = tags.getOrEmpty(Registry.FLUID_REGISTRY);
         
         BiggerReactors.LOGGER.info("Loading reactor moderators");
         registry.clear();
@@ -137,11 +138,11 @@ public class ReactorModeratorRegistry {
     
             switch (moderatorData.type) {
                 case "tag": {
-                    ITag<Block> blockTag = blockTags.get(moderatorData.location);
+                    Tag<Block> blockTag = blockTags.getTag(moderatorData.location);
                     if (blockTag == null) {
                         continue;
                     }
-                    for (Block element : blockTag.getAllElements()) {
+                    for (Block element : blockTag.getValues()) {
                         registry.put(element, properties);
                         BiggerReactors.LOGGER.debug("Loaded moderator " + element.getRegistryName().toString());
                     }
@@ -155,12 +156,12 @@ public class ReactorModeratorRegistry {
                     }
                     break;
                 case "fluidtag": {
-                    ITag<Fluid> blockTag = fluidTags.get(moderatorData.location);
+                    Tag<Fluid> blockTag = fluidTags.getTag(moderatorData.location);
                     if (blockTag == null) {
                         continue;
                     }
-                    for (Fluid element : blockTag.getAllElements()) {
-                        Block elementBlock = element.getDefaultState().getBlockState().getBlock();
+                    for (Fluid element : blockTag.getValues()) {
+                        Block elementBlock = element.defaultFluidState().createLegacyBlock().getBlock();
                         registry.put(elementBlock, properties);
                         BiggerReactors.LOGGER.debug("Loaded moderator " + element.getRegistryName().toString());
                     }
@@ -171,7 +172,7 @@ public class ReactorModeratorRegistry {
                     if (ForgeRegistries.FLUIDS.containsKey(moderatorData.location)) {
                         Fluid fluid = ForgeRegistries.FLUIDS.getValue(moderatorData.location);
                         assert fluid != null;
-                        Block block = fluid.getDefaultState().getBlockState().getBlock();
+                        Block block = fluid.defaultFluidState().createLegacyBlock().getBlock();
                         registry.put(block, properties);
                         BiggerReactors.LOGGER.debug("Loaded moderator " + moderatorData.location);
                     }

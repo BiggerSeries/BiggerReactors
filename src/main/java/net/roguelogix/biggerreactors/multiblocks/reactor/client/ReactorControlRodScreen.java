@@ -1,14 +1,14 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.BiggerReactors;
@@ -31,11 +31,11 @@ public class ReactorControlRodScreen extends ScreenBase<ReactorControlRodContain
 
     private ReactorControlRodState reactorControlRodState;
 
-    public ReactorControlRodScreen(ReactorControlRodContainer container, PlayerInventory playerInventory, ITextComponent title) {
+    public ReactorControlRodScreen(ReactorControlRodContainer container, Inventory playerInventory, Component title) {
         super(container, playerInventory, title, DEFAULT_TEXTURE, 136, 126);
 
         // Initialize control rod state.
-        reactorControlRodState = (ReactorControlRodState) this.getContainer().getGuiPacket();
+        reactorControlRodState = (ReactorControlRodState) this.getMenu().getGuiPacket();
     }
 
     /**
@@ -46,7 +46,7 @@ public class ReactorControlRodScreen extends ScreenBase<ReactorControlRodContain
         super.init();
 
         // Set title to be drawn in the center.
-        this.titleX = (this.getWidth() / 2) - (this.font.getStringPropertyWidth(this.getTitle()) / 2);
+        this.titleLabelX = (this.getWidth() / 2) - (this.font.width(this.getTitle()) / 2);
 
         // Initialize tooltips:
 
@@ -68,12 +68,12 @@ public class ReactorControlRodScreen extends ScreenBase<ReactorControlRodContain
         this.addElement(textBox);
 
         // (Top) Name text box enter button:
-        Button<ReactorControlRodContainer> textBoxEnterButton = new Button<>(this, 114, 27, 17, 14, 194, 0, new TranslationTextComponent("screen.biggerreactors.reactor_control_rod.apply.tooltip"));
+        Button<ReactorControlRodContainer> textBoxEnterButton = new Button<>(this, 114, 27, 17, 14, 194, 0, new TranslatableComponent("screen.biggerreactors.reactor_control_rod.apply.tooltip"));
         textBoxEnterButton.onMouseReleased = (mX, mY, btn) -> {
             // Click logic. Extra check necessary since this is an "in-class" button.
             if (textBoxEnterButton.isMouseOver(mX, mY)) {
                 // Mouse is hovering, do the thing.
-                this.getContainer().executeRequest("setName", textBox.getContents());
+                this.getMenu().executeRequest("setName", textBox.getContents());
                 // Play the selection sound.
                 textBoxEnterButton.playSound(SoundEvents.UI_BUTTON_CLICK);
                 return true;
@@ -95,16 +95,16 @@ public class ReactorControlRodScreen extends ScreenBase<ReactorControlRodContain
         //this.addElement(textBoxEnterButton);
 
         // (Top) Name text box enter button:
-        CommonButton<ReactorControlRodContainer> textEnterButton = new CommonButton<>(this, 114, 27, 17, 14, 61, 130, new TranslationTextComponent("screen.biggerreactors.reactor_redstone_port.apply.tooltip"));
+        CommonButton<ReactorControlRodContainer> textEnterButton = new CommonButton<>(this, 114, 27, 17, 14, 61, 130, new TranslatableComponent("screen.biggerreactors.reactor_redstone_port.apply.tooltip"));
         textEnterButton.onMouseReleased = (mX, mY, btn) -> {
             // Click logic.
-            this.getContainer().executeRequest("setName", textBox.getContents());
+            this.getMenu().executeRequest("setName", textBox.getContents());
             return true;
         };
         this.addElement(textEnterButton);
 
         // (Center) Rod retract button:
-        Button<ReactorControlRodContainer> rodRetractButton = new Button<>(this, 58, 82, 14, 15, 226, 0, new TranslationTextComponent("screen.biggerreactors.reactor_control_rod.retract_rod.tooltip"));
+        Button<ReactorControlRodContainer> rodRetractButton = new Button<>(this, 58, 82, 14, 15, 226, 0, new TranslatableComponent("screen.biggerreactors.reactor_control_rod.retract_rod.tooltip"));
         rodRetractButton.onMouseReleased = (mX, mY, btn) -> {
             // Click logic. Extra check necessary since this is an "in-class" button.
             if (rodRetractButton.isMouseOver(mX, mY)) {
@@ -115,7 +115,7 @@ public class ReactorControlRodScreen extends ScreenBase<ReactorControlRodContain
                 else if (Screen.hasShiftDown()) delta = -10D;
                 else delta = -1D;
                 // Mouse is hovering, do the thing.
-                this.getContainer().executeRequest("changeInsertionLevel", new Pair<>(delta, Screen.hasAltDown()));
+                this.getMenu().executeRequest("changeInsertionLevel", new Pair<>(delta, Screen.hasAltDown()));
                 // Play the selection sound.
                 rodRetractButton.playSound(SoundEvents.UI_BUTTON_CLICK);
                 return true;
@@ -137,7 +137,7 @@ public class ReactorControlRodScreen extends ScreenBase<ReactorControlRodContain
         this.addElement(rodRetractButton);
 
         // (Center) Rod insert button:
-        Button<ReactorControlRodContainer> rodInsertButton = new Button<>(this, 58, 64, 14, 15, 226, 0, new TranslationTextComponent("screen.biggerreactors.reactor_control_rod.insert_rod.tooltip"));
+        Button<ReactorControlRodContainer> rodInsertButton = new Button<>(this, 58, 64, 14, 15, 226, 0, new TranslatableComponent("screen.biggerreactors.reactor_control_rod.insert_rod.tooltip"));
         rodInsertButton.onMouseReleased = (mX, mY, btn) -> {
             // Click logic. Extra check necessary since this is an "in-class" button.
             if (rodInsertButton.isMouseOver(mX, mY)) {
@@ -148,7 +148,7 @@ public class ReactorControlRodScreen extends ScreenBase<ReactorControlRodContain
                 else if (Screen.hasShiftDown()) delta = 10D;
                 else delta = 1D;
                 // Mouse is hovering, do the thing.
-                this.getContainer().executeRequest("changeInsertionLevel", new Pair<>(delta, Screen.hasAltDown()));
+                this.getMenu().executeRequest("changeInsertionLevel", new Pair<>(delta, Screen.hasAltDown()));
                 // Play the selection sound.
                 rodInsertButton.playSound(SoundEvents.UI_BUTTON_CLICK);
                 return true;
@@ -175,8 +175,8 @@ public class ReactorControlRodScreen extends ScreenBase<ReactorControlRodContain
      */
     public void initGauges() {
         // (Center) Control rod insertion gauge:
-        Symbol<ReactorControlRodContainer> rodInsertionGauge = new Symbol<>(this, 36, 50, 18, 64, 0, 126, StringTextComponent.EMPTY);
-        rodInsertionGauge.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> ReactorControlRodScreen.renderInsertionLevel(mS, rodInsertionGauge, this.reactorControlRodState.insertionLevel);
+        Symbol<ReactorControlRodContainer> rodInsertionGauge = new Symbol<>(this, 36, 50, 18, 64, 0, 126, TextComponent.EMPTY);
+        rodInsertionGauge.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> ReactorControlRodScreen.renderInsertionLevel(mS, rodInsertionGauge, this.reactorControlRodState.insertionLevel);
         this.addElement(rodInsertionGauge);
     }
 
@@ -189,14 +189,14 @@ public class ReactorControlRodScreen extends ScreenBase<ReactorControlRodContain
      * @param partialTicks Partial ticks.
      */
     @Override
-    public void render(@Nonnull MatrixStack mStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(@Nonnull PoseStack mStack, int mouseX, int mouseY, float partialTicks) {
         super.render(mStack, mouseX, mouseY, partialTicks);
 
         // Render text for text box:
-        this.font.drawString(mStack, new TranslationTextComponent("screen.biggerreactors.reactor_control_rod.name").getString(), this.getGuiLeft() + 8, this.getGuiTop() + 17, 4210752);
+        this.font.draw(mStack, new TranslatableComponent("screen.biggerreactors.reactor_control_rod.name").getString(), this.getGuiLeft() + 8, this.getGuiTop() + 17, 4210752);
 
         // Render text for insertion level:
-        this.font.drawString(mStack, String.format("%.1f%%", reactorControlRodState.insertionLevel), this.getGuiLeft() + 76, this.getGuiTop() + 77, 4210752);
+        this.font.draw(mStack, String.format("%.1f%%", reactorControlRodState.insertionLevel), this.getGuiLeft() + 76, this.getGuiTop() + 77, 4210752);
     }
 
     /**
@@ -206,9 +206,9 @@ public class ReactorControlRodScreen extends ScreenBase<ReactorControlRodContain
      * @param symbol         The symbol to draw as.
      * @param insertionLevel How far the control rod is inserted. 0 is no insertion, 100 is full insertion.
      */
-    public static void renderInsertionLevel(@Nonnull MatrixStack mStack, @Nonnull Symbol<ReactorControlRodContainer> symbol, double insertionLevel) {
+    public static void renderInsertionLevel(@Nonnull PoseStack mStack, @Nonnull Symbol<ReactorControlRodContainer> symbol, double insertionLevel) {
         // Render fuel background. Offset by 1, otherwise it doesn't align with the frame.
-        RenderHelper.drawFluidGrid(mStack, symbol.x + 1, symbol.y, symbol.getBlitOffset(), 16, 16, FluidYellorium.INSTANCE.getStillFluid(), 1, 4);
+        RenderHelper.drawFluidGrid(mStack, symbol.x + 1, symbol.y, symbol.getBlitOffset(), 16, 16, FluidYellorium.INSTANCE.getSource(), 1, 4);
 
         // If there's nothing inserted, there's no need to draw.
         if (insertionLevel > 0) {
@@ -220,6 +220,6 @@ public class ReactorControlRodScreen extends ScreenBase<ReactorControlRodContain
         // Draw frame.
         symbol.blit(mStack);
         // Update tooltip.
-        symbol.tooltip = new StringTextComponent(String.format("%.1f%%", insertionLevel));
+        symbol.tooltip = new TextComponent(String.format("%.1f%%", insertionLevel));
     }
 }

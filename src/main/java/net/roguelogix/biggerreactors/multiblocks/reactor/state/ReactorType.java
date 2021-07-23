@@ -1,11 +1,11 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.state;
 
-import net.minecraft.state.EnumProperty;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 
 import javax.annotation.Nonnull;
 
-public enum ReactorType implements IStringSerializable {
+public enum ReactorType implements StringRepresentable {
     ACTIVE(1),
     PASSIVE(0);
     
@@ -19,7 +19,7 @@ public enum ReactorType implements IStringSerializable {
 
     @Override
     @Nonnull
-    public String getString() {
+    public String getSerializedName() {
         return toString().toLowerCase();
     }
 

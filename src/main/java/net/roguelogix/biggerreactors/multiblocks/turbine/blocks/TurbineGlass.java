@@ -1,10 +1,10 @@
 package net.roguelogix.biggerreactors.multiblocks.turbine.blocks;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.multiblocks.turbine.tiles.TurbineGlassTile;
@@ -25,23 +25,23 @@ public class TurbineGlass extends TurbineBaseBlock {
     
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new TurbineGlassTile();
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new TurbineGlassTile(pos, state);
     }
     
     @OnlyIn(Dist.CLIENT)
     @RegisterBlock.RenderLayer
     public RenderType renderLayer() {
-        return RenderType.getCutout();
+        return RenderType.cutout();
     }
     
     @SuppressWarnings("deprecation")
-    @OnlyIn(Dist.CLIENT)
-    public float getAmbientOcclusionLightValue(@Nonnull BlockState state, @Nonnull IBlockReader worldIn, @Nonnull BlockPos pos) {
-        return 1.0F;
+    @Override
+    public float getShadeBrightness(BlockState p_60472_, BlockGetter p_60473_, BlockPos p_60474_) {
+        return 1.0f;
     }
     
-    public boolean propagatesSkylightDown(@Nonnull BlockState state, @Nonnull IBlockReader reader, @Nonnull BlockPos pos) {
+    public boolean propagatesSkylightDown(@Nonnull BlockState state, @Nonnull BlockGetter reader, @Nonnull BlockPos pos) {
         return true;
     }
     

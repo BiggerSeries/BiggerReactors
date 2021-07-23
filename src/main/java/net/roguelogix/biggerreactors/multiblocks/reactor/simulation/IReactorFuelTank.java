@@ -1,9 +1,9 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.simulation;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.util.INBTSerializable;
 
-public interface IReactorFuelTank extends INBTSerializable<CompoundNBT> {
+public interface IReactorFuelTank extends INBTSerializable<CompoundTag> {
     long capacity();
     
     long totalStored();

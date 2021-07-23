@@ -1,12 +1,13 @@
 package net.roguelogix.biggerreactors.machine.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.material.Fluids;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.machine.containers.CyaniteReprocessorContainer;
 import net.roguelogix.biggerreactors.machine.state.CyaniteReprocessorState;
@@ -24,11 +25,11 @@ public class CyaniteReprocessorScreen extends ScreenBase<CyaniteReprocessorConta
 
     private CyaniteReprocessorState cyaniteReprocessorState;
 
-    public CyaniteReprocessorScreen(CyaniteReprocessorContainer container, PlayerInventory playerInventory, ITextComponent title) {
+    public CyaniteReprocessorScreen(CyaniteReprocessorContainer container, Inventory playerInventory, Component title) {
         super(container, playerInventory, title, DEFAULT_TEXTURE, 176, 175);
 
         // Initialize reprocessor state.
-        cyaniteReprocessorState = (CyaniteReprocessorState) this.getContainer().getGuiPacket();
+        cyaniteReprocessorState = (CyaniteReprocessorState) this.getMenu().getGuiPacket();
     }
 
     /**
@@ -39,7 +40,7 @@ public class CyaniteReprocessorScreen extends ScreenBase<CyaniteReprocessorConta
         super.init();
 
         // Set title to be drawn in the center.
-        this.titleX = (this.getWidth() / 2) - (this.getFont().getStringPropertyWidth(this.getTitle()) / 2);
+        this.titleLabelX = (this.getWidth() / 2) - (this.getFont().width(this.getTitle()) / 2);
 
         // Initialize tooltips:
         this.initTooltips();
@@ -58,7 +59,7 @@ public class CyaniteReprocessorScreen extends ScreenBase<CyaniteReprocessorConta
      */
     public void initTooltips() {
         // (Left) Internal battery:
-        this.addElement(new Tooltip<>(this, 8, 6, 16, 16, new TranslationTextComponent("screen.biggerreactors.cyanite_reprocessor.internal_battery.tooltip")));
+        this.addElement(new Tooltip<>(this, 8, 6, 16, 16, new TranslatableComponent("screen.biggerreactors.cyanite_reprocessor.internal_battery.tooltip")));
     }
 
     /**
@@ -66,21 +67,21 @@ public class CyaniteReprocessorScreen extends ScreenBase<CyaniteReprocessorConta
      */
     public void initGauges() {
         // (Top) Internal battery:
-        Symbol<CyaniteReprocessorContainer> internalBattery = new Symbol<>(this, 7, 25, 18, 64, 0, 152, StringTextComponent.EMPTY);
-        internalBattery.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> CommonRender.renderEnergyGauge(mS,
+        Symbol<CyaniteReprocessorContainer> internalBattery = new Symbol<>(this, 7, 25, 18, 64, 0, 152, TextComponent.EMPTY);
+        internalBattery.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonRender.renderEnergyGauge(mS,
                 internalBattery, cyaniteReprocessorState.energyStored, cyaniteReprocessorState.energyCapacity);
         this.addElement(internalBattery);
 
         // (Top) Water tank:
-        Symbol<CyaniteReprocessorContainer> waterTank = new Symbol<>(this, 151, 25, 18, 64, 0, 152, StringTextComponent.EMPTY);
-        waterTank.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> CommonRender.renderFluidGauge(mS,
+        Symbol<CyaniteReprocessorContainer> waterTank = new Symbol<>(this, 151, 25, 18, 64, 0, 152, TextComponent.EMPTY);
+        waterTank.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonRender.renderFluidGauge(mS,
                 waterTank, cyaniteReprocessorState.waterStored, cyaniteReprocessorState.waterCapacity,
-                Fluids.WATER.getStillFluid());
+                Fluids.WATER.getSource());
         this.addElement(waterTank);
 
         // (Center) Progress bar:
         Symbol<CyaniteReprocessorContainer> progressBar = new Symbol<>(this, 75, 40, 24, 18, 0, 175, null);
-        progressBar.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> CyaniteReprocessorScreen.renderProgressBar(mS,
+        progressBar.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CyaniteReprocessorScreen.renderProgressBar(mS,
                 progressBar, cyaniteReprocessorState.workTime, cyaniteReprocessorState.workTimeTotal);
         this.addElement(progressBar);
     }
@@ -90,11 +91,11 @@ public class CyaniteReprocessorScreen extends ScreenBase<CyaniteReprocessorConta
      */
     public void initSymbols() {
         // (Right) Water tank symbol:
-        Symbol<CyaniteReprocessorContainer> waterTankSymbol = new Symbol<>(this, 152, 6, 16, 16, 48, 175, new TranslationTextComponent("screen.biggerreactors.cyanite_reprocessor.water_tank.tooltip"));
-        waterTankSymbol.onRender = (@Nonnull MatrixStack mS, int mX, int mY) -> RenderHelper.drawMaskedFluid(mS,
+        Symbol<CyaniteReprocessorContainer> waterTankSymbol = new Symbol<>(this, 152, 6, 16, 16, 48, 175, new TranslatableComponent("screen.biggerreactors.cyanite_reprocessor.water_tank.tooltip"));
+        waterTankSymbol.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> RenderHelper.drawMaskedFluid(mS,
                 waterTankSymbol.x, waterTankSymbol.y, this.getBlitOffset(),
                 waterTankSymbol.width, waterTankSymbol.height,
-                waterTankSymbol.u, waterTankSymbol.v, Fluids.WATER.getStillFluid());
+                waterTankSymbol.u, waterTankSymbol.v, Fluids.WATER.getSource());
         this.addElement(waterTankSymbol);
     }
 
@@ -106,7 +107,7 @@ public class CyaniteReprocessorScreen extends ScreenBase<CyaniteReprocessorConta
      * @param workTime      The time the machine has been working.
      * @param workTimeTotal The total time needed for completion.
      */
-    private static void renderProgressBar(@Nonnull MatrixStack mStack, @Nonnull Symbol<CyaniteReprocessorContainer> symbol, int workTime, int workTimeTotal) {
+    private static void renderProgressBar(@Nonnull PoseStack mStack, @Nonnull Symbol<CyaniteReprocessorContainer> symbol, int workTime, int workTimeTotal) {
         // If there's no progress, there's no need to draw.
         if ((workTime > 0) && (workTimeTotal > 0)) {
             // Calculate how much needs to be rendered.

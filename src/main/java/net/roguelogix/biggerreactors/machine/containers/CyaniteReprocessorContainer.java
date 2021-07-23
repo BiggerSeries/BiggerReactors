@@ -1,12 +1,12 @@
 package net.roguelogix.biggerreactors.machine.containers;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.IWorldPosCallable;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.roguelogix.biggerreactors.machine.blocks.CyaniteReprocessor;
@@ -20,20 +20,20 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @RegisterContainer(name = "cyanite_reprocessor")
-public class CyaniteReprocessorContainer extends Container implements GuiSync.IGUIPacketProvider {
+public class CyaniteReprocessorContainer extends AbstractContainerMenu implements GuiSync.IGUIPacketProvider {
     
     @RegisterContainer.Type
-    public static ContainerType<CyaniteReprocessorContainer> INSTANCE;
+    public static MenuType<CyaniteReprocessorContainer> INSTANCE;
     @RegisterContainer.Supplier
     public static final ContainerSupplier SUPPLIER = CyaniteReprocessorContainer::new;
     
-    private PlayerEntity player;
+    private Player player;
     private CyaniteReprocessorTile tileEntity;
     
-    public CyaniteReprocessorContainer(int windowId, BlockPos blockPos, PlayerEntity player) {
+    public CyaniteReprocessorContainer(int windowId, BlockPos blockPos, Player player) {
         super(CyaniteReprocessorContainer.INSTANCE, windowId);
         this.player = player;
-        this.tileEntity = (CyaniteReprocessorTile) player.world.getTileEntity(blockPos);
+        this.tileEntity = (CyaniteReprocessorTile) player.level.getBlockEntity(blockPos);
         this.getGuiPacket();
         
         // Populate machine slots.
@@ -59,35 +59,35 @@ public class CyaniteReprocessorContainer extends Container implements GuiSync.IG
     }
     
     @Override
-    public boolean canInteractWith(@Nonnull PlayerEntity player) {
-        assert this.tileEntity.getWorld() != null;
-        return isWithinUsableDistance(IWorldPosCallable.of(tileEntity.getWorld(), tileEntity.getPos()),
+    public boolean stillValid(@Nonnull Player player) {
+        assert this.tileEntity.getLevel() != null;
+        return stillValid(ContainerLevelAccess.create(tileEntity.getLevel(), tileEntity.getBlockPos()),
                 player, CyaniteReprocessor.INSTANCE);
     }
     
     @Nonnull
     @Override
-    public ItemStack transferStackInSlot(@Nonnull PlayerEntity player, int index) {
+    public ItemStack quickMoveStack(@Nonnull Player player, int index) {
         ItemStack itemStackA = ItemStack.EMPTY;
-        Slot slot = this.inventorySlots.get(index);
-        int inventorySize = this.tileEntity.getSizeInventory();
+        Slot slot = this.slots.get(index);
+        int inventorySize = this.tileEntity.getContainerSize();
         
-        if (slot != null && slot.getHasStack()) {
-            ItemStack itemStackB = slot.getStack();
+        if (slot.hasItem()) {
+            ItemStack itemStackB = slot.getItem();
             itemStackA = itemStackB.copy();
             
             if (index < inventorySize) {
-                if (!this.mergeItemStack(itemStackB, inventorySize, this.inventorySlots.size(), true)) {
+                if (!this.moveItemStackTo(itemStackB, inventorySize, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.mergeItemStack(itemStackB, 0, inventorySize, false)) {
+            } else if (!this.moveItemStackTo(itemStackB, 0, inventorySize, false)) {
                 return ItemStack.EMPTY;
             }
             
             if (itemStackB.getCount() == 0) {
-                slot.putStack(ItemStack.EMPTY);
+                slot.set(ItemStack.EMPTY);
             } else {
-                slot.onSlotChanged();
+                slot.setChanged();
             }
         }
         
@@ -103,14 +103,14 @@ public class CyaniteReprocessorContainer extends Container implements GuiSync.IG
         // Add player inventory;
         for (int rowIndex = 0; rowIndex < 3; rowIndex++) {
             for (int columnIndex = 0; columnIndex < 9; columnIndex++) {
-                this.addSlot(new Slot(player.inventory, (columnIndex + rowIndex * 9 + 9),
+                this.addSlot(new Slot(player.getInventory(), (columnIndex + rowIndex * 9 + 9),
                         (8 + columnIndex * 18), (guiOffset + rowIndex * 18)));
             }
         }
         // Add player hotbar.
         for (int columnIndex = 0; columnIndex < 9; columnIndex++) {
             this.addSlot(
-                    new Slot(player.inventory, columnIndex, (8 + columnIndex * 18), (guiOffset + 58)));
+                    new Slot(player.getInventory(), columnIndex, (8 + columnIndex * 18), (guiOffset + 58)));
         }
     }
 }

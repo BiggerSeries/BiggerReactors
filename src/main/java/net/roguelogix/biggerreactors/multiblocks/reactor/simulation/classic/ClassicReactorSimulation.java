@@ -1,6 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.simulation.classic;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorBattery;
@@ -447,8 +447,8 @@ public class ClassicReactorSimulation implements IReactorSimulation {
     
     @Override
     @Nonnull
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = new CompoundNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = new CompoundTag();
         nbt.put("fuelTank", fuelTank.serializeNBT());
         nbt.put("coolantTank", coolantTank.serializeNBT());
         nbt.put("battery", battery.serializeNBT());
@@ -459,7 +459,7 @@ public class ClassicReactorSimulation implements IReactorSimulation {
     }
     
     @Override
-    public void deserializeNBT(@Nonnull CompoundNBT nbt) {
+    public void deserializeNBT(@Nonnull CompoundTag nbt) {
         if (nbt.contains("fuelTank")) {
             fuelTank.deserializeNBT(nbt.getCompound("fuelTank"));
         }

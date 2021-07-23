@@ -1,16 +1,18 @@
 package net.roguelogix.biggerreactors.multiblocks.turbine.tiles;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 import net.roguelogix.biggerreactors.multiblocks.turbine.TurbineMultiblockController;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineTerminal;
 import net.roguelogix.biggerreactors.multiblocks.turbine.containers.TurbineTerminalContainer;
@@ -25,15 +27,15 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @RegisterTileEntity(name = "turbine_terminal")
-public class TurbineTerminalTile extends TurbineBaseTile implements INamedContainerProvider, IHasUpdatableState<TurbineState> {
+public class TurbineTerminalTile extends TurbineBaseTile implements MenuProvider, IHasUpdatableState<TurbineState> {
     @RegisterTileEntity.Type
-    public static TileEntityType<?> TYPE;
+    public static BlockEntityType<?> TYPE;
     
     @RegisterTileEntity.Supplier
     public static final TileSupplier SUPPLIER = TurbineTerminalTile::new;
     
-    public TurbineTerminalTile() {
-        super(TYPE);
+    public TurbineTerminalTile(BlockPos pos, BlockState state) {
+        super(TYPE, pos, state);
     }
     
     public final TurbineState turbineState = new TurbineState(this);
@@ -55,21 +57,21 @@ public class TurbineTerminalTile extends TurbineBaseTile implements INamedContai
     @SuppressWarnings("DuplicatedCode")
     @Override
     @Nonnull
-    public ActionResultType onBlockActivated(@Nonnull PlayerEntity player, @Nonnull Hand handIn) {
-        if (player.isCrouching() && handIn == Hand.MAIN_HAND && player.getHeldItemMainhand().getItem() == DebugTool.INSTANCE) {
+    public InteractionResult onBlockActivated(@Nonnull Player player, @Nonnull InteractionHand handIn) {
+        if (player.isCrouching() && handIn == InteractionHand.MAIN_HAND && player.getMainHandItem().getItem() == DebugTool.INSTANCE) {
             if (controller != null) {
                 controller.toggleActive();
             }
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
         
-        if (handIn == Hand.MAIN_HAND) {
-            assert world != null;
-            if (world.getBlockState(pos).get(MultiblockBlock.ASSEMBLED)) {
-                if (!world.isRemote) {
-                    NetworkHooks.openGui((ServerPlayerEntity) player, this, this.getPos());
+        if (handIn == InteractionHand.MAIN_HAND) {
+            assert level != null;
+            if (level.getBlockState(worldPosition).getValue(MultiblockBlock.ASSEMBLED)) {
+                if (!level.isClientSide) {
+                    NetworkHooks.openGui((ServerPlayer) player, this, this.getBlockPos());
                 }
-                return ActionResultType.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
         }
         
@@ -78,13 +80,13 @@ public class TurbineTerminalTile extends TurbineBaseTile implements INamedContai
     
     @Override
     @Nonnull
-    public ITextComponent getDisplayName() {
-        return new TranslationTextComponent(TurbineTerminal.INSTANCE.getTranslationKey());
+    public Component getDisplayName() {
+        return new TranslatableComponent(TurbineTerminal.INSTANCE.getDescriptionId());
     }
     
     @Nullable
     @Override
-    public Container createMenu(int windowId, PlayerInventory playerInventory, @Nonnull PlayerEntity player) {
-        return new TurbineTerminalContainer(windowId, this.pos, playerInventory.player);
+    public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, @Nonnull Player player) {
+        return new TurbineTerminalContainer(windowId, this.worldPosition, playerInventory.player);
     }
 }

@@ -1,8 +1,10 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.tiles;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -26,13 +28,13 @@ import static net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorPo
 @RegisterTileEntity(name = "reactor_power_tap")
 public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophylliteEnergyStorage, IOnAssemblyTile, IOnDisassemblyTile {
     @RegisterTileEntity.Type
-    public static TileEntityType<?> TYPE;
+    public static BlockEntityType<?> TYPE;
     
     @RegisterTileEntity.Supplier
     public static final TileSupplier SUPPLIER = ReactorPowerTapTile::new;
     
-    public ReactorPowerTapTile() {
-        super(TYPE);
+    public ReactorPowerTapTile(BlockPos pos, BlockState state) {
+        super(TYPE, pos, state);
     }
     
     
@@ -53,8 +55,8 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophyl
     private void setConnected(boolean newState) {
         if (newState != connected) {
             connected = newState;
-            assert world != null;
-            world.setBlockState(pos, getBlockState().with(CONNECTION_STATE_ENUM_PROPERTY, connected ? CONNECTED : DISCONNECTED));
+            assert level != null;
+            level.setBlock(worldPosition, getBlockState().setValue(CONNECTION_STATE_ENUM_PROPERTY, connected ? CONNECTED : DISCONNECTED), 3);
         }
     }
     
@@ -121,8 +123,8 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophyl
             setConnected(false);
             return;
         }
-        assert world != null;
-        TileEntity te = world.getTileEntity(pos.offset(powerOutputDirection));
+        assert level != null;
+        BlockEntity te = level.getBlockEntity(worldPosition.relative(powerOutputDirection));
         if (te == null) {
             setConnected(false);
             return;
@@ -137,7 +139,7 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophyl
     
     @Override
     public void onAssembly() {
-        powerOutputDirection = getBlockState().get(BlockStates.FACING);
+        powerOutputDirection = getBlockState().getValue(BlockStates.FACING);
         neighborChanged();
     }
     

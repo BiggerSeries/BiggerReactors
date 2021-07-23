@@ -1,6 +1,6 @@
 package net.roguelogix.biggerreactors.items.tools;
 
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 import net.roguelogix.phosphophyllite.registry.RegisterItem;
 
 import javax.annotation.Nonnull;
@@ -13,6 +13,6 @@ public class Wrench extends Item {
     
     @SuppressWarnings("unused")
     public Wrench(@Nonnull Properties properties) {
-        super(properties.maxStackSize(1));
+        super(properties.stacksTo(1));
     }
 }

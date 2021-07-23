@@ -1,16 +1,16 @@
 package net.roguelogix.biggerreactors.multiblocks.turbine.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.block.BlockState;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Quaternion;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.world.LightType;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.block.state.BlockState;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorBlade;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorShaft;
@@ -20,19 +20,18 @@ import net.roguelogix.phosphophyllite.repack.org.joml.Vector4i;
 
 import javax.annotation.Nonnull;
 
-public class BladeRenderer extends TileEntityRenderer<TurbineRotorBearingTile> {
+public class BladeRenderer implements BlockEntityRenderer<TurbineRotorBearingTile> {
     
-    public BladeRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
-        super(rendererDispatcherIn);
+    public BladeRenderer(BlockEntityRendererProvider.Context rendererDispatcherIn) {
     }
     
     @Override
-    public void render(TurbineRotorBearingTile bearing, float partialTicks, @Nonnull MatrixStack matrixStackIn, @Nonnull IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void render(TurbineRotorBearingTile bearing, float partialTicks, @Nonnull PoseStack matrixStackIn, @Nonnull MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         // fuck using MC's render engine, its a slow pile of garbage
         // if they cant do it properly, ill just have to do it myself
         // later, im lazy right now, still, fuck this shit
         BlockState state = bearing.getBlockState();
-        if (state.get(MultiblockBlock.ASSEMBLED)) {
+        if (state.getValue(MultiblockBlock.ASSEMBLED)) {
             // it is notable that this is on the client, and as a result i do not have direct access to the multiblock controller
             // so, tile entity, do your thing and just magically be updated k thx
             
@@ -43,7 +42,7 @@ public class BladeRenderer extends TileEntityRenderer<TurbineRotorBearingTile> {
             
             // signal to not render
             // ie: no glass
-            if (bearing.rotationAxis == null || bearing.rotorConfiguration == null || (bearing.rotationAxis.getX() == 0 && bearing.rotationAxis.getY() == 0 && bearing.rotationAxis.getZ() == 0)) {
+            if (bearing.rotationAxis == null || bearing.rotorConfiguration == null || (bearing.rotationAxis.x() == 0 && bearing.rotationAxis.y() == 0 && bearing.rotationAxis.z() == 0)) {
                 return;
             }
             
@@ -58,30 +57,30 @@ public class BladeRenderer extends TileEntityRenderer<TurbineRotorBearingTile> {
                 bearing.angle = angle;
             }
             
-            int blade180RotationMultiplier = ((int) -bearing.rotationAxis.getX()) | ((int) -bearing.rotationAxis.getY()) | ((int) bearing.rotationAxis.getZ());
+            int blade180RotationMultiplier = ((int) -bearing.rotationAxis.x()) | ((int) -bearing.rotationAxis.y()) | ((int) bearing.rotationAxis.z());
             if (blade180RotationMultiplier > 0) {
                 angle += 180;
             }
             //            blade180RotationMultiplier *= -1;
             
-            matrixStackIn.push();
+            matrixStackIn.pushPose();
             
             matrixStackIn.translate(0.5, 0.5, 0.5);
             
             Quaternion axisRotation = null;
             
-            if (bearing.rotationAxis.getX() != 0) {
-                axisRotation = new Quaternion(Vector3f.ZP, -90 * bearing.rotationAxis.getX(), true);
+            if (bearing.rotationAxis.x() != 0) {
+                axisRotation = new Quaternion(Vector3f.ZP, -90 * bearing.rotationAxis.x(), true);
                 angle -= 90;
-            } else if (bearing.rotationAxis.getZ() != 0) {
-                axisRotation = new Quaternion(Vector3f.XP, 90 * bearing.rotationAxis.getZ(), true);
-            } else if (bearing.rotationAxis.getY() != 1) {
+            } else if (bearing.rotationAxis.z() != 0) {
+                axisRotation = new Quaternion(Vector3f.XP, 90 * bearing.rotationAxis.z(), true);
+            } else if (bearing.rotationAxis.y() != 1) {
                 axisRotation = new Quaternion(Vector3f.XP, 180, true);
             }
             if (axisRotation != null) {
-                matrixStackIn.rotate(axisRotation);
+                matrixStackIn.mulPose(axisRotation);
             }
-            matrixStackIn.rotate(new Quaternion(Vector3f.YP, (float) angle, true));
+            matrixStackIn.mulPose(new Quaternion(Vector3f.YP, (float) angle, true));
             
             matrixStackIn.translate(-0.5, -0.5, -0.5);
             
@@ -89,63 +88,58 @@ public class BladeRenderer extends TileEntityRenderer<TurbineRotorBearingTile> {
             for (Vector4i vector4i : bearing.rotorConfiguration) {
                 matrixStackIn.translate(0, 1, 0);
                 
-                BlockPos shaftPos = bearing.getPos().add(bearing.rotationAxis.getX(), bearing.rotationAxis.getY(), bearing.rotationAxis.getZ());
-                int skyLight = bearing.getWorld().getLightFor(LightType.SKY, shaftPos);
-                int blockLight = bearing.getWorld().getLightFor(LightType.BLOCK, shaftPos);
+                BlockPos shaftPos = bearing.getBlockPos().offset(bearing.rotationAxis.x(), bearing.rotationAxis.y(), bearing.rotationAxis.z());
+                int skyLight = bearing.getLevel().getBrightness(LightLayer.SKY, shaftPos);
+                int blockLight = bearing.getLevel().getBrightness(LightLayer.BLOCK, shaftPos);
                 int combinedLight = (skyLight << 16) | blockLight;
                 combinedLight *= 16;
                 bearingNum++;
                 
-                Minecraft.getInstance().getBlockRendererDispatcher().renderBlock(TurbineRotorShaft.INSTANCE.getDefaultState(), matrixStackIn, bufferIn, combinedLight, 0xA0000, net.minecraftforge.client.model.data.EmptyModelData.INSTANCE);
+                Minecraft.getInstance().getBlockRenderer().renderSingleBlock(TurbineRotorShaft.INSTANCE.defaultBlockState(), matrixStackIn, bufferIn, combinedLight, 0xA0000, net.minecraftforge.client.model.data.EmptyModelData.INSTANCE);
                 
                 int i = 0;
                 for (Direction direction : Direction.values()) {
                     switch (direction) {
                         case UP:
                         case DOWN: {
-                            if (bearing.rotationAxis.getY() != 0) {
+                            if (bearing.rotationAxis.y() != 0) {
                                 continue;
                             }
                             break;
                         }
                         case NORTH:
                         case SOUTH: {
-                            if (bearing.rotationAxis.getZ() != 0) {
+                            if (bearing.rotationAxis.z() != 0) {
                                 continue;
                             }
                             break;
                         }
                         case WEST:
                         case EAST: {
-                            if (bearing.rotationAxis.getX() != 0) {
+                            if (bearing.rotationAxis.x() != 0) {
                                 continue;
                             }
                             break;
                         }
                     }
                     for (int j = 0; j < vector4i.get(i); j++) {
-                        matrixStackIn.push();
+                        matrixStackIn.pushPose();
                         matrixStackIn.translate(0.5, 0.5, 0.5);
-                        matrixStackIn.rotate(new Quaternion(Vector3f.YP, (float) (180 * (i & 1) + blade180RotationMultiplier * 135 * (i & 2)), true));
+                        matrixStackIn.mulPose(new Quaternion(Vector3f.YP, (float) (180 * (i & 1) + blade180RotationMultiplier * 135 * (i & 2)), true));
                         matrixStackIn.translate(-0.5, -0.5, -0.5);
                         matrixStackIn.translate(0, 0, -(j + 1));
                         matrixStackIn.translate(0.5, 0.5, 0.5);
-                        matrixStackIn.rotate(new Quaternion(Vector3f.ZP, 180, true));
+                        matrixStackIn.mulPose(new Quaternion(Vector3f.ZP, 180, true));
                         matrixStackIn.translate(-0.5, -0.5, -0.5);
-                        Minecraft.getInstance().getBlockRendererDispatcher().renderBlock(TurbineRotorBlade.INSTANCE.getDefaultState(), matrixStackIn, bufferIn, combinedLight, 0xA0000, net.minecraftforge.client.model.data.EmptyModelData.INSTANCE);
-                        matrixStackIn.pop();
+                        Minecraft.getInstance().getBlockRenderer().renderSingleBlock(TurbineRotorBlade.INSTANCE.defaultBlockState(), matrixStackIn, bufferIn, combinedLight, 0xA0000, net.minecraftforge.client.model.data.EmptyModelData.INSTANCE);
+                        matrixStackIn.popPose();
                     }
                     i++;
                 }
             }
             
             
-            matrixStackIn.pop();
+            matrixStackIn.popPose();
         }
-    }
-    
-    @Override
-    public boolean isGlobalRenderer(@Nonnull TurbineRotorBearingTile te) {
-        return true;
     }
 }

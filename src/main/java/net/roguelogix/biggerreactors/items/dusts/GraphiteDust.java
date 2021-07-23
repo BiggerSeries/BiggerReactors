@@ -1,6 +1,6 @@
 package net.roguelogix.biggerreactors.items.dusts;
 
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 import net.roguelogix.phosphophyllite.registry.RegisterItem;
 
 import javax.annotation.Nonnull;

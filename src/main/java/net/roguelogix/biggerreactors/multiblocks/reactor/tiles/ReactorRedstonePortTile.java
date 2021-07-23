@@ -1,19 +1,20 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.tiles;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorRedstonePort;
 import net.roguelogix.biggerreactors.multiblocks.reactor.containers.ReactorRedstonePortContainer;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorActivity;
@@ -25,23 +26,24 @@ import net.roguelogix.phosphophyllite.multiblock.generic.*;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 import net.roguelogix.phosphophyllite.registry.TileSupplier;
 import net.roguelogix.phosphophyllite.util.BlockStates;
+import org.apache.logging.log4j.core.jmx.Server;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @RegisterTileEntity(name = "reactor_redstone_port")
-public class ReactorRedstonePortTile extends ReactorBaseTile implements INamedContainerProvider, ITickableMultiblockTile, IHasUpdatableState<ReactorRedstonePortState>, IOnAssemblyTile, IOnDisassemblyTile {
+public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProvider, ITickableMultiblockTile, IHasUpdatableState<ReactorRedstonePortState>, IOnAssemblyTile, IOnDisassemblyTile {
 
     @RegisterTileEntity.Type
-    public static TileEntityType<?> TYPE;
+    public static BlockEntityType<?> TYPE;
     
     @RegisterTileEntity.Supplier
     public static final TileSupplier SUPPLIER = ReactorRedstonePortTile::new;
     
     public final ReactorRedstonePortState reactorRedstonePortState = new ReactorRedstonePortState(this);
 
-    public ReactorRedstonePortTile() {
-        super(TYPE);
+    public ReactorRedstonePortTile(BlockPos pos, BlockState state) {
+        super(TYPE, pos, state);
     }
 
     private boolean isEmitting;
@@ -63,8 +65,8 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements INamedCo
         if (powerOutputDirection == null) {
             return;
         }
-        assert world != null;
-        isPowered = world.getRedstonePower(pos.offset(powerOutputDirection), powerOutputDirection) > 0;
+        assert level != null;
+        isPowered = level.hasSignal(worldPosition.relative(powerOutputDirection), powerOutputDirection);
     }
 
     private boolean isLit = false;
@@ -177,40 +179,41 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements INamedCo
         if (shouldBeEmitting != isEmitting || wasPowered != isPowered) {
             isEmitting = shouldBeEmitting;
             wasPowered = isPowered;
-            assert world != null;
-            BlockPos updatePos = pos.offset(powerOutputDirection);
-            world.notifyNeighborsOfStateChange(this.getPos(), this.getBlockState().getBlock());
-            world.notifyNeighborsOfStateChange(updatePos, world.getBlockState(updatePos).getBlock());
+            assert level != null;
+            BlockPos updatePos = worldPosition.relative(powerOutputDirection);
+            level.blockUpdated(this.getBlockPos(), this.getBlockState().getBlock());
+            level.blockUpdated(updatePos, level.getBlockState(updatePos).getBlock());
         }
         if (isLit != shouldLight) {
             isLit = shouldLight;
-            world.setBlockState(pos, getBlockState().with(ReactorRedstonePort.IS_LIT_BOOLEAN_PROPERTY, isLit));
+            level.setBlockAndUpdate(worldPosition, getBlockState().setValue(ReactorRedstonePort.IS_LIT_BOOLEAN_PROPERTY, isLit));
         }
-        this.markDirty();
+        // TODO: 7/22/21 only mark changed when it actually changed 
+        this.setChanged();
     }
 
     @Override
     @Nonnull
-    public ActionResultType onBlockActivated(@Nonnull PlayerEntity player, @Nonnull Hand handIn) {
-        assert world != null;
-        if (world.getBlockState(pos).get(MultiblockBlock.ASSEMBLED)) {
-            if (!world.isRemote) {
-                NetworkHooks.openGui((ServerPlayerEntity) player, this, this.getPos());
+    public InteractionResult onBlockActivated(@Nonnull Player player, @Nonnull InteractionHand handIn) {
+        assert level != null;
+        if (level.getBlockState(worldPosition).getValue(MultiblockBlock.ASSEMBLED)) {
+            if (!level.isClientSide) {
+                NetworkHooks.openGui((ServerPlayer) player, this, this.getBlockPos());
             }
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
         return super.onBlockActivated(player, handIn);
     }
 
     @Override
-    public ITextComponent getDisplayName() {
-        return new TranslationTextComponent(ReactorRedstonePort.INSTANCE.getTranslationKey());
+    public Component getDisplayName() {
+        return new TranslatableComponent(ReactorRedstonePort.INSTANCE.getDescriptionId());
     }
 
     @Nullable
     @Override
-    public Container createMenu(int windowId, @Nonnull PlayerInventory playerInventory, @Nonnull PlayerEntity player) {
-        return new ReactorRedstonePortContainer(windowId, this.pos, player);
+    public AbstractContainerMenu createMenu(int windowId, @Nonnull Inventory playerInventory, @Nonnull Player player) {
+        return new ReactorRedstonePortContainer(windowId, this.worldPosition, player);
     }
 
     // Current changes/non-active. See reactorRedstonePortState to see what's actually being used for operations.
@@ -306,8 +309,8 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements INamedCo
 
     @Override
     @Nonnull
-    protected CompoundNBT writeNBT() {
-        CompoundNBT compound = super.writeNBT();
+    protected CompoundTag writeNBT() {
+        CompoundTag compound = super.writeNBT();
         compound.putInt("settingId", reactorRedstonePortState.selectedTab.toInt());
         compound.putBoolean("triggerPulseOrSignal", reactorRedstonePortState.triggerPS.toBool());
         compound.putBoolean("triggerAboveOrBelow", reactorRedstonePortState.triggerAB.toBool());
@@ -320,7 +323,7 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements INamedCo
     }
 
     @Override
-    protected void readNBT(@Nonnull CompoundNBT compound) {
+    protected void readNBT(@Nonnull CompoundTag compound) {
         super.readNBT(compound);
         if (compound.contains("settingId")) {
             reactorRedstonePortState.selectedTab = ReactorRedstonePortSelection.fromInt(compound.getInt("settingId"));
@@ -350,7 +353,7 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements INamedCo
     
     @Override
     public void onAssembly() {
-        powerOutputDirection = getBlockState().get(BlockStates.FACING);
+        powerOutputDirection = getBlockState().getValue(BlockStates.FACING);
         updatePowered();
     }
     

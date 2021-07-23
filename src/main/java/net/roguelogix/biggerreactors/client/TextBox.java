@@ -1,17 +1,14 @@
 package net.roguelogix.biggerreactors.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SharedConstants;
-import net.minecraft.util.SoundEvents;
+import com.mojang.blaze3d.vertex.*;
+import net.minecraft.SharedConstants;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.BiggerReactors;
@@ -25,7 +22,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.GL_QUADS;
 
 @OnlyIn(Dist.CLIENT)
-public class TextBox<T extends Container> extends Button<T> {
+public class TextBox<T extends AbstractContainerMenu> extends Button<T> {
 
     /**
      * Whether or not the text box is in focus.
@@ -65,7 +62,7 @@ public class TextBox<T extends Container> extends Button<T> {
     /**
      * Instance of the font renderer to use.
      */
-    private final FontRenderer fontRenderer;
+    private final Font fontRenderer;
 
     /**
      * Default constructor.
@@ -76,7 +73,7 @@ public class TextBox<T extends Container> extends Button<T> {
      * @param width     How wide this element should be.
      * @param charLimit The max number of characters to allow in this box.
      */
-    public TextBox(@Nonnull ScreenBase<T> parent, @Nonnull FontRenderer fontRenderer, int x, int y, int width, int charLimit, String initialText) {
+    public TextBox(@Nonnull ScreenBase<T> parent, @Nonnull Font fontRenderer, int x, int y, int width, int charLimit, String initialText) {
         super(parent, x, y, width, 16, 0, 158, null);
         this.textBuffer = new StringBuffer(initialText);
         this.fontRenderer = fontRenderer;
@@ -108,7 +105,7 @@ public class TextBox<T extends Container> extends Button<T> {
      * @param mouseY The y position of the mouse.
      */
     @Override
-    public void render(@Nonnull MatrixStack mStack, int mouseX, int mouseY) {
+    public void render(@Nonnull PoseStack mStack, int mouseX, int mouseY) {
         // Check conditions.
         if (this.renderEnable) {
             // Preserve the previously selected texture and bind the common texture.
@@ -128,7 +125,7 @@ public class TextBox<T extends Container> extends Button<T> {
 
             // Draw the text.
             // TODO: Allow for larger text entry by allowing text scrolling.
-            this.fontRenderer.drawStringWithShadow(mStack, this.textBuffer.toString(), (this.x + 3), (this.y + 4), 16777215);
+            this.fontRenderer.drawShadow(mStack, this.textBuffer.toString(), (this.x + 3), (this.y + 4), 16777215);
 
             // Draw cursor and selection box.
             renderCursor();
@@ -163,24 +160,24 @@ public class TextBox<T extends Container> extends Button<T> {
         // Render position for the cursor.
         int cursorRenderPos = (this.x + 2);
         if(this.textBuffer.length() >= this.cursorPos) {
-            cursorRenderPos = (this.fontRenderer.getStringWidth(this.textBuffer.substring(0, this.cursorPos)) + (this.x + 2));
+            cursorRenderPos = (this.fontRenderer.width(this.textBuffer.substring(0, this.cursorPos)) + (this.x + 2));
         }
 
         // Set up tessellator and buffer.
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder renderBuffer = tessellator.getBuffer();
+        Tesselator tessellator = Tesselator.getInstance();
+        BufferBuilder renderBuffer = tessellator.getBuilder();
         RenderHelper.setRenderColor(255.0F, 255.0F, 255.0F, 255.0F);
         RenderSystem.disableTexture();
 
         // Set positions.
-        renderBuffer.begin(GL_QUADS, DefaultVertexFormats.POSITION);
-        renderBuffer.pos((cursorRenderPos + 1), (this.y + 3), 0.0D).endVertex();
-        renderBuffer.pos(cursorRenderPos, (this.y + 3), 0.0D).endVertex();
-        renderBuffer.pos(cursorRenderPos, (this.y + 13), 0.0D).endVertex();
-        renderBuffer.pos((cursorRenderPos + 1), (this.y + 13), 0.0D).endVertex();
+        renderBuffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
+        renderBuffer.vertex((cursorRenderPos + 1), (this.y + 3), 0.0D).endVertex();
+        renderBuffer.vertex(cursorRenderPos, (this.y + 3), 0.0D).endVertex();
+        renderBuffer.vertex(cursorRenderPos, (this.y + 13), 0.0D).endVertex();
+        renderBuffer.vertex((cursorRenderPos + 1), (this.y + 13), 0.0D).endVertex();
 
         // Draw and reset.
-        tessellator.draw();
+        tessellator.end();
         RenderSystem.enableTexture();
         RenderHelper.clearRenderColor();
     }
@@ -197,13 +194,13 @@ public class TextBox<T extends Container> extends Button<T> {
         // Render position for the cursor.
         int cursorRenderPos = (this.x + 2);
         if(this.textBuffer.length() >= this.cursorPos) {
-            cursorRenderPos = (this.fontRenderer.getStringWidth(this.textBuffer.substring(0, this.cursorPos)) + (this.x + 2));
+            cursorRenderPos = (this.fontRenderer.width(this.textBuffer.substring(0, this.cursorPos)) + (this.x + 2));
         }
 
         // Render position for the selection.
         int selectionRenderPos = (this.x + 2);
         if(this.textBuffer.length() >= this.selectionPos) {
-            selectionRenderPos = (this.fontRenderer.getStringWidth(this.textBuffer.substring(0, this.selectionPos)) + (this.x + 2));
+            selectionRenderPos = (this.fontRenderer.width(this.textBuffer.substring(0, this.selectionPos)) + (this.x + 2));
         }
 
         // Left edge of the box.
@@ -212,22 +209,22 @@ public class TextBox<T extends Container> extends Button<T> {
         int rightRenderPos = (this.selectionPos > this.cursorPos) ? selectionRenderPos : cursorRenderPos;
 
         // Set up tessellator and buffer.
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder renderBuffer = tessellator.getBuffer();
+        Tesselator tessellator = Tesselator.getInstance();
+        BufferBuilder renderBuffer = tessellator.getBuilder();
         RenderHelper.setRenderColor(0.0F, 0.0F, 255.0F, 255.0F);
         RenderSystem.disableTexture();
         RenderSystem.enableColorLogicOp();
         RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
 
         // Set positions.
-        renderBuffer.begin(GL_QUADS, DefaultVertexFormats.POSITION);
-        renderBuffer.pos(rightRenderPos, (this.y + 2), 0.0D).endVertex();
-        renderBuffer.pos(leftRenderPos, (this.y + 2), 0.0D).endVertex();
-        renderBuffer.pos(leftRenderPos, (this.y + 14), 0.0D).endVertex();
-        renderBuffer.pos(rightRenderPos, (this.y + 14), 0.0D).endVertex();
+        renderBuffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
+        renderBuffer.vertex(rightRenderPos, (this.y + 2), 0.0D).endVertex();
+        renderBuffer.vertex(leftRenderPos, (this.y + 2), 0.0D).endVertex();
+        renderBuffer.vertex(leftRenderPos, (this.y + 14), 0.0D).endVertex();
+        renderBuffer.vertex(rightRenderPos, (this.y + 14), 0.0D).endVertex();
 
         // Draw and reset.
-        tessellator.draw();
+        tessellator.end();
         RenderSystem.disableColorLogicOp();
         RenderSystem.enableTexture();
         RenderHelper.clearRenderColor();
@@ -287,18 +284,18 @@ public class TextBox<T extends Container> extends Button<T> {
             }
             // Check for Ctrl-C (copy text in selection).
             if (Screen.isCopy(keyCode)) {
-                this.parent.getMinecraft().keyboardListener.setClipboardString(this.getSelection());
+                this.parent.getMinecraft().keyboardHandler.setClipboard(this.getSelection());
                 return true;
             }
             // Check for Ctrl-X (cut text in selection).
             if (Screen.isCut(keyCode)) {
-                this.parent.getMinecraft().keyboardListener.setClipboardString(this.getSelection());
+                this.parent.getMinecraft().keyboardHandler.setClipboard(this.getSelection());
                 this.deleteSelection();
                 return true;
             }
             // Check for Ctrl-V (paste text in selection).
             if (Screen.isPaste(keyCode)) {
-                this.write(this.parent.getMinecraft().keyboardListener.getClipboardString());
+                this.write(this.parent.getMinecraft().keyboardHandler.getClipboard());
                 return true;
             }
             // Handle other characters:
@@ -607,11 +604,11 @@ public class TextBox<T extends Container> extends Button<T> {
         try {
             // Check for character limit.
             if (this.textBuffer.length() >= this.charLimit) {
-                this.playSound(SoundEvents.ENTITY_VILLAGER_NO);
+                this.playSound(SoundEvents.VILLAGER_NO);
                 return;
             }
             // Filter out invalid characters.
-            String filteredText = SharedConstants.filterAllowedCharacters(text);
+            String filteredText = SharedConstants.filterText(text);
             // Append or insert the text (either at the end or in the middle).
             if (this.cursorPos >= this.textBuffer.length() || this.cursorPos < 0) {
                 this.textBuffer.append(filteredText);

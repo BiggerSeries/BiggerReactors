@@ -1,10 +1,10 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.BiggerReactors;
@@ -23,11 +23,11 @@ public class ReactorCoolantPortScreen extends ScreenBase<ReactorCoolantPortConta
 
     private ReactorCoolantPortState reactorCoolantPortState;
 
-    public ReactorCoolantPortScreen(ReactorCoolantPortContainer container, PlayerInventory playerInventory, ITextComponent title) {
+    public ReactorCoolantPortScreen(ReactorCoolantPortContainer container, Inventory playerInventory, Component title) {
         super(container, playerInventory, title, DEFAULT_TEXTURE, 142, 40);
 
         // Initialize access port state.
-        reactorCoolantPortState = (ReactorCoolantPortState) this.getContainer().getGuiPacket();
+        reactorCoolantPortState = (ReactorCoolantPortState) this.getMenu().getGuiPacket();
     }
 
     /**
@@ -38,7 +38,7 @@ public class ReactorCoolantPortScreen extends ScreenBase<ReactorCoolantPortConta
         super.init();
 
         // Set title to be drawn in the center.
-        this.titleX = (this.getWidth() / 2) - (this.getFont().getStringPropertyWidth(this.getTitle()) / 2);
+        this.titleLabelX = (this.getWidth() / 2) - (this.getFont().width(this.getTitle()) / 2);
 
         // Initialize tooltips:
 
@@ -55,11 +55,11 @@ public class ReactorCoolantPortScreen extends ScreenBase<ReactorCoolantPortConta
      */
     public void initControls() {
         // (Left) Direction toggle:
-        Biselector<ReactorCoolantPortContainer> directionToggle = new Biselector<>(this, 8, 18, new TranslationTextComponent("screen.biggerreactors.reactor_coolant_port.direction_toggle.tooltip"),
+        Biselector<ReactorCoolantPortContainer> directionToggle = new Biselector<>(this, 8, 18, new TranslatableComponent("screen.biggerreactors.reactor_coolant_port.direction_toggle.tooltip"),
                 () -> reactorCoolantPortState.direction ? 0 : 1, SelectorColors.CYAN, SelectorColors.RED);
         directionToggle.onMouseReleased = (mX, mY, btn) -> {
             // Click logic.
-            this.getContainer().executeRequest("setDirection", directionToggle.getState() == 0 ? 1 : 0);
+            this.getMenu().executeRequest("setDirection", directionToggle.getState() == 0 ? 1 : 0);
             return true;
         };
         this.addElement(directionToggle);
@@ -74,17 +74,17 @@ public class ReactorCoolantPortScreen extends ScreenBase<ReactorCoolantPortConta
      * @param partialTicks Partial ticks.
      */
     @Override
-    public void render(@Nonnull MatrixStack mStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(@Nonnull PoseStack mStack, int mouseX, int mouseY, float partialTicks) {
         super.render(mStack, mouseX, mouseY, partialTicks);
 
         // Render text for input/output direction:
         if (reactorCoolantPortState.direction) {
             // Text for an inlet:
-            this.getFont().drawString(mStack, new TranslationTextComponent("screen.biggerreactors.reactor_coolant_port.direction_toggle.input").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
+            this.getFont().draw(mStack, new TranslatableComponent("screen.biggerreactors.reactor_coolant_port.direction_toggle.input").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
 
         } else {
             // Text for an outlet:
-            this.getFont().drawString(mStack, new TranslationTextComponent("screen.biggerreactors.reactor_coolant_port.direction_toggle.output").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
+            this.getFont().draw(mStack, new TranslatableComponent("screen.biggerreactors.reactor_coolant_port.direction_toggle.output").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
         }
     }
 }

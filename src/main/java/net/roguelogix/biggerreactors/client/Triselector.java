@@ -1,10 +1,10 @@
 package net.roguelogix.biggerreactors.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.text.ITextComponent;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.phosphophyllite.gui.client.RenderHelper;
@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 import java.util.function.IntSupplier;
 
 @OnlyIn(Dist.CLIENT)
-public class Triselector<T extends Container> extends Button<T> {
+public class Triselector<T extends AbstractContainerMenu> extends Button<T> {
     
     private final IntSupplier renderState;
     
@@ -49,7 +49,7 @@ public class Triselector<T extends Container> extends Button<T> {
      * @param tooltip      The tooltip for this element. If null, a tooltip will not render. If you set a tooltip later, use StringTextComponent.EMPTY.
      * @param initialState The initial switch state to use.
      */
-    public Triselector(@Nonnull ScreenBase<T> parent, int x, int y, @Nullable ITextComponent tooltip, IntSupplier initialState, SelectorColors leftColor, SelectorColors centerColor, SelectorColors rightColor) {
+    public Triselector(@Nonnull ScreenBase<T> parent, int x, int y, @Nullable Component tooltip, IntSupplier initialState, SelectorColors leftColor, SelectorColors centerColor, SelectorColors rightColor) {
         super(parent, x, y, 46, 14, 31, 64, tooltip);
         this.renderState = initialState;
         this.state = initialState.getAsInt();
@@ -75,7 +75,7 @@ public class Triselector<T extends Container> extends Button<T> {
      * @param mouseY The y position of the mouse.
      */
     @Override
-    public void render(@Nonnull MatrixStack mStack, int mouseX, int mouseY) {
+    public void render(@Nonnull PoseStack mStack, int mouseX, int mouseY) {
         // Check conditions.
         if (this.renderEnable) {
             // Preserve the previously selected texture and bind the common texture.

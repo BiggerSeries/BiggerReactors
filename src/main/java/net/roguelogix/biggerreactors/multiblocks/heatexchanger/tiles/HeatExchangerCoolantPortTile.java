@@ -1,28 +1,29 @@
 package net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles;
 
-import mekanism.api.chemical.gas.IGasHandler;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.HeatExchangerCoolantPortBlock;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.HeatExchangerCoolantPortContainer;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.state.HeatExchangerCoolantPortState;
@@ -30,7 +31,6 @@ import net.roguelogix.biggerreactors.multiblocks.heatexchanger.state.HeatExchang
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorTerminal;
 import net.roguelogix.phosphophyllite.fluids.FluidHandlerWrapper;
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
-import net.roguelogix.phosphophyllite.fluids.MekanismGasWrappers;
 import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.multiblock.generic.IOnAssemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.generic.IOnDisassemblyTile;
@@ -38,6 +38,7 @@ import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockBlock;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 import net.roguelogix.phosphophyllite.registry.TileSupplier;
 import net.roguelogix.phosphophyllite.util.BlockStates;
+import org.apache.logging.log4j.core.jmx.Server;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -46,22 +47,22 @@ import static net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.Hea
 import static net.roguelogix.phosphophyllite.util.BlockStates.PORT_DIRECTION;
 
 @RegisterTileEntity(name = "heat_exchanger_coolant_port")
-public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implements IPhosphophylliteFluidHandler, IOnAssemblyTile, IOnDisassemblyTile, INamedContainerProvider, IHasUpdatableState<HeatExchangerCoolantPortState> {
+public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implements IPhosphophylliteFluidHandler, IOnAssemblyTile, IOnDisassemblyTile, MenuProvider, IHasUpdatableState<HeatExchangerCoolantPortState> {
     
     public long lastCheckedTick;
     
     @RegisterTileEntity.Type
-    public static TileEntityType<?> TYPE;
+    public static BlockEntityType<?> TYPE;
     
     @RegisterTileEntity.Supplier
     public static final TileSupplier SUPPLIER = HeatExchangerCoolantPortTile::new;
     
-    public HeatExchangerCoolantPortTile() {
-        super(TYPE);
+    public HeatExchangerCoolantPortTile(BlockPos pos, BlockState state) {
+        super(TYPE, pos, state);
     }
     
-    @CapabilityInject(IGasHandler.class)
-    public static Capability<IGasHandler> GAS_HANDLER_CAPABILITY = null;
+//    @CapabilityInject(IGasHandler.class)
+//    public static Capability<IGasHandler> GAS_HANDLER_CAPABILITY = null;
     
     @Nonnull
     @Override
@@ -69,9 +70,9 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
         if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
             return fluidHandlerCapability().cast();
         }
-        if (cap == GAS_HANDLER_CAPABILITY) {
-            return LazyOptional.of(() -> MekanismGasWrappers.wrap(this)).cast();
-        }
+//        if (cap == GAS_HANDLER_CAPABILITY) {
+//            return LazyOptional.of(() -> MekanismGasWrappers.wrap(this)).cast();
+//        }
         return super.getCapability(cap, side);
     }
     
@@ -85,9 +86,10 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
     private boolean condenser = true;
     
     public void setInlet(boolean inlet) {
+        assert level != null;
         this.inlet = inlet;
-        world.setBlockState(this.getPos(), this.getBlockState().with(PORT_DIRECTION, inlet));
-        markDirty();
+        level.setBlock(this.getBlockPos(), this.getBlockState().setValue(PORT_DIRECTION, inlet), 3);
+        setChanged();
     }
     
     public void setInletOtherOutlet(boolean inlet) {
@@ -100,7 +102,8 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
     
     public void setCondenser(boolean condenser) {
         this.condenser = condenser;
-        world.setBlockState(this.getPos(), this.getBlockState().with(CONDENSER, condenser));
+        assert level != null;
+        level.setBlock(this.getBlockPos(), this.getBlockState().setValue(CONDENSER, condenser), 3);
     }
     
     public boolean isCondenser() {
@@ -134,7 +137,7 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
     
     @Nullable
     @Override
-    public CompoundNBT fluidTagInTank(int tank) {
+    public CompoundTag fluidTagInTank(int tank) {
         if (HETank == null) {
             return null;
         }
@@ -158,7 +161,7 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
     }
     
     @Override
-    public long fill(@Nonnull Fluid fluid, @Nullable CompoundNBT tag, long amount, boolean simulate) {
+    public long fill(@Nonnull Fluid fluid, @Nullable CompoundTag tag, long amount, boolean simulate) {
         if (HETank == null || !inlet) {
             return 0;
         }
@@ -166,7 +169,7 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
     }
     
     @Override
-    public long drain(@Nonnull Fluid fluid, @Nullable CompoundNBT tag, long amount, boolean simulate) {
+    public long drain(@Nonnull Fluid fluid, @Nullable CompoundTag tag, long amount, boolean simulate) {
         if (HETank == null || inlet) {
             return 0;
         }
@@ -207,8 +210,8 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
             connected = false;
             return;
         }
-        assert world != null;
-        TileEntity te = world.getTileEntity(pos.offset(outputDirection));
+        assert level != null;
+        BlockEntity te = level.getBlockEntity(worldPosition.relative(outputDirection));
         if (te == null) {
             connected = false;
             return;
@@ -219,34 +222,34 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
             connected = true;
             handlerOptional = waterOutput;
             handler = FluidHandlerWrapper.wrap(waterOutput.orElse(EMPTY_TANK));
-        } else if (GAS_HANDLER_CAPABILITY != null) {
-            LazyOptional<IGasHandler> gasOptional = te.getCapability(GAS_HANDLER_CAPABILITY, outputDirection.getOpposite());
-            if (gasOptional.isPresent()) {
-                IGasHandler gasHandler = gasOptional.orElse(MekanismGasWrappers.EMPTY_TANK);
-                connected = true;
-                handlerOptional = gasOptional;
-                handler = MekanismGasWrappers.wrap(gasHandler);
-            }
+//        } else if (GAS_HANDLER_CAPABILITY != null) {
+//            LazyOptional<IGasHandler> gasOptional = te.getCapability(GAS_HANDLER_CAPABILITY, outputDirection.getOpposite());
+//            if (gasOptional.isPresent()) {
+//                IGasHandler gasHandler = gasOptional.orElse(MekanismGasWrappers.EMPTY_TANK);
+//                connected = true;
+//                handlerOptional = gasOptional;
+//                handler = MekanismGasWrappers.wrap(gasHandler);
+//            }
         }
     }
     
     @Override
-    protected void readNBT(@Nonnull CompoundNBT compound) {
+    protected void readNBT(@Nonnull CompoundTag compound) {
         super.readNBT(compound);
         inlet = compound.getBoolean("inlet");
     }
     
     @Nonnull
     @Override
-    protected CompoundNBT writeNBT() {
-        CompoundNBT nbt = super.writeNBT();
+    protected CompoundTag writeNBT() {
+        CompoundTag nbt = super.writeNBT();
         nbt.putBoolean("inlet", inlet);
         return nbt;
     }
     
     @Override
     public void onAssembly() {
-        outputDirection = getBlockState().get(BlockStates.FACING);
+        outputDirection = getBlockState().getValue(BlockStates.FACING);
         neighborChanged();
     }
     
@@ -273,26 +276,26 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
 
     @Override
     @Nonnull
-    public ActionResultType onBlockActivated(@Nonnull PlayerEntity player, @Nonnull Hand handIn) {
-        assert world != null;
-        if (world.getBlockState(pos).get(MultiblockBlock.ASSEMBLED)) {
-            if (!world.isRemote) {
-                NetworkHooks.openGui((ServerPlayerEntity) player, this, this.getPos());
+    public InteractionResult onBlockActivated(@Nonnull Player player, @Nonnull InteractionHand handIn) {
+        assert level != null;
+        if (level.getBlockState(worldPosition).getValue(MultiblockBlock.ASSEMBLED)) {
+            if (!level.isClientSide) {
+                NetworkHooks.openGui((ServerPlayer) player, this, this.getBlockPos());
             }
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
         return super.onBlockActivated(player, handIn);
     }
 
     @Override
-    public ITextComponent getDisplayName() {
-        return new TranslationTextComponent(HeatExchangerCoolantPortBlock.INSTANCE.getTranslationKey());
+    public Component getDisplayName() {
+        return new TranslatableComponent(HeatExchangerCoolantPortBlock.INSTANCE.getDescriptionId());
     }
 
     @Nullable
     @Override
-    public Container createMenu(int windowId, @Nonnull PlayerInventory playerInventory, @Nonnull PlayerEntity player) {
-        return new HeatExchangerCoolantPortContainer(windowId, this.pos, player);
+    public AbstractContainerMenu createMenu(int windowId, @Nonnull Inventory playerInventory, @Nonnull Player player) {
+        return new HeatExchangerCoolantPortContainer(windowId, this.worldPosition, player);
     }
     
     public void runRequest(String requestName, Object requestData) {

@@ -1,10 +1,10 @@
 package net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.util.IWorldPosCallable;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.MenuType;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.HeatExchangerTerminalBlock;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerTerminalTile;
 import net.roguelogix.phosphophyllite.gui.GuiSync;
@@ -14,20 +14,20 @@ import net.roguelogix.phosphophyllite.registry.RegisterContainer;
 import javax.annotation.Nonnull;
 
 @RegisterContainer(name = "heat_exchanger_terminal")
-public class HeatExchangerTerminalContainer extends Container implements GuiSync.IGUIPacketProvider {
+public class HeatExchangerTerminalContainer extends AbstractContainerMenu implements GuiSync.IGUIPacketProvider {
 
     @RegisterContainer.Type
-    public static ContainerType<HeatExchangerTerminalContainer> INSTANCE;
+    public static MenuType<HeatExchangerTerminalContainer> INSTANCE;
     @RegisterContainer.Supplier
     public static final ContainerSupplier SUPPLIER = HeatExchangerTerminalContainer::new;
 
-    private PlayerEntity player;
+    private Player player;
     private HeatExchangerTerminalTile tileEntity;
 
-    public HeatExchangerTerminalContainer(int windowId, BlockPos blockPos, PlayerEntity player) {
+    public HeatExchangerTerminalContainer(int windowId, BlockPos blockPos, Player player) {
         super(INSTANCE, windowId);
         this.player = player;
-        this.tileEntity = (HeatExchangerTerminalTile) player.world.getTileEntity(blockPos);
+        this.tileEntity = (HeatExchangerTerminalTile) player.level.getBlockEntity(blockPos);
         this.getGuiPacket();
     }
 
@@ -40,9 +40,9 @@ public class HeatExchangerTerminalContainer extends Container implements GuiSync
     }
 
     @Override
-    public boolean canInteractWith(@Nonnull PlayerEntity player) {
-        assert tileEntity.getWorld() != null;
-        return isWithinUsableDistance(IWorldPosCallable.of(tileEntity.getWorld(), tileEntity.getPos()),
+    public boolean stillValid(@Nonnull Player player) {
+        assert tileEntity.getLevel() != null;
+        return stillValid(ContainerLevelAccess.create(tileEntity.getLevel(), tileEntity.getBlockPos()),
                 player, HeatExchangerTerminalBlock.INSTANCE);
     }
 }

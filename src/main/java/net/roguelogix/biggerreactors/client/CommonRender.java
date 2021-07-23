@@ -1,10 +1,10 @@
 package net.roguelogix.biggerreactors.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.StringTextComponent;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fluids.FluidStack;
@@ -32,7 +32,7 @@ public class CommonRender {
      * @param energyStored   The amount of energy to draw.
      * @param energyCapacity The max energy capacity that can be displayed.
      */
-    public static <T extends Container> void renderEnergyGauge(@Nonnull MatrixStack mStack, @Nonnull Symbol<T> symbol, long energyStored, long energyCapacity) {
+    public static <T extends AbstractContainerMenu> void renderEnergyGauge(@Nonnull PoseStack mStack, @Nonnull Symbol<T> symbol, long energyStored, long energyCapacity) {
         // Preserve the previously selected texture and bind the common texture.
         ResourceLocation preservedResource = RenderHelper.getCurrentResource();
         RenderHelper.bindTexture(COMMON_RESOURCE_TEXTURE);
@@ -48,7 +48,7 @@ public class CommonRender {
         // Draw frame.
         symbol.blit(mStack, 0, 0);
         // Update tooltip.
-        symbol.tooltip = new StringTextComponent(String.format("%s/%s",
+        symbol.tooltip = new TextComponent(String.format("%s/%s",
                 RenderHelper.formatValue(energyStored, "RF"),
                 RenderHelper.formatValue(energyCapacity, "RF")));
         // Reset color and restore the previously bound texture.
@@ -67,7 +67,7 @@ public class CommonRender {
      * @param fluidCapacity The max fluid capacity that can be displayed.
      * @param fluid         The fluid to use.
      */
-    public static <T extends Container> void renderFluidGauge(@Nonnull MatrixStack mStack, @Nonnull Symbol<T> symbol, long fluidStored, long fluidCapacity, Fluid fluid) {
+    public static <T extends AbstractContainerMenu> void renderFluidGauge(@Nonnull PoseStack mStack, @Nonnull Symbol<T> symbol, long fluidStored, long fluidCapacity, Fluid fluid) {
         // Preserve the previously selected texture and bind the common texture.
         ResourceLocation preservedResource = RenderHelper.getCurrentResource();
         RenderHelper.bindTexture(COMMON_RESOURCE_TEXTURE);
@@ -85,7 +85,7 @@ public class CommonRender {
         // Draw level marks.
         symbol.blit(mStack, 72, 0);
         // Update tooltip.
-        symbol.tooltip = new StringTextComponent(String.format("%s/%s of %s",
+        symbol.tooltip = new TextComponent(String.format("%s/%s of %s",
                 RenderHelper.formatValue((fluidStored / 1000.0), "B", true),
                 RenderHelper.formatValue((fluidCapacity / 1000.0), "B", true),
                 new FluidStack(fluid, 1).getDisplayName().getString().toLowerCase()));

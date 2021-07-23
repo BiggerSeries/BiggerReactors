@@ -1,6 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.turbine.simulation;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.roguelogix.biggerreactors.registries.TurbineCoilRegistry;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.VentState;
@@ -8,7 +8,7 @@ import net.roguelogix.phosphophyllite.repack.org.joml.Vector4i;
 
 import java.util.ArrayList;
 
-public interface ITurbineSimulation extends INBTSerializable<CompoundNBT> {
+public interface ITurbineSimulation extends INBTSerializable<CompoundTag> {
     
     void reset();
     

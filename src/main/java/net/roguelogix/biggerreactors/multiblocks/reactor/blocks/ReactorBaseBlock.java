@@ -1,10 +1,10 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.blocks;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.state.StateContainer;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.material.Material;
 import net.roguelogix.biggerreactors.multiblocks.reactor.ReactorMultiblockController;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorActivity;
 import net.roguelogix.biggerreactors.multiblocks.reactor.tiles.ReactorBaseTile;
@@ -12,10 +12,10 @@ import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblo
 
 import javax.annotation.Nonnull;
 
-public class ReactorBaseBlock extends RectangularMultiblockBlock<ReactorMultiblockController, ReactorBaseTile, ReactorBaseBlock> {
+public abstract class ReactorBaseBlock extends RectangularMultiblockBlock<ReactorMultiblockController, ReactorBaseTile, ReactorBaseBlock> {
     
-    public static final Properties PROPERTIES_SOLID = Properties.create(Material.IRON).sound(SoundType.METAL).hardnessAndResistance(2, 10).setAllowsSpawn((a, b, c, d) -> false);
-    public static final Properties PROPERTIES_GLASS = Properties.create(Material.IRON).sound(SoundType.GLASS).notSolid().hardnessAndResistance(2).setAllowsSpawn((a, b, c, d) -> false);
+    public static final Properties PROPERTIES_SOLID = Properties.of(Material.METAL).sound(SoundType.METAL).destroyTime(2).explosionResistance(10).isValidSpawn((a, b, c, d) -> false);
+    public static final Properties PROPERTIES_GLASS = Properties.of(Material.METAL).sound(SoundType.GLASS).noOcclusion().destroyTime(2).explosionResistance(2).isValidSpawn((a, b, c, d) -> false);
     
     
     public ReactorBaseBlock() {
@@ -25,7 +25,7 @@ public class ReactorBaseBlock extends RectangularMultiblockBlock<ReactorMultiblo
     public ReactorBaseBlock(boolean solid) {
         super(solid ? PROPERTIES_SOLID : PROPERTIES_GLASS);
         if (usesReactorState()) {
-            setDefaultState(getDefaultState().with(ReactorActivity.REACTOR_ACTIVITY_ENUM_PROPERTY, ReactorActivity.INACTIVE));
+            registerDefaultState(defaultBlockState().setValue(ReactorActivity.REACTOR_ACTIVITY_ENUM_PROPERTY, ReactorActivity.INACTIVE));
         }
     }
     
@@ -34,8 +34,8 @@ public class ReactorBaseBlock extends RectangularMultiblockBlock<ReactorMultiblo
     }
     
     @Override
-    protected void fillStateContainer(@Nonnull StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         if (usesReactorState()) {
             builder.add(ReactorActivity.REACTOR_ACTIVITY_ENUM_PROPERTY);
         }

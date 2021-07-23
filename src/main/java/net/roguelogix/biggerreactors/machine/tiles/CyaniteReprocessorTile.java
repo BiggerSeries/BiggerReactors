@@ -1,29 +1,26 @@
 package net.roguelogix.biggerreactors.machine.tiles;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.LockableTileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.*;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -34,7 +31,7 @@ import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.roguelogix.biggerreactors.BiggerReactors;
@@ -50,16 +47,17 @@ import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.items.DebugTool;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 import net.roguelogix.phosphophyllite.registry.TileSupplier;
+import org.apache.logging.log4j.core.jmx.Server;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
 @RegisterTileEntity(name = "cyanite_reprocessor")
-public class CyaniteReprocessorTile extends LockableTileEntity implements INamedContainerProvider, ITickableTileEntity, IHasUpdatableState<CyaniteReprocessorState> {
+public class CyaniteReprocessorTile extends BaseContainerBlockEntity implements MenuProvider, IHasUpdatableState<CyaniteReprocessorState> {
     
     @RegisterTileEntity.Type
-    public static TileEntityType<CyaniteReprocessorTile> INSTANCE;
+    public static BlockEntityType<CyaniteReprocessorTile> INSTANCE;
     
     @RegisterTileEntity.Supplier
     public static final TileSupplier SUPPLIER = CyaniteReprocessorTile::new;
@@ -107,9 +105,9 @@ public class CyaniteReprocessorTile extends LockableTileEntity implements INamed
      */
     private ItemStack itemPresentLastTick = ItemStack.EMPTY;
     
-    public CyaniteReprocessorTile() {
-        super(CyaniteReprocessorTile.INSTANCE);
-        this.clear();
+    public CyaniteReprocessorTile(BlockPos pos, BlockState state) {
+        super(CyaniteReprocessorTile.INSTANCE, pos, state);
+        this.clearContent();
         this.updateState();
     }
     
@@ -117,46 +115,46 @@ public class CyaniteReprocessorTile extends LockableTileEntity implements INamed
      * Do right-click stuff.
      */
     @Nonnull
-    public ActionResultType onBlockActivated(@Nonnull BlockState blockState, World world, @Nonnull BlockPos blockPos, @Nonnull PlayerEntity player, @Nonnull Hand hand, @Nonnull BlockRayTraceResult trace) {
+    public InteractionResult onBlockActivated(@Nonnull BlockState blockState, Level world, @Nonnull BlockPos blockPos, @Nonnull Player player, @Nonnull InteractionHand hand, @Nonnull BlockHitResult trace) {
         // Check for client-side.
-        if (world.isRemote) {
-            return ActionResultType.SUCCESS;
+        if (world.isClientSide) {
+            return InteractionResult.SUCCESS;
         }
         
         // Print tile data.
-        if (ItemStack.areItemsEqual(player.getHeldItemMainhand(), new ItemStack(DebugTool.INSTANCE))) {
-            player.sendMessage(new StringTextComponent(String.format("[%s] Progress: %s/%s", BiggerReactors.modid, this.cyaniteReprocessorState.workTime, this.cyaniteReprocessorState.workTimeTotal)), player.getUniqueID());
-            player.sendMessage(new StringTextComponent(String.format("[%s] Energy: %s/%s RF", BiggerReactors.modid, this.cyaniteReprocessorState.energyStored, this.cyaniteReprocessorState.energyCapacity)), player.getUniqueID());
-            player.sendMessage(new StringTextComponent(String.format("[%s] Fluid Tank: %s/%s mB", BiggerReactors.modid, this.cyaniteReprocessorState.waterStored, this.cyaniteReprocessorState.waterCapacity)), player.getUniqueID());
-            return ActionResultType.SUCCESS;
+        if (ItemStack.isSame(player.getMainHandItem(), new ItemStack(DebugTool.INSTANCE))) {
+            player.sendMessage(new TextComponent(String.format("[%s] Progress: %s/%s", BiggerReactors.modid, this.cyaniteReprocessorState.workTime, this.cyaniteReprocessorState.workTimeTotal)), player.getUUID());
+            player.sendMessage(new TextComponent(String.format("[%s] Energy: %s/%s RF", BiggerReactors.modid, this.cyaniteReprocessorState.energyStored, this.cyaniteReprocessorState.energyCapacity)), player.getUUID());
+            player.sendMessage(new TextComponent(String.format("[%s] Fluid Tank: %s/%s mB", BiggerReactors.modid, this.cyaniteReprocessorState.waterStored, this.cyaniteReprocessorState.waterCapacity)), player.getUUID());
+            return InteractionResult.SUCCESS;
         }
         
         // Do water bucket check.
-        if (ItemStack.areItemsEqual(player.getHeldItemMainhand(), new ItemStack(Items.WATER_BUCKET))) {
+        if (ItemStack.isSame(player.getMainHandItem(), new ItemStack(Items.WATER_BUCKET))) {
             if (this.fluidTank.getFluidAmount() <= (Config.CyaniteReprocessor.WaterTankCapacity - 1000)) {
                 this.fluidTank.fill(new FluidStack(Fluids.WATER, 1000), IFluidHandler.FluidAction.EXECUTE);
-                player.setHeldItem(Hand.MAIN_HAND, new ItemStack(Items.BUCKET));
+                player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.BUCKET));
             }
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
         
         // Get container and open GUI.
-        NetworkHooks.openGui((ServerPlayerEntity) player, this, blockPos);
-        return ActionResultType.SUCCESS;
+        NetworkHooks.openGui((ServerPlayer) player, this, blockPos);
+        return InteractionResult.SUCCESS;
     }
     
     /**
      * Drop items on destruction.
      */
-    public void onReplaced(BlockState blockState, World world, BlockPos blockPos, BlockState newBlockState, boolean isMoving) {
+    public void onReplaced(BlockState blockState, Level world, BlockPos blockPos, BlockState newBlockState, boolean isMoving) {
         ItemStack inputStack = this.itemHandler.getStackInSlot(CyaniteReprocessorItemHandler.INPUT_SLOT_INDEX);
         if (!inputStack.isEmpty()) {
-            InventoryHelper.dropInventoryItems(world, blockPos, new Inventory(inputStack));
+            Containers.dropContents(world, blockPos, new SimpleContainer(inputStack));
         }
         
         ItemStack outputStack = this.itemHandler.getStackInSlot(CyaniteReprocessorItemHandler.OUTPUT_SLOT_INDEX);
         if (!outputStack.isEmpty()) {
-            InventoryHelper.dropInventoryItems(world, blockPos, new Inventory(outputStack));
+            Containers.dropContents(world, blockPos, new SimpleContainer(outputStack));
         }
     }
     
@@ -164,7 +162,7 @@ public class CyaniteReprocessorTile extends LockableTileEntity implements INamed
      * @see CyaniteReprocessorTile#getDefaultName()
      */
     @Override
-    public ITextComponent getDisplayName() {
+    public Component getDisplayName() {
         return this.getDefaultName();
     }
     
@@ -172,8 +170,8 @@ public class CyaniteReprocessorTile extends LockableTileEntity implements INamed
      * @return The localized default name for the tile.
      */
     @Override
-    protected ITextComponent getDefaultName() {
-        return new TranslationTextComponent("block.biggerreactors.cyanite_reprocessor");
+    protected Component getDefaultName() {
+        return new TranslatableComponent("block.biggerreactors.cyanite_reprocessor");
     }
     
     /**
@@ -184,8 +182,8 @@ public class CyaniteReprocessorTile extends LockableTileEntity implements INamed
      * @return A GUI container to render.
      */
     @Override
-    protected Container createMenu(int windowId, PlayerInventory playerInventory) {
-        return new CyaniteReprocessorContainer(windowId, this.getPos(), playerInventory.player);
+    protected AbstractContainerMenu createMenu(int windowId, Inventory playerInventory) {
+        return new CyaniteReprocessorContainer(windowId, this.getBlockPos(), playerInventory.player);
     }
     
     /**
@@ -215,7 +213,7 @@ public class CyaniteReprocessorTile extends LockableTileEntity implements INamed
      * @return How large this tile's inventory is.
      */
     @Override
-    public int getSizeInventory() {
+    public int getContainerSize() {
         return this.itemHandler.getSlots();
     }
     
@@ -239,7 +237,7 @@ public class CyaniteReprocessorTile extends LockableTileEntity implements INamed
      * @return Any items held in that slot.
      */
     @Override
-    public ItemStack getStackInSlot(int index) {
+    public ItemStack getItem(int index) {
         return this.itemHandler.getStackInSlot(index);
     }
     
@@ -251,7 +249,7 @@ public class CyaniteReprocessorTile extends LockableTileEntity implements INamed
      * @return The items that were removed.
      */
     @Override
-    public ItemStack decrStackSize(int index, int count) {
+    public ItemStack removeItem(int index, int count) {
         return this.itemHandler.getStackInSlot(index).split(count);
     }
     
@@ -262,7 +260,7 @@ public class CyaniteReprocessorTile extends LockableTileEntity implements INamed
      * @return The items that were removed.
      */
     @Override
-    public ItemStack removeStackFromSlot(int index) {
+    public ItemStack removeItemNoUpdate(int index) {
         ItemStack itemStack = this.itemHandler.getStackInSlot(index).copy();
         this.itemHandler.setStackInSlot(index, ItemStack.EMPTY);
         return itemStack;
@@ -275,18 +273,18 @@ public class CyaniteReprocessorTile extends LockableTileEntity implements INamed
      * @param stack The items to update with.
      */
     @Override
-    public void setInventorySlotContents(int index, ItemStack stack) {
+    public void setItem(int index, ItemStack stack) {
         ItemStack oldStack = this.itemHandler.getStackInSlot(index);
-        boolean flag = !stack.isEmpty() && stack.isItemEqual(oldStack) && ItemStack
-                .areItemStackTagsEqual(stack, oldStack);
+        boolean flag = !stack.isEmpty() && stack.sameItem(oldStack) && ItemStack
+                .isSame(stack, oldStack);
         this.itemHandler.setStackInSlot(index, stack);
-        if (stack.getCount() > this.getInventoryStackLimit()) {
-            stack.setCount(this.getInventoryStackLimit());
+        if (stack.getCount() > this.getMaxStackSize()) {
+            stack.setCount(this.getMaxStackSize());
         }
         
         if (index == 0 && !flag) {
             this.workHandler.clear();
-            this.markDirty();
+            this.setChanged();
         }
     }
     
@@ -294,7 +292,7 @@ public class CyaniteReprocessorTile extends LockableTileEntity implements INamed
      * Clears all data and inventory for this tile.
      */
     @Override
-    public void clear() {
+    public void clearContent() {
         // Reset work.
         this.workHandler = new WorkHandler(Config.CyaniteReprocessor.TotalWorkTime);
         
@@ -316,15 +314,15 @@ public class CyaniteReprocessorTile extends LockableTileEntity implements INamed
      * @return True if usable, false otherwise.
      */
     @Override
-    public boolean isUsableByPlayer(PlayerEntity player) {
-        assert this.world != null;
-        if (this.world.getTileEntity(this.getPos()) != this) {
+    public boolean stillValid(Player player) {
+        assert this.level != null;
+        if (this.level.getBlockEntity(this.getBlockPos()) != this) {
             return false;
         } else {
-            return player.getDistanceSq(
-                    (double) this.getPos().getX() + 0.5D,
-                    (double) this.getPos().getY() + 0.5D,
-                    (double) this.getPos().getZ() + 0.5D) <= 64.0D;
+            return player.distanceToSqr(
+                    (double) this.getBlockPos().getX() + 0.5D,
+                    (double) this.getBlockPos().getY() + 0.5D,
+                    (double) this.getBlockPos().getZ() + 0.5D) <= 64.0D;
         }
     }
     
@@ -334,9 +332,9 @@ public class CyaniteReprocessorTile extends LockableTileEntity implements INamed
      * @param parentCompound The parent compound to read from.
      */
     @Override
-    public void read(BlockState state, @Nonnull CompoundNBT parentCompound) {
-        super.read(state, parentCompound);
-        CompoundNBT childCompound = parentCompound.getCompound("cyaniteReprocessorState");
+    public void load(@Nonnull CompoundTag parentCompound) {
+        super.load(parentCompound);
+        CompoundTag childCompound = parentCompound.getCompound("cyaniteReprocessorState");
         
         // Read work.
         this.workHandler = new WorkHandler(childCompound.getInt("workTimeTotal"), childCompound.getInt("workTime"));
@@ -358,9 +356,9 @@ public class CyaniteReprocessorTile extends LockableTileEntity implements INamed
      * @return The updated compound.
      */
     @Override
-    public final CompoundNBT write(@Nonnull CompoundNBT parentCompound) {
-        super.write(parentCompound);
-        CompoundNBT childCompound = new CompoundNBT();
+    public final CompoundTag save(@Nonnull CompoundTag parentCompound) {
+        parentCompound = super.save(parentCompound);
+        CompoundTag childCompound = new CompoundTag();
         
         // Write work.
         childCompound.putInt("workTime", this.workHandler.getProgress());
@@ -371,7 +369,7 @@ public class CyaniteReprocessorTile extends LockableTileEntity implements INamed
         childCompound.putInt("energyStored", this.energyStorage.getEnergyStored());
         childCompound.putInt("energyCapacity", this.energyStorage.getMaxEnergyStored());
         // Write fluids.
-        childCompound.put("fluidTank", fluidTank.writeToNBT(new CompoundNBT()));
+        childCompound.put("fluidTank", fluidTank.writeToNBT(new CompoundTag()));
         
         parentCompound.put("cyaniteReprocessorState", childCompound);
         
@@ -384,7 +382,7 @@ public class CyaniteReprocessorTile extends LockableTileEntity implements INamed
      */
     private boolean canWork() {
         // If the output slot is full, we cannot work.
-        if (this.getStackInSlot(CyaniteReprocessorItemHandler.OUTPUT_SLOT_INDEX).getCount() >= 64) {
+        if (this.getItem(CyaniteReprocessorItemHandler.OUTPUT_SLOT_INDEX).getCount() >= 64) {
             return false;
         }
         return (this.energyStorage.getEnergyStored() >= Config.CyaniteReprocessor.EnergyConsumptionPerTick
@@ -394,11 +392,10 @@ public class CyaniteReprocessorTile extends LockableTileEntity implements INamed
     /**
      * Do work (if possible).
      */
-    @Override
     public void tick() {
         // Check for client-side.
-        assert world != null;
-        if (world.isRemote()) {
+        assert level != null;
+        if (level.isClientSide()) {
             return;
         }
         
@@ -407,7 +404,7 @@ public class CyaniteReprocessorTile extends LockableTileEntity implements INamed
         ItemStack inputStack = this.itemHandler.getStackInSlot(CyaniteReprocessorItemHandler.INPUT_SLOT_INDEX);
         
         // Check to make sure the player doesn't try to pull a fast one.
-        if (!ItemStack.areItemsEqual(this.itemPresentLastTick, inputStack)) {
+        if (!ItemStack.isSame(this.itemPresentLastTick, inputStack)) {
             this.workHandler.clear();
         }
         this.itemPresentLastTick = inputStack.copy();
@@ -433,15 +430,15 @@ public class CyaniteReprocessorTile extends LockableTileEntity implements INamed
             }
         }
         
-        BlockState currentBlockState = world.getBlockState(this.getPos());
-        BlockState newBlockState = currentBlockState.with(CyaniteReprocessor.ENABLED, isActive);
+        BlockState currentBlockState = level.getBlockState(this.getBlockPos());
+        BlockState newBlockState = currentBlockState.setValue(CyaniteReprocessor.ENABLED, isActive);
         if (!newBlockState.equals(currentBlockState)) {
-            this.world.setBlockState(this.getPos(), newBlockState);
+            this.level.setBlock(this.getBlockPos(), newBlockState, 3);
             doUpdate = true;
         }
         
         if (doUpdate) {
-            markDirty();
+            setChanged();
         }
         
         // Update the current machine state.
@@ -488,7 +485,7 @@ public class CyaniteReprocessorTile extends LockableTileEntity implements INamed
     }
     
     @Override
-    public boolean isItemValidForSlot(int index, ItemStack stack) {
+    public boolean canPlaceItem(int index, ItemStack stack) {
         return this.itemHandler.isItemValid(index, stack);
     }
     

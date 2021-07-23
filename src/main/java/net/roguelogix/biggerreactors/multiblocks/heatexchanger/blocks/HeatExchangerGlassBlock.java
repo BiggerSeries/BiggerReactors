@@ -1,11 +1,11 @@
 package net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks;
 
 
-import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerGlassTile;
@@ -26,23 +26,24 @@ public class HeatExchangerGlassBlock extends HeatExchangerBaseBlock {
     
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new HeatExchangerGlassTile();
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new HeatExchangerGlassTile(pos, state);
     }
     
     @OnlyIn(Dist.CLIENT)
     @RegisterBlock.RenderLayer
     public RenderType renderLayer() {
-        return RenderType.getCutout();
+        return RenderType.cutout();
     }
     
     @SuppressWarnings("deprecation")
-    @OnlyIn(Dist.CLIENT)
-    public float getAmbientOcclusionLightValue(@Nonnull BlockState state, @Nonnull IBlockReader worldIn, @Nonnull BlockPos pos) {
+    @Override
+    public float getShadeBrightness(@Nonnull BlockState state, @Nonnull BlockGetter worldIn, @Nonnull BlockPos pos) {
         return 1.0F;
     }
     
-    public boolean propagatesSkylightDown(@Nonnull BlockState state, @Nonnull IBlockReader reader, @Nonnull BlockPos pos) {
+    @Override
+    public boolean propagatesSkylightDown(@Nonnull BlockState state, @Nonnull BlockGetter reader, @Nonnull BlockPos pos) {
         return true;
     }
     
