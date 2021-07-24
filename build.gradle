@@ -18,15 +18,19 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
-version = '0.5.0'
-group = 'net.roguelogix.biggerreactors' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+version = "${majorVersion}.${minorVersion}.${patchVersion}"
+if (!"${postfixVersion}".isEmpty()) {
+    version += "-${postfixVersion}"
+}
+
+group = 'net.roguelogix.biggerreactors'
 archivesBaseName = "biggerreactors-${mc_version}"
 
 minecraft {
-        mappings channel: 'official', version: "${mc_version}"
-        // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
+    mappings channel: 'official', version: "${mc_version}"
+    // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
-        accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
@@ -109,9 +113,6 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
-    // Fixes ResolutionException. See https://github.com/MinecraftForge/MinecraftForge/issues/7893.
-    implementation('cpw.mods:securejarhandler') { version { strictly '0.9.45' } }
-
     compileOnly project(':Phosphophyllite')
 
 //    compileOnly fg.deobf("org.squiddev:cc-tweaked-${cc_mc_version}:${cc_version}")
@@ -123,20 +124,19 @@ dependencies {
 
 }
 
-// Example for how to get properties into the manifest for reading by the runtime..
 jar {
     manifest {
         attributes([
-                "Specification-Title"   : "BiggerReactors",
-//                "Specification-Vendor"    : "examplemodsareus",
-                "Specification-Version" : "1", // We are version 1 of ourselves
-                "Implementation-Title"  : project.name,
-                "Implementation-Version": "${version}",
-//                "Implementation-Vendor"   : "examplemodsareus",
-//                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+                "Specification-Title"     : "BiggerReactors",
+                "Specification-Version"   : "1",
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : "${version}",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
 }
+
+publish.dependsOn('reobfJar')
 
 //task generateModeratorCsv(type: net.roguelogix.Json5ToCsvTask) {
 //    records = ["type", "location", "absorption", "efficiency", "moderation", "conductivity"]
@@ -159,3 +159,41 @@ jar {
 //    csvInput = generateCoilCsv.outputs.files[0]
 //    txtOutput = file("$buildDir/data/coils.txt")
 //}
+
+gradle.projectsEvaluated {
+    def resource_targets = ["META-INF/mods.toml", "pack.mcmeta"]
+    def into_targets = ["$rootDir/out/production/resources/", "$rootDir/out/production/${project.name}.main/", "$rootDir/bin/main/"]
+    def properties = [
+            version         : version,
+            fmlVersion      : forge_version.substring(0, forge_version.indexOf('.')),
+            forgeVersion    : forge_version,
+            mcVersion       : mc_version,
+            phosVersionRange: project.project(":Phosphophyllite").property("compatibility").toString()
+    ]
+    processResources {
+        duplicatesStrategy = 'INCLUDE'
+        inputs.properties properties
+
+        def spec = copySpec {
+            from(sourceSets.main.resources) {
+                include resource_targets
+                expand properties
+            }
+        }
+
+        with spec
+        into_targets.each {
+            def file = file(it)
+            if (file.exists()) {
+                copy {
+                    with spec
+                    into file
+                }
+            }
+        }
+
+        from(sourceSets.main.resources) {
+            exclude resource_targets
+        }
+    }
+}
