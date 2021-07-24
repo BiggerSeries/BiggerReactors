@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
-import net.roguelogix.phosphophyllite.registry.TileSupplier;
 
 @RegisterTileEntity(name = "turbine_rotor_blade")
 public class TurbineRotorBladeTile extends TurbineBaseTile{
@@ -13,7 +12,7 @@ public class TurbineRotorBladeTile extends TurbineBaseTile{
     public static BlockEntityType<?> TYPE;
     
     @RegisterTileEntity.Supplier
-    public static final TileSupplier SUPPLIER = TurbineRotorBladeTile::new;
+    public static final BlockEntityType.BlockEntitySupplier<TurbineRotorBladeTile> SUPPLIER = TurbineRotorBladeTile::new;
     
     public TurbineRotorBladeTile(BlockPos pos, BlockState state) {
         super(TYPE, pos, state);

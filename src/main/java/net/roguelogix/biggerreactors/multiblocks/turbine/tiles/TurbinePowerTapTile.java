@@ -14,7 +14,6 @@ import net.roguelogix.phosphophyllite.energy.EnergyStorageWrapper;
 import net.roguelogix.phosphophyllite.energy.IPhosphophylliteEnergyStorage;
 import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
-import net.roguelogix.phosphophyllite.registry.TileSupplier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,7 +27,7 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IPhosphophyl
     public static BlockEntityType<?> TYPE;
     
     @RegisterTileEntity.Supplier
-    public static final TileSupplier SUPPLIER = TurbinePowerTapTile::new;
+    public static final BlockEntityType.BlockEntitySupplier<TurbinePowerTapTile> SUPPLIER = TurbinePowerTapTile::new;
     
     public TurbinePowerTapTile(BlockPos pos, BlockState state) {
         super(TYPE, pos, state);

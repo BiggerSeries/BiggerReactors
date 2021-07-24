@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
-import net.roguelogix.phosphophyllite.registry.TileSupplier;
 
 @RegisterTileEntity(name = "reactor_manifold")
 public class ReactorManifoldTile extends ReactorBaseTile {
@@ -12,7 +11,7 @@ public class ReactorManifoldTile extends ReactorBaseTile {
     public static BlockEntityType<?> TYPE;
     
     @RegisterTileEntity.Supplier
-    public static final TileSupplier SUPPLIER = ReactorManifoldTile::new;
+    public static final BlockEntityType.BlockEntitySupplier<ReactorManifoldTile> SUPPLIER = ReactorManifoldTile::new;
     
     public ReactorManifoldTile(BlockPos pos, BlockState state) {
         super(TYPE, pos, state);

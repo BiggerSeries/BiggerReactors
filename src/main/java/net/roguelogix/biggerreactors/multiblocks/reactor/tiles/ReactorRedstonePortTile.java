@@ -24,9 +24,7 @@ import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorRedstonePo
 import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.multiblock.generic.*;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
-import net.roguelogix.phosphophyllite.registry.TileSupplier;
 import net.roguelogix.phosphophyllite.util.BlockStates;
-import org.apache.logging.log4j.core.jmx.Server;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,7 +36,7 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProv
     public static BlockEntityType<?> TYPE;
     
     @RegisterTileEntity.Supplier
-    public static final TileSupplier SUPPLIER = ReactorRedstonePortTile::new;
+    public static final BlockEntityType.BlockEntitySupplier<ReactorRedstonePortTile> SUPPLIER = ReactorRedstonePortTile::new;
     
     public final ReactorRedstonePortState reactorRedstonePortState = new ReactorRedstonePortState(this);
 

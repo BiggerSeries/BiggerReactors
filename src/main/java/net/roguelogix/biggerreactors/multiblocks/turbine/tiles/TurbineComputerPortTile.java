@@ -7,7 +7,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
-import net.roguelogix.phosphophyllite.registry.TileSupplier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -19,7 +18,7 @@ public class TurbineComputerPortTile extends TurbineBaseTile {
     public static BlockEntityType<?> TYPE;
     
     @RegisterTileEntity.Supplier
-    public static final TileSupplier SUPPLIER = TurbineComputerPortTile::new;
+    public static final BlockEntityType.BlockEntitySupplier<TurbineComputerPortTile> SUPPLIER = TurbineComputerPortTile::new;
     
     public TurbineComputerPortTile(BlockPos pos, BlockState state) {
         super(TYPE, pos, state);

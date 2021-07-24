@@ -8,7 +8,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.roguelogix.phosphophyllite.multiblock.generic.IOnAssemblyTile;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
-import net.roguelogix.phosphophyllite.registry.TileSupplier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,7 +19,7 @@ public class ReactorComputerPortTile extends ReactorBaseTile implements IOnAssem
     public static BlockEntityType<?> TYPE;
     
     @RegisterTileEntity.Supplier
-    public static final TileSupplier SUPPLIER = ReactorComputerPortTile::new;
+    public static final BlockEntityType.BlockEntitySupplier<ReactorComputerPortTile> SUPPLIER = ReactorComputerPortTile::new;
     
     public ReactorComputerPortTile(BlockPos pos, BlockState state) {
         super(TYPE, pos, state);

@@ -16,7 +16,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
@@ -46,8 +45,6 @@ import net.roguelogix.biggerreactors.items.ingots.BlutoniumIngot;
 import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.items.DebugTool;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
-import net.roguelogix.phosphophyllite.registry.TileSupplier;
-import org.apache.logging.log4j.core.jmx.Server;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,7 +57,7 @@ public class CyaniteReprocessorTile extends BaseContainerBlockEntity implements 
     public static BlockEntityType<CyaniteReprocessorTile> INSTANCE;
     
     @RegisterTileEntity.Supplier
-    public static final TileSupplier SUPPLIER = CyaniteReprocessorTile::new;
+    public static final BlockEntityType.BlockEntitySupplier<CyaniteReprocessorTile> SUPPLIER = CyaniteReprocessorTile::new;
     
     /**
      * The (mostly) current state of the machine.

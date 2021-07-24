@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
-import net.roguelogix.phosphophyllite.registry.TileSupplier;
 
 @RegisterTileEntity(name = "heat_exchanger_casing")
 public class HeatExchangerCasingTile extends HeatExchangerBaseTile{
@@ -13,7 +12,7 @@ public class HeatExchangerCasingTile extends HeatExchangerBaseTile{
     public static BlockEntityType<?> TYPE;
     
     @RegisterTileEntity.Supplier
-    public static final TileSupplier SUPPLIER = HeatExchangerCasingTile::new;
+    public static final BlockEntityType.BlockEntitySupplier<HeatExchangerCasingTile> SUPPLIER = HeatExchangerCasingTile::new;
     
     public HeatExchangerCasingTile(BlockPos pos, BlockState state) {
         super(TYPE, pos, state);

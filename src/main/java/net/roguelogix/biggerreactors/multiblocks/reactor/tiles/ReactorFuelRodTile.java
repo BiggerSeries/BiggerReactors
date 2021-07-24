@@ -5,7 +5,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
-import net.roguelogix.phosphophyllite.registry.TileSupplier;
 
 import javax.annotation.Nonnull;
 
@@ -16,7 +15,7 @@ public class ReactorFuelRodTile extends ReactorBaseTile {
     public static BlockEntityType<?> TYPE;
     
     @RegisterTileEntity.Supplier
-    public static final TileSupplier SUPPLIER = ReactorFuelRodTile::new;
+    public static final BlockEntityType.BlockEntitySupplier<ReactorFuelRodTile> SUPPLIER = ReactorFuelRodTile::new;
     
     public ReactorFuelRodTile(BlockPos pos, BlockState state) {
         super(TYPE, pos, state);

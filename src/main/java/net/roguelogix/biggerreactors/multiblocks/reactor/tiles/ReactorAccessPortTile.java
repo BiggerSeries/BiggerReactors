@@ -34,7 +34,6 @@ import net.roguelogix.biggerreactors.items.ingots.YelloriumIngot;
 import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.multiblock.generic.*;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
-import net.roguelogix.phosphophyllite.registry.TileSupplier;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
 import javax.annotation.Nonnull;
@@ -49,7 +48,7 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     public static BlockEntityType<?> TYPE;
     
     @RegisterTileEntity.Supplier
-    public static final TileSupplier SUPPLIER = ReactorAccessPortTile::new;
+    public static final BlockEntityType.BlockEntitySupplier<ReactorAccessPortTile> SUPPLIER = ReactorAccessPortTile::new;
     
     private static final ResourceLocation uraniumIngotTag = new ResourceLocation("forge:ingots/uranium");
     private static final ResourceLocation uraniumBlockTag = new ResourceLocation("forge:storage_blocks/uranium");

@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
-import net.roguelogix.phosphophyllite.registry.TileSupplier;
 
 @RegisterTileEntity(name = "reactor_glass")
 public class ReactorGlassTile extends ReactorBaseTile {
@@ -13,7 +12,7 @@ public class ReactorGlassTile extends ReactorBaseTile {
     public static BlockEntityType<?> TYPE;
     
     @RegisterTileEntity.Supplier
-    public static final TileSupplier SUPPLIER = ReactorGlassTile::new;
+    public static final BlockEntityType.BlockEntitySupplier<ReactorGlassTile> SUPPLIER = ReactorGlassTile::new;
     
     public ReactorGlassTile(BlockPos pos, BlockState state) {
         super(TYPE, pos, state);

@@ -19,7 +19,6 @@ import net.roguelogix.biggerreactors.multiblocks.heatexchanger.state.HeatExchang
 import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockBlock;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
-import net.roguelogix.phosphophyllite.registry.TileSupplier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,7 +30,7 @@ public class HeatExchangerTerminalTile extends HeatExchangerBaseTile implements 
     public static BlockEntityType<?> TYPE;
     
     @RegisterTileEntity.Supplier
-    public static final TileSupplier SUPPLIER = HeatExchangerTerminalTile::new;
+    public static final BlockEntityType.BlockEntitySupplier<HeatExchangerTerminalTile> SUPPLIER = HeatExchangerTerminalTile::new;
     
     public HeatExchangerTerminalTile(BlockPos pos, BlockState state) {
         super(TYPE, pos, state);
