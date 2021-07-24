@@ -40,7 +40,7 @@ public class CyaniteReprocessorScreen extends ScreenBase<CyaniteReprocessorConta
         super.init();
 
         // Set title to be drawn in the center.
-        this.titleLabelX = (this.getWidth() / 2) - (this.getFont().width(this.getTitle()) / 2);
+        this.titleLabelX = (this.getXSize() / 2) - (this.getFont().width(this.getTitle()) / 2);
 
         // Initialize tooltips:
         this.initTooltips();
