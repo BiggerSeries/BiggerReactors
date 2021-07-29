@@ -1,5 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.turbine.tiles;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -12,15 +13,17 @@ import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.roguelogix.phosphophyllite.energy.EnergyStorageWrapper;
 import net.roguelogix.phosphophyllite.energy.IPhosphophylliteEnergyStorage;
-import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import static net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbinePowerTap.ConnectionState.*;
+import static net.roguelogix.phosphophyllite.multiblock.modular.MultiblockController.AssemblyState.ASSEMBLED;
+import static net.roguelogix.phosphophyllite.multiblock.modular.MultiblockController.AssemblyState.DISASSEMBLED;
 
-
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 @RegisterTileEntity(name = "turbine_power_tap")
 public class TurbinePowerTapTile extends TurbineBaseTile implements IPhosphophylliteEnergyStorage {
     @RegisterTileEntity.Type
@@ -33,10 +36,8 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IPhosphophyl
         super(TYPE, pos, state);
     }
     
-    
-    @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+    public <T> LazyOptional<T> capability(Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityEnergy.ENERGY) {
             return LazyOptional.of(() -> this).cast();
         }
@@ -56,7 +57,6 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IPhosphophyl
         }
     }
     
-    @Nonnull
     LazyOptional<?> outputOptional = LazyOptional.empty();
     IPhosphophylliteEnergyStorage output;
     
@@ -74,29 +74,29 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IPhosphophyl
     
     @Override
     public long extractEnergy(long maxExtract, boolean simulate) {
-        if(controller == null || controller.assemblyState() != MultiblockController.AssemblyState.ASSEMBLED){
+        if (nullableController() == null || controller().assemblyState() != ASSEMBLED) {
             return 0;
         }
-        long toExtract = controller.simulation().battery().stored();
+        long toExtract = controller().simulation().battery().stored();
         toExtract = Math.min(maxExtract, toExtract);
         if (!simulate) {
-            toExtract = controller.simulation().battery().extract(toExtract);
+            toExtract = controller().simulation().battery().extract(toExtract);
         }
         return toExtract;
     }
     
     @Override
     public long energyStored() {
-        if (controller != null) {
-            return controller.simulation().battery().stored();
+        if (nullableController() != null) {
+            return controller().simulation().battery().stored();
         }
         return 0;
     }
     
     @Override
     public long maxEnergyStored() {
-        if (controller != null) {
-            return controller.simulation().battery().capacity();
+        if (nullableController() != null) {
+            return controller().simulation().battery().capacity();
         }
         return 0;
     }
@@ -110,21 +110,22 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IPhosphophyl
     public boolean canExtract() {
         return true;
     }
+    
     @SuppressWarnings("DuplicatedCode")
     public void updateOutputDirection() {
-        if (controller.assemblyState() == MultiblockController.AssemblyState.DISASSEMBLED) {
+        if (controller().assemblyState() == DISASSEMBLED) {
             powerOutputDirection = null;
-        } else if (worldPosition.getX() == controller.minCoord().x()) {
+        } else if (worldPosition.getX() == controller().minCoord().x()) {
             powerOutputDirection = Direction.WEST;
-        } else if (worldPosition.getX() == controller.maxCoord().x()) {
+        } else if (worldPosition.getX() == controller().maxCoord().x()) {
             powerOutputDirection = Direction.EAST;
-        } else if (worldPosition.getY() == controller.minCoord().y()) {
+        } else if (worldPosition.getY() == controller().minCoord().y()) {
             powerOutputDirection = Direction.DOWN;
-        } else if (worldPosition.getY() == controller.maxCoord().y()) {
+        } else if (worldPosition.getY() == controller().maxCoord().y()) {
             powerOutputDirection = Direction.UP;
-        } else if (worldPosition.getZ() == controller.minCoord().z()) {
+        } else if (worldPosition.getZ() == controller().minCoord().z()) {
             powerOutputDirection = Direction.NORTH;
-        } else if (worldPosition.getZ() == controller.maxCoord().z()) {
+        } else if (worldPosition.getZ() == controller().maxCoord().z()) {
             powerOutputDirection = Direction.SOUTH;
         }
         neighborChanged();
@@ -146,7 +147,7 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IPhosphophyl
         }
         LazyOptional<IEnergyStorage> energyOptional = te.getCapability(CapabilityEnergy.ENERGY, powerOutputDirection.getOpposite());
         setConnected(energyOptional.isPresent());
-        if(connected){
+        if (connected) {
             outputOptional = energyOptional;
             output = EnergyStorageWrapper.wrap(energyOptional.orElse(ENERGY_ZERO));
         }

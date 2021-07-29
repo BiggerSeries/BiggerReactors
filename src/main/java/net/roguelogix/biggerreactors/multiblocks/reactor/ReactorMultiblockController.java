@@ -1,5 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -22,18 +23,20 @@ import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorType;
 import net.roguelogix.biggerreactors.multiblocks.reactor.tiles.*;
 import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
 import net.roguelogix.phosphophyllite.Phosphophyllite;
-import net.roguelogix.phosphophyllite.multiblock.generic.ValidationError;
-import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblockController;
+import net.roguelogix.phosphophyllite.multiblock.modular.ValidationError;
+import net.roguelogix.phosphophyllite.multiblock.modular.rectangular.RectangularMultiblockController;
 import net.roguelogix.phosphophyllite.repack.org.joml.Vector3i;
 import net.roguelogix.phosphophyllite.util.Util;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 
-public class ReactorMultiblockController extends RectangularMultiblockController<ReactorMultiblockController, ReactorBaseTile, ReactorBaseBlock> {
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
+public class ReactorMultiblockController extends RectangularMultiblockController<ReactorBaseTile, ReactorMultiblockController> {
     
-    public ReactorMultiblockController(@Nonnull Level world) {
+    public ReactorMultiblockController(Level world) {
         super(world, tile -> tile instanceof ReactorBaseTile, block -> block instanceof ReactorBaseBlock);
         
         minSize.set(3);
@@ -146,13 +149,13 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     private final Set<ReactorManifoldTile> manifolds = new LinkedHashSet<>();
     
     @Override
-    protected void onPartPlaced(@Nonnull ReactorBaseTile placed) {
+    protected void onPartPlaced(ReactorBaseTile placed) {
         onPartAttached(placed);
     }
     
     
     @Override
-    protected synchronized void onPartAttached(@Nonnull ReactorBaseTile tile) {
+    protected synchronized void onPartAttached(ReactorBaseTile tile) {
         if (tile instanceof ReactorTerminalTile) {
             terminals.add((ReactorTerminalTile) tile);
         }
@@ -179,12 +182,12 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     }
     
     @Override
-    protected void onPartBroken(@Nonnull ReactorBaseTile broken) {
+    protected void onPartBroken(ReactorBaseTile broken) {
         onPartDetached(broken);
     }
     
     @Override
-    protected synchronized void onPartDetached(@Nonnull ReactorBaseTile tile) {
+    protected synchronized void onPartDetached(ReactorBaseTile tile) {
         if (tile instanceof ReactorTerminalTile) {
             terminals.remove(tile);
         }
@@ -222,7 +225,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         });
     }
     
-    public synchronized void setActive(@Nonnull ReactorActivity newState) {
+    public synchronized void setActive(ReactorActivity newState) {
         if (reactorActivity != newState) {
             reactorActivity = newState;
             updateBlockStates();
@@ -238,7 +241,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         return reactorActivity == ReactorActivity.ACTIVE;
     }
     
-    protected void read(@Nonnull CompoundTag compound) {
+    protected void read(CompoundTag compound) {
         if (compound.contains("reactorState")) {
             reactorActivity = ReactorActivity.valueOf(compound.getString("reactorState").toUpperCase());
             simulation.setActive(reactorActivity == ReactorActivity.ACTIVE);
@@ -251,7 +254,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         updateBlockStates();
     }
     
-    @Nonnull
+    
     protected CompoundTag write() {
         CompoundTag compound = new CompoundTag();
         {
@@ -262,7 +265,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     }
     
     @Override
-    protected void onMerge(@Nonnull ReactorMultiblockController otherController) {
+    protected void onMerge(ReactorMultiblockController otherController) {
         setActive(ReactorActivity.INACTIVE);
         distributeFuel();
         otherController.distributeFuel();
@@ -544,7 +547,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         return fuelInserted;
     }
     
-    public void updateReactorState(@Nonnull ReactorState reactorState) {
+    public void updateReactorState(ReactorState reactorState) {
         // TODO: These are mixed between the new enums and old booleans. Migrate them fully to enums.
         reactorState.reactorActivity = reactorActivity;
         reactorState.reactorType = simulation.isPassive() ? ReactorType.PASSIVE : ReactorType.ACTIVE;
@@ -578,7 +581,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         reactorState.reactorOutputRate = simulation.outputLastTick();
     }
     
-    public void runRequest(@Nonnull String requestName, @Nullable Object requestData) {
+    public void runRequest(String requestName, @Nullable Object requestData) {
         switch (requestName) {
             // Set the reactor to ACTIVE or INACTIVE.
             case "setActive": {
@@ -605,9 +608,9 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     }
     
     @Override
-    @Nonnull
-    public String getDebugInfo() {
-        return super.getDebugInfo() +
+    
+    public String getDebugString() {
+        return super.getDebugString() +
                 "State: " + reactorActivity.toString() + "\n" +
                 "StoredPower: " + simulation.battery().stored() + "\n" +
                 "PowerProduction: " + simulation.FEProducedLastTick() + "\n" +

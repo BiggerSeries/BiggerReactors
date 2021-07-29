@@ -1,16 +1,22 @@
 package net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks;
 
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerTerminalTile;
+import net.roguelogix.phosphophyllite.multiblock.modular.IAssemblyStateBlock;
+import net.roguelogix.phosphophyllite.multiblock.modular.rectangular.IFaceDirectionBlock;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
 @RegisterBlock(name = "heat_exchanger_terminal", tileEntityClass = HeatExchangerTerminalTile.class)
-public class HeatExchangerTerminalBlock extends HeatExchangerBaseBlock {
+public class HeatExchangerTerminalBlock extends HeatExchangerBaseBlock implements IAssemblyStateBlock, IFaceDirectionBlock {
     
     @RegisterBlock.Instance
     public static HeatExchangerTerminalBlock INSTANCE;
@@ -19,15 +25,5 @@ public class HeatExchangerTerminalBlock extends HeatExchangerBaseBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new HeatExchangerTerminalTile(pos, state);
-    }
-    
-    @Override
-    public boolean usesFaceDirection() {
-        return true;
-    }
-    
-    @Override
-    public boolean usesAssemblyState() {
-        return true;
     }
 }

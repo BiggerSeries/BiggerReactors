@@ -43,7 +43,7 @@ import net.roguelogix.biggerreactors.machine.state.CyaniteReprocessorState;
 import net.roguelogix.biggerreactors.machine.tiles.impl.CyaniteReprocessorItemHandler;
 import net.roguelogix.biggerreactors.items.ingots.BlutoniumIngot;
 import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
-import net.roguelogix.phosphophyllite.items.DebugTool;
+import net.roguelogix.phosphophyllite.debug.DebugTool;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 
 import javax.annotation.Nonnull;

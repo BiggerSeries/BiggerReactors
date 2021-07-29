@@ -1,5 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.turbine.blocks;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
@@ -8,13 +9,17 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.multiblocks.turbine.tiles.TurbineGlassTile;
+import net.roguelogix.phosphophyllite.modular.block.IConnectedTexture;
+import net.roguelogix.phosphophyllite.multiblock.modular.IAssemblyStateBlock;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 @RegisterBlock(name = "turbine_glass", tileEntityClass = TurbineGlassTile.class)
-public class TurbineGlass extends TurbineBaseBlock {
+public class TurbineGlass extends TurbineBaseBlock implements IAssemblyStateBlock, IConnectedTexture {
     
     @RegisterBlock.Instance
     public static TurbineGlass INSTANCE;
@@ -41,12 +46,7 @@ public class TurbineGlass extends TurbineBaseBlock {
         return 1.0f;
     }
     
-    public boolean propagatesSkylightDown(@Nonnull BlockState state, @Nonnull BlockGetter reader, @Nonnull BlockPos pos) {
-        return true;
-    }
-    
-    @Override
-    public boolean connectedTexture() {
+    public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
         return true;
     }
 }

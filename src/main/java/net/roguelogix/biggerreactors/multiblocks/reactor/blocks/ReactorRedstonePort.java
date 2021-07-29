@@ -1,5 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.blocks;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
@@ -10,13 +11,17 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.roguelogix.biggerreactors.multiblocks.reactor.tiles.ReactorRedstonePortTile;
+import net.roguelogix.phosphophyllite.multiblock.modular.IAssemblyStateBlock;
+import net.roguelogix.phosphophyllite.multiblock.modular.rectangular.IFaceDirectionBlock;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 @RegisterBlock(name = "reactor_redstone_port", tileEntityClass = ReactorRedstonePortTile.class)
-public class ReactorRedstonePort extends ReactorBaseBlock {
+public class ReactorRedstonePort extends ReactorBaseBlock implements IAssemblyStateBlock, IFaceDirectionBlock {
     @RegisterBlock.Instance
     public static ReactorRedstonePort INSTANCE;
     
@@ -37,7 +42,7 @@ public class ReactorRedstonePort extends ReactorBaseBlock {
     }
     
     @Override
-    public int getSignal(@Nonnull BlockState blockState, @Nonnull BlockGetter blockAccess, @Nonnull BlockPos pos, @Nonnull Direction side) {
+    public int getSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
         BlockEntity tile = blockAccess.getBlockEntity(pos);
         if (tile instanceof ReactorRedstonePortTile) {
             return ((ReactorRedstonePortTile) tile).isEmitting(side) ? 15 : 0;
@@ -46,7 +51,7 @@ public class ReactorRedstonePort extends ReactorBaseBlock {
     }
     
     @Override
-    public int getDirectSignal(@Nonnull BlockState blockState, @Nonnull BlockGetter blockAccess, @Nonnull BlockPos pos, @Nonnull Direction side) {
+    public int getDirectSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
         BlockEntity tile = blockAccess.getBlockEntity(pos);
         if (tile instanceof ReactorRedstonePortTile) {
             return ((ReactorRedstonePortTile) tile).isEmitting(side) ? 15 : 0;
@@ -55,23 +60,17 @@ public class ReactorRedstonePort extends ReactorBaseBlock {
     }
     
     @Override
-    public void neighborChanged(@Nonnull BlockState state, @Nonnull Level worldIn, @Nonnull BlockPos pos, @Nonnull Block blockIn, @Nonnull BlockPos fromPos, boolean isMoving) {
+    public void onNeighborChange(BlockState state, Level worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
         BlockEntity tile = worldIn.getBlockEntity(pos);
         if (tile instanceof ReactorRedstonePortTile) {
             ((ReactorRedstonePortTile) tile).updatePowered();
         }
     }
     
-    @Override
-    public boolean usesFaceDirection() {
-        return true;
-    }
-    
     public static BooleanProperty IS_LIT_BOOLEAN_PROPERTY = BooleanProperty.create("is_lit");
     
     @Override
-    protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
+    protected void buildStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(IS_LIT_BOOLEAN_PROPERTY);
-        super.createBlockStateDefinition(builder);
     }
 }

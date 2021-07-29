@@ -1,5 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.blocks;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
@@ -13,9 +14,11 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.multiblocks.reactor.tiles.ReactorFuelRodTile;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 @RegisterBlock(name = "reactor_fuel_rod", tileEntityClass = ReactorFuelRodTile.class)
 public class ReactorFuelRod extends ReactorBaseBlock {
     
@@ -45,7 +48,7 @@ public class ReactorFuelRod extends ReactorBaseBlock {
         return 1.0f;
     }
     
-    public boolean propagatesSkylightDown(@Nonnull BlockState state, @Nonnull BlockGetter reader, @Nonnull BlockPos pos) {
+    public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
         return true;
     }
     
@@ -53,15 +56,10 @@ public class ReactorFuelRod extends ReactorBaseBlock {
     public static IntegerProperty WASTE_HEIGHT_PROPERTY = IntegerProperty.create("waste_level", 0, 16);
     
     @Override
-    protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
-        super.createBlockStateDefinition(builder);
+    protected void buildStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.buildStateDefinition(builder);
         builder.add(FUEL_HEIGHT_PROPERTY);
         builder.add(WASTE_HEIGHT_PROPERTY);
-    }
-    
-    @Override
-    public boolean usesAssemblyState() {
-        return false;
     }
     
     @Override

@@ -1,13 +1,11 @@
 package net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -22,25 +20,26 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.fmllegacy.network.NetworkHooks;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.HeatExchangerCoolantPortBlock;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.HeatExchangerCoolantPortContainer;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.state.HeatExchangerCoolantPortState;
 import net.roguelogix.phosphophyllite.fluids.FluidHandlerWrapper;
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
 import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
-import net.roguelogix.phosphophyllite.multiblock.generic.IOnAssemblyTile;
-import net.roguelogix.phosphophyllite.multiblock.generic.IOnDisassemblyTile;
-import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockBlock;
+import net.roguelogix.phosphophyllite.multiblock.modular.IOnAssemblyTile;
+import net.roguelogix.phosphophyllite.multiblock.modular.IOnDisassemblyTile;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import static net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.HeatExchangerCoolantPortBlock.CONDENSER;
 import static net.roguelogix.phosphophyllite.util.BlockStates.PORT_DIRECTION;
 
+
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
 @RegisterTileEntity(name = "heat_exchanger_coolant_port")
 public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implements IPhosphophylliteFluidHandler, IOnAssemblyTile, IOnDisassemblyTile, MenuProvider, IHasUpdatableState<HeatExchangerCoolantPortState> {
     
@@ -55,13 +54,12 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
     public HeatExchangerCoolantPortTile(BlockPos pos, BlockState state) {
         super(TYPE, pos, state);
     }
-    
+
 //    @CapabilityInject(IGasHandler.class)
 //    public static Capability<IGasHandler> GAS_HANDLER_CAPABILITY = null;
     
-    @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+    public <T> LazyOptional<T> capability(Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
             return fluidHandlerCapability().cast();
         }
@@ -88,7 +86,7 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
     }
     
     public void setInletOtherOutlet(boolean inlet) {
-        controller.setInletPort(this, inlet);
+        controller().setInletPort(this, inlet);
     }
     
     public boolean isInlet() {
@@ -121,7 +119,7 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
         return HETank.tankCapacity(tank);
     }
     
-    @Nonnull
+    
     @Override
     public Fluid fluidTypeInTank(int tank) {
         if (HETank == null) {
@@ -148,7 +146,7 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
     }
     
     @Override
-    public boolean fluidValidForTank(int tank, @Nonnull Fluid fluid) {
+    public boolean fluidValidForTank(int tank, Fluid fluid) {
         if (HETank == null) {
             return false;
         }
@@ -156,7 +154,7 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
     }
     
     @Override
-    public long fill(@Nonnull Fluid fluid, @Nullable CompoundTag tag, long amount, boolean simulate) {
+    public long fill(Fluid fluid, @Nullable CompoundTag tag, long amount, boolean simulate) {
         if (HETank == null || !inlet) {
             return 0;
         }
@@ -164,7 +162,7 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
     }
     
     @Override
-    public long drain(@Nonnull Fluid fluid, @Nullable CompoundTag tag, long amount, boolean simulate) {
+    public long drain(Fluid fluid, @Nullable CompoundTag tag, long amount, boolean simulate) {
         if (HETank == null || inlet) {
             return 0;
         }
@@ -229,12 +227,12 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
     }
     
     @Override
-    protected void readNBT(@Nonnull CompoundTag compound) {
+    protected void readNBT(CompoundTag compound) {
         super.readNBT(compound);
         inlet = compound.getBoolean("inlet");
     }
     
-    @Nonnull
+    
     @Override
     protected CompoundTag writeNBT() {
         CompoundTag nbt = super.writeNBT();
@@ -257,45 +255,31 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
     
     private final HeatExchangerCoolantPortState state = new HeatExchangerCoolantPortState(this);
     
-    @Nonnull
     @Override
     public HeatExchangerCoolantPortState getState() {
         return state;
     }
-
+    
     @Override
     public void updateState() {
         state.direction = isInlet();
         state.condenser = isCondenser();
     }
-
-    @Override
-    @Nonnull
-    public InteractionResult onBlockActivated(@Nonnull Player player, @Nonnull InteractionHand handIn) {
-        assert level != null;
-        if (level.getBlockState(worldPosition).getValue(MultiblockBlock.ASSEMBLED)) {
-            if (!level.isClientSide) {
-                NetworkHooks.openGui((ServerPlayer) player, this, this.getBlockPos());
-            }
-            return InteractionResult.SUCCESS;
-        }
-        return super.onBlockActivated(player, handIn);
-    }
-
+    
     @Override
     public Component getDisplayName() {
         return new TranslatableComponent(HeatExchangerCoolantPortBlock.INSTANCE.getDescriptionId());
     }
-
+    
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int windowId, @Nonnull Inventory playerInventory, @Nonnull Player player) {
+    public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
         return new HeatExchangerCoolantPortContainer(windowId, this.worldPosition, player);
     }
     
     public void runRequest(String requestName, Object requestData) {
-        if(requestName.equals("setDirection")){
-            int direction = (Integer)requestData;
+        if (requestName.equals("setDirection")) {
+            int direction = (Integer) requestData;
             setInletOtherOutlet(direction == 0);
         }
     }

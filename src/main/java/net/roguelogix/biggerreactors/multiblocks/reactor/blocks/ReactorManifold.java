@@ -1,5 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.blocks;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
@@ -9,13 +10,16 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.multiblocks.reactor.tiles.ReactorManifoldTile;
+import net.roguelogix.phosphophyllite.modular.block.IConnectedTexture;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 @RegisterBlock(name = "reactor_manifold", tileEntityClass = ReactorManifoldTile.class)
-public class ReactorManifold extends ReactorBaseBlock {
+public class ReactorManifold extends ReactorBaseBlock implements IConnectedTexture {
     
     @RegisterBlock.Instance
     public static ReactorManifold INSTANCE;
@@ -41,17 +45,7 @@ public class ReactorManifold extends ReactorBaseBlock {
         return 1.0f;
     }
     
-    public boolean propagatesSkylightDown(@Nonnull BlockState state, @Nonnull BlockGetter reader, @Nonnull BlockPos pos) {
-        return true;
-    }
-    
-    @Override
-    public boolean usesAssemblyState() {
-        return false;
-    }
-    
-    @Override
-    public boolean connectedTexture() {
+    public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
         return true;
     }
     
@@ -66,9 +60,9 @@ public class ReactorManifold extends ReactorBaseBlock {
     }
     
     @Override
-    protected boolean connectToBlock(Block block) {
-        if(block instanceof ReactorBaseBlock){
-            return !(block instanceof ReactorGlass) && ((ReactorBaseBlock) block).isGoodForExterior() || block == INSTANCE;
+    public boolean connectToBlock(Block block) {
+        if (block instanceof ReactorBaseBlock reactorBlock) {
+            return !(reactorBlock instanceof ReactorGlass) && (reactorBlock).isGoodForExterior() || reactorBlock == this;
         }
         return false;
     }

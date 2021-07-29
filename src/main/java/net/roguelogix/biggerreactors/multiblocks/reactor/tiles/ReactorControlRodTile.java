@@ -1,30 +1,28 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.tiles;
 
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fmllegacy.network.NetworkHooks;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorControlRod;
 import net.roguelogix.biggerreactors.multiblocks.reactor.containers.ReactorControlRodContainer;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorControlRodState;
 import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
-import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockBlock;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
 @RegisterTileEntity(name = "reactor_control_rod")
 public class ReactorControlRodTile extends ReactorBaseTile implements MenuProvider, IHasUpdatableState<ReactorControlRodState> {
     
@@ -41,7 +39,6 @@ public class ReactorControlRodTile extends ReactorBaseTile implements MenuProvid
     public final ReactorControlRodState reactorControlRodState = new ReactorControlRodState(this);
     
     @Override
-    @Nonnull
     public ReactorControlRodState getState() {
         this.updateState();
         return this.reactorControlRodState;
@@ -54,34 +51,21 @@ public class ReactorControlRodTile extends ReactorBaseTile implements MenuProvid
     }
     
     @Override
-    @Nonnull
-    public InteractionResult onBlockActivated(@Nonnull Player player, @Nonnull InteractionHand handIn) {
-        assert level != null;
-        if (level.getBlockState(worldPosition).getValue(MultiblockBlock.ASSEMBLED)) {
-            if (!level.isClientSide) {
-                NetworkHooks.openGui((ServerPlayer) player, this, this.getBlockPos());
-            }
-            return InteractionResult.SUCCESS;
-        }
-        return super.onBlockActivated(player, handIn);
-    }
     
-    @Override
-    @Nonnull
     public Component getDisplayName() {
         return new TranslatableComponent(ReactorControlRod.INSTANCE.getDescriptionId());
     }
     
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int windowId, @Nonnull Inventory playerInventory, @Nonnull Player player) {
+    public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
         return new ReactorControlRodContainer(windowId, this.worldPosition, player);
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public void runRequest(String requestName, Object requestData) {
-        if (controller == null) {
+        if (nullableController() == null) {
             return;
         }
         
@@ -91,10 +75,10 @@ public class ReactorControlRodTile extends ReactorBaseTile implements MenuProvid
             double newLevel = this.insertion + dataPair.getFirst();
             newLevel = Math.max(0, Math.min(100, newLevel));
             if (dataPair.getSecond()) {
-                controller.setAllControlRodLevels(newLevel);
+                controller().setAllControlRodLevels(newLevel);
             } else {
                 this.insertion = newLevel;
-                controller.updateControlRodLevels();
+                controller().updateControlRodLevels();
             }
         }
         
@@ -109,7 +93,7 @@ public class ReactorControlRodTile extends ReactorBaseTile implements MenuProvid
     private double insertion = 0;
     
     public void setInsertion(double newLevel) {
-        if(Double.isNaN(newLevel)){
+        if (Double.isNaN(newLevel)) {
             return;
         }
         if (newLevel < 0) {
@@ -128,17 +112,15 @@ public class ReactorControlRodTile extends ReactorBaseTile implements MenuProvid
     // TODO: What should the default control rod name be? I think it should be Chris Houlihan...
     private String name = "";
     
-    public void setName(@Nonnull String name) {
+    public void setName(String name) {
         this.name = name;
     }
     
-    @Nonnull
     public String getName() {
         return name;
     }
     
     @Override
-    @Nonnull
     protected CompoundTag writeNBT() {
         CompoundTag compound = super.writeNBT();
         compound.putDouble("insertion", insertion);
@@ -147,7 +129,7 @@ public class ReactorControlRodTile extends ReactorBaseTile implements MenuProvid
     }
     
     @Override
-    protected void readNBT(@Nonnull CompoundTag compound) {
+    protected void readNBT(CompoundTag compound) {
         super.readNBT(compound);
         if (compound.contains("insertion")) {
             insertion = compound.getDouble("insertion");

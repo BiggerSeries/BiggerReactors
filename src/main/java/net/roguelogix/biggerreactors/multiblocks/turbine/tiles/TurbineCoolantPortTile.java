@@ -1,13 +1,11 @@
 package net.roguelogix.biggerreactors.multiblocks.turbine.tiles;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -22,7 +20,6 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.fmllegacy.network.NetworkHooks;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineCoolantPort;
 import net.roguelogix.biggerreactors.multiblocks.turbine.containers.TurbineCoolantPortContainer;
 import net.roguelogix.biggerreactors.multiblocks.turbine.simulation.ITurbineFluidTank;
@@ -30,17 +27,18 @@ import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineCoolantPor
 import net.roguelogix.phosphophyllite.fluids.FluidHandlerWrapper;
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
 import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
-import net.roguelogix.phosphophyllite.multiblock.generic.IOnAssemblyTile;
-import net.roguelogix.phosphophyllite.multiblock.generic.IOnDisassemblyTile;
-import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockBlock;
+import net.roguelogix.phosphophyllite.multiblock.modular.IOnAssemblyTile;
+import net.roguelogix.phosphophyllite.multiblock.modular.IOnDisassemblyTile;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import static net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineCoolantPort.PortDirection.*;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 @RegisterTileEntity(name = "turbine_coolant_port")
 public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphophylliteFluidHandler, MenuProvider, IHasUpdatableState<TurbineCoolantPortState>, IOnAssemblyTile, IOnDisassemblyTile {
     
@@ -53,13 +51,12 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphop
     public TurbineCoolantPortTile(BlockPos pos, BlockState state) {
         super(TYPE, pos, state);
     }
-    
+
 //    @CapabilityInject(IGasHandler.class)
 //    public static Capability<IGasHandler> GAS_HANDLER_CAPABILITY = null;
     
-    @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+    public <T> LazyOptional<T> capability(Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
             return LazyOptional.of(() -> this).cast();
         }
@@ -87,7 +84,6 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphop
         return transitionTank.tankCapacity(tank);
     }
     
-    @Nonnull
     @Override
     public Fluid fluidTypeInTank(int tank) {
         if (transitionTank == null) {
@@ -114,7 +110,7 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphop
     }
     
     @Override
-    public boolean fluidValidForTank(int tank, @Nonnull Fluid fluid) {
+    public boolean fluidValidForTank(int tank, Fluid fluid) {
         if (transitionTank == null) {
             return false;
         }
@@ -122,7 +118,7 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphop
     }
     
     @Override
-    public long fill(@Nonnull Fluid fluid, @Nullable CompoundTag tag, long amount, boolean simulate) {
+    public long fill(Fluid fluid, @Nullable CompoundTag tag, long amount, boolean simulate) {
         if (transitionTank == null || direction != INLET) {
             return 0;
         }
@@ -130,7 +126,7 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphop
     }
     
     @Override
-    public long drain(@Nonnull Fluid fluid, @Nullable CompoundTag tag, long amount, boolean simulate) {
+    public long drain(Fluid fluid, @Nullable CompoundTag tag, long amount, boolean simulate) {
         if (transitionTank == null || direction == INLET) {
             return 0;
         }
@@ -142,7 +138,7 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphop
             return 0;
         }
         if (handlerOptional.isPresent()) {
-    
+            
             Fluid fluid = transitionTank.liquidType();
             long amount = transitionTank.liquidAmount();
             amount = transitionTank.drain(fluid, null, amount, true);
@@ -159,7 +155,7 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphop
     
     private boolean connected = false;
     Direction waterOutputDirection = null;
-    @Nonnull
+    
     LazyOptional<?> handlerOptional = LazyOptional.empty();
     IPhosphophylliteFluidHandler handler = null;
     FluidTank EMPTY_TANK = new FluidTank(0);
@@ -203,31 +199,17 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphop
     }
     
     @Override
-    protected void readNBT(@Nonnull CompoundTag compound) {
+    protected void readNBT(CompoundTag compound) {
         if (compound.contains("direction")) {
             direction = TurbineCoolantPort.PortDirection.valueOf(compound.getString("direction"));
         }
     }
     
-    @Nonnull
     @Override
     protected CompoundTag writeNBT() {
         CompoundTag NBT = new CompoundTag();
         NBT.putString("direction", String.valueOf(direction));
         return NBT;
-    }
-    
-    @Override
-    @Nonnull
-    public InteractionResult onBlockActivated(@Nonnull Player player, @Nonnull InteractionHand handIn) {
-        assert level != null;
-        if (level.getBlockState(worldPosition).getValue(MultiblockBlock.ASSEMBLED)) {
-            if (!level.isClientSide) {
-                NetworkHooks.openGui((ServerPlayer) player, this, this.getBlockPos());
-            }
-            return InteractionResult.SUCCESS;
-        }
-        return super.onBlockActivated(player, handIn);
     }
     
     @SuppressWarnings("unchecked")
@@ -248,7 +230,7 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphop
     
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int windowId, @Nonnull Inventory playerInventory, @Nonnull Player player) {
+    public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
         return new TurbineCoolantPortContainer(windowId, this.worldPosition, player);
     }
     
@@ -266,7 +248,7 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphop
     
     @Override
     public void onAssembly() {
-        this.transitionTank = controller.simulation().fluidTank();
+        this.transitionTank = controller().simulation().fluidTank();
         waterOutputDirection = getBlockState().getValue(BlockStates.FACING);
         level.setBlockAndUpdate(worldPosition, level.getBlockState(worldPosition).setValue(PORT_DIRECTION_ENUM_PROPERTY, direction));
         neighborChanged();

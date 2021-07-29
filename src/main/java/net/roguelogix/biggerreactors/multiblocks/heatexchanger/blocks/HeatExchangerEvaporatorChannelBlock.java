@@ -1,6 +1,7 @@
 package net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks;
 
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
@@ -10,13 +11,16 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerEvaporatorChannelTile;
+import net.roguelogix.phosphophyllite.modular.block.IConnectedTexture;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 @RegisterBlock(name = "heat_exchanger_evaporator_channel", tileEntityClass = HeatExchangerEvaporatorChannelTile.class)
-public class HeatExchangerEvaporatorChannelBlock extends HeatExchangerBaseBlock {
+public class HeatExchangerEvaporatorChannelBlock extends HeatExchangerBaseBlock implements IConnectedTexture {
     
     @RegisterBlock.Instance
     public static HeatExchangerEvaporatorChannelBlock INSTANCE;
@@ -39,23 +43,18 @@ public class HeatExchangerEvaporatorChannelBlock extends HeatExchangerBaseBlock 
     
     @SuppressWarnings("deprecation")
     @Override
-    public float getShadeBrightness(@Nonnull BlockState state, @Nonnull BlockGetter worldIn, @Nonnull BlockPos pos) {
+    public float getShadeBrightness(BlockState state, BlockGetter worldIn, BlockPos pos) {
         return 1.0F;
     }
     
     @Override
-    public boolean propagatesSkylightDown(@Nonnull BlockState state, @Nonnull BlockGetter reader, @Nonnull BlockPos pos) {
+    public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
         return true;
     }
     
     @Override
-    public boolean connectedTexture() {
-        return true;
-    }
-    
-    @Override
-    protected boolean connectToBlock(Block block) {
-        return super.connectToBlock(block) || block == HeatExchangerCoolantPortBlock.INSTANCE;
+    public boolean connectToBlock(Block block) {
+        return IConnectedTexture.super.connectToBlock(block) || block == HeatExchangerCoolantPortBlock.INSTANCE;
     }
     
     @Override

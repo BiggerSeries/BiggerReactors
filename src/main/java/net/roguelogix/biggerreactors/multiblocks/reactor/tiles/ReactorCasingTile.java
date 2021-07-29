@@ -1,10 +1,15 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.tiles;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
 @RegisterTileEntity(name = "reactor_casing")
 public class ReactorCasingTile extends ReactorBaseTile {
     

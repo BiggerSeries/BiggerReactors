@@ -1,5 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.turbine;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -10,7 +11,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluids;
 import net.roguelogix.biggerreactors.Config;
-import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.*;
+import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineBaseBlock;
+import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorBearing;
+import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorBlade;
+import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorShaft;
 import net.roguelogix.biggerreactors.multiblocks.turbine.simulation.ITurbineSimulation;
 import net.roguelogix.biggerreactors.multiblocks.turbine.simulation.classic.ClassicTurbineSimulation;
 import net.roguelogix.biggerreactors.multiblocks.turbine.simulation.modern.ModernTurbineSimulation;
@@ -18,21 +22,24 @@ import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineActivity;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineState;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.VentState;
 import net.roguelogix.biggerreactors.multiblocks.turbine.tiles.*;
-import net.roguelogix.biggerreactors.fluids.Steam;
 import net.roguelogix.biggerreactors.registries.TurbineCoilRegistry;
 import net.roguelogix.phosphophyllite.Phosphophyllite;
-import net.roguelogix.phosphophyllite.multiblock.generic.ValidationError;
-import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblockController;
+import net.roguelogix.phosphophyllite.multiblock.modular.ValidationError;
+import net.roguelogix.phosphophyllite.multiblock.modular.rectangular.RectangularMultiblockController;
 import net.roguelogix.phosphophyllite.repack.org.joml.*;
 import net.roguelogix.phosphophyllite.util.Util;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.lang.Math;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
-// ahh shit, here we go again
-public class TurbineMultiblockController extends RectangularMultiblockController<TurbineMultiblockController, TurbineBaseTile, TurbineBaseBlock> {
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
+public class TurbineMultiblockController extends RectangularMultiblockController<TurbineBaseTile, TurbineMultiblockController> {
     public TurbineMultiblockController(Level world) {
         super(world, tile -> tile instanceof TurbineBaseTile, block -> block instanceof TurbineBaseBlock);
         minSize.set(5, 4, 5);
@@ -102,7 +109,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
             boolean inCoil = false;
             boolean inBlades = false;
             boolean switched = false;
-    
+            
             final int[] validCoilBlocks = {0};
             
             currentPos = bearingPosition;
@@ -140,10 +147,10 @@ public class TurbineMultiblockController extends RectangularMultiblockController
                     validCoilBlocks[0]++;
                 });
                 
-                if(flags[0] && flags[1]){
+                if (flags[0] && flags[1]) {
                     throw new ValidationError("multiblock.error.biggerreactors.turbine.mixed_blades_and_coil");
                 }
-    
+                
                 if (flags[1]) {
                     if (inBlades) {
                         if (switched) {
@@ -168,7 +175,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
                     }
                     inBlades = true;
                 }
-    
+                
                 sliceMin.setComponent(axisComponent, sliceMin.get(axisComponent) + marchDirection.getAxisDirection().getStep());
                 sliceMax.setComponent(axisComponent, sliceMax.get(axisComponent) + marchDirection.getAxisDirection().getStep());
             }
@@ -212,12 +219,12 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     private long glassCount = 0;
     
     @Override
-    protected void onPartPlaced(@Nonnull TurbineBaseTile placed) {
+    protected void onPartPlaced( TurbineBaseTile placed) {
         onPartAttached(placed);
     }
     
     @Override
-    protected void onPartAttached(@Nonnull TurbineBaseTile tile) {
+    protected void onPartAttached( TurbineBaseTile tile) {
         if (tile instanceof TurbineTerminalTile) {
             terminals.add((TurbineTerminalTile) tile);
         }
@@ -242,12 +249,12 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     }
     
     @Override
-    protected void onPartBroken(@Nonnull TurbineBaseTile broken) {
+    protected void onPartBroken( TurbineBaseTile broken) {
         onPartDetached(broken);
     }
     
     @Override
-    protected void onPartDetached(@Nonnull TurbineBaseTile tile) {
+    protected void onPartDetached( TurbineBaseTile tile) {
         if (tile instanceof TurbineTerminalTile) {
             terminals.remove(tile);
         }
@@ -283,8 +290,8 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     
     ITurbineSimulation simulation = createSimulation();
     
-    private static ITurbineSimulation createSimulation(){
-        switch (Config.mode){
+    private static ITurbineSimulation createSimulation() {
+        switch (Config.mode) {
             case CLASSIC:
                 return new ClassicTurbineSimulation();
             case MODERN:
@@ -448,7 +455,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         }
     }
     
-    public void updateDataPacket(@Nonnull TurbineState turbineState) {
+    public void updateDataPacket( TurbineState turbineState) {
         turbineState.turbineActivity = simulation.active() ? TurbineActivity.ACTIVE : TurbineActivity.INACTIVE;
         turbineState.ventState = simulation.ventState();
         turbineState.coilStatus = simulation.coilEngaged();
@@ -473,7 +480,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     }
     
     @SuppressWarnings("UnnecessaryReturnStatement")
-    public void runRequest(@Nonnull String requestName, @Nullable Object requestData) {
+    public void runRequest( String requestName, @Nullable Object requestData) {
         switch (requestName) {
             // Set the turbine to ACTIVE or INACTIVE.
             case "setActive": {
@@ -510,11 +517,9 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         }
     }
     
-    
-    private void setVentState(@Nonnull VentState newVentState) {
+    private void setVentState( VentState newVentState) {
         simulation.setVentState(newVentState);
     }
-    
     
     private void setMaxFlowRate(long flowRate) {
         if (flowRate < 0) {
@@ -530,12 +535,12 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         simulation.setCoilEngaged(engaged);
     }
     
-    @Nonnull
+    
     protected CompoundTag write() {
         return simulation().serializeNBT();
     }
     
-    protected void read(@Nonnull CompoundTag compound) {
+    protected void read( CompoundTag compound) {
         simulation.deserializeNBT(compound);
         updateBlockStates();
     }
@@ -552,9 +557,9 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     }
     
     @Override
-    @Nonnull
-    public String getDebugInfo() {
-        return super.getDebugInfo() + "\n" +
+    
+    public String getDebugString() {
+        return super.getDebugString() + "\n" +
                 simulation.debugString() +
                 "";
     }

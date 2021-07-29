@@ -1,5 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.turbine.tiles;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -7,12 +8,16 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorBlade;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorShaft;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineShaftRotationState;
-import net.roguelogix.phosphophyllite.multiblock.generic.IAssemblyAttemptedTile;
+import net.roguelogix.phosphophyllite.multiblock.modular.IAssemblyAttemptedTile;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import static net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorBlade.BLADE_POSITION;
 import static net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineShaftRotationState.*;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 @RegisterTileEntity(name = "turbine_rotor_shaft")
 public class TurbineRotorShaftTile extends TurbineBaseTile implements IAssemblyAttemptedTile {
     
@@ -49,7 +54,7 @@ public class TurbineRotorShaftTile extends TurbineBaseTile implements IAssemblyA
         // propagate it out to the blades
         int i = 0;
         for (Direction value : Direction.values()) {
-            if(value.getAxis().ordinal() == newRotation.ordinal()){
+            if (value.getAxis().ordinal() == newRotation.ordinal()) {
                 continue;
             }
             
@@ -57,7 +62,7 @@ public class TurbineRotorShaftTile extends TurbineBaseTile implements IAssemblyA
             while (true) {
                 pos = pos.relative(value);
                 BlockState state = level.getBlockState(pos);
-                if(state.getBlock() != TurbineRotorBlade.INSTANCE){
+                if (state.getBlock() != TurbineRotorBlade.INSTANCE) {
                     break;
                 }
                 level.setBlockAndUpdate(pos, state.setValue(TURBINE_SHAFT_ROTATION_STATE_ENUM_PROPERTY, newRotation).setValue(BLADE_POSITION, i));

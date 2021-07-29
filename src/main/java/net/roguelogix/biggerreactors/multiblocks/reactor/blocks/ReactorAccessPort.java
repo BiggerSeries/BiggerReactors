@@ -1,5 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.blocks;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
@@ -14,17 +15,20 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.roguelogix.biggerreactors.multiblocks.reactor.tiles.ReactorAccessPortTile;
+import net.roguelogix.phosphophyllite.multiblock.modular.IAssemblyStateBlock;
+import net.roguelogix.phosphophyllite.multiblock.modular.rectangular.IFaceDirectionBlock;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Set;
 
 import static net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorAccessPort.PortDirection.*;
 
-
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 @RegisterBlock(name = "reactor_access_port", tileEntityClass = ReactorAccessPortTile.class)
-public class ReactorAccessPort extends ReactorBaseBlock {
+public class ReactorAccessPort extends ReactorBaseBlock implements IAssemblyStateBlock, IFaceDirectionBlock {
     
     @RegisterBlock.Instance
     public static ReactorAccessPort INSTANCE;
@@ -54,14 +58,12 @@ public class ReactorAccessPort extends ReactorBaseBlock {
     }
     
     @Override
-    protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
-        super.createBlockStateDefinition(builder);
+    protected void buildStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(PORT_DIRECTION_ENUM_PROPERTY);
     }
     
-    @Nonnull
     @Override
-    public InteractionResult use(@Nonnull BlockState state, Level worldIn, @Nonnull BlockPos pos, @Nonnull Player player, @Nonnull InteractionHand handIn, @Nonnull BlockHitResult hit) {
+    public InteractionResult onUse(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
         if (handIn == InteractionHand.MAIN_HAND) {
             Set<ResourceLocation> tags = player.getMainHandItem().getItem().getTags();
             if (tags.contains(new ResourceLocation("forge:tools/wrench")) || tags.contains(new ResourceLocation("forge:wrenches"))) {
@@ -78,20 +80,15 @@ public class ReactorAccessPort extends ReactorBaseBlock {
                 return InteractionResult.SUCCESS;
             }
         }
-        return super.use(state, worldIn, pos, player, handIn, hit);
+        return super.onUse(state, worldIn, pos, player, handIn, hit);
     }
     
     @Override
-    public void neighborChanged(@Nonnull BlockState state, @Nonnull Level worldIn, @Nonnull BlockPos pos, @Nonnull Block blockIn, @Nonnull BlockPos fromPos, boolean isMoving) {
-        super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
+    public void onNeighborChange(BlockState state, Level worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
+        super.onNeighborChange(state, worldIn, pos, blockIn, fromPos, isMoving);
         BlockEntity te = worldIn.getBlockEntity(pos);
         if (te instanceof ReactorAccessPortTile) {
             ((ReactorAccessPortTile) te).neighborChanged();
         }
-    }
-    
-    @Override
-    public boolean usesFaceDirection() {
-        return true;
     }
 }

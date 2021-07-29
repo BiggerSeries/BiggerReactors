@@ -3,6 +3,7 @@ package net.roguelogix.biggerreactors.multiblocks.turbine.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -15,23 +16,26 @@ import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorBlade;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorShaft;
 import net.roguelogix.biggerreactors.multiblocks.turbine.tiles.TurbineRotorBearingTile;
-import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockBlock;
 import net.roguelogix.phosphophyllite.repack.org.joml.Vector4i;
 
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+import static net.roguelogix.phosphophyllite.multiblock.modular.IAssemblyStateBlock.ASSEMBLED;
+
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class BladeRenderer implements BlockEntityRenderer<TurbineRotorBearingTile> {
     
     public BladeRenderer(BlockEntityRendererProvider.Context rendererDispatcherIn) {
     }
     
     @Override
-    public void render(TurbineRotorBearingTile bearing, float partialTicks, @Nonnull PoseStack matrixStackIn, @Nonnull MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void render(TurbineRotorBearingTile bearing, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         // fuck using MC's render engine, its a slow pile of garbage
         // if they cant do it properly, ill just have to do it myself
         // later, im lazy right now, still, fuck this shit
         BlockState state = bearing.getBlockState();
-        if (state.getValue(MultiblockBlock.ASSEMBLED)) {
+        if (state.getValue(ASSEMBLED)) {
             // it is notable that this is on the client, and as a result i do not have direct access to the multiblock controller
             // so, tile entity, do your thing and just magically be updated k thx
             

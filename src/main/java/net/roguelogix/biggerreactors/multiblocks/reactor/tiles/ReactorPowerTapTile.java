@@ -1,5 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.tiles;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -12,18 +13,19 @@ import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.roguelogix.phosphophyllite.energy.EnergyStorageWrapper;
 import net.roguelogix.phosphophyllite.energy.IPhosphophylliteEnergyStorage;
-import net.roguelogix.phosphophyllite.multiblock.generic.IOnAssemblyTile;
-import net.roguelogix.phosphophyllite.multiblock.generic.IOnDisassemblyTile;
-import net.roguelogix.phosphophyllite.multiblock.generic.MultiblockController;
+import net.roguelogix.phosphophyllite.multiblock.modular.IOnAssemblyTile;
+import net.roguelogix.phosphophyllite.multiblock.modular.IOnDisassemblyTile;
+import net.roguelogix.phosphophyllite.multiblock.modular.MultiblockController;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import static net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorPowerTap.ConnectionState.*;
 
-
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
 @RegisterTileEntity(name = "reactor_power_tap")
 public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophylliteEnergyStorage, IOnAssemblyTile, IOnDisassemblyTile {
     @RegisterTileEntity.Type
@@ -36,10 +38,8 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophyl
         super(TYPE, pos, state);
     }
     
-    
-    @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+    public <T> LazyOptional<T> capability(Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityEnergy.ENERGY) {
             return LazyOptional.of(() -> this).cast();
         }
@@ -59,7 +59,6 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophyl
         }
     }
     
-    @Nonnull
     LazyOptional<?> outputOptional = LazyOptional.empty();
     IPhosphophylliteEnergyStorage output;
     
@@ -77,29 +76,29 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophyl
     
     @Override
     public long extractEnergy(long maxExtract, boolean simulate) {
-        if(controller == null || controller.assemblyState() != MultiblockController.AssemblyState.ASSEMBLED){
+        if (nullableController() == null || controller().assemblyState() != MultiblockController.AssemblyState.ASSEMBLED) {
             return 0;
         }
-        long toExtract = controller.simulation().battery().stored();
+        long toExtract = controller().simulation().battery().stored();
         toExtract = Math.min(maxExtract, toExtract);
         if (!simulate) {
-            toExtract = controller.simulation().battery().extract(toExtract);
+            toExtract = controller().simulation().battery().extract(toExtract);
         }
         return toExtract;
     }
     
     @Override
     public long energyStored() {
-        if (controller != null) {
-            return controller.simulation().battery().stored();
+        if (nullableController() != null) {
+            return controller().simulation().battery().stored();
         }
         return 0;
     }
     
     @Override
     public long maxEnergyStored() {
-        if (controller != null) {
-            return controller.simulation().battery().capacity();
+        if (nullableController() != null) {
+            return controller().simulation().battery().capacity();
         }
         return 0;
     }

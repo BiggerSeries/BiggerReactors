@@ -1,20 +1,17 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.tiles;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fmllegacy.network.NetworkHooks;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorRedstonePort;
 import net.roguelogix.biggerreactors.multiblocks.reactor.containers.ReactorRedstonePortContainer;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorActivity;
@@ -22,16 +19,20 @@ import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorRedstonePo
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorRedstonePortState;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorRedstonePortTriggers;
 import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
-import net.roguelogix.phosphophyllite.multiblock.generic.*;
+import net.roguelogix.phosphophyllite.multiblock.modular.IOnAssemblyTile;
+import net.roguelogix.phosphophyllite.multiblock.modular.IOnDisassemblyTile;
+import net.roguelogix.phosphophyllite.multiblock.modular.ITickableMultiblockTile;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
 @RegisterTileEntity(name = "reactor_redstone_port")
 public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProvider, ITickableMultiblockTile, IHasUpdatableState<ReactorRedstonePortState>, IOnAssemblyTile, IOnDisassemblyTile {
-
+    
     @RegisterTileEntity.Type
     public static BlockEntityType<?> TYPE;
     
@@ -39,26 +40,26 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProv
     public static final BlockEntityType.BlockEntitySupplier<ReactorRedstonePortTile> SUPPLIER = ReactorRedstonePortTile::new;
     
     public final ReactorRedstonePortState reactorRedstonePortState = new ReactorRedstonePortState(this);
-
+    
     public ReactorRedstonePortTile(BlockPos pos, BlockState state) {
         super(TYPE, pos, state);
     }
-
+    
     private boolean isEmitting;
     double mainVal = 0;
     double secondaryVal = 0;
     Direction powerOutputDirection = null;
-
+    
     public boolean isEmitting(Direction side) {
         if (side.getOpposite() != powerOutputDirection) {
             return false;
         }
         return isEmitting;
     }
-
+    
     private boolean isPowered = false;
     private boolean wasPowered = false;
-
+    
     public void updatePowered() {
         if (powerOutputDirection == null) {
             return;
@@ -66,9 +67,9 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProv
         assert level != null;
         isPowered = level.hasSignal(worldPosition.relative(powerOutputDirection), powerOutputDirection);
     }
-
+    
     private boolean isLit = false;
-
+    
     @Override
     public void tick() {
         boolean shouldBeEmitting = false;
@@ -79,11 +80,11 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProv
                 if (reactorRedstonePortState.triggerPS.toBool()) {
                     // signal
                     if (wasPowered != isPowered) {
-                        controller.setActive(isPowered ? ReactorActivity.ACTIVE : ReactorActivity.INACTIVE);
+                        controller().setActive(isPowered ? ReactorActivity.ACTIVE : ReactorActivity.INACTIVE);
                     }
                 } else if (!wasPowered && isPowered) {
                     // not signal, so, pulse
-                    controller.toggleActive();
+                    controller().toggleActive();
                 }
                 break;
             case INPUT_CONTROL_ROD_INSERTION: {
@@ -93,23 +94,23 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProv
                         break;
                     }
                     if (isPowered) {
-                        controller.setAllControlRodLevels(mainVal);
+                        controller().setAllControlRodLevels(mainVal);
                     } else {
-                        controller.setAllControlRodLevels(secondaryVal);
+                        controller().setAllControlRodLevels(secondaryVal);
                     }
                 } else {
                     if (!wasPowered && isPowered) {
                         switch (reactorRedstonePortState.triggerMode) {
                             case 0: {
-                                controller.setAllControlRodLevels(controller.controlRodLevel(0) + mainVal);
+                                controller().setAllControlRodLevels(controller().controlRodLevel(0) + mainVal);
                                 break;
                             }
                             case 1: {
-                                controller.setAllControlRodLevels(controller.controlRodLevel(0) - mainVal);
+                                controller().setAllControlRodLevels(controller().controlRodLevel(0) - mainVal);
                                 break;
                             }
                             case 2: {
-                                controller.setAllControlRodLevels(mainVal);
+                                controller().setAllControlRodLevels(mainVal);
                                 break;
                             }
                             default:
@@ -122,27 +123,27 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProv
             case INPUT_EJECT_WASTE: {
                 shouldLight = isPowered;
                 if (!wasPowered && isPowered) {
-                    controller.ejectWaste();
+                    controller().ejectWaste();
                 }
                 break;
             }
             case OUTPUT_FUEL_TEMP: {
-                double fuelTemp = controller.simulation().fuelHeat();
+                double fuelTemp = controller().simulation().fuelHeat();
                 if ((fuelTemp < mainVal) == reactorRedstonePortState.triggerAB.toBool()) {
                     shouldBeEmitting = true;
                 }
             }
             break;
             case OUTPUT_CASING_TEMP: {
-                double casingTemperature = controller.simulation().caseHeat();
+                double casingTemperature = controller().simulation().caseHeat();
                 if ((casingTemperature < mainVal) == reactorRedstonePortState.triggerAB.toBool()) {
                     shouldBeEmitting = true;
                 }
             }
             break;
             case OUTPUT_FUEL_ENRICHMENT: {
-                double fuelPercent = controller.simulation().fuelTank().fuel();
-                fuelPercent /= controller.simulation().fuelTank().totalStored();
+                double fuelPercent = controller().simulation().fuelTank().fuel();
+                fuelPercent /= controller().simulation().fuelTank().totalStored();
                 fuelPercent *= 100;
                 if ((fuelPercent < mainVal) == reactorRedstonePortState.triggerAB.toBool()) {
                     shouldBeEmitting = true;
@@ -150,22 +151,22 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProv
             }
             break;
             case OUTPUT_FUEL_AMOUNT: {
-                double fuelAmount = controller.simulation().fuelTank().fuel();
+                double fuelAmount = controller().simulation().fuelTank().fuel();
                 if ((fuelAmount < mainVal) == reactorRedstonePortState.triggerAB.toBool()) {
                     shouldBeEmitting = true;
                 }
             }
             break;
             case OUTPUT_WASTE_AMOUNT: {
-                double wasteAmount = controller.simulation().fuelTank().waste();
+                double wasteAmount = controller().simulation().fuelTank().waste();
                 if ((wasteAmount < mainVal) == reactorRedstonePortState.triggerAB.toBool()) {
                     shouldBeEmitting = true;
                 }
             }
             break;
             case OUTPUT_ENERGY_AMOUNT: {
-                double energyAmount = controller.simulation().battery().stored();
-                energyAmount /= (double) controller.simulation().battery().capacity();
+                double energyAmount = controller().simulation().battery().stored();
+                energyAmount /= (double) controller().simulation().battery().capacity();
                 energyAmount *= 100;
                 if ((energyAmount < mainVal) == reactorRedstonePortState.triggerAB.toBool()) {
                     shouldBeEmitting = true;
@@ -189,50 +190,36 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProv
         // TODO: 7/22/21 only mark changed when it actually changed 
         this.setChanged();
     }
-
-    @Override
-    @Nonnull
-    public InteractionResult onBlockActivated(@Nonnull Player player, @Nonnull InteractionHand handIn) {
-        assert level != null;
-        if (level.getBlockState(worldPosition).getValue(MultiblockBlock.ASSEMBLED)) {
-            if (!level.isClientSide) {
-                NetworkHooks.openGui((ServerPlayer) player, this, this.getBlockPos());
-            }
-            return InteractionResult.SUCCESS;
-        }
-        return super.onBlockActivated(player, handIn);
-    }
-
+    
     @Override
     public Component getDisplayName() {
         return new TranslatableComponent(ReactorRedstonePort.INSTANCE.getDescriptionId());
     }
-
+    
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int windowId, @Nonnull Inventory playerInventory, @Nonnull Player player) {
+    public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
         return new ReactorRedstonePortContainer(windowId, this.worldPosition, player);
     }
-
+    
     // Current changes/non-active. See reactorRedstonePortState to see what's actually being used for operations.
     private final ReactorRedstonePortState currentChanges = new ReactorRedstonePortState(this);
-
+    
     public ReactorRedstonePortState getCurrentChanges() {
         return this.currentChanges;
     }
-
-    @Nonnull
+    
     @Override
     public ReactorRedstonePortState getState() {
         this.updateState();
         return this.reactorRedstonePortState;
     }
-
+    
     @Override
     public void updateState() {
         // Update committed/active values.
     }
-
+    
     public void applyChanges() {
         this.reactorRedstonePortState.selectedTab = this.currentChanges.selectedTab;
         this.reactorRedstonePortState.triggerPS = this.currentChanges.triggerPS;
@@ -240,10 +227,10 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProv
         this.reactorRedstonePortState.triggerMode = this.currentChanges.triggerMode;
         this.reactorRedstonePortState.textBufferA = this.currentChanges.textBufferA;
         this.reactorRedstonePortState.textBufferB = this.currentChanges.textBufferB;
-
+        
         this.mainVal = (!this.reactorRedstonePortState.textBufferA.isEmpty()) ? Double.parseDouble(this.reactorRedstonePortState.textBufferA) : 0D;
         this.secondaryVal = (!this.reactorRedstonePortState.textBufferB.isEmpty()) ? Double.parseDouble(this.reactorRedstonePortState.textBufferB) : 0D;
-
+        
         //if (!activeMainBuffer.isEmpty()) {
         //    mainVal = Double.parseDouble(activeMainBuffer);
         //} else {
@@ -255,7 +242,7 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProv
         //    secondaryVal = 0;
         //}
     }
-
+    
     public void revertChanges() {
         this.currentChanges.selectedTab = this.reactorRedstonePortState.selectedTab;
         this.currentChanges.triggerPS = this.reactorRedstonePortState.triggerPS;
@@ -264,7 +251,7 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProv
         this.currentChanges.textBufferA = this.reactorRedstonePortState.textBufferA;
         this.currentChanges.textBufferB = this.reactorRedstonePortState.textBufferB;
     }
-
+    
     @Override
     public void runRequest(String requestName, Object requestData) {
         // We save changes to an uncommitted changes temp state. When apply is pressed, then we send the run requests forward.
@@ -304,9 +291,8 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProv
                 break;
         }
     }
-
+    
     @Override
-    @Nonnull
     protected CompoundTag writeNBT() {
         CompoundTag compound = super.writeNBT();
         compound.putInt("settingId", reactorRedstonePortState.selectedTab.toInt());
@@ -319,9 +305,9 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProv
         compound.putBoolean("isEmitting", isEmitting);
         return compound;
     }
-
+    
     @Override
-    protected void readNBT(@Nonnull CompoundTag compound) {
+    protected void readNBT(CompoundTag compound) {
         super.readNBT(compound);
         if (compound.contains("settingId")) {
             reactorRedstonePortState.selectedTab = ReactorRedstonePortSelection.fromInt(compound.getInt("settingId"));

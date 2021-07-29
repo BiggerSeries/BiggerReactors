@@ -1,22 +1,24 @@
 package net.roguelogix.biggerreactors.multiblocks.turbine.tiles;
 
 import com.mojang.math.Vector3f;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.roguelogix.phosphophyllite.multiblock.generic.IAssemblyAttemptedTile;
+import net.roguelogix.phosphophyllite.multiblock.modular.IAssemblyAttemptedTile;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 import net.roguelogix.phosphophyllite.repack.org.joml.Vector4i;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 @RegisterTileEntity(name = "turbine_rotor_bearing")
 public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssemblyAttemptedTile {
     
@@ -41,21 +43,20 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
     
     @Nullable
     @Override
-    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+    public CompoundTag getUpdateNBT() {
         CompoundTag nbt = new CompoundTag();
-        if (controller != null) {
-            nbt.putDouble("speed", controller.simulation().RPM());
+        if (nullableController() != null) {
+            nbt.putDouble("speed", controller().simulation().RPM());
             if (sendFullUpdate) {
                 sendFullUpdate = false;
                 nbt.put("config", getUpdateTag());
             }
         }
-        return new ClientboundBlockEntityDataPacket(this.getBlockPos(), 0, nbt);
+        return nbt;
     }
     
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        CompoundTag nbt = pkt.getTag();
+    public void handleUpdateNBT(CompoundTag nbt) {
         if (nbt.contains("speed")) {
             speed = nbt.getDouble("speed");
             if (nbt.contains("config")) {
@@ -65,7 +66,7 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
     }
     
     @Override
-    public void handleUpdateTag(CompoundTag nbt) {
+    public void handleDataNBT(CompoundTag nbt) {
         if (nbt.contains("rotx")) {
             isRenderBearing = true;
             if (rotationAxis == null) {
@@ -92,20 +93,20 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
     }
     
     @Override
-    public CompoundTag getUpdateTag() {
+    public CompoundTag getDataNBT() {
         CompoundTag nbt = super.getUpdateTag();
-        if (isRenderBearing && controller != null) {
-            nbt.putFloat("rotx", controller.rotationAxis.getX());
-            nbt.putFloat("roty", controller.rotationAxis.getY());
-            nbt.putFloat("rotz", controller.rotationAxis.getZ());
-            nbt.putInt("minx", controller.minCoord().x());
-            nbt.putInt("miny", controller.minCoord().y());
-            nbt.putInt("minz", controller.minCoord().z());
-            nbt.putInt("maxx", controller.maxCoord().x());
-            nbt.putInt("maxy", controller.maxCoord().y());
-            nbt.putInt("maxz", controller.maxCoord().z());
-            nbt.putInt("shafts", controller.rotorConfiguration.size());
-            ArrayList<Vector4i> config = controller.rotorConfiguration;
+        if (isRenderBearing && nullableController() != null) {
+            nbt.putFloat("rotx", controller().rotationAxis.getX());
+            nbt.putFloat("roty", controller().rotationAxis.getY());
+            nbt.putFloat("rotz", controller().rotationAxis.getZ());
+            nbt.putInt("minx", controller().minCoord().x());
+            nbt.putInt("miny", controller().minCoord().y());
+            nbt.putInt("minz", controller().minCoord().z());
+            nbt.putInt("maxx", controller().maxCoord().x());
+            nbt.putInt("maxy", controller().maxCoord().y());
+            nbt.putInt("maxz", controller().maxCoord().z());
+            nbt.putInt("shafts", controller().rotorConfiguration.size());
+            ArrayList<Vector4i> config = controller().rotorConfiguration;
             for (int i = 0; i < config.size(); i++) {
                 Vector4i vec = config.get(i);
                 nbt.putInt("shaft" + i + "0", vec.x);

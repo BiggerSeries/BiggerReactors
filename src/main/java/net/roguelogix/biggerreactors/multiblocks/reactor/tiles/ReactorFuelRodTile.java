@@ -1,13 +1,16 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.tiles;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
 @RegisterTileEntity(name = "reactor_fuel_rod")
 public class ReactorFuelRodTile extends ReactorBaseTile {
     
@@ -27,14 +30,14 @@ public class ReactorFuelRodTile extends ReactorBaseTile {
     public long waste = 0;
     
     @Override
-    protected void readNBT(@Nonnull CompoundTag compound) {
+    protected void readNBT(CompoundTag compound) {
         super.readNBT(compound);
         fuel = compound.getLong("fuel");
         waste = compound.getLong("waste");
     }
     
     @Override
-    @Nonnull
+    
     protected CompoundTag writeNBT() {
         CompoundTag compound = super.writeNBT();
         compound.putLong("fuel", fuel);
