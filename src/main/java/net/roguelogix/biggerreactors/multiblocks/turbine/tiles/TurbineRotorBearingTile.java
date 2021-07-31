@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.roguelogix.phosphophyllite.Phosphophyllite;
 import net.roguelogix.phosphophyllite.multiblock.IAssemblyAttemptedTile;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 import net.roguelogix.phosphophyllite.repack.org.joml.Vector4i;
@@ -39,7 +40,7 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
     public Vector3f rotationAxis = null;
     public ArrayList<Vector4i> rotorConfiguration = null;
     public AABB AABB = null;
-    private boolean sendFullUpdate = false;
+    private long sendFullUpdate = Long.MAX_VALUE;
     
     @Nullable
     @Override
@@ -47,8 +48,8 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
         CompoundTag nbt = new CompoundTag();
         if (nullableController() != null) {
             nbt.putDouble("speed", controller().simulation().RPM());
-            if (sendFullUpdate) {
-                sendFullUpdate = false;
+            if (sendFullUpdate < Phosphophyllite.tickNumber()) {
+                sendFullUpdate = Long.MAX_VALUE;
                 nbt.put("config", getUpdateTag());
             }
         }
@@ -120,7 +121,7 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
     
     @Override
     public void onAssemblyAttempted() {
-        sendFullUpdate = true;
+        sendFullUpdate = Phosphophyllite.tickNumber() + 10;
     }
     
     @OnlyIn(Dist.CLIENT)
