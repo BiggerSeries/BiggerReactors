@@ -101,7 +101,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
             boolean inCoil = false;
             boolean inBlades = false;
             boolean switched = false;
-    
+            
             final int[] validCoilBlocks = {0};
             
             currentPos = bearingPosition;
@@ -139,10 +139,10 @@ public class TurbineMultiblockController extends RectangularMultiblockController
                     validCoilBlocks[0]++;
                 });
                 
-                if(flags[0] && flags[1]){
+                if (flags[0] && flags[1]) {
                     throw new ValidationError("multiblock.error.biggerreactors.turbine.mixed_blades_and_coil");
                 }
-    
+                
                 if (flags[1]) {
                     if (inBlades) {
                         if (switched) {
@@ -167,7 +167,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
                     }
                     inBlades = true;
                 }
-    
+                
                 sliceMin.setComponent(axisComponent, sliceMin.get(axisComponent) + marchDirection.getAxisDirection().getOffset());
                 sliceMax.setComponent(axisComponent, sliceMax.get(axisComponent) + marchDirection.getAxisDirection().getOffset());
             }
@@ -282,8 +282,8 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     
     ITurbineSimulation simulation = createSimulation();
     
-    private static ITurbineSimulation createSimulation(){
-        switch (Config.mode){
+    private static ITurbineSimulation createSimulation() {
+        switch (Config.mode) {
             case CLASSIC:
                 return new ClassicTurbineSimulation();
             case MODERN:
@@ -413,6 +413,11 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     @Override
     public void tick() {
         
+        if(updateBlockStates){
+            updateBlockStates = false;
+            updateBlockStates();
+        }
+        
         simulation.tick();
         
         long totalPowerRequested = 0;
@@ -509,11 +514,9 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         }
     }
     
-    
     private void setVentState(@Nonnull VentState newVentState) {
         simulation.setVentState(newVentState);
     }
-    
     
     private void setMaxFlowRate(long flowRate) {
         if (flowRate < 0) {
@@ -534,9 +537,11 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         return simulation().serializeNBT();
     }
     
+    boolean updateBlockStates = false;
+    
     protected void read(@Nonnull CompoundNBT compound) {
         simulation.deserializeNBT(compound);
-        updateBlockStates();
+        updateBlockStates = true;
     }
     
     public void toggleActive() {
@@ -546,7 +551,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     public void setActive(boolean active) {
         if (simulation.active() != active) {
             simulation.setActive(active);
-            updateBlockStates();
+            updateBlockStates = true;
         }
     }
     

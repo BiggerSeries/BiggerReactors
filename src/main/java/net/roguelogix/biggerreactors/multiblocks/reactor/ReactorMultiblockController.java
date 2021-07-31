@@ -215,6 +215,8 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         }
     }
     
+    boolean updateBlockStates = false;
+    
     public void updateBlockStates() {
         terminals.forEach(terminal -> {
             world.setBlockState(terminal.getPos(), terminal.getBlockState().with(ReactorActivity.REACTOR_ACTIVITY_ENUM_PROPERTY, reactorActivity));
@@ -225,7 +227,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     public synchronized void setActive(@Nonnull ReactorActivity newState) {
         if (reactorActivity != newState) {
             reactorActivity = newState;
-            updateBlockStates();
+            updateBlockStates = true;
         }
         simulation.setActive(reactorActivity == ReactorActivity.ACTIVE);
     }
@@ -247,8 +249,8 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         if (compound.contains("simulationData")) {
             simulation.deserializeNBT(compound.getCompound("simulationData"));
         }
-        
-        updateBlockStates();
+    
+        updateBlockStates = true;
     }
     
     @Nonnull
@@ -344,6 +346,11 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     
     @Override
     public synchronized void tick() {
+        
+        if(updateBlockStates){
+            updateBlockStates = false;
+            updateBlockStates();
+        }
         
         simulation.tick();
         if (autoEjectWaste) {
