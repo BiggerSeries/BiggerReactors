@@ -1,17 +1,28 @@
 package net.roguelogix.biggerreactors.multiblocks.turbine.blocks;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineActivity;
 import net.roguelogix.phosphophyllite.modular.block.PhosphophylliteBlock;
 import net.roguelogix.phosphophyllite.multiblock.rectangular.IRectangularMultiblockBlock;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+
+import static net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock.ASSEMBLED;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -54,5 +65,18 @@ public abstract class TurbineBaseBlock extends PhosphophylliteBlock implements I
     @Override
     public boolean isGoodForFrame() {
         return false;
+    }
+    
+    @Override
+    public InteractionResult onUse(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (hand == InteractionHand.MAIN_HAND && state.getValue(ASSEMBLED)) {
+            if (level.getBlockEntity(pos) instanceof MenuProvider menuProvider) {
+                if (!level.isClientSide) {
+                    NetworkHooks.openGui((ServerPlayer) player, menuProvider, pos);
+                }
+                return InteractionResult.SUCCESS;
+            }
+        }
+        return super.onUse(state, level, pos, player, hand, hitResult);
     }
 }
