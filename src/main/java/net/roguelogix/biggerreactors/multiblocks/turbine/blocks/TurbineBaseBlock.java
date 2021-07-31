@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.Material;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineActivity;
 import net.roguelogix.phosphophyllite.modular.block.PhosphophylliteBlock;
-import net.roguelogix.phosphophyllite.multiblock.modular.rectangular.IRectangularMultiblockBlock;
+import net.roguelogix.phosphophyllite.multiblock.rectangular.IRectangularMultiblockBlock;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 

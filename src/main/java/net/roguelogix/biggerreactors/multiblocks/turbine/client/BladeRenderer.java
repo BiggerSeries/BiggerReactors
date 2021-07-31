@@ -20,7 +20,7 @@ import net.roguelogix.phosphophyllite.repack.org.joml.Vector4i;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import static net.roguelogix.phosphophyllite.multiblock.modular.IAssemblyStateBlock.ASSEMBLED;
+import static net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock.ASSEMBLED;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault

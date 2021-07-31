@@ -29,8 +29,8 @@ import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorAccessPor
 import net.roguelogix.biggerreactors.multiblocks.reactor.containers.ReactorAccessPortContainer;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorAccessPortState;
 import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
-import net.roguelogix.phosphophyllite.multiblock.modular.IOnAssemblyTile;
-import net.roguelogix.phosphophyllite.multiblock.modular.IOnDisassemblyTile;
+import net.roguelogix.phosphophyllite.multiblock.IOnAssemblyTile;
+import net.roguelogix.phosphophyllite.multiblock.IOnDisassemblyTile;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 

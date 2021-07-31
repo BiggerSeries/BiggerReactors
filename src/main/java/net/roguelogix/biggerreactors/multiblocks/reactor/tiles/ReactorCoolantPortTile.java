@@ -28,9 +28,9 @@ import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorCoolantPor
 import net.roguelogix.phosphophyllite.fluids.FluidHandlerWrapper;
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
 import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
-import net.roguelogix.phosphophyllite.multiblock.modular.IAssemblyAttemptedTile;
-import net.roguelogix.phosphophyllite.multiblock.modular.IOnAssemblyTile;
-import net.roguelogix.phosphophyllite.multiblock.modular.IOnDisassemblyTile;
+import net.roguelogix.phosphophyllite.multiblock.IAssemblyAttemptedTile;
+import net.roguelogix.phosphophyllite.multiblock.IOnAssemblyTile;
+import net.roguelogix.phosphophyllite.multiblock.IOnDisassemblyTile;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 

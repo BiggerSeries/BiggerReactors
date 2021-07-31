@@ -6,7 +6,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.HeatExchangerMultiblockController;
 import net.roguelogix.phosphophyllite.modular.tile.PhosphophylliteTile;
-import net.roguelogix.phosphophyllite.multiblock.modular.rectangular.IRectangularMultiblockTile;
+import net.roguelogix.phosphophyllite.multiblock.rectangular.IRectangularMultiblockTile;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;

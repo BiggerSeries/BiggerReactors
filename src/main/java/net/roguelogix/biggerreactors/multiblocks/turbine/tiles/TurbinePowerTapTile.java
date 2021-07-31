@@ -19,8 +19,8 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import static net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbinePowerTap.ConnectionState.*;
-import static net.roguelogix.phosphophyllite.multiblock.modular.MultiblockController.AssemblyState.ASSEMBLED;
-import static net.roguelogix.phosphophyllite.multiblock.modular.MultiblockController.AssemblyState.DISASSEMBLED;
+import static net.roguelogix.phosphophyllite.multiblock.MultiblockController.AssemblyState.ASSEMBLED;
+import static net.roguelogix.phosphophyllite.multiblock.MultiblockController.AssemblyState.DISASSEMBLED;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault

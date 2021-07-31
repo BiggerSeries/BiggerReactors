@@ -17,11 +17,11 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.fmllegacy.network.NetworkHooks;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorActivity;
 import net.roguelogix.phosphophyllite.modular.block.PhosphophylliteBlock;
-import net.roguelogix.phosphophyllite.multiblock.modular.rectangular.IRectangularMultiblockBlock;
+import net.roguelogix.phosphophyllite.multiblock.rectangular.IRectangularMultiblockBlock;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import static net.roguelogix.phosphophyllite.multiblock.modular.IAssemblyStateBlock.ASSEMBLED;
+import static net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock.ASSEMBLED;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault

@@ -15,8 +15,8 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.roguelogix.biggerreactors.multiblocks.turbine.tiles.TurbineCoolantPortTile;
-import net.roguelogix.phosphophyllite.multiblock.modular.IAssemblyStateBlock;
-import net.roguelogix.phosphophyllite.multiblock.modular.rectangular.IFaceDirectionBlock;
+import net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock;
+import net.roguelogix.phosphophyllite.multiblock.rectangular.IFaceDirectionBlock;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
 import javax.annotation.Nullable;

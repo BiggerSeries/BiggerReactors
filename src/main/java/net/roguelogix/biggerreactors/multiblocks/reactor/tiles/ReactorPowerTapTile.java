@@ -13,9 +13,9 @@ import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.roguelogix.phosphophyllite.energy.EnergyStorageWrapper;
 import net.roguelogix.phosphophyllite.energy.IPhosphophylliteEnergyStorage;
-import net.roguelogix.phosphophyllite.multiblock.modular.IOnAssemblyTile;
-import net.roguelogix.phosphophyllite.multiblock.modular.IOnDisassemblyTile;
-import net.roguelogix.phosphophyllite.multiblock.modular.MultiblockController;
+import net.roguelogix.phosphophyllite.multiblock.IOnAssemblyTile;
+import net.roguelogix.phosphophyllite.multiblock.IOnDisassemblyTile;
+import net.roguelogix.phosphophyllite.multiblock.MultiblockController;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 

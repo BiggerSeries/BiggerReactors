@@ -23,8 +23,8 @@ import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorType;
 import net.roguelogix.biggerreactors.multiblocks.reactor.tiles.*;
 import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
 import net.roguelogix.phosphophyllite.Phosphophyllite;
-import net.roguelogix.phosphophyllite.multiblock.modular.ValidationError;
-import net.roguelogix.phosphophyllite.multiblock.modular.rectangular.RectangularMultiblockController;
+import net.roguelogix.phosphophyllite.multiblock.ValidationError;
+import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblockController;
 import net.roguelogix.phosphophyllite.repack.org.joml.Vector3i;
 import net.roguelogix.phosphophyllite.util.Util;
 
