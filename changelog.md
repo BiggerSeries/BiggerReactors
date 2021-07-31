@@ -1,3 +1,13 @@
+# 1.16.5-0..5.1
+
+## Reactor
+ - Fix CC deadlock
+ - Fix tank size reporting
+
+## Turbine
+ - Fix CC deadlock
+ - Fix rotor not rendering after chunk reloads in some cases
+
 # 1.16.5-0.5.0
 That's all folks!
 
