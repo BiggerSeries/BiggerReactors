@@ -94,7 +94,7 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
     
     @Override
     public CompoundTag getDataNBT() {
-        CompoundTag nbt = super.getUpdateTag();
+        CompoundTag nbt = super.getDataNBT();
         if (isRenderBearing && nullableController() != null) {
             nbt.putFloat("rotx", controller().rotationAxis.getX());
             nbt.putFloat("roty", controller().rotationAxis.getY());
