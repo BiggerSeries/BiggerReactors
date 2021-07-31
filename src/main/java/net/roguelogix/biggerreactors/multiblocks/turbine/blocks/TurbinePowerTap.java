@@ -21,11 +21,10 @@ import static net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbinePo
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@RegisterBlock(name = "turbine_power_tap", tileEntityClass = TurbinePowerTapTile.class)
 public class TurbinePowerTap extends TurbineBaseBlock implements IAssemblyStateBlock, IFaceDirectionBlock {
     
-    @RegisterBlock.Instance
-    public static TurbinePowerTap INSTANCE;
+    @RegisterBlock(name = "turbine_power_tap", tileEntityClass = TurbinePowerTapTile.class)
+    public static final TurbinePowerTap INSTANCE = new TurbinePowerTap();
     
     public TurbinePowerTap() {
         super();

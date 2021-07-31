@@ -19,11 +19,10 @@ import static net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineSha
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@RegisterBlock(name = "turbine_rotor_shaft", tileEntityClass = TurbineRotorShaftTile.class)
 public class TurbineRotorShaft extends TurbineBaseBlock implements IAssemblyStateBlock {
     
-    @RegisterBlock.Instance
-    public static TurbineRotorShaft INSTANCE;
+    @RegisterBlock(name = "turbine_rotor_shaft", tileEntityClass = TurbineRotorShaftTile.class)
+    public static final TurbineRotorShaft INSTANCE = new TurbineRotorShaft();
     
     public TurbineRotorShaft() {
         super(false);

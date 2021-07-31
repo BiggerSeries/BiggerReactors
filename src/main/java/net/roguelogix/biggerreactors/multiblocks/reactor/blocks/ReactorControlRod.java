@@ -14,11 +14,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@RegisterBlock(name = "reactor_control_rod", tileEntityClass = ReactorControlRodTile.class)
 public class ReactorControlRod extends ReactorBaseBlock implements IAssemblyStateBlock, IFaceDirectionBlock {
     
-    @RegisterBlock.Instance
-    public static ReactorControlRod INSTANCE;
+    @RegisterBlock(name = "reactor_control_rod", tileEntityClass = ReactorControlRodTile.class)
+    public static final ReactorControlRod INSTANCE = new ReactorControlRod();
     
     @Nullable
     @Override

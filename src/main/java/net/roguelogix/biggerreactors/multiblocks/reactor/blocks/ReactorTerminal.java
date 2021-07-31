@@ -16,11 +16,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @CreativeTabBlock
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@RegisterBlock(name = "reactor_terminal", tileEntityClass = ReactorTerminalTile.class)
 public class ReactorTerminal extends ReactorBaseBlock implements IAssemblyStateBlock, IFaceDirectionBlock {
     
-    @RegisterBlock.Instance
-    public static ReactorTerminal INSTANCE;
+    @RegisterBlock(name = "reactor_terminal", tileEntityClass = ReactorTerminalTile.class)
+    public static final ReactorTerminal INSTANCE = new ReactorTerminal();
     
     @Nullable
     @Override

@@ -15,11 +15,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-@RegisterBlock(name = "heat_exchanger_computer_port", tileEntityClass = HeatExchangerComputerPortTile.class)
 public class HeatExchangerComputerPortBlock extends HeatExchangerBaseBlock implements IAssemblyStateBlock, IFaceDirectionBlock {
     
-    @RegisterBlock.Instance
-    public static HeatExchangerComputerPortBlock INSTANCE;
+    @RegisterBlock(name = "heat_exchanger_computer_port", tileEntityClass = HeatExchangerComputerPortTile.class)
+    public static final HeatExchangerComputerPortBlock INSTANCE = new HeatExchangerComputerPortBlock();
     
     @Nullable
     @Override

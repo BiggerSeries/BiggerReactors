@@ -21,11 +21,10 @@ import static net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorPo
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@RegisterBlock(name = "reactor_power_tap", tileEntityClass = ReactorPowerTapTile.class)
 public class ReactorPowerTap extends ReactorBaseBlock implements IAssemblyStateBlock, IFaceDirectionBlock {
     
-    @RegisterBlock.Instance
-    public static ReactorPowerTap INSTANCE;
+    @RegisterBlock(name = "reactor_power_tap", tileEntityClass = ReactorPowerTapTile.class)
+    public static final ReactorPowerTap INSTANCE = new ReactorPowerTap();
     
     public ReactorPowerTap() {
         super();

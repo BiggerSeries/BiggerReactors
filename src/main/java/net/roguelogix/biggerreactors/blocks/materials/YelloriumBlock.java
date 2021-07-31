@@ -5,11 +5,10 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.Material;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
-@RegisterBlock(name = "yellorium_block")
 public class YelloriumBlock extends Block {
     
-    @RegisterBlock.Instance
-    public static YelloriumBlock INSTANCE;
+    @RegisterBlock(name = "yellorium_block")
+    public static final YelloriumBlock INSTANCE = new YelloriumBlock();
     
     public YelloriumBlock() {
         super(

@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.multiblocks.reactor.tiles.ReactorManifoldTile;
 import net.roguelogix.phosphophyllite.modular.block.IConnectedTexture;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
@@ -18,11 +19,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@RegisterBlock(name = "reactor_manifold", tileEntityClass = ReactorManifoldTile.class)
 public class ReactorManifold extends ReactorBaseBlock implements IConnectedTexture {
     
-    @RegisterBlock.Instance
-    public static ReactorManifold INSTANCE;
+    @RegisterBlock(name = "reactor_manifold", tileEntityClass = ReactorManifoldTile.class)
+    public static final ReactorManifold INSTANCE = new ReactorManifold();
     
     public ReactorManifold() {
         super(false);

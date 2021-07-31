@@ -14,11 +14,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@RegisterBlock(name = "reactor_computer_port", tileEntityClass = ReactorComputerPortTile.class)
 public class ReactorComputerPort extends ReactorBaseBlock implements IAssemblyStateBlock, IFaceDirectionBlock {
     
-    @RegisterBlock.Instance
-    public static ReactorComputerPort INSTANCE;
+    @RegisterBlock(name = "reactor_computer_port", tileEntityClass = ReactorComputerPortTile.class)
+    public static final ReactorComputerPort INSTANCE = new ReactorComputerPort();
     
     public ReactorComputerPort() {
         super();

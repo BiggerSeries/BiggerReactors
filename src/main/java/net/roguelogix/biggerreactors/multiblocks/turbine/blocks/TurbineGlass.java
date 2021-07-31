@@ -18,11 +18,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@RegisterBlock(name = "turbine_glass", tileEntityClass = TurbineGlassTile.class)
 public class TurbineGlass extends TurbineBaseBlock implements IAssemblyStateBlock, IConnectedTexture {
     
-    @RegisterBlock.Instance
-    public static TurbineGlass INSTANCE;
+    @RegisterBlock(name = "turbine_glass", tileEntityClass = TurbineGlassTile.class)
+    public static final TurbineGlass INSTANCE = new TurbineGlass();
     
     public TurbineGlass() {
         super(false);

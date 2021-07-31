@@ -5,11 +5,10 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.Material;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
-@RegisterBlock(name = "blutonium_block")
 public class BlutoniumBlock extends Block {
     
-    @RegisterBlock.Instance
-    public static BlutoniumBlock INSTANCE;
+    @RegisterBlock(name = "blutonium_block")
+    public static final BlutoniumBlock INSTANCE = new BlutoniumBlock();
     
     public BlutoniumBlock() {
         super(

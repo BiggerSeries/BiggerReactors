@@ -27,10 +27,9 @@ import static net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineCo
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@RegisterBlock(name = "turbine_coolant_port", tileEntityClass = TurbineCoolantPortTile.class)
 public class TurbineCoolantPort extends TurbineBaseBlock implements IAssemblyStateBlock, IFaceDirectionBlock {
-    @RegisterBlock.Instance
-    public static TurbineCoolantPort INSTANCE;
+    @RegisterBlock(name = "turbine_coolant_port", tileEntityClass = TurbineCoolantPortTile.class)
+    public static final TurbineCoolantPort INSTANCE = new TurbineCoolantPort();
     
     public TurbineCoolantPort() {
         super();

@@ -5,11 +5,10 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.Material;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
-@RegisterBlock(name = "ludicrite_block")
 public class LudicriteBlock extends Block {
     
-    @RegisterBlock.Instance
-    public static LudicriteBlock INSTANCE;
+    @RegisterBlock(name = "ludicrite_block")
+    public static final LudicriteBlock INSTANCE = new LudicriteBlock();
     
     public LudicriteBlock() {
         super(

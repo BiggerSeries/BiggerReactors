@@ -27,7 +27,6 @@ import static net.roguelogix.phosphophyllite.util.BlockStates.PORT_DIRECTION;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-@RegisterBlock(name = "heat_exchanger_coolant_port", tileEntityClass = HeatExchangerCoolantPortTile.class)
 public class HeatExchangerCoolantPortBlock extends HeatExchangerBaseBlock implements IAssemblyStateBlock, IFaceDirectionBlock {
     
     public static final BooleanProperty CONDENSER = BooleanProperty.create("condenser");
@@ -39,8 +38,8 @@ public class HeatExchangerCoolantPortBlock extends HeatExchangerBaseBlock implem
         registerDefaultState(defaultBlockState().setValue(CONDENSER, false));
     }
     
-    @RegisterBlock.Instance
-    public static HeatExchangerCoolantPortBlock INSTANCE;
+    @RegisterBlock(name = "heat_exchanger_coolant_port", tileEntityClass = HeatExchangerCoolantPortTile.class)
+    public static final HeatExchangerCoolantPortBlock INSTANCE = new HeatExchangerCoolantPortBlock();
     
     @Override
     protected void buildStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {

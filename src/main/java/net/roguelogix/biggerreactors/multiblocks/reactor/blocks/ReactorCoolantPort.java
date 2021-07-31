@@ -25,10 +25,10 @@ import static net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorAc
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@RegisterBlock(name = "reactor_coolant_port", tileEntityClass = ReactorCoolantPortTile.class)
 public class ReactorCoolantPort extends ReactorBaseBlock implements IAssemblyStateBlock, IFaceDirectionBlock {
-    @RegisterBlock.Instance
-    public static ReactorCoolantPort INSTANCE;
+
+    @RegisterBlock(name = "reactor_coolant_port", tileEntityClass = ReactorCoolantPortTile.class)
+    public static final ReactorCoolantPort INSTANCE = new ReactorCoolantPort();
     
     public ReactorCoolantPort() {
         super();

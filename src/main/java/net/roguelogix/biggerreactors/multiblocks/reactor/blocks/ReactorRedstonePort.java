@@ -20,10 +20,12 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@RegisterBlock(name = "reactor_redstone_port", tileEntityClass = ReactorRedstonePortTile.class)
 public class ReactorRedstonePort extends ReactorBaseBlock implements IAssemblyStateBlock, IFaceDirectionBlock {
-    @RegisterBlock.Instance
-    public static ReactorRedstonePort INSTANCE;
+    
+    public static BooleanProperty IS_LIT_BOOLEAN_PROPERTY = BooleanProperty.create("is_lit");
+    
+    @RegisterBlock(name = "reactor_redstone_port", tileEntityClass = ReactorRedstonePortTile.class)
+    public static final ReactorRedstonePort INSTANCE = new ReactorRedstonePort();
     
     public ReactorRedstonePort() {
         super();
@@ -66,8 +68,6 @@ public class ReactorRedstonePort extends ReactorBaseBlock implements IAssemblySt
             ((ReactorRedstonePortTile) tile).updatePowered();
         }
     }
-    
-    public static BooleanProperty IS_LIT_BOOLEAN_PROPERTY = BooleanProperty.create("is_lit");
     
     @Override
     protected void buildStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {

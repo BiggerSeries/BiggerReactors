@@ -19,11 +19,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@RegisterBlock(name = "reactor_fuel_rod", tileEntityClass = ReactorFuelRodTile.class)
 public class ReactorFuelRod extends ReactorBaseBlock {
     
-    @RegisterBlock.Instance
-    public static ReactorFuelRod INSTANCE;
+    public static IntegerProperty FUEL_HEIGHT_PROPERTY = IntegerProperty.create("fuel_level", 0, 16);
+    public static IntegerProperty WASTE_HEIGHT_PROPERTY = IntegerProperty.create("waste_level", 0, 16);
+    
+    @RegisterBlock(name = "reactor_fuel_rod", tileEntityClass = ReactorFuelRodTile.class)
+    public static final ReactorFuelRod INSTANCE = new ReactorFuelRod();
     
     public ReactorFuelRod() {
         super(false);
@@ -51,9 +53,6 @@ public class ReactorFuelRod extends ReactorBaseBlock {
     public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
         return true;
     }
-    
-    public static IntegerProperty FUEL_HEIGHT_PROPERTY = IntegerProperty.create("fuel_level", 0, 16);
-    public static IntegerProperty WASTE_HEIGHT_PROPERTY = IntegerProperty.create("waste_level", 0, 16);
     
     @Override
     protected void buildStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {

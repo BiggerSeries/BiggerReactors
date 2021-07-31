@@ -15,11 +15,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-@RegisterBlock(name = "heat_exchanger_casing", tileEntityClass = HeatExchangerCasingTile.class)
 public class HeatExchangerCasingBlock extends HeatExchangerBaseBlock implements IAssemblyStateBlock, IAxisPositionBlock {
     
-    @RegisterBlock.Instance
-    public static HeatExchangerCasingBlock INSTANCE;
+    @RegisterBlock(name = "heat_exchanger_casing", tileEntityClass = HeatExchangerCasingTile.class)
+    public static final HeatExchangerCasingBlock INSTANCE = new HeatExchangerCasingBlock();
     
     @Override
     public boolean isGoodForFrame() {

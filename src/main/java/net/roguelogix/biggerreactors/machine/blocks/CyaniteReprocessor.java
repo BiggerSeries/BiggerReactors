@@ -28,14 +28,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Properties;
 
-@RegisterBlock(name = "cyanite_reprocessor", tileEntityClass = CyaniteReprocessorTile.class)
 public class CyaniteReprocessor extends BaseEntityBlock implements EntityBlock{
     
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty ENABLED = BlockStateProperties.ENABLED;
     
-    @RegisterBlock.Instance
-    public static CyaniteReprocessor INSTANCE;
+    @RegisterBlock(name = "cyanite_reprocessor", tileEntityClass = CyaniteReprocessorTile.class)
+    public static final CyaniteReprocessor INSTANCE = new CyaniteReprocessor();
     
     public CyaniteReprocessor() {
         super(Properties.of(Material.METAL)

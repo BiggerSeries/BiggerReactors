@@ -18,11 +18,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@RegisterBlock(name = "reactor_glass", tileEntityClass = ReactorGlassTile.class)
 public class ReactorGlass extends ReactorBaseBlock implements IAssemblyStateBlock, IConnectedTexture {
     
-    @RegisterBlock.Instance
-    public static ReactorGlass INSTANCE;
+    @RegisterBlock(name = "reactor_glass", tileEntityClass = ReactorGlassTile.class)
+    public static final ReactorGlass INSTANCE = new ReactorGlass();
     
     public ReactorGlass() {
         super(false);

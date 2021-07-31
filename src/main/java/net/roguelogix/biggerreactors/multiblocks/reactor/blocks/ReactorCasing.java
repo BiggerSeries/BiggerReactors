@@ -14,11 +14,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@RegisterBlock(name = "reactor_casing", tileEntityClass = ReactorCasingTile.class)
 public class ReactorCasing extends ReactorBaseBlock implements IAssemblyStateBlock, IAxisPositionBlock {
     
-    @RegisterBlock.Instance
-    public static ReactorCasing INSTANCE;
+    @RegisterBlock(name = "reactor_casing", tileEntityClass = ReactorCasingTile.class)
+    public static final ReactorCasing INSTANCE = new ReactorCasing();
     
     public ReactorCasing() {
         super();

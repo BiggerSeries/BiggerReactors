@@ -6,11 +6,10 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
-@RegisterBlock(name = "graphite_block")
 public class GraphiteBlock extends Block {
     
-    @RegisterBlock.Instance
-    public static GraphiteBlock INSTANCE;
+    @RegisterBlock(name = "graphite_block")
+    public static final GraphiteBlock INSTANCE = new GraphiteBlock();
     
     public GraphiteBlock() {
         super(

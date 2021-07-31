@@ -20,18 +20,17 @@ import static net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineSha
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@RegisterBlock(name = "turbine_rotor_blade", tileEntityClass = TurbineRotorBladeTile.class)
 public class TurbineRotorBlade extends TurbineBaseBlock implements IAssemblyStateBlock {
     
-    @RegisterBlock.Instance
-    public static TurbineRotorBlade INSTANCE;
+    public static final IntegerProperty BLADE_POSITION = IntegerProperty.create("blade_position", 0, 3);
+    
+    @RegisterBlock(name = "turbine_rotor_blade", tileEntityClass = TurbineRotorBladeTile.class)
+    public static final TurbineRotorBlade INSTANCE = new TurbineRotorBlade();
     
     public TurbineRotorBlade() {
         super(false);
         registerDefaultState(defaultBlockState().setValue(TurbineShaftRotationState.TURBINE_SHAFT_ROTATION_STATE_ENUM_PROPERTY, Y));
     }
-    
-    public static final IntegerProperty BLADE_POSITION = IntegerProperty.create("blade_position", 0, 3);
     
     @Override
     protected void buildStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {

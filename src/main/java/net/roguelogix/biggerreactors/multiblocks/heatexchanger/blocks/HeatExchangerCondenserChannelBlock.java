@@ -19,11 +19,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@RegisterBlock(name = "heat_exchanger_condenser_channel", tileEntityClass = HeatExchangerCondenserChannelTile.class)
 public class HeatExchangerCondenserChannelBlock extends HeatExchangerBaseBlock implements IConnectedTexture {
     
-    @RegisterBlock.Instance
-    public static HeatExchangerCondenserChannelBlock INSTANCE;
+    @RegisterBlock(name = "heat_exchanger_condenser_channel", tileEntityClass = HeatExchangerCondenserChannelTile.class)
+    public static final HeatExchangerCondenserChannelBlock INSTANCE = new HeatExchangerCondenserChannelBlock();
     
     public HeatExchangerCondenserChannelBlock() {
         super(PROPERTIES_GLASS);

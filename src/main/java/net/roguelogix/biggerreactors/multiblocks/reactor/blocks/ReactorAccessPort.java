@@ -27,11 +27,10 @@ import static net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorAc
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@RegisterBlock(name = "reactor_access_port", tileEntityClass = ReactorAccessPortTile.class)
 public class ReactorAccessPort extends ReactorBaseBlock implements IAssemblyStateBlock, IFaceDirectionBlock {
     
-    @RegisterBlock.Instance
-    public static ReactorAccessPort INSTANCE;
+    @RegisterBlock(name = "reactor_access_port", tileEntityClass = ReactorAccessPortTile.class)
+    public static final ReactorAccessPort INSTANCE = new ReactorAccessPort();
     
     public ReactorAccessPort() {
         super();
