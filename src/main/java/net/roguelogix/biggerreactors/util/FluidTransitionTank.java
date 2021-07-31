@@ -50,7 +50,7 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
     
     @Override
     public long tankCapacity(int tank) {
-        return Long.min(perSideCapacity, Integer.MAX_VALUE);
+        return perSideCapacity;
     }
     
     @Nonnull
@@ -271,6 +271,7 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
             outFluid = newOutFluid;
             inAmount = nbt.getLong("inAmount");
             outAmount = nbt.getLong("outAmount");
+            transitionUpdate();
         }
     }
     

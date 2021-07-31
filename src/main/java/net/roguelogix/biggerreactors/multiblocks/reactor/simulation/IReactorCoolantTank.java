@@ -8,7 +8,7 @@ import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
 public interface IReactorCoolantTank extends INBTSerializable<CompoundNBT>, IPhosphophylliteFluidHandler {
     
     default long perSideCapacity(){
-        return getTankCapacity(0);
+        return tankCapacity(0);
     }
     
     default long liquidAmount(){
