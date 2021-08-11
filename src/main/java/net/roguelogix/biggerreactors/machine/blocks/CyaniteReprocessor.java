@@ -8,7 +8,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -20,13 +19,12 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.ToolType;
+import net.minecraftforge.common.ToolAction;
 import net.roguelogix.biggerreactors.machine.tiles.CyaniteReprocessorTile;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Properties;
 
 public class CyaniteReprocessor extends BaseEntityBlock implements EntityBlock{
     
@@ -40,8 +38,7 @@ public class CyaniteReprocessor extends BaseEntityBlock implements EntityBlock{
         super(Properties.of(Material.METAL)
                 .sound(SoundType.STONE)
                 .destroyTime(1.0F)
-                .explosionResistance(1.0F)
-                .harvestTool(ToolType.PICKAXE));
+                .explosionResistance(1.0F));
         this.registerDefaultState(this.getStateDefinition().any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(ENABLED, Boolean.FALSE));
