@@ -1,3 +1,14 @@
+# 1.17.1-0.6.0-alpha.1
+Modular multi-blocks
+
+## Turbine
+ - Fix stack overflow with rotor bearing
+ - Fix maybe rendering 
+
+## Misc
+ - update to Phos 0.6.0-alpha.1, and its multiblock changes
+
+
 # 1.17.1-0.6.0-alpha
 1.17.1
 
