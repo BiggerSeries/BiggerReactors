@@ -70,7 +70,7 @@ public class HeatExchangerCoolantPortBlock extends HeatExchangerBaseBlock implem
                 return InteractionResult.SUCCESS;
             }
         }
-        return super.use(state, worldIn, pos, player, handIn, hit);
+        return super.onUse(state, worldIn, pos, player, handIn, hit);
     }
     
     @Override
