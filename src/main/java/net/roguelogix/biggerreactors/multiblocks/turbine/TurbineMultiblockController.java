@@ -210,6 +210,8 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         });
     }
     
+    private boolean updateBlockStates = false;
+    
     private final Set<TurbineTerminalTile> terminals = new HashSet<>();
     private final Set<TurbineCoolantPortTile> coolantPorts = new HashSet<>();
     private final Set<TurbineRotorBearingTile> rotorBearings = new HashSet<>();
@@ -420,6 +422,11 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     
     @Override
     public void tick() {
+    
+        if (updateBlockStates) {
+            updateBlockStates = false;
+            updateBlockStates();
+        }
         
         simulation.tick();
         
@@ -542,7 +549,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     
     protected void read( CompoundTag compound) {
         simulation.deserializeNBT(compound);
-        updateBlockStates();
+        updateBlockStates = true;
     }
     
     public void toggleActive() {
@@ -552,7 +559,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     public void setActive(boolean active) {
         if (simulation.active() != active) {
             simulation.setActive(active);
-            updateBlockStates();
+            updateBlockStates = true;
         }
     }
     

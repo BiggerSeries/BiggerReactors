@@ -137,6 +137,8 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         });
     }
     
+    private boolean updateBlockStates = false;
+    
     private ReactorActivity reactorActivity = ReactorActivity.INACTIVE;
     
     private final Set<ReactorTerminalTile> terminals = new HashSet<>();
@@ -152,7 +154,6 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     protected void onPartPlaced(ReactorBaseTile placed) {
         onPartAttached(placed);
     }
-    
     
     @Override
     protected synchronized void onPartAttached(ReactorBaseTile tile) {
@@ -228,7 +229,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     public synchronized void setActive(ReactorActivity newState) {
         if (reactorActivity != newState) {
             reactorActivity = newState;
-            updateBlockStates();
+            updateBlockStates = true;
         }
         simulation.setActive(reactorActivity == ReactorActivity.ACTIVE);
     }
@@ -251,9 +252,8 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             simulation.deserializeNBT(compound.getCompound("simulationData"));
         }
         
-        updateBlockStates();
+        updateBlockStates = true;
     }
-    
     
     protected CompoundTag write() {
         CompoundTag compound = new CompoundTag();
@@ -324,7 +324,6 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         setActive(ReactorActivity.INACTIVE);
     }
     
-    
     private IReactorSimulation simulation = createSimulation();
     
     IReactorSimulation createSimulation() {
@@ -347,6 +346,11 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     
     @Override
     public synchronized void tick() {
+        
+        if (updateBlockStates) {
+            updateBlockStates = false;
+            updateBlockStates();
+        }
         
         simulation.tick();
         if (autoEjectWaste) {
