@@ -1,3 +1,18 @@
+# 1.17.1-0.6.0-alpha.2
+ComputerCraft
+
+## Reactor
+ - Re-enable computer port
+ - fix possible deadlock state and race condition
+
+## Turbine
+ - Re-enable computer port
+ - fix possible deadlock state and race condition
+
+## Heat Exchanger
+ - Re-enable computer port
+ - Fix stack overflow with coolant port
+ 
 # 1.17.1-0.6.0-alpha.1
 Modular multi-blocks
 
