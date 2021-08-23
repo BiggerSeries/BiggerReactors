@@ -13,6 +13,7 @@ import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorBaseBlock;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorFuelRod;
+import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorManifold;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorSimulation;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.classic.ClassicReactorSimulation;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.experimental.MultithreadedReactorSimulation;
@@ -42,7 +43,25 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         minSize.set(3);
         maxSize.set(Config.Reactor.MaxLength, Config.Reactor.MaxHeight, Config.Reactor.MaxWidth);
         interiorValidator = ReactorModeratorRegistry::isBlockAllowed;
+        validationStartedCallback = () -> {
+            foundRods = 0;
+            foundManifolds = 0;
+        };
+        blockValidatedCallback = (block) -> {
+            if(block == ReactorFuelRod.INSTANCE){
+                foundRods++;
+            }
+            if(block == ReactorManifold.INSTANCE){
+                foundManifolds++;
+            }
+        };
         setAssemblyValidator(genericController -> {
+            if(foundRods > fuelRods.size()){
+                throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.dangling_rod"));
+            }
+            if(foundManifolds > manifolds.size()){
+                throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.dangling_manifold"));
+            }
             if (terminals.isEmpty()) {
                 throw new ValidationError("multiblock.error.biggerreactors.no_terminal");
             }
@@ -120,22 +139,16 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             for (ReactorManifoldTile manifold : manifolds) {
                 if (manifold.lastCheckedTick != tick) {
                     BlockPos pos = manifold.getBlockPos();
-                    throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.dangling_manifold", pos.getX(), pos.getY(), pos.getZ()));
+                    throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.disconnected_manifold", pos.getX(), pos.getY(), pos.getZ()));
                 }
             }
-            
-            Util.chunkCachedBlockStateIteration(minCoord(), maxCoord(), world, (block, pos) -> {
-                if (block.getBlock() instanceof ReactorBaseBlock) {
-                    mutableBlockPos.set(pos.x, pos.y, pos.z);
-                    if (!blocks.containsPos(mutableBlockPos)) {
-                        throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.dangling_internal_part", pos.x, pos.y, pos.z));
-                    }
-                }
-            });
             
             return true;
         });
     }
+    
+    private int foundRods = 0;
+    private int foundManifolds = 0;
     
     private boolean updateBlockStates = false;
     
