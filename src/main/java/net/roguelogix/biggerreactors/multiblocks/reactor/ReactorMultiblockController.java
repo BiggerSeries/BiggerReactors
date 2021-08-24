@@ -24,6 +24,7 @@ import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorType;
 import net.roguelogix.biggerreactors.multiblocks.reactor.tiles.*;
 import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
 import net.roguelogix.phosphophyllite.Phosphophyllite;
+import net.roguelogix.phosphophyllite.multiblock.MultiblockTileModule;
 import net.roguelogix.phosphophyllite.multiblock.ValidationError;
 import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblockController;
 import net.roguelogix.phosphophyllite.repack.org.joml.Vector3i;
@@ -48,18 +49,18 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             foundManifolds = 0;
         };
         blockValidatedCallback = (block) -> {
-            if(block == ReactorFuelRod.INSTANCE){
+            if (block == ReactorFuelRod.INSTANCE) {
                 foundRods++;
             }
-            if(block == ReactorManifold.INSTANCE){
+            if (block == ReactorManifold.INSTANCE) {
                 foundManifolds++;
             }
         };
         setAssemblyValidator(genericController -> {
-            if(foundRods > fuelRods.size()){
+            if (foundRods > fuelRods.size()) {
                 throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.dangling_rod"));
             }
-            if(foundManifolds > manifolds.size()){
+            if (foundManifolds > manifolds.size()) {
                 throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.dangling_manifold"));
             }
             if (terminals.isEmpty()) {
@@ -71,22 +72,23 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             if (!powerPorts.isEmpty() && !coolantPorts.isEmpty()) {
                 throw new ValidationError("multiblock.error.biggerreactors.coolant_and_power_ports");
             }
-            BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
             
             long tick = Phosphophyllite.tickNumber();
             
             for (ReactorControlRodTile controlRod : controlRods) {
-                mutableBlockPos.set(controlRod.getBlockPos());
-                if (mutableBlockPos.getY() != maxCoord().y()) {
-                    throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.control_rod_not_on_top", controlRod.getBlockPos().getX(), controlRod.getBlockPos().getY(), controlRod.getBlockPos().getZ()));
+                var controlRodPos = controlRod.getBlockPos();
+                if (controlRodPos.getY() != maxCoord().y()) {
+                    throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.control_rod_not_on_top", controlRodPos.getX(), controlRodPos.getY(), controlRodPos.getZ()));
                 }
+                MultiblockTileModule<?, ?> currentModule = controlRod.multiblockModule();
                 for (int i = 0; i < maxCoord().y() - minCoord().y() - 1; i++) {
-                    mutableBlockPos.move(0, -1, 0);
-                    ReactorBaseTile tile = blocks.getTile(mutableBlockPos);
-                    if (!(tile instanceof ReactorFuelRodTile)) {
-                        throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.fuel_rod_gap", controlRod.getBlockPos().getX(), controlRod.getBlockPos().getY() + (-1 - i), controlRod.getBlockPos().getZ()));
+                    currentModule = currentModule.getNeighbor(Direction.DOWN);
+                    
+                    if (currentModule == null || !(currentModule.iface instanceof ReactorFuelRodTile)) {
+                        throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.fuel_rod_gap", controlRodPos.getX(), controlRodPos.getY() + (-1 - i), controlRodPos.getZ()));
                     }
-                    ((ReactorFuelRodTile) tile).lastCheckedTick = tick;
+                    
+                    ((ReactorFuelRodTile) currentModule.iface).lastCheckedTick = tick;
                 }
             }
             
@@ -96,7 +98,11 @@ public class ReactorMultiblockController extends RectangularMultiblockController
                 }
             }
             
-            ArrayList<ReactorManifoldTile> manifoldsToCheck = new ArrayList<>();
+            BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+            
+            ArrayList<MultiblockTileModule<?, ?>> manifoldsToCheck = new ArrayList<>();
+            
+            final var directions = Direction.values();
             
             for (ReactorManifoldTile manifold : manifolds) {
                 BlockPos pos = manifold.getBlockPos();
@@ -104,33 +110,37 @@ public class ReactorMultiblockController extends RectangularMultiblockController
                 if (pos.getX() == minCoord().x() + 1 || pos.getX() == maxCoord().x() - 1 ||
                         pos.getY() == minCoord().y() + 1 || pos.getY() == maxCoord().y() - 1 ||
                         pos.getZ() == minCoord().z() + 1 || pos.getZ() == maxCoord().z() - 1) {
-                    for (Direction value : Direction.values()) {
-                        mutableBlockPos.set(pos);
-                        mutableBlockPos.move(value);
-                        BlockEntity edgeTile = blocks.getTile(mutableBlockPos);
-                        if (edgeTile == null) {
+                    var manifoldModule = manifold.multiblockModule();
+                    for (int i = 0; i < 6; i++) {
+                        final var direction = directions[i];
+                        final MultiblockTileModule<?, ?> neighborModule = manifoldModule.getNeighbor(direction);
+                        if (neighborModule == null) {
                             continue;
                         }
-                        if (!(edgeTile instanceof ReactorGlassTile) && ((ReactorBaseBlock) edgeTile.getBlockState().getBlock()).isGoodForExterior()) {
-                            manifoldsToCheck.add(manifold);
+                        final BlockEntity neighborTile = neighborModule.iface;
+                        if (!(neighborTile instanceof ReactorGlassTile) && ((ReactorBaseBlock) neighborTile.getBlockState().getBlock()).isGoodForExterior()) {
+                            manifoldsToCheck.add(manifoldModule);
                             manifold.lastCheckedTick = tick;
                             break;
                         }
                     }
                 }
             }
-            
+    
             while (!manifoldsToCheck.isEmpty()) {
                 // done like this to avoid array shuffling
-                ReactorManifoldTile manifoldTile = manifoldsToCheck.remove(manifoldsToCheck.size() - 1);
-                manifoldTile.lastCheckedTick = tick;
-                for (Direction value : Direction.values()) {
-                    mutableBlockPos.set(manifoldTile.getBlockPos());
-                    mutableBlockPos.move(value);
-                    ReactorBaseTile tile = blocks.getTile(mutableBlockPos);
-                    if (tile instanceof ReactorManifoldTile) {
-                        if (((ReactorManifoldTile) tile).lastCheckedTick != tick) {
-                            manifoldsToCheck.add((ReactorManifoldTile) tile);
+                MultiblockTileModule<?, ?> manifoldModule = manifoldsToCheck.remove(manifoldsToCheck.size() - 1);
+                for (int i = 0; i < 6; i++) {
+                    final var direction = directions[i];
+                    final MultiblockTileModule<?, ?> neighborModule = manifoldModule.getNeighbor(direction);
+                    if (neighborModule == null) {
+                        continue;
+                    }
+                    final BlockEntity neighborTile = neighborModule.iface;
+                    if (neighborTile instanceof ReactorManifoldTile neighborManifoldTile) {
+                        if (neighborManifoldTile.lastCheckedTick != tick) {
+                            manifoldsToCheck.add(neighborModule);
+                            neighborManifoldTile.lastCheckedTick = tick;
                         }
                     }
                 }
