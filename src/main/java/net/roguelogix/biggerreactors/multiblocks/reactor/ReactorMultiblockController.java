@@ -167,7 +167,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     private final Set<ReactorTerminalTile> terminals = new HashSet<>();
     private final List<ReactorControlRodTile> controlRods = new ArrayList<>();
     private final Set<ReactorFuelRodTile> fuelRods = new LinkedHashSet<>();
-    private final ArrayList<Set<ReactorFuelRodTile>> fuelRodsByLevel = new ArrayList<>();
+    private final ArrayList<ArrayList<ReactorFuelRodTile>> fuelRodsByLevel = new ArrayList<>();
     private final Set<ReactorPowerTapTile> powerPorts = new HashSet<>();
     private final Set<ReactorAccessPortTile> accessPorts = new HashSet<>();
     private final Set<ReactorCoolantPortTile> coolantPorts = new HashSet<>();
@@ -320,10 +320,13 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         collectFuel();
         
         int levels = this.maxCoord().y() - this.minCoord().y() - 1;
+        final int rodsPerLevel = fuelRods.size() / levels;
         fuelRodsByLevel.clear();
         fuelRodsByLevel.ensureCapacity(levels);
         for (int i = 0; i < levels; i++) {
-            fuelRodsByLevel.add(new LinkedHashSet<>());
+            var newList = new ArrayList<ReactorFuelRodTile>();
+            newList.ensureCapacity(rodsPerLevel);
+            fuelRodsByLevel.add(newList);
         }
         
         fuelRods.forEach(rod -> {
