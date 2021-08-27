@@ -18,6 +18,7 @@ import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchang
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerEvaporatorChannelTile;
 import net.roguelogix.biggerreactors.util.FluidTransitionTank;
 import net.roguelogix.phosphophyllite.Phosphophyllite;
+import net.roguelogix.phosphophyllite.multiblock.MultiblockTileModule;
 import net.roguelogix.phosphophyllite.multiblock.ValidationError;
 import net.roguelogix.phosphophyllite.multiblock.Validator;
 import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblockController;
@@ -117,9 +118,14 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
             if (nextDirection == null) {
                 throw new ValidationError("Unknown channel verification error, this shouldn't be possible " + mutableBlockPos);
             }
+            MultiblockTileModule<HeatExchangerBaseTile, HeatExchangerMultiblockController> currentModule = coolantPort.multiblockModule();
             while (true) {
                 mutableBlockPos.move(nextDirection);
-                HeatExchangerBaseTile channelTile = blocks.getTile(mutableBlockPos);
+                currentModule = currentModule.getNeighbor(nextDirection);
+                if(currentModule == null){
+                    throw new ValidationError("Unknown channel verification error, this shouldn't be possible " + mutableBlockPos);
+                }
+                HeatExchangerBaseTile channelTile = currentModule.iface;
                 if (channelTile instanceof HeatExchangerCoolantPortTile) {
                     break;
                 }

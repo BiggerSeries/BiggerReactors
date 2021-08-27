@@ -59,7 +59,7 @@ public class ModernReactorSimulation implements IReactorSimulation {
             new Vector3i(+0, +0, -1)
     };
     
-    public ModernReactorSimulation(double ambientTemperature){
+    public ModernReactorSimulation(double ambientTemperature) {
         ambientHeat.setInfinite(true);
         ambientHeat.setTemperature(ambientTemperature + 273.15);
         caseHeat.setTemperature(ambientTemperature + 273.15);
@@ -129,14 +129,15 @@ public class ModernReactorSimulation implements IReactorSimulation {
         fuelToManifoldSurfaceArea = 0;
         for (ControlRod controlRod : controlRods) {
             for (int i = 0; i < y; i++) {
-                for (Vector2i direction : cardinalDirections) {
+                for (int j = 0; j < 4; j++) {
+                    Vector2i direction = cardinalDirections[j];
                     if (controlRod.x + direction.x < 0 || controlRod.x + direction.x >= x || controlRod.z + direction.y < 0 || controlRod.z + direction.y >= z) {
                         fuelToCasingRFKT += Config.Reactor.Modern.CasingHeatTransferRFMKT;
                         continue;
                     }
                     ReactorModeratorRegistry.IModeratorProperties properties = moderatorProperties[controlRod.x + direction.x][i][controlRod.z + direction.y];
                     if (properties != null) {
-                        if (properties instanceof CoolantTank) {
+                        if (properties == coolantTank) {
                             // manifold, dynamic heat transfer rate
                             fuelToManifoldSurfaceArea++;
                         } else {
@@ -157,10 +158,11 @@ public class ModernReactorSimulation implements IReactorSimulation {
             for (int j = 0; j < y; j++) {
                 for (int k = 0; k < z; k++) {
                     ReactorModeratorRegistry.IModeratorProperties properties = moderatorProperties[i][j][k];
-                    if (properties instanceof CoolantTank) {
+                    if (properties == coolantTank) {
                         manifoldCount++;
                         // its a manifold here, need to consider its surface area
-                        for (Vector3i axisDirection : axisDirections) {
+                        for (int l = 0; l < 6; l++) {
+                            final var axisDirection = axisDirections[l];
                             int neighborX = i + axisDirection.x;
                             int neighborY = j + axisDirection.y;
                             int neighborZ = k + axisDirection.z;
@@ -227,7 +229,6 @@ public class ModernReactorSimulation implements IReactorSimulation {
         output.transferWith(caseHeat, casingToCoolantSystemRFKT);
         caseHeat.transferWith(ambientHeat, casingToAmbientRFKT);
     }
-    
     
     private int rodToIrradiate = 0;
     private int yLevelToIrradiate = 0;
