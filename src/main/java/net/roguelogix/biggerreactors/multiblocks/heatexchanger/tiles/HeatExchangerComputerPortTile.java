@@ -38,7 +38,7 @@ public class HeatExchangerComputerPortTile extends HeatExchangerBaseTile {
         if (cap == CAPABILITY_PERIPHERAL) {
             return HeatExchangerPeripheral.create(this::controller).cast();
         }
-        return LazyOptional.empty();
+        return super.capability(cap, side);
     }
     
 }

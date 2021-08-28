@@ -119,7 +119,7 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             return itemStackHandler.cast();
         }
-        return super.getCapability(cap, side);
+        return super.capability(cap, side);
     }
     
     @Override

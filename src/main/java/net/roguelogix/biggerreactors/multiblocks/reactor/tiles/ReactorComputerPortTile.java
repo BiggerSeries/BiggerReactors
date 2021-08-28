@@ -48,7 +48,7 @@ public class ReactorComputerPortTile extends ReactorBaseTile implements IOnAssem
         if (cap == CAPABILITY_PERIPHERAL) {
             return peripheralCapability.cast();
         }
-        return LazyOptional.empty();
+        return super.capability(cap, side);
     }
     
     @Override

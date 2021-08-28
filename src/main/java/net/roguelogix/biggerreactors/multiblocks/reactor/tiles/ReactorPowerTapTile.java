@@ -43,7 +43,7 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophyl
         if (cap == CapabilityEnergy.ENERGY) {
             return LazyOptional.of(() -> this).cast();
         }
-        return super.getCapability(cap, side);
+        return super.capability(cap, side);
     }
     
     private boolean connected = false;

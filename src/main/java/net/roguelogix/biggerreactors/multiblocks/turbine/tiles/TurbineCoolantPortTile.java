@@ -63,7 +63,7 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphop
 //        if (cap == GAS_HANDLER_CAPABILITY) {
 //            return LazyOptional.of(() -> MekanismGasWrappers.wrap(this)).cast();
 //        }
-        return super.getCapability(cap, side);
+        return super.capability(cap, side);
     }
     
     private ITurbineFluidTank transitionTank;

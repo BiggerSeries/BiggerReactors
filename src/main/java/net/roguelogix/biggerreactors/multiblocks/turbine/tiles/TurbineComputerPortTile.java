@@ -38,7 +38,7 @@ public class TurbineComputerPortTile extends TurbineBaseTile {
         if (cap == CAPABILITY_PERIPHERAL) {
             return TurbinePeripheral.create(this::controller).cast();
         }
-        return LazyOptional.empty();
+        return super.capability(cap, side);
     }
     
 }
