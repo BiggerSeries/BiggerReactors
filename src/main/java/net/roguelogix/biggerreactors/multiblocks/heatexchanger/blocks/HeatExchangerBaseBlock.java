@@ -53,7 +53,7 @@ public abstract class HeatExchangerBaseBlock extends PhosphophylliteBlock implem
     
     @Override
     public InteractionResult onUse(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        if (hand == InteractionHand.MAIN_HAND && state.getValue(ASSEMBLED)) {
+        if (hand == InteractionHand.MAIN_HAND && state.hasProperty(ASSEMBLED) && state.getValue(ASSEMBLED)) {
             if (level.getBlockEntity(pos) instanceof MenuProvider menuProvider) {
                 if (!level.isClientSide) {
                     NetworkHooks.openGui((ServerPlayer) player, menuProvider, pos);
