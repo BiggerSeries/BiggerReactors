@@ -1,3 +1,24 @@
+# 1.17.1-0.6.0-alpha.3
+*I AM, **S P E E D***
+
+~~except on unload, that needs work~~
+
+## Reactor
+ - Assembly tick optimizations, 50% magic
+ - Delegate to correct capability super method
+
+## Turbine
+ - Assembly tick optimizations
+ - Delegate to correct capability super method
+ - Query for ASSEMBLED blocks state existence before value
+
+## Heat Exchanger
+ - Delegate to correct capability super method
+ - Query for ASSEMBLED blocks state existence before value
+
+## Misc
+ - Switch to parchment mappings
+
 # 1.17.1-0.6.0-alpha.2
 ComputerCraft
 
