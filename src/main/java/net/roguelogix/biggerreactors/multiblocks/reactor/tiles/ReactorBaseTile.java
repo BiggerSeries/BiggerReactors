@@ -15,6 +15,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class ReactorBaseTile extends PhosphophylliteTile implements IRectangularMultiblockTile<ReactorBaseTile, ReactorMultiblockController> {
     
+    public int index = -1;
+    
     public ReactorBaseTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
         super(tileEntityTypeIn, pos, state);
     }

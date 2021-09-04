@@ -195,24 +195,31 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     @Override
     protected synchronized void onPartAttached(ReactorBaseTile tile) {
         if (tile instanceof ReactorTerminalTile) {
+            tile.index = terminals.size();
             terminals.add((ReactorTerminalTile) tile);
         }
         if (tile instanceof ReactorControlRodTile) {
+            tile.index = controlRods.size();
             controlRods.add((ReactorControlRodTile) tile);
         }
         if (tile instanceof ReactorFuelRodTile) {
+            tile.index = fuelRods.size();
             fuelRods.add((ReactorFuelRodTile) tile);
         }
         if (tile instanceof ReactorPowerTapTile) {
+            tile.index = powerPorts.size();
             powerPorts.add((ReactorPowerTapTile) tile);
         }
         if (tile instanceof ReactorAccessPortTile) {
+            tile.index = accessPorts.size();
             accessPorts.add((ReactorAccessPortTile) tile);
         }
         if (tile instanceof ReactorCoolantPortTile) {
+            tile.index = coolantPorts.size();
             coolantPorts.add((ReactorCoolantPortTile) tile);
         }
         if (tile instanceof ReactorManifoldTile) {
+            tile.index = manifolds.size();
             manifolds.add((ReactorManifoldTile) tile);
         }
     }
@@ -231,16 +238,18 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             // because order doesnt matter after a reactor is disassembled
             // should help with chunk unload times
             // yes this is specific to the arraylist
-            int index = controlRods.indexOf(tile);
-            if (index != -1) {
-                controlRods.set(index, controlRods.get(controlRods.size() - 1));
-                controlRods.remove(controlRods.size() - 1);
+            int index = tile.index;
+            var endControlRod = controlRods.pop();
+            if (index != controlRods.size()) {
+                endControlRod.index = index;
+                controlRods.set(index, endControlRod);
             }
         }
         if (tile instanceof ReactorFuelRodTile) {
-            int index = fuelRods.indexOf(tile);
-            final var endFuelRod = fuelRods.remove(fuelRods.size() - 1);
+            int index = tile.index;
+            final var endFuelRod = fuelRods.pop();
             if (index != fuelRods.size()) {
+                endFuelRod.index = index;
                 fuelRods.set(index, endFuelRod);
             }
         }
@@ -254,10 +263,11 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             coolantPorts.remove(tile);
         }
         if (tile instanceof ReactorManifoldTile) {
-            int index = manifolds.indexOf(tile);
-            final var endFuelRod = manifolds.remove(manifolds.size() - 1);
+            int index = tile.index;
+            final var endManifold = manifolds.pop();
             if (index != manifolds.size()) {
-                manifolds.set(index, endFuelRod);
+                endManifold.index = index;
+                manifolds.set(index, endManifold);
             }
         }
     }
