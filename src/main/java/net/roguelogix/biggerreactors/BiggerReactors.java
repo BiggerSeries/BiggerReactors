@@ -64,7 +64,7 @@ public class BiggerReactors {
         dataPackRegistries = null;
     }
 
-    public void onTagsUpdatedEvent(final TagsUpdatedEvent.CustomTagTypes tagsUpdatedEvent) {
+    public void onTagsUpdatedEvent(final TagsUpdatedEvent tagsUpdatedEvent) {
         if(dataPackRegistries == null){
             return;
         }
