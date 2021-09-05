@@ -1,0 +1,15 @@
+name: builds
+on: [push]
+jobs:
+  reobfJar:
+    runs-on: Felix
+    steps:
+      - uses: actions/checkout@v2
+      - run: git submodule update --init --recursive
+      - run: ./gradlew publish
+      - run: mkdir jars
+      - run: mv build/libs/biggerreactors-* jars/
+      - uses: actions/upload-artifact@v2
+        with:
+          name: jars
+          path: jars/*
