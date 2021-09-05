@@ -1,11 +1,12 @@
 package net.roguelogix.biggerreactors;
 
+import net.roguelogix.phosphophyllite.config.ConfigFormat;
 import net.roguelogix.phosphophyllite.config.PhosphophylliteConfig;
 import net.roguelogix.phosphophyllite.registry.RegisterConfig;
 
 @SuppressWarnings({"FieldMayBeFinal", "unused"})
 @RegisterConfig
-@PhosphophylliteConfig
+@PhosphophylliteConfig(format = ConfigFormat.TOML)
 public class Config {
     
     @PhosphophylliteConfig.EnableAdvanced
