@@ -8,9 +8,10 @@ import net.roguelogix.phosphophyllite.registry.IPhosphophylliteOre;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 import net.roguelogix.phosphophyllite.registry.RegisterOre;
 
-@RegisterOre
+
 public class YelloriteOre extends Block implements IPhosphophylliteOre {
     
+    @RegisterOre
     @RegisterBlock(name = "yellorite_ore")
     public static final YelloriteOre INSTANCE = new YelloriteOre();
     
