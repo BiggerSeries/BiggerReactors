@@ -1,3 +1,11 @@
+# 1.17.1-0.6.0-alpha.4
+I'm a strong independent mod that doesn't need any other repository to build me 
+
+# Misc
+ - Built directly from BiggerReactors repo, w/ Phosphophyllite submodule
+ - Oregen fixed (mostly in Phos)
+ - Config format changed to TOML by default, will still read/use json5 for existing configs
+
 # 1.17.1-0.6.0-alpha.3.1
 update forge to 37.0.53
 
