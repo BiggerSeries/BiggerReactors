@@ -321,12 +321,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     ITurbineSimulation simulation = createSimulation();
     
     private static ITurbineSimulation createSimulation() {
-        switch (BiggerReactors.CONFIG.mode) {
-            case MODERN:
-            case EXPERIMENTAL:
-            default:
-                return new ModernTurbineSimulation();
-        }
+        return new ModernTurbineSimulation();
     }
     
     public ITurbineSimulation simulation() {
