@@ -27,6 +27,7 @@ import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblo
 import net.roguelogix.phosphophyllite.repack.org.joml.*;
 import net.roguelogix.phosphophyllite.util.Util;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.lang.Math;
@@ -567,6 +568,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         simulation.setCoilEngaged(engaged);
     }
     
+    @Nonnull
     protected CompoundTag write() {
         return simulation().serializeNBT();
     }

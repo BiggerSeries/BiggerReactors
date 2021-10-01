@@ -307,6 +307,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         updateBlockStates = true;
     }
     
+    @Nonnull
     protected CompoundTag write() {
         CompoundTag compound = new CompoundTag();
         {

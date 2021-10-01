@@ -26,6 +26,7 @@ import net.roguelogix.phosphophyllite.repack.org.joml.Vector3i;
 import net.roguelogix.phosphophyllite.util.HeatBody;
 import net.roguelogix.phosphophyllite.util.Util;
 
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -386,6 +387,7 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
     }
     
     
+    @Nonnull
     @Override
     protected CompoundTag write() {
         CompoundTag nbt = super.write();
