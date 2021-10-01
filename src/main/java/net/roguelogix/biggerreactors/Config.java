@@ -14,8 +14,6 @@ public class Config {
     private static boolean EnableAdvancedConfig = false;
     
     public enum Modes {
-        // classic BR, if available
-        CLASSIC,
         // Modern BiR, familiar yet different
         MODERN,
         // Mechanics of modern, usually, may be unstable, may be more resource intensive, may not even run

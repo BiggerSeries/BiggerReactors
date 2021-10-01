@@ -384,8 +384,6 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     
     IReactorSimulation createSimulation() {
         switch (Config.mode) {
-            case CLASSIC:
-                return new ClassicReactorSimulation();
             default:
             case MODERN:
                 return new ModernReactorSimulation(20);

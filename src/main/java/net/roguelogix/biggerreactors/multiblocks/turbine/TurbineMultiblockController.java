@@ -321,8 +321,6 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     
     private static ITurbineSimulation createSimulation() {
         switch (Config.mode) {
-            case CLASSIC:
-                return new ClassicTurbineSimulation();
             case MODERN:
             case EXPERIMENTAL:
             default:
