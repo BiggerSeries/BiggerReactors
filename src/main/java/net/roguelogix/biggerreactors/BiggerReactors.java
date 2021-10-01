@@ -30,6 +30,8 @@ import net.roguelogix.biggerreactors.multiblocks.turbine.tiles.TurbineRotorBeari
 import net.roguelogix.biggerreactors.registries.FluidTransitionRegistry;
 import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
 import net.roguelogix.biggerreactors.registries.TurbineCoilRegistry;
+import net.roguelogix.phosphophyllite.config.ConfigFormat;
+import net.roguelogix.phosphophyllite.registry.RegisterConfig;
 import net.roguelogix.phosphophyllite.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,9 +43,13 @@ public class BiggerReactors {
     public static final String modid = "biggerreactors";
 
     public static final Logger LOGGER = LogManager.getLogger();
-
+    
+    @RegisterConfig(format = ConfigFormat.TOML)
+    public static final Config CONFIG = new Config();
+    
     public BiggerReactors() {
         new Registry();
+//        SimBench.main(null);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onClientSetup);
         MinecraftForge.EVENT_BUS.addListener(this::onTagsUpdatedEvent);
         MinecraftForge.EVENT_BUS.addListener(this::onAddReloadListenerEvent);
@@ -51,7 +57,6 @@ public class BiggerReactors {
         if (FMLEnvironment.dist == Dist.CLIENT) {
             MinecraftForge.EVENT_BUS.addListener(this::onRenderWorldLast);
         }
-
     }
 
     public static ServerResources dataPackRegistries;

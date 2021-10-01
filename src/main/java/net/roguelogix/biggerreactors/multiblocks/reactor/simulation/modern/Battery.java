@@ -1,7 +1,7 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.simulation.modern;
 
 import net.minecraft.nbt.CompoundTag;
-import net.roguelogix.biggerreactors.Config;
+import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorBattery;
 import net.roguelogix.phosphophyllite.util.HeatBody;
 
@@ -26,7 +26,7 @@ public class Battery extends HeatBody implements IReactorBattery {
         
         double rfTransferred = (newTemp - other.temperature()) * other.rfPerKelvin();
     
-        generatedLastTick = (long) (-rfTransferred * Config.Reactor.OutputMultiplier * Config.Reactor.PassiveOutputMultiplier);
+        generatedLastTick = (long) (-rfTransferred * BiggerReactors.CONFIG.Reactor.OutputMultiplier * BiggerReactors.CONFIG.Reactor.PassiveOutputMultiplier);
         stored += generatedLastTick;
         if(stored > capacity){
             stored = capacity;

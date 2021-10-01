@@ -9,15 +9,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluids;
-import net.roguelogix.biggerreactors.Config;
+import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineBaseBlock;
-import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorBearing;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorBlade;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorShaft;
 import net.roguelogix.biggerreactors.multiblocks.turbine.simulation.ITurbineSimulation;
-import net.roguelogix.biggerreactors.multiblocks.turbine.simulation.classic.ClassicTurbineSimulation;
 import net.roguelogix.biggerreactors.multiblocks.turbine.simulation.modern.ModernTurbineSimulation;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineActivity;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineState;
@@ -33,7 +30,10 @@ import net.roguelogix.phosphophyllite.util.Util;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.lang.Math;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -41,7 +41,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     public TurbineMultiblockController(Level world) {
         super(world, tile -> tile instanceof TurbineBaseTile, block -> block instanceof TurbineBaseBlock);
         minSize.set(5, 4, 5);
-        maxSize.set(Config.Turbine.MaxLength, Config.Turbine.MaxHeight, Config.Turbine.MaxWidth);
+        maxSize.set(BiggerReactors.CONFIG.Turbine.MaxLength, BiggerReactors.CONFIG.Turbine.MaxHeight, BiggerReactors.CONFIG.Turbine.MaxWidth);
         frameValidator = block -> false;
         exteriorValidator = frameValidator;
         interiorValidator = block -> block.defaultBlockState().isAir() || TurbineCoilRegistry.isBlockAllowed(block);
@@ -320,7 +320,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     ITurbineSimulation simulation = createSimulation();
     
     private static ITurbineSimulation createSimulation() {
-        switch (Config.mode) {
+        switch (BiggerReactors.CONFIG.mode) {
             case MODERN:
             case EXPERIMENTAL:
             default:

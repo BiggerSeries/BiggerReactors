@@ -9,7 +9,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.roguelogix.biggerreactors.Config;
+import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.multiblocks.reactor.containers.ReactorTerminalContainer;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorActivity;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorState;
@@ -169,12 +169,12 @@ public class CommonReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
         
         // (Top) Case heat gauge:
         Symbol<ReactorTerminalContainer> caseHeatGauge = new Symbol<>(screen, 107, 25, 18, 64, 0, 152, TextComponent.EMPTY);
-        caseHeatGauge.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonReactorTerminalScreen.renderHeatGauge(mS, caseHeatGauge, reactorState.caseHeatStored, Config.Reactor.GUI.HeatDisplayMax);
+        caseHeatGauge.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonReactorTerminalScreen.renderHeatGauge(mS, caseHeatGauge, reactorState.caseHeatStored, BiggerReactors.CONFIG.Reactor.GUI.HeatDisplayMax);
         screen.addElement(caseHeatGauge);
         
         // (Top) Fuel heat gauge:
         Symbol<ReactorTerminalContainer> fuelHeatGauge = new Symbol<>(screen, 129, 25, 18, 64, 0, 152, TextComponent.EMPTY);
-        fuelHeatGauge.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonReactorTerminalScreen.renderHeatGauge(mS, fuelHeatGauge, reactorState.fuelHeatStored, Config.Reactor.GUI.HeatDisplayMax);
+        fuelHeatGauge.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonReactorTerminalScreen.renderHeatGauge(mS, fuelHeatGauge, reactorState.fuelHeatStored, BiggerReactors.CONFIG.Reactor.GUI.HeatDisplayMax);
         screen.addElement(fuelHeatGauge);
     }
     

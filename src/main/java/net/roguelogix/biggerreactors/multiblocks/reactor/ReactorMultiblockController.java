@@ -11,13 +11,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
-import net.roguelogix.biggerreactors.Config;
+import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorBaseBlock;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorFuelRod;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorManifold;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorSimulation;
-import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.classic.ClassicReactorSimulation;
-import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.experimental.MultithreadedReactorSimulation;
+import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.modern.MultithreadedReactorSimulation;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.modern.ModernReactorSimulation;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorActivity;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorState;
@@ -43,7 +42,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         super(world, tile -> tile instanceof ReactorBaseTile, block -> block instanceof ReactorBaseBlock);
         
         minSize.set(3);
-        maxSize.set(Config.Reactor.MaxLength, Config.Reactor.MaxHeight, Config.Reactor.MaxWidth);
+        maxSize.set(BiggerReactors.CONFIG.Reactor.MaxLength, BiggerReactors.CONFIG.Reactor.MaxHeight, BiggerReactors.CONFIG.Reactor.MaxWidth);
         interiorValidator = ReactorModeratorRegistry::isBlockAllowed;
         validationStartedCallback = () -> {
             foundRods = 0;
@@ -383,7 +382,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     private IReactorSimulation simulation = createSimulation();
     
     IReactorSimulation createSimulation() {
-        switch (Config.mode) {
+        switch (BiggerReactors.CONFIG.mode) {
             default:
             case MODERN:
                 return new ModernReactorSimulation(20);
@@ -573,7 +572,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         // outlets have already taken as much as they can, now just hose it out the inlets too
         // this will only actually do anything with items, so, we only care if there is a full ingot or more
         // if/when fluid fueling is added, only oulets will output it
-        if (simulation.fuelTank().waste() > Config.Reactor.FuelMBPerIngot) {
+        if (simulation.fuelTank().waste() > BiggerReactors.CONFIG.Reactor.FuelMBPerIngot) {
             for (ReactorAccessPortTile accessPort : accessPorts) {
                 long wastePushed = accessPort.pushWaste((int) simulation.fuelTank().waste(), false);
                 forceDirty = simulation.fuelTank().extractWaste(wastePushed, false) > 0;

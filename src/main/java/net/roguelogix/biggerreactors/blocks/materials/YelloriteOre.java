@@ -3,7 +3,7 @@ package net.roguelogix.biggerreactors.blocks.materials;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.Material;
-import net.roguelogix.biggerreactors.Config;
+import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.phosphophyllite.registry.IPhosphophylliteOre;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 import net.roguelogix.phosphophyllite.registry.RegisterOre;
@@ -25,17 +25,17 @@ public class YelloriteOre extends Block implements IPhosphophylliteOre {
     
     @Override
     public int size() {
-        return Config.WorldGen.YelloriteMaxOrePerCluster;
+        return BiggerReactors.CONFIG.WorldGen.YelloriteMaxOrePerCluster;
     }
     
     @Override
     public int count() {
-        return Config.WorldGen.YelloriteOreMaxClustersPerChunk;
+        return BiggerReactors.CONFIG.WorldGen.YelloriteOreMaxClustersPerChunk;
     }
     
     @Override
     public int maxLevel() {
-        return Config.WorldGen.YelloriteOreMaxSpawnY;
+        return BiggerReactors.CONFIG.WorldGen.YelloriteOreMaxSpawnY;
     }
     
     @Override
@@ -45,6 +45,6 @@ public class YelloriteOre extends Block implements IPhosphophylliteOre {
     
     @Override
     public boolean doSpawn() {
-        return Config.WorldGen.EnableYelloriteGeneration;
+        return BiggerReactors.CONFIG.WorldGen.EnableYelloriteGeneration;
     }
 }
