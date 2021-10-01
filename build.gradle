@@ -134,8 +134,7 @@ dependencies {
 //
 //    compileOnly "mekanism:Mekanism:${mekanism_mc_version}-${mekanism_version}:api"
 
-    // compile against the JEI API but do not include it at runtime
-//    compileOnly fg.deobf("mezz.jei:jei-${jei_mc_version}:${jei_version}:api")
+    runtimeOnly fg.deobf('curse.maven:JEI-238222:3448057')
 
 }
 
