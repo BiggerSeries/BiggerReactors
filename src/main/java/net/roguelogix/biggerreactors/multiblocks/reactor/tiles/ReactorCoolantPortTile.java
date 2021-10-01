@@ -20,10 +20,10 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.roguelogix.biggerreactors.multiblocks.reactor.util.ReactorTransitionTank;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorAccessPort;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorCoolantPort;
 import net.roguelogix.biggerreactors.multiblocks.reactor.containers.ReactorCoolantPortContainer;
-import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorCoolantTank;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorCoolantPortState;
 import net.roguelogix.phosphophyllite.fluids.FluidHandlerWrapper;
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
@@ -68,7 +68,8 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
         return super.capability(cap, side);
     }
     
-    private IReactorCoolantTank transitionTank;
+    @Nullable
+    private ReactorTransitionTank transitionTank;
     
     @Override
     public int tankCount() {
@@ -139,7 +140,7 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
         if (!connected || direction == INLET) {
             return 0;
         }
-        if (handlerOptional.isPresent()) {
+        if (handlerOptional.isPresent() && transitionTank != null) {
             Fluid fluid = transitionTank.vaporType();
             long amount = transitionTank.vaporAmount();
             amount = transitionTank.drain(fluid, null, amount, true);
@@ -225,6 +226,7 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
         // Change IO direction.
         if (requestName.equals("setDirection")) {
             this.setDirection(((Integer) requestData != 0) ? OUTLET : INLET);
+            assert level != null;
             level.setBlock(this.worldPosition, this.getBlockState().setValue(PORT_DIRECTION_ENUM_PROPERTY, direction), 3);
         }
         
@@ -256,7 +258,7 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
     
     @Override
     public void onAssembly() {
-        this.transitionTank = controller().simulation().coolantTank();
+        this.transitionTank = controller().coolantTank();
         steamOutputDirection = getBlockState().getValue(BlockStates.FACING);
         neighborChanged();
     }

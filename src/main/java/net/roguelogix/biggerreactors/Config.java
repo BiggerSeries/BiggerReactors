@@ -14,6 +14,9 @@ public class Config {
         // Mechanics of modern, usually, may be unstable, may be more resource intensive, may not even run
         // if not applicable to multiblock, defaults to modern
         EXPERIMENTAL,
+        // Experimental, but allowed to use multiple threads
+        // don't blame me if you end up pissing off your server host
+        MULTITHREADED,
     }
     
     @ConfigValue(advanced = true)

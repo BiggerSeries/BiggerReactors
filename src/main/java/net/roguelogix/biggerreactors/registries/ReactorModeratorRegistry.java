@@ -10,6 +10,8 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.phosphophyllite.data.DataLoader;
+import net.roguelogix.phosphophyllite.robn.ROBNObject;
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,7 +20,7 @@ import java.util.Map;
 
 public class ReactorModeratorRegistry {
     
-    public interface IModeratorProperties {
+    public interface IModeratorProperties extends ROBNObject {
         double absorption();
         
         double heatEfficiency();
@@ -26,31 +28,26 @@ public class ReactorModeratorRegistry {
         double moderation();
         
         double heatConductivity();
+        
+        @Override
+        default Map<String, Object> toROBNMap() {
+            final Map<String, Object> map = new HashMap<>();
+            map.put("absorption", absorption());
+            map.put("heatEfficiency", heatEfficiency());
+            map.put("moderation", moderation());
+            map.put("heatConductivity", heatConductivity());
+            return map;
+        }
+        
+        @Override
+        default void fromROBNMap(Map<String, Object> map) {
+            throw new NotImplementedException("");
+        }
     }
     
-    public static final IModeratorProperties EMPTY_MODERATOR = new IModeratorProperties() {
-        @Override
-        public double absorption() {
-            return 0;
-        }
-    
-        @Override
-        public double heatEfficiency() {
-            return 0;
-        }
-    
-        @Override
-        public double moderation() {
-            return 1;
-        }
-    
-        @Override
-        public double heatConductivity() {
-            return 0;
-        }
-    };
-    
-    public static class ModeratorProperties implements IModeratorProperties {
+    public static class ModeratorProperties implements IModeratorProperties, ROBNObject {
+        
+        public static final ModeratorProperties EMPTY_MODERATOR = new ModeratorProperties(0, 0, 0, 0);
         
         public final double absorption;
         public final double heatEfficiency;
@@ -63,26 +60,28 @@ public class ReactorModeratorRegistry {
             this.moderation = moderation;
             this.heatConductivity = heatConductivity;
         }
-    
+        
         @Override
         public double absorption() {
             return absorption;
         }
-    
+        
         @Override
         public double heatEfficiency() {
             return heatEfficiency;
         }
-    
+        
         @Override
         public double moderation() {
             return moderation;
         }
-    
+        
         @Override
         public double heatConductivity() {
             return heatConductivity;
         }
+        
+        
     }
     
     private final static HashMap<Block, ModeratorProperties> registry = new HashMap<>();
@@ -135,7 +134,7 @@ public class ReactorModeratorRegistry {
         for (ReactorModeratorJsonData moderatorData : data) {
             
             ModeratorProperties properties = new ModeratorProperties(moderatorData.absorption, moderatorData.efficiency, moderatorData.moderation, moderatorData.conductivity);
-    
+            
             switch (moderatorData.type) {
                 case "tag": {
                     Tag<Block> blockTag = blockTags.getTag(moderatorData.location);

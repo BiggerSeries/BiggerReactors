@@ -1,9 +1,16 @@
-package net.roguelogix.biggerreactors.multiblocks.reactor.simulation.modern;
+package net.roguelogix.biggerreactors.multiblocks.reactor.simulation;
 
-import net.minecraft.nbt.CompoundTag;
-import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorFuelTank;
+import net.roguelogix.phosphophyllite.serialization.IPhosphophylliteSerializable;
+import net.roguelogix.phosphophyllite.serialization.PhosphophylliteCompound;
+import net.roguelogix.phosphophyllite.util.MethodsReturnNonnullByDefault;
 
-public class FuelTank implements IReactorFuelTank {
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
+class FuelTank implements IReactorSimulation.IFuelTank, IPhosphophylliteSerializable {
     
     private long capacity;
     
@@ -12,18 +19,22 @@ public class FuelTank implements IReactorFuelTank {
     
     private double partialUsed = 0;
     
+    private double burnedLastTick = 0;
+    
     void setCapacity(long capacity) {
         this.capacity = capacity;
     }
     
-    double burn(double amount) {
+    void burn(double amount) {
         if (Double.isInfinite(amount) || Double.isNaN(amount)) {
-            return 0;
+            burnedLastTick = 0;
+            return;
         }
+        
         double toProcess = partialUsed + amount;
         toProcess = Math.min(toProcess, (double) fuel);
         
-        double burnedThisTick = toProcess - partialUsed;
+        burnedLastTick = toProcess - partialUsed;
         
         partialUsed = toProcess;
         if (toProcess >= 1) {
@@ -32,8 +43,6 @@ public class FuelTank implements IReactorFuelTank {
             waste += toBurn;
             partialUsed -= toBurn;
         }
-        
-        return burnedThisTick;
     }
     
     @Override
@@ -107,20 +116,26 @@ public class FuelTank implements IReactorFuelTank {
     }
     
     @Override
-    public CompoundTag serializeNBT() {
-        CompoundTag nbt = new CompoundTag();
-        nbt.putLong("capacity", capacity);
-        nbt.putLong("fuel", fuel);
-        nbt.putLong("waste", waste);
-        nbt.putDouble("partialUsed", partialUsed);
-        return nbt;
+    public double burnedLastTick() {
+        return burnedLastTick;
+    }
+    
+    @Nullable
+    @Override
+    public PhosphophylliteCompound save() {
+        PhosphophylliteCompound compound = new PhosphophylliteCompound();
+        compound.put("capacity", capacity);
+        compound.put("fuel", fuel);
+        compound.put("waste", waste);
+        compound.put("partialUsed", partialUsed);
+        return compound;
     }
     
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        capacity = nbt.getLong("capacity");
-        fuel = nbt.getLong("fuel");
-        waste = nbt.getLong("waste");
-        partialUsed = nbt.getDouble("partialUsed");
+    public void load(@Nonnull PhosphophylliteCompound compound) {
+        capacity = compound.getLong("capacity");
+        fuel = compound.getLong("fuel");
+        waste = compound.getLong("waste");
+        partialUsed = compound.getDouble("partialUsed");
     }
 }

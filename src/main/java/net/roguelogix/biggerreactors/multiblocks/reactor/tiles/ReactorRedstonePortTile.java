@@ -135,7 +135,7 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProv
             }
             break;
             case OUTPUT_CASING_TEMP: {
-                double casingTemperature = controller().simulation().caseHeat();
+                double casingTemperature = controller().simulation().stackHeat();
                 if ((casingTemperature < mainVal) == reactorRedstonePortState.triggerAB.toBool()) {
                     shouldBeEmitting = true;
                 }

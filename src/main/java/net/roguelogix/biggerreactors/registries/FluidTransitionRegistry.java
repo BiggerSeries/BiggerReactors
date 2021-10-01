@@ -8,6 +8,8 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.phosphophyllite.data.DataLoader;
+import net.roguelogix.phosphophyllite.robn.ROBNObject;
+import org.apache.commons.lang3.NotImplementedException;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -17,7 +19,36 @@ import java.util.*;
 @ParametersAreNonnullByDefault
 public class FluidTransitionRegistry {
     
-    public static class FluidTransition {
+    public interface ITransitionProperties extends ROBNObject {
+        double latentHeat();
+        
+        double boilingPoint();
+        
+        double liquidRFMKT();
+        
+        double gasRFMKT();
+        
+        double turbineMultiplier();
+    
+        @Override
+        default Map<String, Object> toROBNMap() {
+            final Map<String, Object> map = new HashMap<>();
+            map.put("latentHeat", latentHeat());
+            map.put("boilingPoint", boilingPoint());
+            map.put("liquidRFMKT", liquidRFMKT());
+            map.put("gasRFMKT", gasRFMKT());
+            map.put("turbineMultiplier", turbineMultiplier());
+            return map;
+        }
+    
+        @Override
+        default void fromROBNMap(Map<String, Object> map) {
+            throw new NotImplementedException("");
+        }
+    }
+    
+    
+    public static class FluidTransition implements ITransitionProperties {
         public final List<Fluid> liquids;
         public final List<Fluid> gases;
         public final double latentHeat;
@@ -35,18 +66,43 @@ public class FluidTransitionRegistry {
             this.gasRFMKT = gasRFMKT;
             this.turbineMultiplier = turbineMultiplier;
         }
+    
+        @Override
+        public double latentHeat() {
+            return latentHeat;
+        }
+    
+        @Override
+        public double boilingPoint() {
+            return boilingPoint;
+        }
+    
+        @Override
+        public double liquidRFMKT() {
+            return liquidRFMKT;
+        }
+    
+        @Override
+        public double gasRFMKT() {
+            return gasRFMKT;
+        }
+    
+        @Override
+        public double turbineMultiplier() {
+            return turbineMultiplier;
+        }
     }
     
     private static final Map<Fluid, FluidTransition> liquidTransitions = new HashMap<>();
     private static final Map<Fluid, FluidTransition> gasTransitions = new HashMap<>();
     
     @Nullable
-    public static FluidTransition liquidTransition(Fluid liquid){
+    public static FluidTransition liquidTransition(Fluid liquid) {
         return liquidTransitions.get(liquid);
     }
     
     @Nullable
-    public static FluidTransition gasTransition(Fluid gas){
+    public static FluidTransition gasTransition(Fluid gas) {
         return gasTransitions.get(gas);
     }
     
@@ -64,14 +120,13 @@ public class FluidTransitionRegistry {
         
         @DataLoader.Range("(20,)")
         public double boilingPoint;
-    
+        
         @DataLoader.Range("(0,)")
         public double liquidThermalConductivity;
         
         @DataLoader.Range("(0,)")
         public double gasThermalConductivity;
-    
-    
+        
         @DataLoader.Range("[0,)")
         public double turbineMultiplier;
     }

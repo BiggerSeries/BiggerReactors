@@ -1,8 +1,8 @@
-package net.roguelogix.biggerreactors.multiblocks.reactor.simulation.modern;
+package net.roguelogix.biggerreactors.multiblocks.reactor.simulationold.modern;
 
 import net.minecraft.nbt.CompoundTag;
 import net.roguelogix.biggerreactors.BiggerReactors;
-import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorBattery;
+import net.roguelogix.biggerreactors.multiblocks.reactor.simulationold.IReactorBattery;
 import net.roguelogix.phosphophyllite.util.HeatBody;
 
 public class Battery extends HeatBody implements IReactorBattery {

@@ -1,11 +1,11 @@
-package net.roguelogix.biggerreactors.multiblocks.reactor.simulation.modern;
+package net.roguelogix.biggerreactors.multiblocks.reactor.simulationold.modern;
 
 import net.minecraft.nbt.CompoundTag;
 import net.roguelogix.biggerreactors.BiggerReactors;
-import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorBattery;
-import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorCoolantTank;
-import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorFuelTank;
-import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorSimulation;
+import net.roguelogix.biggerreactors.multiblocks.reactor.simulationold.IReactorBattery;
+import net.roguelogix.biggerreactors.multiblocks.reactor.simulationold.IReactorCoolantTank;
+import net.roguelogix.biggerreactors.multiblocks.reactor.simulationold.IReactorFuelTank;
+import net.roguelogix.biggerreactors.multiblocks.reactor.simulationold.IReactorSimulation;
 import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
 import net.roguelogix.phosphophyllite.registry.OnModLoad;
 import net.roguelogix.phosphophyllite.repack.org.joml.*;

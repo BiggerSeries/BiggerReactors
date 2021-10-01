@@ -1,10 +1,12 @@
-package net.roguelogix.biggerreactors.multiblocks.reactor.simulation.modern;
+package net.roguelogix.biggerreactors.multiblocks.reactor.simulationold.modern;
 
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
-import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorCoolantTank;
+import net.roguelogix.biggerreactors.multiblocks.reactor.simulationold.IReactorCoolantTank;
 import net.roguelogix.biggerreactors.util.FluidTransitionTank;
+
+import javax.annotation.Nonnull;
 
 public class CoolantTank extends FluidTransitionTank implements IReactorCoolantTank, ReactorModeratorRegistry.IModeratorProperties {
     public CoolantTank() {
@@ -22,14 +24,14 @@ public class CoolantTank extends FluidTransitionTank implements IReactorCoolantT
         dumpTank(OUT_TANK);
     }
     
-    private ReactorModeratorRegistry.IModeratorProperties airProperties = ReactorModeratorRegistry.EMPTY_MODERATOR;
-    private ReactorModeratorRegistry.IModeratorProperties liquidProperties = ReactorModeratorRegistry.EMPTY_MODERATOR;
+    private ReactorModeratorRegistry.IModeratorProperties airProperties = ReactorModeratorRegistry.ModeratorProperties.EMPTY_MODERATOR;
+    private ReactorModeratorRegistry.IModeratorProperties liquidProperties = ReactorModeratorRegistry.ModeratorProperties.EMPTY_MODERATOR;
     
     @Override
     protected void transitionUpdate() {
         airProperties = ReactorModeratorRegistry.blockModeratorProperties(Blocks.AIR);
         if (airProperties == null) {
-            airProperties = ReactorModeratorRegistry.EMPTY_MODERATOR;
+            airProperties = ReactorModeratorRegistry.ModeratorProperties.EMPTY_MODERATOR;
         }
         liquidProperties = airProperties;
         Fluid liquid = inFluid;
@@ -39,6 +41,10 @@ public class CoolantTank extends FluidTransitionTank implements IReactorCoolantT
                 liquidProperties = airProperties;
             }
         }
+    }
+    
+    public void setCoolantModerationProperties(@Nonnull ReactorModeratorRegistry.IModeratorProperties liquidProperties) {
+        this.liquidProperties = liquidProperties;
     }
     
     @Override
