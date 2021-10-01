@@ -33,7 +33,6 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
     protected Fluid outFluid;
     protected long outAmount = 0;
     
-    @Deprecated
     protected long rfTransferredLastTick;
     protected long transitionedLastTick;
     protected long maxTransitionedLastTick;
@@ -90,7 +89,6 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
         return maxTransitionedLastTick;
     }
     
-    @Deprecated
     public long rfTransferredLastTick() {
         return rfTransferredLastTick;
     }
@@ -114,7 +112,13 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
         return fill(fluid, amount, simulate, activeTransition);
     }
     
-    private long fill(@Nonnull Fluid fluid, long amount, boolean simulate, @Nullable FluidTransitionRegistry.FluidTransition transition) {
+    /**
+     * Use above fill from IPhosphophylliteFluidHandler unless you need to override the active transition
+     * you probably don't, so, don't use this
+     */
+    @Deprecated
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    public long fill(@Nonnull Fluid fluid, long amount, boolean simulate, @Nullable FluidTransitionRegistry.FluidTransition transition) {
         if (transition == null) {
             transition = selectTransition(fluid);
         }
@@ -208,6 +212,7 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
         outAmount += toTransition;
         
         rf = toTransition * activeTransition.latentHeat;
+        rfTransferredLastTick = (long) rf;
         if (!condenser) {
             rf *= -1;
         }
