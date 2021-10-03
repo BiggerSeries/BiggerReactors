@@ -10,7 +10,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluids;
-import net.roguelogix.biggerreactors.BiggerReactors;
+import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineBaseBlock;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorBlade;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorShaft;
@@ -42,7 +42,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     public TurbineMultiblockController(Level world) {
         super(world, tile -> tile instanceof TurbineBaseTile, block -> block instanceof TurbineBaseBlock);
         minSize.set(5, 4, 5);
-        maxSize.set(BiggerReactors.CONFIG.Turbine.MaxLength, BiggerReactors.CONFIG.Turbine.MaxHeight, BiggerReactors.CONFIG.Turbine.MaxWidth);
+        maxSize.set(Config.CONFIG.Turbine.MaxLength, Config.CONFIG.Turbine.MaxHeight, Config.CONFIG.Turbine.MaxWidth);
         frameValidator = block -> false;
         exteriorValidator = frameValidator;
         interiorValidator = block -> block.defaultBlockState().isAir() || TurbineCoilRegistry.isBlockAllowed(block);

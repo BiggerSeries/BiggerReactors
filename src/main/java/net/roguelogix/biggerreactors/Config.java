@@ -1,9 +1,14 @@
 package net.roguelogix.biggerreactors;
 
+import net.roguelogix.phosphophyllite.config.ConfigFormat;
 import net.roguelogix.phosphophyllite.config.ConfigValue;
+import net.roguelogix.phosphophyllite.registry.RegisterConfig;
 
 @SuppressWarnings("unused")
 public class Config {
+    
+    @RegisterConfig(format = ConfigFormat.TOML)
+    public static final Config CONFIG = new Config();
     
     @ConfigValue(hidden = true, enableAdvanced = true)
     private final boolean EnableAdvancedConfig = false;

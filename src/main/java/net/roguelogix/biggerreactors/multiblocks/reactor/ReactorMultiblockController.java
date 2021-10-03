@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
-import net.roguelogix.biggerreactors.BiggerReactors;
+import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorBaseBlock;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorFuelRod;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorManifold;
@@ -48,7 +48,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         super(world, tile -> tile instanceof ReactorBaseTile, block -> block instanceof ReactorBaseBlock);
         
         minSize.set(3);
-        maxSize.set(BiggerReactors.CONFIG.Reactor.MaxLength, BiggerReactors.CONFIG.Reactor.MaxHeight, BiggerReactors.CONFIG.Reactor.MaxWidth);
+        maxSize.set(Config.CONFIG.Reactor.MaxLength, Config.CONFIG.Reactor.MaxHeight, Config.CONFIG.Reactor.MaxWidth);
         interiorValidator = ReactorModeratorRegistry::isBlockAllowed;
         validationStartedCallback = () -> {
             foundRods = 0;
@@ -370,7 +370,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             airProperties = ReactorModeratorRegistry.ModeratorProperties.EMPTY_MODERATOR;
         }
         simulationDescription.setDefaultIModeratorProperties(airProperties);
-        simulation = simulationDescription.build(BiggerReactors.CONFIG.mode);
+        simulation = simulationDescription.build(Config.CONFIG.mode);
         if (simulationData != null) {
             simulation.load(simulationData);
         }
@@ -634,7 +634,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         // outlets have already taken as much as they can, now just hose it out the inlets too
         // this will only actually do anything with items, so, we only care if there is a full ingot or more
         // if/when fluid fueling is added, only oulets will output it
-        if (simulation.fuelTank().waste() > BiggerReactors.CONFIG.Reactor.FuelMBPerIngot) {
+        if (simulation.fuelTank().waste() > Config.CONFIG.Reactor.FuelMBPerIngot) {
             for (ReactorAccessPortTile accessPort : accessPorts) {
                 long wastePushed = accessPort.pushWaste((int) simulation.fuelTank().waste(), false);
                 forceDirty = simulation.fuelTank().extractWaste(wastePushed, false) > 0;

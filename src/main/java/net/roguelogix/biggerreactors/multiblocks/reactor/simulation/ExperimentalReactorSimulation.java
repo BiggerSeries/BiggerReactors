@@ -1,6 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.simulation;
 
-import net.roguelogix.biggerreactors.BiggerReactors;
+import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
 import net.roguelogix.phosphophyllite.repack.org.joml.Vector2ic;
 import net.roguelogix.phosphophyllite.repack.org.joml.Vector3ic;
@@ -77,11 +77,11 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
         }
         
         if (simulationDescription.passivelyCooled) {
-            output = battery = new Battery((((long) (x + 2) * (y + 2) * (z + 2)) - ((long) x * y * z)) * BiggerReactors.CONFIG.Reactor.PassiveBatteryPerExternalBlock);
+            output = battery = new Battery((((long) (x + 2) * (y + 2) * (z + 2)) - ((long) x * y * z)) * Config.CONFIG.Reactor.PassiveBatteryPerExternalBlock);
             coolantTank = null;
         } else {
-            long perSideCapacity = controlRods.length * y * BiggerReactors.CONFIG.Reactor.CoolantTankAmountPerFuelRod;
-            perSideCapacity += simulationDescription.manifoldCount * BiggerReactors.CONFIG.Reactor.CoolantTankAmountPerFuelRod;
+            long perSideCapacity = controlRods.length * y * Config.CONFIG.Reactor.CoolantTankAmountPerFuelRod;
+            perSideCapacity += simulationDescription.manifoldCount * Config.CONFIG.Reactor.CoolantTankAmountPerFuelRod;
             output = coolantTank = new CoolantTank(perSideCapacity, simulationDescription.defaultModeratorProperties);
             battery = null;
         }
@@ -101,7 +101,7 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
             }
         }
         
-        fuelTank.setCapacity(BiggerReactors.CONFIG.Reactor.PerFuelRodCapacity * controlRods.length * y);
+        fuelTank.setCapacity(Config.CONFIG.Reactor.PerFuelRodCapacity * controlRods.length * y);
         
         int fuelToCasingRFKT = 0;
         int fuelToManifoldSurfaceArea = 0;
@@ -109,7 +109,7 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
             for (int i = 0; i < y; i++) {
                 for (Vector2ic direction : SimUtil.cardinalDirections) {
                     if (controlRod.x + direction.x() < 0 || controlRod.x + direction.x() >= x || controlRod.z + direction.y() < 0 || controlRod.z + direction.y() >= z) {
-                        fuelToCasingRFKT += BiggerReactors.CONFIG.Reactor.CasingHeatTransferRFMKT;
+                        fuelToCasingRFKT += Config.CONFIG.Reactor.CasingHeatTransferRFMKT;
                         continue;
                     }
                     ReactorModeratorRegistry.IModeratorProperties properties = moderatorProperties[controlRod.x + direction.x()][i][controlRod.z + direction.y()];
@@ -125,7 +125,7 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
                 }
             }
         }
-        fuelToCasingRFKT *= BiggerReactors.CONFIG.Reactor.FuelToStackRFKTMultiplier;
+        fuelToCasingRFKT *= Config.CONFIG.Reactor.FuelToStackRFKTMultiplier;
         
         int stackToCoolantSystemRFKT = 2 * (x * y + x * z + z * y);
         
@@ -157,19 +157,19 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
                 }
             }
         }
-        stackToCoolantSystemRFKT *= BiggerReactors.CONFIG.Reactor.StackToCoolantRFMKT;
+        stackToCoolantSystemRFKT *= Config.CONFIG.Reactor.StackToCoolantRFMKT;
         
         if (simulationDescription.passivelyCooled) {
-            stackToCoolantSystemRFKT *= BiggerReactors.CONFIG.Reactor.PassiveCoolingTransferEfficiency;
+            stackToCoolantSystemRFKT *= Config.CONFIG.Reactor.PassiveCoolingTransferEfficiency;
         }
         
-        this.casingToAmbientRFKT = 2 * ((x + 2) * (y + 2) + (x + 2) * (z + 2) + (z + 2) * (y + 2)) * BiggerReactors.CONFIG.Reactor.StackToAmbientRFMKT;
+        this.casingToAmbientRFKT = 2 * ((x + 2) * (y + 2) + (x + 2) * (z + 2) + (z + 2) * (y + 2)) * Config.CONFIG.Reactor.StackToAmbientRFMKT;
         this.fuelToCasingRFKT = fuelToCasingRFKT;
         this.fuelToManifoldSurfaceArea = fuelToManifoldSurfaceArea;
         this.stackToCoolantSystemRFKT = stackToCoolantSystemRFKT;
         
-        fuelHeat.setRfPerKelvin(controlRods.length * y * BiggerReactors.CONFIG.Reactor.RodFEPerUnitVolumeKelvin);
-        stackHeat.setRfPerKelvin(x * y * z * BiggerReactors.CONFIG.Reactor.RodFEPerUnitVolumeKelvin);
+        fuelHeat.setRfPerKelvin(controlRods.length * y * Config.CONFIG.Reactor.RodFEPerUnitVolumeKelvin);
+        stackHeat.setRfPerKelvin(x * y * z * Config.CONFIG.Reactor.RodFEPerUnitVolumeKelvin);
         
         ambientHeat.setInfinite(true);
         ambientHeat.setTemperature(simulationDescription.ambientTemperature);
@@ -189,14 +189,14 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
         
         {
             // decay fertility, RadiationHelper.tick in old BR, this is copied, mostly
-            double denominator = BiggerReactors.CONFIG.Reactor.FuelFertilityDecayDenominator;
+            double denominator = Config.CONFIG.Reactor.FuelFertilityDecayDenominator;
             if (!active) {
                 // Much slower decay when off
-                denominator *= BiggerReactors.CONFIG.Reactor.FuelFertilityDecayDenominatorInactiveMultiplier;
+                denominator *= Config.CONFIG.Reactor.FuelFertilityDecayDenominatorInactiveMultiplier;
             }
             
             // Fertility decay, at least 0.1 rad/t, otherwise halve it every 10 ticks
-            fuelFertility = Math.max(0f, fuelFertility - Math.max(BiggerReactors.CONFIG.Reactor.FuelFertilityMinimumDecay, fuelFertility / denominator));
+            fuelFertility = Math.max(0f, fuelFertility - Math.max(Config.CONFIG.Reactor.FuelFertilityMinimumDecay, fuelFertility / denominator));
         }
         
         fuelHeat.transferWith(stackHeat, fuelToCasingRFKT + fuelToManifoldSurfaceArea * (coolantTank == null ? defaultModeratorProperties : coolantTank).heatConductivity());
@@ -207,26 +207,26 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
     private void radiate() {
         
         // Base value for radiation production penalties. 0-1, caps at about 3000C;
-        final double radiationPenaltyBase = Math.exp(-BiggerReactors.CONFIG.Reactor.RadPenaltyShiftMultiplier * Math.exp(-0.001 * BiggerReactors.CONFIG.Reactor.RadPenaltyRateMultiplier * (fuelHeat.temperature() - 273.15)));
+        final double radiationPenaltyBase = Math.exp(-Config.CONFIG.Reactor.RadPenaltyShiftMultiplier * Math.exp(-0.001 * Config.CONFIG.Reactor.RadPenaltyRateMultiplier * (fuelHeat.temperature() - 273.15)));
         
         // Raw amount - what's actually in the tanks
         // Effective amount - how
         final long baseFuelAmount = fuelTank.fuel() + (fuelTank.waste() / 100);
         
         // Intensity = how strong the radiation is, hardness = how energetic the radiation is (penetration)
-        final double rawRadIntensity = (double) baseFuelAmount * BiggerReactors.CONFIG.Reactor.FissionEventsPerFuelUnit;
+        final double rawRadIntensity = (double) baseFuelAmount * Config.CONFIG.Reactor.FissionEventsPerFuelUnit;
         
         // Scale up the "effective" intensity of radiation, to provide an incentive for bigger reactors in general.
         // Scale up a second time based on scaled amount in each fuel rod. Provides an incentive for making reactors that aren't just pancakes.
-        final double scaledRadIntensity = Math.pow((Math.pow((rawRadIntensity), BiggerReactors.CONFIG.Reactor.FuelReactivity) / controlRods.length), BiggerReactors.CONFIG.Reactor.FuelReactivity) * controlRods.length;
+        final double scaledRadIntensity = Math.pow((Math.pow((rawRadIntensity), Config.CONFIG.Reactor.FuelReactivity) / controlRods.length), Config.CONFIG.Reactor.FuelReactivity) * controlRods.length;
         
         // Radiation hardness starts at 20% and asymptotically approaches 100% as heat rises.
         // This will make radiation harder and harder to capture.
         final double initialHardness = Math.min(1.0, 0.2f + (0.8 * radiationPenaltyBase));
         
-        final double rawIntensity = (1f + (-BiggerReactors.CONFIG.Reactor.RadIntensityScalingMultiplier * Math.exp(-10f * BiggerReactors.CONFIG.Reactor.RadIntensityScalingShiftMultiplier * Math.exp(-0.001f * BiggerReactors.CONFIG.Reactor.RadIntensityScalingRateExponentMultiplier * (fuelHeat.temperature() - 273.15)))));
-        final double fuelAbsorptionTemperatureCoefficient = (1.0 - (BiggerReactors.CONFIG.Reactor.FuelAbsorptionScalingMultiplier * Math.exp(-10 * BiggerReactors.CONFIG.Reactor.FuelAbsorptionScalingShiftMultiplier * Math.exp(-0.001 * BiggerReactors.CONFIG.Reactor.FuelAbsorptionScalingRateExponentMultiplier * (fuelHeat.temperature() - 273.15)))));
-        final double fuelHardnessMultiplier = 1 / BiggerReactors.CONFIG.Reactor.FuelHardnessDivisor;
+        final double rawIntensity = (1f + (-Config.CONFIG.Reactor.RadIntensityScalingMultiplier * Math.exp(-10f * Config.CONFIG.Reactor.RadIntensityScalingShiftMultiplier * Math.exp(-0.001f * Config.CONFIG.Reactor.RadIntensityScalingRateExponentMultiplier * (fuelHeat.temperature() - 273.15)))));
+        final double fuelAbsorptionTemperatureCoefficient = (1.0 - (Config.CONFIG.Reactor.FuelAbsorptionScalingMultiplier * Math.exp(-10 * Config.CONFIG.Reactor.FuelAbsorptionScalingShiftMultiplier * Math.exp(-0.001 * Config.CONFIG.Reactor.FuelAbsorptionScalingRateExponentMultiplier * (fuelHeat.temperature() - 273.15)))));
+        final double fuelHardnessMultiplier = 1 / Config.CONFIG.Reactor.FuelHardnessDivisor;
         
         double rawFuelUsage = 0;
         
@@ -234,10 +234,10 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
         double fuelRadAdded = 0;
         double caseRFAdded = 0;
         
-        final var FEPerRadiationUnit = BiggerReactors.CONFIG.Reactor.FEPerRadiationUnit;
-        final var FuelUsageMultiplier = BiggerReactors.CONFIG.Reactor.FuelUsageMultiplier;
-        final var FuelAbsorptionCoefficient = BiggerReactors.CONFIG.Reactor.FuelAbsorptionCoefficient;
-        final var FuelModerationFactor = BiggerReactors.CONFIG.Reactor.FuelModerationFactor;
+        final var FEPerRadiationUnit = Config.CONFIG.Reactor.FEPerRadiationUnit;
+        final var FuelUsageMultiplier = Config.CONFIG.Reactor.FuelUsageMultiplier;
+        final var FuelAbsorptionCoefficient = Config.CONFIG.Reactor.FuelAbsorptionCoefficient;
+        final var FuelModerationFactor = Config.CONFIG.Reactor.FuelModerationFactor;
         
         //noinspection ForLoopReplaceableByForEach
         for (int r = 0; r < controlRods.length; r++) {

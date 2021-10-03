@@ -1,7 +1,7 @@
 package net.roguelogix.biggerreactors.multiblocks.turbine.simulation.modern;
 
 import net.minecraft.nbt.CompoundTag;
-import net.roguelogix.biggerreactors.BiggerReactors;
+import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.registries.TurbineCoilRegistry;
 import net.roguelogix.biggerreactors.multiblocks.turbine.simulation.ITurbineBattery;
 import net.roguelogix.biggerreactors.multiblocks.turbine.simulation.ITurbineFluidTank;
@@ -56,7 +56,7 @@ public class ModernTurbineSimulation implements ITurbineSimulation {
         inductionEfficiency = 0;
         inductorDragCoefficient = 0;
         inductionEnergyExponentBonus = 0;
-        maxMaxFlowRate = (((long) x * z) - 1 /* bearing*/) * BiggerReactors.CONFIG.Turbine.FlowRatePerBlock;
+        maxMaxFlowRate = (((long) x * z) - 1 /* bearing*/) * Config.CONFIG.Turbine.FlowRatePerBlock;
     }
     
     @Override
@@ -71,18 +71,18 @@ public class ModernTurbineSimulation implements ITurbineSimulation {
             rotorMass += vector4i.x + vector4i.y + vector4i.z + vector4i.w;
         }
         
-        rotorCapacityPerRPM = linearBladeMetersPerRevolution * BiggerReactors.CONFIG.Turbine.FluidPerBladeLinerKilometre;
+        rotorCapacityPerRPM = linearBladeMetersPerRevolution * Config.CONFIG.Turbine.FluidPerBladeLinerKilometre;
         rotorCapacityPerRPM /= 1000; // metre / kilometre
         
         rotorShafts = rotorConfiguration.size();
         
-        rotorAxialMass = rotorShafts * BiggerReactors.CONFIG.Turbine.RotorAxialMassPerShaft;
-        rotorAxialMass += linearBladeMetersPerRevolution * BiggerReactors.CONFIG.Turbine.RotorAxialMassPerBlade;
+        rotorAxialMass = rotorShafts * Config.CONFIG.Turbine.RotorAxialMassPerShaft;
+        rotorAxialMass += linearBladeMetersPerRevolution * Config.CONFIG.Turbine.RotorAxialMassPerBlade;
         
         rotorCapacityPerRPM *= 2 * Math.PI;
         
-        rotorMass *= BiggerReactors.CONFIG.Turbine.RotorAxialMassPerBlade;
-        rotorMass += (double) rotorShafts * BiggerReactors.CONFIG.Turbine.RotorAxialMassPerShaft;
+        rotorMass *= Config.CONFIG.Turbine.RotorAxialMassPerBlade;
+        rotorMass += (double) rotorShafts * Config.CONFIG.Turbine.RotorAxialMassPerShaft;
         
         if (maxFlowRate == -1) {
             setNominalFlowRate((long) (rotorCapacityPerRPM * 1800));
@@ -114,9 +114,9 @@ public class ModernTurbineSimulation implements ITurbineSimulation {
     
     @Override
     public void updateInternalValues() {
-        inductorDragCoefficient *= BiggerReactors.CONFIG.Turbine.CoilDragMultiplier;
+        inductorDragCoefficient *= Config.CONFIG.Turbine.CoilDragMultiplier;
         
-        battery.setCapacity((coilSize + 1) * BiggerReactors.CONFIG.Turbine.BatterySizePerCoilBlock);
+        battery.setCapacity((coilSize + 1) * Config.CONFIG.Turbine.BatterySizePerCoilBlock);
         
         if (coilSize <= 0) {
             inductionEfficiency = 0;
@@ -129,7 +129,7 @@ public class ModernTurbineSimulation implements ITurbineSimulation {
             inductorDragCoefficient = (inductorDragCoefficient / coilSize);
         }
         
-        fluidTank.perSideCapacity = (((long) x * y * z) - ((long) rotorShafts + coilSize)) * BiggerReactors.CONFIG.Turbine.TankVolumePerBlock;
+        fluidTank.perSideCapacity = (((long) x * y * z) - ((long) rotorShafts + coilSize)) * Config.CONFIG.Turbine.TankVolumePerBlock;
     }
     
     @Override
@@ -253,8 +253,8 @@ public class ModernTurbineSimulation implements ITurbineSimulation {
             energyGeneratedLastTick = 0;
         }
         
-        rotorEnergy -= rotorMass * Math.pow(rpm * BiggerReactors.CONFIG.Turbine.FrictionDragMultiplier, 2); // yes, rpm squared, thats how drag works, bitch ain't it?
-        rotorEnergy -= linearBladeMetersPerRevolution * Math.pow(rpm * BiggerReactors.CONFIG.Turbine.AerodynamicDragMultiplier, 2);
+        rotorEnergy -= rotorMass * Math.pow(rpm * Config.CONFIG.Turbine.FrictionDragMultiplier, 2); // yes, rpm squared, thats how drag works, bitch ain't it?
+        rotorEnergy -= linearBladeMetersPerRevolution * Math.pow(rpm * Config.CONFIG.Turbine.AerodynamicDragMultiplier, 2);
         if (rotorEnergy < 0) {
             rotorEnergy = 0;
         }

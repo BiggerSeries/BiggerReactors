@@ -12,6 +12,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.BiggerReactors;
+import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.client.CommonRender;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.HeatExchangerTerminalContainer;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.state.HeatExchangerState;
@@ -116,12 +117,12 @@ public class HeatExchangerTerminalScreen extends ScreenBase<HeatExchangerTermina
 
         // (Top) Condenser heat gauge:
         Symbol<HeatExchangerTerminalContainer> condenserHeatGauge = new Symbol<>(this, 52, 36, 18, 64, 0, 144, TextComponent.EMPTY);
-        condenserHeatGauge.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> HeatExchangerTerminalScreen.renderHeatGauge(mS, condenserHeatGauge, heatExchangerState.condenserChannelTemperature, BiggerReactors.CONFIG.HeatExchanger.gui.HeatDisplayMax);
+        condenserHeatGauge.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> HeatExchangerTerminalScreen.renderHeatGauge(mS, condenserHeatGauge, heatExchangerState.condenserChannelTemperature, Config.CONFIG.HeatExchanger.gui.HeatDisplayMax);
         this.addElement(condenserHeatGauge);
 
         // (Top) Evaporator heat gauge:
         Symbol<HeatExchangerTerminalContainer> evaporatorHeatGauge = new Symbol<>(this, 74, 36, 18, 64, 0, 144, TextComponent.EMPTY);
-        evaporatorHeatGauge.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> HeatExchangerTerminalScreen.renderHeatGauge(mS, evaporatorHeatGauge, heatExchangerState.evaporatorChannelTemperature, BiggerReactors.CONFIG.HeatExchanger.gui.HeatDisplayMax);
+        evaporatorHeatGauge.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> HeatExchangerTerminalScreen.renderHeatGauge(mS, evaporatorHeatGauge, heatExchangerState.evaporatorChannelTemperature, Config.CONFIG.HeatExchanger.gui.HeatDisplayMax);
         this.addElement(evaporatorHeatGauge);
 
         // (Top) Condenser exhaust tank:

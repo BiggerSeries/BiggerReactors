@@ -9,7 +9,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.roguelogix.biggerreactors.BiggerReactors;
+import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.HeatExchangerBaseBlock;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.HeatExchangerCasingBlock;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerBaseTile;
@@ -279,17 +279,17 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
     protected void onUnpaused() {
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         
-        condenserHeatBody.setRfPerKelvin(condenserChannels.size() * BiggerReactors.CONFIG.HeatExchanger.ChannelFEPerKelvinUnitVolume);
-        evaporatorHeatBody.setRfPerKelvin(evaporatorChannels.size() * BiggerReactors.CONFIG.HeatExchanger.ChannelFEPerKelvinUnitVolume);
+        condenserHeatBody.setRfPerKelvin(condenserChannels.size() * Config.CONFIG.HeatExchanger.ChannelFEPerKelvinUnitVolume);
+        evaporatorHeatBody.setRfPerKelvin(evaporatorChannels.size() * Config.CONFIG.HeatExchanger.ChannelFEPerKelvinUnitVolume);
         
-        condenserTank.perSideCapacity = condenserChannels.size() * BiggerReactors.CONFIG.HeatExchanger.ChannelTankVolumePerBlock;
-        evaporatorTank.perSideCapacity = evaporatorChannels.size() * BiggerReactors.CONFIG.HeatExchanger.ChannelTankVolumePerBlock;
+        condenserTank.perSideCapacity = condenserChannels.size() * Config.CONFIG.HeatExchanger.ChannelTankVolumePerBlock;
+        evaporatorTank.perSideCapacity = evaporatorChannels.size() * Config.CONFIG.HeatExchanger.ChannelTankVolumePerBlock;
         
         Vector3i vec = new Vector3i(maxCoord()).sub(minCoord()).add(1, 1, 1);
         int airVolume = vec.x * vec.y * vec.z;
         airVolume -= condenserChannels.size();
         airVolume -= evaporatorChannels.size();
-        airHeatBody.setRfPerKelvin(airVolume * BiggerReactors.CONFIG.HeatExchanger.AirFEPerKelvinUnitVolume);
+        airHeatBody.setRfPerKelvin(airVolume * Config.CONFIG.HeatExchanger.AirFEPerKelvinUnitVolume);
         
         int channelContactArea = 0;
         int evaporatorAirContactArea = 0;
@@ -323,10 +323,10 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         airAmbientContactArea = vec.x * vec.y + vec.x * vec.z + vec.y * vec.z;
         airAmbientContactArea *= 2;
         
-        channelRFKT = channelContactArea * BiggerReactors.CONFIG.HeatExchanger.ChannelFEPerKelvinMetreSquared;
-        condenserAirRFKT = condenserAirContactArea * BiggerReactors.CONFIG.HeatExchanger.AirFEPerKelvinMetreSquared;
-        evaporatorAirRFKT = evaporatorAirContactArea * BiggerReactors.CONFIG.HeatExchanger.AirFEPerKelvinMetreSquared;
-        airAmbientRFKT = airAmbientContactArea * BiggerReactors.CONFIG.HeatExchanger.AmbientFEPerKelvinMetreSquared;
+        channelRFKT = channelContactArea * Config.CONFIG.HeatExchanger.ChannelFEPerKelvinMetreSquared;
+        condenserAirRFKT = condenserAirContactArea * Config.CONFIG.HeatExchanger.AirFEPerKelvinMetreSquared;
+        evaporatorAirRFKT = evaporatorAirContactArea * Config.CONFIG.HeatExchanger.AirFEPerKelvinMetreSquared;
+        airAmbientRFKT = airAmbientContactArea * Config.CONFIG.HeatExchanger.AmbientFEPerKelvinMetreSquared;
         
         for (HeatExchangerCoolantPortTile coolantPort : coolantPorts) {
             BlockPos portPos = coolantPort.getBlockPos();
@@ -361,11 +361,11 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
     
     @Override
     public void tick() {
-        condenserTank.transferWith(condenserHeatBody, condenserChannels.size() * BiggerReactors.CONFIG.HeatExchanger.ChannelInternalSurfaceArea);
+        condenserTank.transferWith(condenserHeatBody, condenserChannels.size() * Config.CONFIG.HeatExchanger.ChannelInternalSurfaceArea);
         condenserHeatBody.transferWith(airHeatBody, condenserAirRFKT);
         condenserHeatBody.transferWith(evaporatorHeatBody, channelRFKT);
         evaporatorHeatBody.transferWith(airHeatBody, evaporatorAirRFKT);
-        evaporatorTank.transferWith(evaporatorHeatBody, evaporatorChannels.size() * BiggerReactors.CONFIG.HeatExchanger.ChannelInternalSurfaceArea);
+        evaporatorTank.transferWith(evaporatorHeatBody, evaporatorChannels.size() * Config.CONFIG.HeatExchanger.ChannelInternalSurfaceArea);
         airHeatBody.transferWith(ambientHeatBody, airAmbientRFKT);
         coolantPorts.forEach(HeatExchangerCoolantPortTile::pushFluid);
     }

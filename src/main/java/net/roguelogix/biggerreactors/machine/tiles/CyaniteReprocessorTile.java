@@ -34,6 +34,7 @@ import net.minecraftforge.fmllegacy.network.NetworkHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.roguelogix.biggerreactors.BiggerReactors;
+import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.api.IWorkHandler;
 import net.roguelogix.biggerreactors.api.WorkHandler;
 import net.roguelogix.biggerreactors.machine.blocks.CyaniteReprocessor;
@@ -127,7 +128,7 @@ public class CyaniteReprocessorTile extends BaseContainerBlockEntity implements 
         
         // Do water bucket check.
         if (ItemStack.isSame(player.getMainHandItem(), new ItemStack(Items.WATER_BUCKET))) {
-            if (this.fluidTank.getFluidAmount() <= (BiggerReactors.CONFIG.CyaniteReprocessor.WaterTankCapacity - 1000)) {
+            if (this.fluidTank.getFluidAmount() <= (Config.CONFIG.CyaniteReprocessor.WaterTankCapacity - 1000)) {
                 this.fluidTank.fill(new FluidStack(Fluids.WATER, 1000), IFluidHandler.FluidAction.EXECUTE);
                 player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.BUCKET));
             }
@@ -290,17 +291,17 @@ public class CyaniteReprocessorTile extends BaseContainerBlockEntity implements 
     @Override
     public void clearContent() {
         // Reset work.
-        this.workHandler = new WorkHandler(BiggerReactors.CONFIG.CyaniteReprocessor.TotalWorkTime);
+        this.workHandler = new WorkHandler(Config.CONFIG.CyaniteReprocessor.TotalWorkTime);
         
         // Reset items.
         this.itemHandler = new CyaniteReprocessorItemHandler();
         this.itemHandler.setSize(2);
         
         // Reset energy.
-        this.energyStorage = new EnergyStorage(BiggerReactors.CONFIG.CyaniteReprocessor.EnergyTankCapacity);
+        this.energyStorage = new EnergyStorage(Config.CONFIG.CyaniteReprocessor.EnergyTankCapacity);
         
         // Reset fluids.
-        this.fluidTank = new FluidTank(BiggerReactors.CONFIG.CyaniteReprocessor.WaterTankCapacity, fluid -> fluid.getFluid() == Fluids.WATER);
+        this.fluidTank = new FluidTank(Config.CONFIG.CyaniteReprocessor.WaterTankCapacity, fluid -> fluid.getFluid() == Fluids.WATER);
     }
     
     /**
@@ -338,8 +339,8 @@ public class CyaniteReprocessorTile extends BaseContainerBlockEntity implements 
         this.itemHandler.deserializeNBT(childCompound.getCompound("inventory"));
         // Read energy.
         this.energyStorage = new EnergyStorage(childCompound.getInt("energyCapacity"),
-                BiggerReactors.CONFIG.CyaniteReprocessor.TransferRate,
-                BiggerReactors.CONFIG.CyaniteReprocessor.TransferRate,
+                Config.CONFIG.CyaniteReprocessor.TransferRate,
+                Config.CONFIG.CyaniteReprocessor.TransferRate,
                 childCompound.getInt("energyStored"));
         // Read fluids.
         this.fluidTank = this.fluidTank.readFromNBT(childCompound.getCompound("fluidStorage"));
@@ -381,8 +382,8 @@ public class CyaniteReprocessorTile extends BaseContainerBlockEntity implements 
         if (this.getItem(CyaniteReprocessorItemHandler.OUTPUT_SLOT_INDEX).getCount() >= 64) {
             return false;
         }
-        return (this.energyStorage.getEnergyStored() >= BiggerReactors.CONFIG.CyaniteReprocessor.EnergyConsumptionPerTick
-                && this.fluidTank.getFluidAmount() >= BiggerReactors.CONFIG.CyaniteReprocessor.WaterConsumptionPerTick);
+        return (this.energyStorage.getEnergyStored() >= Config.CONFIG.CyaniteReprocessor.EnergyConsumptionPerTick
+                && this.fluidTank.getFluidAmount() >= Config.CONFIG.CyaniteReprocessor.WaterConsumptionPerTick);
     }
     
     /**
@@ -411,8 +412,8 @@ public class CyaniteReprocessorTile extends BaseContainerBlockEntity implements 
                 isActive = true;
                 doUpdate = true;
                 this.workHandler.increment(1);
-                this.energyStorage.extractEnergy(BiggerReactors.CONFIG.CyaniteReprocessor.EnergyConsumptionPerTick, false);
-                this.fluidTank.drain(BiggerReactors.CONFIG.CyaniteReprocessor.WaterConsumptionPerTick, IFluidHandler.FluidAction.EXECUTE);
+                this.energyStorage.extractEnergy(Config.CONFIG.CyaniteReprocessor.EnergyConsumptionPerTick, false);
+                this.fluidTank.drain(Config.CONFIG.CyaniteReprocessor.WaterConsumptionPerTick, IFluidHandler.FluidAction.EXECUTE);
                 // We've run out of resources, halt.
             } else if (this.workHandler.getProgress() > 0) {
                 this.workHandler.decrement(2);

@@ -44,9 +44,6 @@ public class BiggerReactors {
 
     public static final Logger LOGGER = LogManager.getLogger();
     
-    @RegisterConfig(format = ConfigFormat.TOML)
-    public static final Config CONFIG = new Config();
-    
     public BiggerReactors() {
         new Registry();
 //        SimBench.main(null);

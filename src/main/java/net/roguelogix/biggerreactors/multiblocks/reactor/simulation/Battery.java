@@ -1,6 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.simulation;
 
-import net.roguelogix.biggerreactors.BiggerReactors;
+import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.phosphophyllite.serialization.IPhosphophylliteSerializable;
 import net.roguelogix.phosphophyllite.serialization.PhosphophylliteCompound;
 import net.roguelogix.phosphophyllite.util.HeatBody;
@@ -33,7 +33,7 @@ class Battery extends HeatBody implements IReactorSimulation.IBattery, IPhosphop
         
         double rfTransferred = (newTemp - other.temperature()) * other.rfPerKelvin();
         
-        generatedLastTick = (long) (-rfTransferred * BiggerReactors.CONFIG.Reactor.OutputMultiplier * BiggerReactors.CONFIG.Reactor.PassiveOutputMultiplier);
+        generatedLastTick = (long) (-rfTransferred * Config.CONFIG.Reactor.OutputMultiplier * Config.CONFIG.Reactor.PassiveOutputMultiplier);
         stored += generatedLastTick;
         if (stored > capacity) {
             stored = capacity;
