@@ -47,7 +47,7 @@ public class ReactorModeratorRegistry {
     
     public static class ModeratorProperties implements IModeratorProperties, ROBNObject {
         
-        public static final ModeratorProperties EMPTY_MODERATOR = new ModeratorProperties(0, 0, 0, 0);
+        public static final ModeratorProperties EMPTY_MODERATOR = new ModeratorProperties(0, 0, 1, 0);
         
         public final double absorption;
         public final double heatEfficiency;
