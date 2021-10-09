@@ -153,27 +153,6 @@ public class Config {
         @ConfigValue(range = "[4,256]")
         public final int MaxHeight = 192;
         
-        public static final class Classic {
-            @ConfigValue(range = "(0,)", advanced = true)
-            public final long FluidPerBlade = 25;
-            @ConfigValue(range = "(0,)", advanced = true)
-            public final long FlowRatePerBlock = 500;
-            @ConfigValue(range = "(0,)", advanced = true)
-            public final long TankVolumePerBlock = 1000;
-            @ConfigValue(range = "(0,)", advanced = true)
-            public final double LatentHeatMultiplier = 2.5;
-            @ConfigValue(range = "(0,)", advanced = true)
-            public final long RotorMassPerPart = 10;
-            @ConfigValue(range = "(0,)", advanced = true)
-            public final double MassDragMultiplier = 0.01;
-            @ConfigValue(range = "(0,)", advanced = true)
-            public final double BladeDragMultiplier = 0.000025;
-            @ConfigValue(range = "(0,)", advanced = true)
-            public final double CoilDragMultiplier = 1;
-            @ConfigValue(range = "(0,)", advanced = true)
-            public final long BatterySizePerCoilBlock = 30_000;
-        }
-        
         @ConfigValue(range = "(0,)", advanced = true)
         public final long FlowRatePerBlock = 5000;
         @ConfigValue(range = "(0,)", advanced = true)
