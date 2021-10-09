@@ -1,5 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.simulation;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
 import net.roguelogix.phosphophyllite.repack.org.joml.Vector2ic;
@@ -20,9 +21,16 @@ import java.util.ArrayList;
 public class MultithreadedReactorSimulation implements IReactorSimulation {
     
     private static class ControlRod extends SimUtil.ControlRod {
-        double initialHardness = 0;
-        double initialIntensity = 0;
-        double fuelAbsorptionTemperatureCoefficient = 0;
+        public record PassData(double initialHardness,
+                               double initialIntensity,
+                               double fuelAbsorptionTemperatureCoefficient,
+                               double FEPerRadiationUnit,
+                               double FuelAbsorptionCoefficient,
+                               double FuelModerationFactor,
+                               double fuelHardnessMultiplier) {
+        }
+        
+        PassData passData;
         
         private ControlRod(int x, int z) {
             super(x, z);
@@ -102,6 +110,9 @@ public class MultithreadedReactorSimulation implements IReactorSimulation {
             for (int j = 0; j < y; j++) {
                 for (int k = 0; k < z; k++) {
                     var newProperties = simulationDescription.moderatorProperties[i][j][k];
+                    if (newProperties == null) {
+                        newProperties = simulationDescription.defaultModeratorProperties;
+                    }
                     if (controlRodsXZ[i][k] != null) {
                         newProperties = null;
                     }
@@ -115,7 +126,7 @@ public class MultithreadedReactorSimulation implements IReactorSimulation {
         
         fuelTank.setCapacity(Config.CONFIG.Reactor.PerFuelRodCapacity * controlRods.length * y);
         
-        int fuelToCasingRFKT = 0;
+        double fuelToCasingRFKT = 0;
         int fuelToManifoldSurfaceArea = 0;
         for (ControlRod controlRod : controlRods) {
             for (int i = 0; i < y; i++) {
@@ -139,7 +150,7 @@ public class MultithreadedReactorSimulation implements IReactorSimulation {
         }
         fuelToCasingRFKT *= Config.CONFIG.Reactor.FuelToStackRFKTMultiplier;
         
-        int stackToCoolantSystemRFKT = 2 * (x * y + x * z + z * y);
+        double stackToCoolantSystemRFKT = 2 * (x * y + x * z + z * y);
         
         
         for (int i = 0; i < x; i++) {
@@ -191,25 +202,22 @@ public class MultithreadedReactorSimulation implements IReactorSimulation {
             battery.setTemperature(simulationDescription.ambientTemperature);
         }
         
-        fuelRods.clear();
-        fuelRods.ensureCapacity(controlRods.length * y);
-        for (ControlRod rod : controlRods) {
-            for (int j = 0; j < y; j++) {
-                fuelRods.add(new FuelRod(rod, j));
-            }
-        }
-        
-        final int BATCH_SIZE = Config.CONFIG.Reactor.Experimental.RodBatchSize;
+        final int BATCH_SIZE = Config.CONFIG.Reactor.Experimental.RodBatchSize / y;
         
         batches.clear();
         int handledRods = 0;
-        int rodsToHandle = fuelRods.size();
+        int rodsToHandle = controlRods.length;
         while (rodsToHandle >= BATCH_SIZE) {
-            batches.add(new RodBatch(handledRods, BATCH_SIZE));
+            ControlRod[] controlRods = new ControlRod[BATCH_SIZE];
+            System.arraycopy(this.controlRods, handledRods, controlRods, 0, controlRods.length);
+            batches.add(new RodBatch(controlRods));
             handledRods += BATCH_SIZE;
             rodsToHandle -= BATCH_SIZE;
         }
-        batches.add(new RodBatch(handledRods, rodsToHandle));
+        
+        ControlRod[] controlRods = new ControlRod[rodsToHandle];
+        System.arraycopy(this.controlRods, handledRods, controlRods, 0, controlRods.length);
+        batches.add(new RodBatch(controlRods));
     }
     
     @Nullable
@@ -247,8 +255,9 @@ public class MultithreadedReactorSimulation implements IReactorSimulation {
     public void tick(boolean active) {
         if (active) {
             radiate();
+        } else {
+            fuelTank.burn(0);
         }
-        fuelTank.burn(0);
         
         {
             // decay fertility, RadiationHelper.tick in old BR, this is copied, mostly
@@ -267,27 +276,60 @@ public class MultithreadedReactorSimulation implements IReactorSimulation {
         stackHeat.transferWith(ambientHeat, casingToAmbientRFKT);
     }
     
-    private final ArrayList<FuelRod> fuelRods = new ArrayList<>();
     private final ArrayList<RodBatch> batches = new ArrayList<>();
     
-    private static class FuelRod {
-        final ControlRod controlRod;
-        final int y;
-        
-        private FuelRod(ControlRod controlRod, int y) {
-            this.controlRod = controlRod;
-            this.y = y;
-        }
-    }
-    
     private class RodBatch {
-        final int startingRod;
-        final int size;
         
-        private RodBatch(int startingRod, int size) {
-            this.startingRod = startingRod;
-            this.size = size;
+        final ControlRod[] controlRods;
+        
+        class ModeratorProperties {
+            double absorption;
+            double heatEfficiency;
+            double moderation;
+            
+            final int x, y, z;
+            
+            public ModeratorProperties(double absorption, double heatEfficiency, double moderation, int x, int y, int z) {
+                this.absorption = absorption;
+                this.heatEfficiency = heatEfficiency;
+                this.moderation = moderation;
+                this.x = x;
+                this.y = y;
+                this.z = z;
+            }
+        }
+        
+        final ModeratorProperties[][][][] rodNearbyProperties;
+        final ObjectArrayList<ModeratorProperties> dynamicModerators = new ObjectArrayList<>();
+        final double[][][] rodNearbyInsertions;
+        
+        private RodBatch(ControlRod[] controlRods) {
+            this.controlRods = controlRods;
             lastTickDone.trigger();
+            rodNearbyProperties = new ModeratorProperties[controlRods.length][9][9][y];
+            rodNearbyInsertions = new double[controlRods.length][9][9];
+            for (int i = 0; i < controlRods.length; i++) {
+                var rod = controlRods[i];
+                var rodProperties = rodNearbyProperties[i];
+                for (int j = 0; j < 9; j++) {
+                    for (int l = 0; l < 9; l++) {
+                        int X = rod.x + j - 4;
+                        int Z = rod.z + l - 4;
+                        if (X < 0 || X >= x || Z < 0 || Z >= z) {
+                            continue;
+                        }
+                        for (int k = 0; k < y; k++) {
+                            var posProperties = moderatorProperties[X][k][Z];
+                            if (posProperties instanceof ReactorModeratorRegistry.ModeratorProperties) {
+                                rodProperties[j][l][k] = new ModeratorProperties(posProperties.absorption(), posProperties.heatEfficiency(), posProperties.moderation(), 0, 0, 0);
+                            } else if (posProperties != null) {
+                                rodProperties[j][l][k] = new ModeratorProperties(posProperties.absorption(), posProperties.heatEfficiency(), posProperties.moderation(), X, k, Z);
+                                dynamicModerators.add(rodProperties[j][l][k]);
+                            }
+                        }
+                    }
+                }
+            }
         }
         
         class Results {
@@ -314,65 +356,109 @@ public class MultithreadedReactorSimulation implements IReactorSimulation {
         }
         
         private void doRun() {
-            for (int i = startingRod; i < fuelRods.size() && i < startingRod + size; i++) {
-                FuelRod rod = fuelRods.get(i);
-                runFuelRodSim(rod.controlRod.x, rod.y, rod.controlRod.z, rod.controlRod.initialHardness, rod.controlRod.initialIntensity, rod.controlRod.fuelAbsorptionTemperatureCoefficient, results);
+            for (int j = 0; j < dynamicModerators.size(); j++) {
+                var moderator = dynamicModerators.get(j);
+                var posProperties = moderatorProperties[moderator.x][moderator.y][moderator.z];
+                if (posProperties != null) {
+                    moderator.absorption = posProperties.absorption();
+                    moderator.heatEfficiency = posProperties.heatEfficiency();
+                    moderator.moderation = posProperties.moderation();
+                }
+            }
+            for (int i = 0; i < controlRods.length; i++) {
+                updateRodData(i);
+//            }
+//            for (int i = 0; i < controlRods.length; i++) {
+                runRodSim(i);
             }
         }
-    }
-    
-    private void runFuelRodSim(int X, int Y, int Z, double initialHardness, double initialIntensity, double fuelAbsorptionTemperatureCoefficient, RodBatch.Results results) {
-        for (int j = 0; j < SimUtil.rays.size(); j++) {
-            ArrayList<SimUtil.RayStep> raySteps = SimUtil.rays.get(j);
-            double neutronHardness = initialHardness;
-            double neutronIntensity = initialIntensity;
-            for (int k = 0; k < raySteps.size(); k++) {
-                SimUtil.RayStep rayStep = raySteps.get(k);
-                int currentX = X + rayStep.offset.x;
-                int currentY = Y + rayStep.offset.y;
-                int currentZ = Z + rayStep.offset.z;
-                if (currentX < 0 || currentX >= this.x ||
-                        currentY < 0 || currentY >= this.y ||
-                        currentZ < 0 || currentZ >= this.z) {
-                    break;
+        
+        private void updateRodData(int i) {
+            var rod = controlRods[i];
+            var rodInsertions = rodNearbyInsertions[i];
+            for (int j = 0; j < 9; j++) {
+                for (int l = 0; l < 9; l++) {
+                    int X = rod.x + j - 4;
+                    int Z = rod.z + l - 4;
+                    if (X < 0 || X >= x || Z < 0 || Z >= z) {
+                        continue;
+                    }
+                    var rodxz = controlRodsXZ[X][Z];
+                    if (rodxz != null) {
+                        rodInsertions[j][l] = controlRodsXZ[X][Z].insertion;
+                    }
                 }
-                ReactorModeratorRegistry.IModeratorProperties properties = moderatorProperties[currentX][currentY][currentZ];
-                if (properties != null) {
-                    double radiationAbsorbed = neutronIntensity * properties.absorption() * (1f - neutronHardness) * rayStep.length;
-                    neutronIntensity = Math.max(0, neutronIntensity - radiationAbsorbed);
-                    neutronHardness = neutronHardness / (((properties.moderation() - 1.0) * rayStep.length) + 1.0);
-                    results.caseRFAdded += properties.heatEfficiency() * radiationAbsorbed * Config.CONFIG.Reactor.FEPerRadiationUnit;
-                } else {
-                    // its a fuel rod!
-                    
-                    // Scale control rod insertion 0..1
-                    double controlRodInsertion = controlRodsXZ[currentX][currentZ].insertion * .001;
-                    
-                    // Fuel absorptiveness is determined by control rod + a heat modifier.
-                    // Starts at 1 and decays towards 0.05, reaching 0.6 at 1000 and just under 0.2 at 2000. Inflection point at about 500-600.
-                    // Harder radiation makes absorption more difficult.
-                    double baseAbsorption = fuelAbsorptionTemperatureCoefficient * (1f - (neutronHardness / Config.CONFIG.Reactor.FuelHardnessDivisor));
-                    
-                    // Some fuels are better at absorbing radiation than others
-                    double scaledAbsorption = baseAbsorption * Config.CONFIG.Reactor.FuelAbsorptionCoefficient * rayStep.length;
-                    
-                    // Control rods increase total neutron absorption, but decrease the total neutrons which fertilize the fuel
-                    // Absorb up to 50% better with control rods inserted.
-                    double controlRodBonus = (1f - scaledAbsorption) * controlRodInsertion * 0.5f;
-                    double controlRodPenalty = scaledAbsorption * controlRodInsertion * 0.5f;
-                    
-                    double radiationAbsorbed = (scaledAbsorption + controlRodBonus) * neutronIntensity;
-                    double fertilityAbsorbed = (scaledAbsorption - controlRodPenalty) * neutronIntensity;
-                    
-                    double fuelModerationFactor = Config.CONFIG.Reactor.FuelModerationFactor;
-                    fuelModerationFactor += fuelModerationFactor * controlRodInsertion + controlRodInsertion; // Full insertion doubles the moderation factor of the fuel as well as adding its own level
-                    
-                    neutronIntensity = Math.max(0, neutronIntensity - (radiationAbsorbed));
-                    neutronHardness = neutronHardness / (((fuelModerationFactor - 1.0) * rayStep.length) + 1.0);
-                    
-                    // Being irradiated both heats up the fuel and also enhances its fertility
-                    results.fuelRFAdded += radiationAbsorbed * Config.CONFIG.Reactor.FEPerRadiationUnit;
-                    results.fuelRadAdded += fertilityAbsorbed;
+            }
+        }
+        
+        private void runRodSim(int r) {
+            final var controlRod = controlRods[r];
+            final int X = controlRod.x, Z = controlRod.z;
+            final var passData = controlRod.passData;
+            final var rodModerators = rodNearbyProperties[r];
+            final var rodInsertions = rodNearbyInsertions[r];
+            final double initialHardness = passData.initialHardness;
+            final double initialIntensity = passData.initialIntensity;
+            final double fuelAbsorptionTemperatureCoefficient = passData.fuelAbsorptionTemperatureCoefficient;
+            final double FEPerRadiationUnit = passData.FEPerRadiationUnit;
+            final double FuelAbsorptionCoefficient = passData.FuelAbsorptionCoefficient;
+            final double FuelModerationFactor = passData.FuelModerationFactor;
+            final double fuelHardnessMultiplier = passData.fuelHardnessMultiplier;
+            for (int i = 0; i < y; i++) {
+                for (int j = 0; j < SimUtil.rays.size(); j++) {
+                    ArrayList<SimUtil.RayStep> raySteps = SimUtil.rays.get(j);
+                    double neutronHardness = initialHardness;
+                    double neutronIntensity = initialIntensity;
+                    for (int k = 0; k < raySteps.size(); k++) {
+                        SimUtil.RayStep rayStep = raySteps.get(k);
+                        int currentX = X + rayStep.offset.x;
+                        int currentY = i + rayStep.offset.y;
+                        int currentZ = Z + rayStep.offset.z;
+                        if (currentX < 0 || currentX >= MultithreadedReactorSimulation.this.x ||
+                                currentY < 0 || currentY >= MultithreadedReactorSimulation.this.y ||
+                                currentZ < 0 || currentZ >= MultithreadedReactorSimulation.this.z) {
+                            break;
+                        }
+                        int arrayIndexX = rayStep.offset.x + 4;
+                        int arrayIndexZ = rayStep.offset.z + 4;
+                        var properties = rodModerators[arrayIndexX][arrayIndexZ][currentY];
+                        if (properties != null) {
+                            final double radiationAbsorbed = neutronIntensity * properties.absorption * (1f - neutronHardness) * rayStep.length;
+                            neutronIntensity = Math.max(0, neutronIntensity - radiationAbsorbed);
+                            neutronHardness = neutronHardness / (((properties.moderation - 1.0) * rayStep.length) + 1.0);
+                            results.caseRFAdded += properties.heatEfficiency * radiationAbsorbed * FEPerRadiationUnit;
+                        } else {
+                            // its a fuel rod!
+                            
+                            // Scale control rod insertion 0..1
+                            final double controlRodInsertion = rodInsertions[arrayIndexX][arrayIndexZ] * .001;
+                            
+                            // Fuel absorptiveness is determined by control rod + a heat modifier.
+                            // Starts at 1 and decays towards 0.05, reaching 0.6 at 1000 and just under 0.2 at 2000. Inflection point at about 500-600.
+                            // Harder radiation makes absorption more difficult.
+                            final double baseAbsorption = fuelAbsorptionTemperatureCoefficient * (1f - (neutronHardness / fuelHardnessMultiplier));
+                            
+                            // Some fuels are better at absorbing radiation than others
+                            final double scaledAbsorption = baseAbsorption * FuelAbsorptionCoefficient * rayStep.length;
+                            
+                            // Control rods increase total neutron absorption, but decrease the total neutrons which fertilize the fuel
+                            // Absorb up to 50% better with control rods inserted.
+                            final double controlRodBonus = (1f - scaledAbsorption) * controlRodInsertion * 0.5f;
+                            final double controlRodPenalty = scaledAbsorption * controlRodInsertion * 0.5f;
+                            
+                            final double radiationAbsorbed = (scaledAbsorption + controlRodBonus) * neutronIntensity;
+                            final double fertilityAbsorbed = (scaledAbsorption - controlRodPenalty) * neutronIntensity;
+                            
+                            final double fuelModerationFactor = FuelModerationFactor + FuelModerationFactor * controlRodInsertion + controlRodInsertion; // Full insertion doubles the moderation factor of the fuel as well as adding its own level
+                            
+                            neutronIntensity = Math.max(0, neutronIntensity - (radiationAbsorbed));
+                            neutronHardness = neutronHardness / (((fuelModerationFactor - 1.0) * rayStep.length) + 1.0);
+                            
+                            // Being irradiated both heats up the fuel and also enhances its fertility
+                            results.fuelRFAdded += radiationAbsorbed * FEPerRadiationUnit;
+                            results.fuelRadAdded += fertilityAbsorbed;
+                        }
+                    }
                 }
             }
         }
@@ -417,24 +503,37 @@ public class MultithreadedReactorSimulation implements IReactorSimulation {
         
         final double rayMultiplier = 1.0 / (double) (SimUtil.rays.size() * y);
         
+        final double FuelUsageMultiplier = Config.CONFIG.Reactor.FuelUsageMultiplier;
+        final double FuelPerRadiationUnit = Config.CONFIG.Reactor.FuelPerRadiationUnit;
+        final double FEPerRadiationUnit = Config.CONFIG.Reactor.FEPerRadiationUnit;
+        final double FuelAbsorptionCoefficient = Config.CONFIG.Reactor.FuelAbsorptionCoefficient;
+        final double FuelModerationFactor = Config.CONFIG.Reactor.FuelModerationFactor;
+        final double fuelHardnessMultiplier = 1 / Config.CONFIG.Reactor.FuelHardnessDivisor;
+        
         for (int r = 0; r < controlRods.length; r++) {
             ControlRod rod = controlRods[r];
             
             // Apply control rod moderation of radiation to the quantity of produced radiation. 100% insertion = 100% reduction.
-            double controlRodModifier = (100 - rod.insertion) / 100f;
-            double effectiveRadIntensity = scaledRadIntensity * controlRodModifier;
-            double effectiveRawRadIntensity = rawRadIntensity * controlRodModifier;
+            final double controlRodModifier = (100 - rod.insertion) / 100f;
+            final double effectiveRadIntensity = scaledRadIntensity * controlRodModifier;
+            final double effectiveRawRadIntensity = rawRadIntensity * controlRodModifier;
             
             // Now nerf actual radiation production based on heat.
-            double initialIntensity = effectiveRadIntensity * rawIntensity;
+            final double initialIntensity = effectiveRadIntensity * rawIntensity;
             
             // Calculate based on propagation-to-self
-            rawFuelUsage += (Config.CONFIG.Reactor.FuelPerRadiationUnit * effectiveRawRadIntensity / fertility()) * Config.CONFIG.Reactor.FuelUsageMultiplier; // Not a typo. Fuel usage is thus penalized at high heats.
-            fuelRFAdded += Config.CONFIG.Reactor.FEPerRadiationUnit * initialIntensity;
+            rawFuelUsage += (FuelPerRadiationUnit * effectiveRawRadIntensity / fertility()) * FuelUsageMultiplier; // Not a typo. Fuel usage is thus penalized at high heats.
+            fuelRFAdded += FEPerRadiationUnit * initialIntensity;
             
-            rod.initialHardness = initialHardness;
-            rod.initialIntensity = initialIntensity * rayMultiplier;
-            rod.fuelAbsorptionTemperatureCoefficient = fuelAbsorptionTemperatureCoefficient;
+            rod.passData = new ControlRod.PassData(
+                    initialHardness,
+                    initialIntensity * rayMultiplier,
+                    fuelAbsorptionTemperatureCoefficient,
+                    FEPerRadiationUnit,
+                    FuelAbsorptionCoefficient,
+                    FuelModerationFactor,
+                    fuelHardnessMultiplier
+            );
         }
         
         rawFuelUsage /= controlRods.length;
