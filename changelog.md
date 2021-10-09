@@ -1,3 +1,19 @@
+# 1.17.1-0.6.0-alpha.5
+Not your grandpa's reactors anymore
+
+# Reactor
+ - Remove classic simulation
+ - correctly write to rfTransferredLastTick
+ - switch to new internal simulation interface
+   - allows simulation to be loaded independent of Forge/Minecraft
+ - ensure EMTPY_MODERATOR isn't going to cause divide by zero errors
+
+# Turbine
+ - Remove classic simulation
+
+# Misc
+ - Move config to new object based system
+
 # 1.17.1-0.6.0-alpha.4
 I'm a strong independent mod that doesn't need any other repository to build me 
 
