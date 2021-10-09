@@ -90,6 +90,9 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
             for (int j = 0; j < y; j++) {
                 for (int k = 0; k < z; k++) {
                     var newProperties = simulationDescription.moderatorProperties[i][j][k];
+                    if(newProperties == null){
+                        newProperties = simulationDescription.defaultModeratorProperties;
+                    }
                     if (controlRodsXZ[i][k] != null) {
                         newProperties = null;
                     }
@@ -103,7 +106,7 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
         
         fuelTank.setCapacity(Config.CONFIG.Reactor.PerFuelRodCapacity * controlRods.length * y);
         
-        int fuelToCasingRFKT = 0;
+        double fuelToCasingRFKT = 0;
         int fuelToManifoldSurfaceArea = 0;
         for (SimUtil.ControlRod controlRod : controlRods) {
             for (int i = 0; i < y; i++) {
@@ -127,7 +130,7 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
         }
         fuelToCasingRFKT *= Config.CONFIG.Reactor.FuelToStackRFKTMultiplier;
         
-        int stackToCoolantSystemRFKT = 2 * (x * y + x * z + z * y);
+        double stackToCoolantSystemRFKT = 2 * (x * y + x * z + z * y);
         
         
         for (int i = 0; i < x; i++) {
@@ -184,8 +187,9 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
     public void tick(boolean active) {
         if (active) {
             radiate();
+        } else {
+            fuelTank.burn(0);
         }
-        fuelTank.burn(0);
         
         {
             // decay fertility, RadiationHelper.tick in old BR, this is copied, mostly
@@ -234,6 +238,7 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
         double fuelRadAdded = 0;
         double caseRFAdded = 0;
         
+        final var FuelPerRadiationUnit = Config.CONFIG.Reactor.FuelPerRadiationUnit;
         final var FEPerRadiationUnit = Config.CONFIG.Reactor.FEPerRadiationUnit;
         final var FuelUsageMultiplier = Config.CONFIG.Reactor.FuelUsageMultiplier;
         final var FuelAbsorptionCoefficient = Config.CONFIG.Reactor.FuelAbsorptionCoefficient;
@@ -244,18 +249,18 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
             SimUtil.ControlRod rod = controlRods[r];
             
             // Apply control rod moderation of radiation to the quantity of produced radiation. 100% insertion = 100% reduction.
-            double controlRodModifier = (100 - rod.insertion) / 100f;
-            double effectiveRadIntensity = scaledRadIntensity * controlRodModifier;
-            double effectiveRawRadIntensity = rawRadIntensity * controlRodModifier;
+            final double controlRodModifier = (100 - rod.insertion) / 100f;
+            final double effectiveRadIntensity = scaledRadIntensity * controlRodModifier;
+            final double effectiveRawRadIntensity = rawRadIntensity * controlRodModifier;
             
             // Now nerf actual radiation production based on heat.
-            double initialIntensity = effectiveRadIntensity * rawIntensity;
+            final double initialIntensity = effectiveRadIntensity * rawIntensity;
             
             // Calculate based on propagation-to-self
-            rawFuelUsage += (FEPerRadiationUnit * effectiveRawRadIntensity / fertility()) * FuelUsageMultiplier; // Not a typo. Fuel usage is thus penalized at high heats.
+            rawFuelUsage += (FuelPerRadiationUnit * effectiveRawRadIntensity / fertility()) * FuelUsageMultiplier; // Not a typo. Fuel usage is thus penalized at high heats.
             fuelRFAdded += FEPerRadiationUnit * initialIntensity;
             
-            double rayMultiplier = 1.0 / (double) (SimUtil.rays.size() * y);
+            final double rayMultiplier = 1.0 / (double) (SimUtil.rays.size() * y);
             
             for (int i = 0; i < y; i++) {
                 for (int j = 0; j < SimUtil.rays.size(); j++) {

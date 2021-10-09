@@ -188,7 +188,10 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     private final Set<ReactorTerminalTile> terminals = new HashSet<>();
     private final ObjectArrayList<ReactorControlRodTile> controlRods = new ObjectArrayList<>();
     private final ObjectArrayList<ReactorFuelRodTile> fuelRods = new ObjectArrayList<>();
-    private final ObjectArrayList<ObjectArrayList<ReactorFuelRodTile>> fuelRodsByLevel = new ObjectArrayList<>();
+    // because class cast exception when getting elements, wrapping is required
+    @SuppressWarnings("unchecked")
+    private final ObjectArrayList<ObjectArrayList<ReactorFuelRodTile>> fuelRodsByLevel = ObjectArrayList.wrap(new ObjectArrayList[0]);
+    ;
     private final Set<ReactorPowerTapTile> powerPorts = new HashSet<>();
     private final Set<ReactorAccessPortTile> accessPorts = new HashSet<>();
     private final Set<ReactorCoolantPortTile> coolantPorts = new HashSet<>();
@@ -415,6 +418,9 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     protected void onDisassembled() {
         distributeFuel();
         setActive(ReactorActivity.INACTIVE);
+        if (simulation != null) {
+            simulationData = simulation.save();
+        }
     }
     
     @Nullable

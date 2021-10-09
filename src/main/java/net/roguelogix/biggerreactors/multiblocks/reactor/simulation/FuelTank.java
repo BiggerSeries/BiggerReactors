@@ -26,7 +26,7 @@ class FuelTank implements IReactorSimulation.IFuelTank, IPhosphophylliteSerializ
     }
     
     void burn(double amount) {
-        if (Double.isInfinite(amount) || Double.isNaN(amount)) {
+        if (Double.isInfinite(amount) || Double.isNaN(amount) || amount == 0) {
             burnedLastTick = 0;
             return;
         }

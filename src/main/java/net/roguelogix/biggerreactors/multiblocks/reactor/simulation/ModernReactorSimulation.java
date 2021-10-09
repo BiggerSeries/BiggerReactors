@@ -92,6 +92,9 @@ public class ModernReactorSimulation implements IReactorSimulation {
             for (int j = 0; j < y; j++) {
                 for (int k = 0; k < z; k++) {
                     var newProperties = simulationDescription.moderatorProperties[i][j][k];
+                    if(newProperties == null){
+                        newProperties = simulationDescription.defaultModeratorProperties;
+                    }
                     if (controlRodsXZ[i][k] != null) {
                         newProperties = null;
                     }
@@ -105,7 +108,7 @@ public class ModernReactorSimulation implements IReactorSimulation {
         
         fuelTank.setCapacity(Config.CONFIG.Reactor.PerFuelRodCapacity * controlRods.length * y);
         
-        int fuelToCasingRFKT = 0;
+        double fuelToCasingRFKT = 0;
         int fuelToManifoldSurfaceArea = 0;
         for (SimUtil.ControlRod controlRod : controlRods) {
             for (int i = 0; i < y; i++) {
@@ -128,8 +131,8 @@ public class ModernReactorSimulation implements IReactorSimulation {
             }
         }
         fuelToCasingRFKT *= Config.CONFIG.Reactor.FuelToStackRFKTMultiplier;
-        
-        int stackToCoolantSystemRFKT = 2 * (x * y + x * z + z * y);
+    
+        double stackToCoolantSystemRFKT = 2 * (x * y + x * z + z * y);
         
         
         for (int i = 0; i < x; i++) {
@@ -217,8 +220,9 @@ public class ModernReactorSimulation implements IReactorSimulation {
     public void tick(boolean active) {
         if (active) {
             radiate();
+        } else {
+            fuelTank.burn(0);
         }
-        fuelTank.burn(0);
         
         {
             // decay fertility, RadiationHelper.tick in old BR, this is copied, mostly
@@ -276,6 +280,7 @@ public class ModernReactorSimulation implements IReactorSimulation {
         double fuelRadAdded = 0;
         double caseRFAdded = 0;
         
+        final var FuelPerRadiationUnit = Config.CONFIG.Reactor.FuelPerRadiationUnit;
         final var FEPerRadiationUnit = Config.CONFIG.Reactor.FEPerRadiationUnit;
         final var FuelUsageMultiplier = Config.CONFIG.Reactor.FuelUsageMultiplier;
         final var FuelAbsorptionCoefficient = Config.CONFIG.Reactor.FuelAbsorptionCoefficient;
@@ -292,7 +297,7 @@ public class ModernReactorSimulation implements IReactorSimulation {
         double initialIntensity = effectiveRadIntensity * rawIntensity;
         
         // Calculate based on propagation-to-self
-        rawFuelUsage += (FEPerRadiationUnit * effectiveRawRadIntensity / fertility()) * FuelUsageMultiplier; // Not a typo. Fuel usage is thus penalized at high heats.
+        rawFuelUsage += (FuelPerRadiationUnit * effectiveRawRadIntensity / fertility()) * FuelUsageMultiplier; // Not a typo. Fuel usage is thus penalized at high heats.
         fuelRFAdded += FEPerRadiationUnit * initialIntensity;
         
         double rayMultiplier = 1.0 / (double) (SimUtil.rays.size());
@@ -305,7 +310,7 @@ public class ModernReactorSimulation implements IReactorSimulation {
             for (int k = 0; k < raySteps.size(); k++) {
                 SimUtil.RayStep rayStep = raySteps.get(k);
                 final int currentX = rod.x + rayStep.offset.x;
-                final int currentY = currentRod + rayStep.offset.y;
+                final int currentY = this.currentY + rayStep.offset.y;
                 final int currentZ = rod.z + rayStep.offset.z;
                 if (currentX < 0 || currentX >= this.x ||
                         currentY < 0 || currentY >= this.y ||
