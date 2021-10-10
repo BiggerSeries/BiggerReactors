@@ -9,7 +9,7 @@ version="${version}"
 displayName="Bigger Reactors" 
 displayURL="https://biggerseries.net/" 
 logoFile="BiggerReactors.png" 
-credits="ErogeneousBeef for the original Big Reactors mod, that this is spirtually (and semi-literally) derived from" 
+credits="ErogeneousBeef for the original Big Reactors mod, that this is spiritually (and semi-literally) derived from"
 authors="RogueLogix, gizmocodes, Ridanisaurus" 
 description='''
 Big Reactors, but even bigger
