@@ -359,12 +359,12 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < manifolds.size(); i++) {
             BlockPos manifoldPos = manifolds.get(i).getBlockPos();
-            simulationDescription.addManifold(manifoldPos.getX() - start.x, manifoldPos.getY() - start.y, manifoldPos.getZ() - start.z);
+            simulationDescription.setManifold(manifoldPos.getX() - start.x, manifoldPos.getY() - start.y, manifoldPos.getZ() - start.z, true);
         }
         //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < controlRods.size(); i++) {
             BlockPos rodPos = controlRods.get(i).getBlockPos();
-            simulationDescription.addControlRod(rodPos.getX() - start.x, rodPos.getZ() - start.z);
+            simulationDescription.setControlRod(rodPos.getX() - start.x, rodPos.getZ() - start.z, true);
         }
         simulationDescription.setPassivelyCooled(coolantPorts.isEmpty());
         simulationDescription.setAmbientTemperature(293.15);

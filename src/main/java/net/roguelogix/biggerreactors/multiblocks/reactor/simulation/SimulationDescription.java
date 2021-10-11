@@ -10,6 +10,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -75,47 +77,42 @@ public class SimulationDescription implements IPhosphophylliteSerializable {
         moderatorProperties[x][y][z] = properties;
     }
     
-    public void addControlRod(int x, int z) {
+    public void setControlRod(int x, int z, boolean isControlRod) {
         if (controlRodLocations == null) {
+            if (!isControlRod) {
+                return;
+            }
             throw new IllegalStateException("Size must be set before adding control rods");
         }
         if (x < 0 || x >= controlRodLocations.length || z < 0 || z >= controlRodLocations[0].length) {
+            if (!isControlRod) {
+                return;
+            }
             throw new IndexOutOfBoundsException("Attempt to add control rod outside of reactor bounds");
         }
-        controlRodLocations[x][z] = true;
-        controlRodCount++;
+        if (controlRodLocations[x][z] != isControlRod) {
+            controlRodCount += isControlRod ? 1 : -1;
+        }
+        controlRodLocations[x][z] = isControlRod;
     }
     
-    public void removeControlRod(int x, int z) {
-        if (controlRodLocations == null) {
-            return;
-        }
-        if (x < 0 || x >= controlRodLocations.length || y < 0 || y >= controlRodLocations[0].length) {
-            return;
-        }
-        controlRodLocations[x][z] = false;
-    }
-    
-    public void addManifold(int x, int y, int z) {
+    public void setManifold(int x, int y, int z, boolean manifold) {
         if (manifoldLocations == null) {
+            if (!manifold) {
+                return;
+            }
             throw new IllegalStateException("Size must be set before adding manifolds");
         }
         if (x < 0 || x >= manifoldLocations.length || y < 0 || y >= manifoldLocations[0].length || z < 0 || z >= manifoldLocations[0][0].length) {
+            if (!manifold) {
+                return;
+            }
             throw new IndexOutOfBoundsException("Attempt to add manifold outside of reactor bounds");
         }
-        manifoldLocations[x][y][z] = true;
-        manifoldCount++;
-    }
-    
-    public void removeManifold(int x, int y, int z) {
-        if (manifoldLocations == null) {
-            return;
+        if (manifoldLocations[x][y][z] != manifold) {
+            manifoldCount += manifold ? 1 : -1;
         }
-        if (x < 0 || x >= manifoldLocations.length || y < 0 || y >= manifoldLocations[0].length || z < 0 || z >= manifoldLocations[0][0].length) {
-            return;
-        }
-        manifoldLocations[x][y][z] = false;
-        manifoldCount--;
+        manifoldLocations[x][y][z] = manifold;
     }
     
     public void setPassivelyCooled(boolean passivelyCooled) {
@@ -127,7 +124,7 @@ public class SimulationDescription implements IPhosphophylliteSerializable {
     }
     
     public IReactorSimulation build(Config.Mode mode) {
-        return switch (mode){
+        return switch (mode) {
             case MODERN -> new ModernReactorSimulation(this);
             case EXPERIMENTAL -> new ExperimentalReactorSimulation(this);
             case MULTITHREADED -> new MultithreadedReactorSimulation(this);
@@ -156,13 +153,17 @@ public class SimulationDescription implements IPhosphophylliteSerializable {
                 ArrayList<Boolean> manifoldLocationsXY = new ArrayList<>();
                 for (int k = 0; k < z; k++) {
                     ReactorModeratorRegistry.IModeratorProperties properties = this.moderatorProperties[i][j][k];
-                    int index = moderatorProperties.indexOf(properties);
-                    if (index == -1) {
-                        index = moderatorProperties.size();
-                        moderatorProperties.add(properties);
+                    if (properties == null) {
+                        moderatorIndexesXY.add(-1);
+                    } else {
+                        int index = moderatorProperties.indexOf(properties);
+                        if (index == -1) {
+                            index = moderatorProperties.size();
+                            moderatorProperties.add(properties);
+                        }
+                        moderatorIndexesXY.add(index);
                     }
-                    moderatorIndexesXY.add(index);
-                    manifoldLocationsXY.add(this.manifoldLocations[x][y][z]);
+                    manifoldLocationsXY.add(this.manifoldLocations[i][j][k]);
                 }
                 moderatorIndexesX.add(moderatorIndexesXY);
                 manifoldLocationsX.add(manifoldLocationsXY);
@@ -176,16 +177,122 @@ public class SimulationDescription implements IPhosphophylliteSerializable {
         }
         
         
+        compound.put("x", x);
+        compound.put("y", y);
+        compound.put("z", z);
         compound.put("moderatorProperties", moderatorProperties);
-        compound.put("moderatorIndexes", moderatorIndexes);
+        compound.put("moderatorIndices", moderatorIndexes);
         compound.put("manifoldLocations", manifoldLocations);
         compound.put("controlRodLocations", controlRodLocations);
+        compound.put("defaultModeratorProperties", defaultModeratorProperties.toROBNMap());
+        compound.put("passivelyCooled", passivelyCooled);
+        compound.put("ambientTemperature", ambientTemperature);
         
         return compound;
     }
     
     @Override
     public void load(@Nonnull PhosphophylliteCompound compound) {
-    
+        setSize(compound.getInt("x"), compound.getInt("y"), compound.getInt("z"));
+        final ArrayList<ReactorModeratorRegistry.ModeratorProperties> moderatorProperties = new ArrayList<>();
+        {
+            final List<?> moderatorROBN = compound.getList("moderatorProperties");
+            for (Object o : moderatorROBN) {
+                if (!(o instanceof Map<?, ?> map)) {
+                    throw new IllegalArgumentException("Malformed Binary");
+                }
+                double absorption = 0;
+                if (map.get("absorption") instanceof Number num) {
+                    absorption = num.doubleValue();
+                }
+                double heatEfficiency = 0;
+                if (map.get("heatEfficiency") instanceof Number num) {
+                    heatEfficiency = num.doubleValue();
+                }
+                double moderation = 1;
+                if (map.get("moderation") instanceof Number num) {
+                    moderation = num.doubleValue();
+                }
+                double heatConductivity = 0;
+                if (map.get("heatConductivity") instanceof Number num) {
+                    heatConductivity = num.doubleValue();
+                }
+                moderatorProperties.add(new ReactorModeratorRegistry.ModeratorProperties(absorption, heatEfficiency, moderation, heatConductivity));
+            }
+        }
+        List<?> moderatorIndices = compound.getList("moderatorIndices");
+        List<?> manifoldLocations = compound.getList("manifoldLocations");
+        List<?> controlRodLocations = compound.getList("controlRodLocations");
+        if (moderatorIndices.size() != x || manifoldLocations.size() != x || controlRodLocations.size() != x) {
+            throw new IllegalArgumentException("Malformed Binary");
+        }
+        for (int i = 0; i < x; i++) {
+            if (!(moderatorIndices.get(i) instanceof List<?> moderatorIndicesX)) {
+                throw new IllegalArgumentException("Malformed Binary");
+            }
+            if (!(manifoldLocations.get(i) instanceof List<?> manifoldLocationsX)) {
+                throw new IllegalArgumentException("Malformed Binary");
+            }
+            if (!(controlRodLocations.get(i) instanceof List<?> controlRodLocationsX)) {
+                throw new IllegalArgumentException("Malformed Binary");
+            }
+            if (moderatorIndicesX.size() != y || manifoldLocationsX.size() != y || controlRodLocations.size() != z) {
+                throw new IllegalArgumentException("Malformed Binary");
+            }
+            for (int j = 0; j < y; j++) {
+                if (!(moderatorIndicesX.get(j) instanceof List<?> moderatorIndicesXY)) {
+                    throw new IllegalArgumentException("Malformed Binary");
+                }
+                if (!(manifoldLocationsX.get(j) instanceof List<?> manifoldLocationsXY)) {
+                    throw new IllegalArgumentException("Malformed Binary");
+                }
+                if (moderatorIndicesXY.size() != z || manifoldLocationsXY.size() != z) {
+                    throw new IllegalArgumentException("Malformed Binary");
+                }
+                for (int k = 0; k < z; k++) {
+                    if (!(moderatorIndicesXY.get(k) instanceof Number moderatorIndex)) {
+                        throw new IllegalArgumentException("Malformed Binary");
+                    }
+                    if (!(manifoldLocationsXY.get(k) instanceof Boolean isManifold)) {
+                        throw new IllegalArgumentException("Malformed Binary");
+                    }
+                    int index = moderatorIndex.intValue();
+                    setModeratorProperties(i, j, k, index != -1 ? moderatorProperties.get(index) : null);
+                    setManifold(i, j, k, isManifold);
+                }
+            }
+            for (int j = 0; j < z; j++) {
+                if (!(controlRodLocationsX.get(j) instanceof Boolean isControlRod)) {
+                    throw new IllegalArgumentException("Malformed Binary");
+                }
+                setControlRod(i, j, isControlRod);
+            }
+        }
+        
+        {
+            Map<?, ?> map = compound.getMap("defaultModeratorProperties");
+            if (map.isEmpty()) {
+                throw new IllegalArgumentException("Malformed Binary");
+            }
+            double absorption = 0;
+            if (map.get("absorption") instanceof Number num) {
+                absorption = num.doubleValue();
+            }
+            double heatEfficiency = 0;
+            if (map.get("heatEfficiency") instanceof Number num) {
+                heatEfficiency = num.doubleValue();
+            }
+            double moderation = 1;
+            if (map.get("moderation") instanceof Number num) {
+                moderation = num.doubleValue();
+            }
+            double heatConductivity = 0;
+            if (map.get("heatConductivity") instanceof Number num) {
+                heatConductivity = num.doubleValue();
+            }
+            setDefaultIModeratorProperties(new ReactorModeratorRegistry.ModeratorProperties(absorption, heatEfficiency, moderation, heatConductivity));
+        }
+        setPassivelyCooled(compound.getBoolean("passivelyCooled"));
+        setAmbientTemperature(compound.getDouble("ambientTemperature"));
     }
 }
