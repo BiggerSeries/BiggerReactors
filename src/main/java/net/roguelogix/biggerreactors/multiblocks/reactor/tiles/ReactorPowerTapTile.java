@@ -79,10 +79,18 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophyl
         if (nullableController() == null || controller().assemblyState() != MultiblockController.AssemblyState.ASSEMBLED) {
             return 0;
         }
-        long toExtract = controller().simulation().battery().stored();
+        var reactorSim = controller().simulation();
+        if (reactorSim == null) {
+            return 0;
+        }
+        var battery = reactorSim.battery();
+        if (battery == null) {
+            return 0;
+        }
+        long toExtract = battery.stored();
         toExtract = Math.min(maxExtract, toExtract);
         if (!simulate) {
-            toExtract = controller().simulation().battery().extract(toExtract);
+            toExtract = battery.extract(toExtract);
         }
         return toExtract;
     }
@@ -90,7 +98,15 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophyl
     @Override
     public long energyStored() {
         if (nullableController() != null) {
-            return controller().simulation().battery().stored();
+            var reactorSim = controller().simulation();
+            if (reactorSim == null) {
+                return 0;
+            }
+            var battery = reactorSim.battery();
+            if (battery == null) {
+                return 0;
+            }
+            return battery.stored();
         }
         return 0;
     }
@@ -98,7 +114,15 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophyl
     @Override
     public long maxEnergyStored() {
         if (nullableController() != null) {
-            return controller().simulation().battery().capacity();
+            var reactorSim = controller().simulation();
+            if (reactorSim == null) {
+                return 0;
+            }
+            var battery = reactorSim.battery();
+            if (battery == null) {
+                return 0;
+            }
+            return battery.capacity();
         }
         return 0;
     }
