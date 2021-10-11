@@ -1,5 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.simulation;
 
+import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.phosphophyllite.registry.OnModLoad;
 import net.roguelogix.phosphophyllite.repack.org.joml.*;
 
@@ -88,12 +89,8 @@ public class SimUtil {
     }
     
     static {
-        // i cannot rely on the config being loaded yet, so, im just going to make the assumption that its TTL of 4, its probably not been changed
-        // once i update the registry with more strict ordering, then i can rely on the config being loaded, but until then, *it might not be*
-        
-        // registry has more strict ordering now, its loaded by this point, dont feel like changing this though, so, *succ*
-        
-        final double TTL = 4;
+        // Config is registered before any @OnModLoad classes are loaded/called, so, the the config is loaded first
+        final double TTL = Config.CONFIG.Reactor.IrradiationDistance;
         
         final Vector3d radiationDirection = new Vector3d();
         final Vector3d currentSegment = new Vector3d();
