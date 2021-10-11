@@ -5,6 +5,7 @@ import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.lua.LuaFunction;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import net.minecraftforge.common.util.LazyOptional;
+import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.multiblocks.reactor.ReactorMultiblockController;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorSimulation;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorActivity;
@@ -35,6 +36,11 @@ public class ReactorPeripheral implements IPeripheral {
         battery = new Battery(simulationSupplier);
         coolantTank = new CoolantTank(simulationSupplier);
         fuelTank = new FuelTank(controllerSupplier, simulationSupplier);
+    }
+    
+    @LuaFunction
+    public String apiVersion() {
+        return BiggerReactors.modVersion();
     }
     
     @LuaFunction

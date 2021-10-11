@@ -12,6 +12,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fmlserverevents.FMLServerStoppedEvent;
 import net.roguelogix.biggerreactors.machine.client.CyaniteReprocessorScreen;
 import net.roguelogix.biggerreactors.machine.containers.CyaniteReprocessorContainer;
@@ -30,8 +31,6 @@ import net.roguelogix.biggerreactors.multiblocks.turbine.tiles.TurbineRotorBeari
 import net.roguelogix.biggerreactors.registries.FluidTransitionRegistry;
 import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
 import net.roguelogix.biggerreactors.registries.TurbineCoilRegistry;
-import net.roguelogix.phosphophyllite.config.ConfigFormat;
-import net.roguelogix.phosphophyllite.registry.RegisterConfig;
 import net.roguelogix.phosphophyllite.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,6 +53,7 @@ public class BiggerReactors {
         if (FMLEnvironment.dist == Dist.CLIENT) {
             MinecraftForge.EVENT_BUS.addListener(this::onRenderWorldLast);
         }
+        version = FMLLoader.getLoadingModList().getModFileById(modid).versionString();
     }
 
     public static ServerResources dataPackRegistries;
@@ -109,4 +109,8 @@ public class BiggerReactors {
         lastRenderTime = System.nanoTime();
     }
 
+    private static String version;
+    public static String modVersion(){
+        return version;
+    }
 }
