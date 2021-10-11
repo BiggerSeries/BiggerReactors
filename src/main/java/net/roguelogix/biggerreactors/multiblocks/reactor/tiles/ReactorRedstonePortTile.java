@@ -128,22 +128,34 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProv
                 break;
             }
             case OUTPUT_FUEL_TEMP: {
-                double fuelTemp = controller().simulation().fuelHeat();
+                var reactorSim = controller().simulation();
+                if (reactorSim == null) {
+                    break;
+                }
+                double fuelTemp = reactorSim.fuelHeat();
                 if ((fuelTemp < mainVal) == reactorRedstonePortState.triggerAB.toBool()) {
                     shouldBeEmitting = true;
                 }
             }
             break;
             case OUTPUT_CASING_TEMP: {
-                double casingTemperature = controller().simulation().stackHeat();
+                var reactorSim = controller().simulation();
+                if (reactorSim == null) {
+                    break;
+                }
+                double casingTemperature = reactorSim.stackHeat();
                 if ((casingTemperature < mainVal) == reactorRedstonePortState.triggerAB.toBool()) {
                     shouldBeEmitting = true;
                 }
             }
             break;
             case OUTPUT_FUEL_ENRICHMENT: {
-                double fuelPercent = controller().simulation().fuelTank().fuel();
-                fuelPercent /= controller().simulation().fuelTank().totalStored();
+                var reactorSim = controller().simulation();
+                if (reactorSim == null) {
+                    break;
+                }
+                double fuelPercent = reactorSim.fuelTank().fuel();
+                fuelPercent /= reactorSim.fuelTank().totalStored();
                 fuelPercent *= 100;
                 if ((fuelPercent < mainVal) == reactorRedstonePortState.triggerAB.toBool()) {
                     shouldBeEmitting = true;
@@ -151,22 +163,38 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProv
             }
             break;
             case OUTPUT_FUEL_AMOUNT: {
-                double fuelAmount = controller().simulation().fuelTank().fuel();
+                var reactorSim = controller().simulation();
+                if (reactorSim == null) {
+                    break;
+                }
+                double fuelAmount = reactorSim.fuelTank().fuel();
                 if ((fuelAmount < mainVal) == reactorRedstonePortState.triggerAB.toBool()) {
                     shouldBeEmitting = true;
                 }
             }
             break;
             case OUTPUT_WASTE_AMOUNT: {
-                double wasteAmount = controller().simulation().fuelTank().waste();
+                var reactorSim = controller().simulation();
+                if (reactorSim == null) {
+                    break;
+                }
+                double wasteAmount = reactorSim.fuelTank().waste();
                 if ((wasteAmount < mainVal) == reactorRedstonePortState.triggerAB.toBool()) {
                     shouldBeEmitting = true;
                 }
             }
             break;
             case OUTPUT_ENERGY_AMOUNT: {
-                double energyAmount = controller().simulation().battery().stored();
-                energyAmount /= (double) controller().simulation().battery().capacity();
+                var reactorSim = controller().simulation();
+                if (reactorSim == null) {
+                    break;
+                }
+                var battery = reactorSim.battery();
+                if (battery == null) {
+                    break;
+                }
+                double energyAmount = battery.stored();
+                energyAmount /= (double) battery.capacity();
                 energyAmount *= 100;
                 if ((energyAmount < mainVal) == reactorRedstonePortState.triggerAB.toBool()) {
                     shouldBeEmitting = true;
@@ -185,6 +213,7 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProv
         }
         if (isLit != shouldLight) {
             isLit = shouldLight;
+            assert level != null;
             level.setBlockAndUpdate(worldPosition, getBlockState().setValue(ReactorRedstonePort.IS_LIT_BOOLEAN_PROPERTY, isLit));
         }
         // TODO: 7/22/21 only mark changed when it actually changed 
