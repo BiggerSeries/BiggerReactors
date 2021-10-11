@@ -34,6 +34,7 @@ import net.roguelogix.phosphophyllite.multiblock.IOnDisassemblyTile;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -127,21 +128,28 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
         return 3;
     }
     
+    @Nonnull
     @Override
     public ItemStack getStackInSlot(int slot) {
         if (nullableController() == null) {
             return ItemStack.EMPTY;
-        } else if (slot == WASTE_SLOT) {
-            long availableIngots = controller().simulation().fuelTank().waste() / Config.CONFIG.Reactor.FuelMBPerIngot;
+        }
+        var reactorSim = controller().simulation();
+        if(reactorSim == null){
+            return ItemStack.EMPTY;
+        }
+        if (slot == WASTE_SLOT) {
+            long availableIngots = reactorSim.fuelTank().waste() / Config.CONFIG.Reactor.FuelMBPerIngot;
             return new ItemStack(CyaniteIngot.INSTANCE, (int) availableIngots);
         } else if (slot == FUEL_SLOT) {
-            long availableIngots = controller().simulation().fuelTank().fuel() / Config.CONFIG.Reactor.FuelMBPerIngot;
+            long availableIngots = reactorSim.fuelTank().fuel() / Config.CONFIG.Reactor.FuelMBPerIngot;
             return new ItemStack(YelloriumIngot.INSTANCE, (int) availableIngots);
         } else {
             return ItemStack.EMPTY;
         }
     }
     
+    @Nonnull
     @Override
     public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
         if (!isInlet() || nullableController() == null || slot != FUEL_INSERT_SLOT) {
@@ -167,6 +175,7 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
         return stack;
     }
     
+    @Nonnull
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
         if (isInlet() || nullableController() == null || slot == FUEL_INSERT_SLOT) {
@@ -195,7 +204,11 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
         if (nullableController() == null) {
             return 0;
         }
-        return (int) (controller().simulation().fuelTank().capacity() / Config.CONFIG.Reactor.FuelMBPerIngot);
+        var reactorSim = controller().simulation();
+        if(reactorSim == null){
+            return 0;
+        }
+        return (int) (reactorSim.fuelTank().capacity() / Config.CONFIG.Reactor.FuelMBPerIngot);
     }
     
     @Override
@@ -278,7 +291,6 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
         connected = itemOutput.isPresent();
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public void runRequest(String requestName, Object requestData) {
         if (nullableController() == null) {
@@ -288,6 +300,7 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
         // Change IO direction.
         if (requestName.equals("setDirection")) {
             this.setDirection(((Integer) requestData != 0) ? OUTLET : INLET);
+            assert level != null;
             level.setBlockAndUpdate(this.worldPosition, this.getBlockState().setValue(PORT_DIRECTION_ENUM_PROPERTY, direction));
             return;
         }
@@ -321,7 +334,6 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
         return new ReactorAccessPortContainer(windowId, this.worldPosition, player);
     }
     
-    @Nullable
     @Override
     public ReactorAccessPortState getState() {
         this.updateState();
