@@ -177,6 +177,13 @@ public class Config {
     public final Turbine Turbine = new Turbine();
     
     public static final class HeatExchanger {
+        @ConfigValue(range = "[3,)")
+        public final int MaxLength = 64;
+        @ConfigValue(range = "[3,)")
+        public final int MaxWidth = 64;
+        @ConfigValue(range = "[4,)")
+        public final int MaxHeight = 96;
+        
         @ConfigValue(range = "(0,)", advanced = true)
         public final long ChannelTankVolumePerBlock = 10000;
         @ConfigValue(range = "(0,)", advanced = true)

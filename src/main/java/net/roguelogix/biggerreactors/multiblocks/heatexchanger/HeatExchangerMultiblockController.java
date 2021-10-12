@@ -42,7 +42,7 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
     public HeatExchangerMultiblockController(Level world) {
         super(world, tile -> tile instanceof HeatExchangerBaseTile, block -> block instanceof HeatExchangerBaseBlock);
         minSize.set(4, 3, 3);
-        maxSize.set(-1, -1, -1);
+        maxSize.set(Config.CONFIG.HeatExchanger.MaxLength, Config.CONFIG.HeatExchanger.MaxHeight, Config.CONFIG.HeatExchanger.MaxWidth);
         setAssemblyValidator(HeatExchangerMultiblockController::validate);
         frameValidator = block -> block instanceof HeatExchangerCasingBlock;
         exteriorValidator = Validator.or(frameValidator, block -> false);
