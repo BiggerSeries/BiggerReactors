@@ -5,6 +5,7 @@ import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.lua.LuaFunction;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import net.minecraftforge.common.util.LazyOptional;
+import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.multiblocks.turbine.TurbineMultiblockController;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.VentState;
 import net.roguelogix.phosphophyllite.multiblock.MultiblockController;
@@ -30,6 +31,11 @@ public class TurbinePeripheral implements IPeripheral {
         battery = new Battery(controllerSupplier);
         rotor = new Rotor(controllerSupplier);
         tank = new FluidTank(controllerSupplier);
+    }
+    
+    @LuaFunction
+    public String apiVersion() {
+        return BiggerReactors.modVersion();
     }
 
     @LuaFunction
