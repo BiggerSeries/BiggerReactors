@@ -42,13 +42,11 @@ public class Config {
     public final WorldGen WorldGen = new WorldGen();
     
     public static final class Reactor {
-        //TODO: remove max, its only there because of the render system
-        //      multiblock system can take *much* larger structures
-        @ConfigValue(range = "[3,192]")
+        @ConfigValue(range = "[3,)")
         public final int MaxLength = 128;
-        @ConfigValue(range = "[3,192]")
+        @ConfigValue(range = "[3,)")
         public final int MaxWidth = 128;
-        @ConfigValue(range = "[3,256]")
+        @ConfigValue(range = "[3,)")
         public final int MaxHeight = 192;
         
         @ConfigValue(range = "(0,)")
@@ -146,11 +144,11 @@ public class Config {
     public final Reactor Reactor = new Reactor();
     
     public static final class Turbine {
-        @ConfigValue(range = "[5,192]")
+        @ConfigValue(range = "[5,)")
         public final int MaxLength = 32;
-        @ConfigValue(range = "[5,192]")
+        @ConfigValue(range = "[5,)")
         public final int MaxWidth = 32;
-        @ConfigValue(range = "[4,256]")
+        @ConfigValue(range = "[4,)")
         public final int MaxHeight = 192;
         
         @ConfigValue(range = "(0,)", advanced = true)
