@@ -185,7 +185,7 @@ public class HeatExchangerTerminalScreen extends ScreenBase<HeatExchangerTermina
         // Draw frame.
         symbol.blit(mStack);
         // Update tooltip.
-        symbol.tooltip = new TextComponent(String.format("%.1f/%.1f \u00B0C", heatStored, heatCapacity));
+        symbol.tooltip = new TextComponent(String.format("%.1f/%.1f K", heatStored, heatCapacity));
     }
 
     /**
@@ -201,10 +201,10 @@ public class HeatExchangerTerminalScreen extends ScreenBase<HeatExchangerTermina
         super.render(mStack, mouseX, mouseY, partialTicks);
 
         // Render text for condenser channel temperature:
-        this.getFont().draw(mStack, String.format("%.0f \u00B0K", this.heatExchangerState.condenserChannelTemperature), this.getGuiLeft() + 27, this.getGuiTop() + 107, 4210752);
+        this.getFont().draw(mStack, String.format("%.0f K", this.heatExchangerState.condenserChannelTemperature), this.getGuiLeft() + 27, this.getGuiTop() + 107, 4210752);
 
         // Render text for evaporator channel temperature:
-        this.getFont().draw(mStack, String.format("%.0f \u00B0K", this.heatExchangerState.evaporatorChannelTemperature), this.getGuiLeft() + 27, this.getGuiTop() + 127, 4210752);
+        this.getFont().draw(mStack, String.format("%.0f K", this.heatExchangerState.evaporatorChannelTemperature), this.getGuiLeft() + 27, this.getGuiTop() + 127, 4210752);
 
         // Render text for condenser channel flow rate:
         this.getFont().draw(mStack, RenderHelper.formatValue((this.heatExchangerState.condenserChannelFlowRate / 1000.0), 1, "B/t", true), this.getGuiLeft() + 93, this.getGuiTop() + 107, 4210752);

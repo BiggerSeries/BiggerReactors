@@ -64,7 +64,7 @@ public class CommonReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
         // (Left) Temperature readout tooltip:
         Tooltip<ReactorTerminalContainer> temperatureReadoutTooltip = new Tooltip<>(screen, 26, 19, 53, 16, TextComponent.EMPTY);
         temperatureReadoutTooltip.onTick = () -> {
-            temperatureReadoutTooltip.tooltip = new TextComponent(String.format("%.3f \u00B0C", reactorState.fuelHeatStored));
+            temperatureReadoutTooltip.tooltip = new TextComponent(String.format("%.3f K", reactorState.fuelHeatStored));
         };
         screen.addElement(temperatureReadoutTooltip);
         
@@ -208,7 +208,7 @@ public class CommonReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
         // Draw frame.
         symbol.blit(mStack);
         // Update tooltip.
-        symbol.tooltip = new TextComponent(String.format("%.1f/%.1f \u00B0C", heatStored, heatCapacity));
+        symbol.tooltip = new TextComponent(String.format("%.1f/%.1f K", heatStored, heatCapacity));
     }
     
     /**
@@ -257,7 +257,7 @@ public class CommonReactorTerminalScreen extends ScreenBase<ReactorTerminalConta
      */
     public static void renderStatusText(@Nonnull PoseStack mStack, @Nonnull ScreenBase<ReactorTerminalContainer> screen, ReactorActivity reactorActivity, boolean doAutoEject, double heatStored, double fuelUsageRate, double reactivityRate) {
         // Render text for reactor temperature (no fancy suffix for Celsius):
-        screen.getFont().draw(mStack, String.format("%.0f \u00B0C", heatStored), screen.getGuiLeft() + 27, screen.getGuiTop() + 23, 4210752);
+        screen.getFont().draw(mStack, String.format("%.0f K", heatStored), screen.getGuiLeft() + 27, screen.getGuiTop() + 23, 4210752);
         
         // Render text for fuel consumption rate:
         screen.getFont().draw(mStack, RenderHelper.formatValue((fuelUsageRate / 1000.0), 3, "B/t", true), screen.getGuiLeft() + 27, screen.getGuiTop() + 61, 4210752);
