@@ -1,3 +1,20 @@
+# 1.17.1-0.6.0-alpha.6
+
+# Reactor
+ - Fix NPEs caused by new simulation interface
+ - Implement simulation description serialization
+ - Add version to CC API
+ - Temperatures are in Kelvin now
+ - Remove range limit for max size
+
+# Turbine
+ - Add version to CC API
+ - Remove range limit for max size
+
+# Heat Exchanger
+ - Add version to CC API
+ - Add config options for max size
+
 # 1.17.1-0.6.0-alpha.5
 Not your grandpa's reactors anymore
 
