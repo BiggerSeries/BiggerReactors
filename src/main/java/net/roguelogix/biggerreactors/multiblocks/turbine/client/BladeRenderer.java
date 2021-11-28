@@ -20,6 +20,7 @@ import net.roguelogix.phosphophyllite.repack.org.joml.Vector4i;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import static net.roguelogix.biggerreactors.multiblocks.turbine.tiles.TurbineRotorBearingTile.USE_QUARTZ;
 import static net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock.ASSEMBLED;
 
 @ParametersAreNonnullByDefault
@@ -31,6 +32,9 @@ public class BladeRenderer implements BlockEntityRenderer<TurbineRotorBearingTil
     
     @Override
     public void render(TurbineRotorBearingTile bearing, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+        if(USE_QUARTZ){
+            return;
+        }
         // fuck using MC's render engine, its a slow pile of garbage
         // if they cant do it properly, ill just have to do it myself
         // later, im lazy right now, still, fuck this shit
@@ -61,7 +65,7 @@ public class BladeRenderer implements BlockEntityRenderer<TurbineRotorBearingTil
                 bearing.angle = angle;
             }
             
-            int blade180RotationMultiplier = ((int) -bearing.rotationAxis.x()) | ((int) -bearing.rotationAxis.y()) | ((int) bearing.rotationAxis.z());
+            int blade180RotationMultiplier = -bearing.rotationAxis.x() | -bearing.rotationAxis.y() | bearing.rotationAxis.z();
             if (blade180RotationMultiplier > 0) {
                 angle += 180;
             }

@@ -1,27 +1,41 @@
 package net.roguelogix.biggerreactors.multiblocks.turbine.tiles;
 
-import com.mojang.math.Vector3f;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorBlade;
+import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorShaft;
 import net.roguelogix.phosphophyllite.Phosphophyllite;
 import net.roguelogix.phosphophyllite.multiblock.IAssemblyAttemptedTile;
+import net.roguelogix.phosphophyllite.quartz.*;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.repack.org.joml.Matrix4f;
+import net.roguelogix.phosphophyllite.repack.org.joml.Vector3i;
+import net.roguelogix.phosphophyllite.repack.org.joml.Vector3ic;
 import net.roguelogix.phosphophyllite.repack.org.joml.Vector4i;
+import net.roguelogix.phosphophyllite.threading.Queues;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 
+import static net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock.ASSEMBLED;
+
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @RegisterTileEntity(name = "turbine_rotor_bearing")
 public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssemblyAttemptedTile {
+    
+    public static boolean USE_QUARTZ = true;
     
     @RegisterTileEntity.Type
     public static BlockEntityType<TurbineRotorBearingTile> TYPE;
@@ -37,7 +51,7 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
     
     public boolean isRenderBearing = false;
     public double speed = 0;
-    public Vector3f rotationAxis = null;
+    public Vector3i rotationAxis = null;
     public ArrayList<Vector4i> rotorConfiguration = null;
     public AABB AABB = null;
     private long sendFullUpdate = Long.MAX_VALUE;
@@ -47,6 +61,10 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
     public CompoundTag getUpdateNBT() {
         CompoundTag nbt = new CompoundTag();
         if (nullableController() != null) {
+            if (!getBlockState().getValue(ASSEMBLED)) {
+                nbt.putBoolean("disassembled", true);
+                return nbt;
+            }
             nbt.putDouble("speed", controller().simulation().RPM());
             if (sendFullUpdate < Phosphophyllite.tickNumber()) {
                 sendFullUpdate = Long.MAX_VALUE;
@@ -58,11 +76,18 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
     
     @Override
     public void handleUpdateNBT(CompoundTag nbt) {
-        if (nbt.contains("speed")) {
+        if (getBlockState().getValue(ASSEMBLED) && nbt.contains("speed")) {
             speed = nbt.getDouble("speed");
             if (nbt.contains("config")) {
                 handleUpdateTag(nbt.getCompound("config"));
             }
+//            if (rotationAxis != null) {
+//                teardownQuartzModel();
+//                setupQuartzModel();
+//            }
+        } else {
+            Queues.clientThread.enqueue(this::teardownQuartzModel);
+            isRenderBearing = false;
         }
     }
     
@@ -71,9 +96,9 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
         if (nbt.contains("rotx")) {
             isRenderBearing = true;
             if (rotationAxis == null) {
-                rotationAxis = new Vector3f();
+                rotationAxis = new Vector3i();
             }
-            rotationAxis.set(nbt.getFloat("rotx"), nbt.getFloat("roty"), nbt.getFloat("rotz"));
+            rotationAxis.set(nbt.getInt("rotx"), nbt.getInt("roty"), nbt.getInt("rotz"));
             if (rotorConfiguration == null) {
                 rotorConfiguration = new ArrayList<>();
             }
@@ -88,7 +113,9 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
                 rotorConfiguration.add(vec);
             }
             AABB = new AABB(nbt.getInt("minx"), nbt.getInt("miny"), nbt.getInt("minz"), nbt.getInt("maxx"), nbt.getInt("maxy"), nbt.getInt("maxz"));
+            Queues.clientThread.enqueue(this::setupQuartzModel);
         } else {
+            Queues.clientThread.enqueue(this::teardownQuartzModel);
             isRenderBearing = false;
         }
     }
@@ -97,9 +124,9 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
     public CompoundTag getDataNBT() {
         CompoundTag nbt = super.getDataNBT();
         if (isRenderBearing && nullableController() != null) {
-            nbt.putFloat("rotx", controller().rotationAxis.getX());
-            nbt.putFloat("roty", controller().rotationAxis.getY());
-            nbt.putFloat("rotz", controller().rotationAxis.getZ());
+            nbt.putInt("rotx", controller().rotationAxis.getX());
+            nbt.putInt("roty", controller().rotationAxis.getY());
+            nbt.putInt("rotz", controller().rotationAxis.getZ());
             nbt.putInt("minx", controller().minCoord().x());
             nbt.putInt("miny", controller().minCoord().y());
             nbt.putInt("minz", controller().minCoord().z());
@@ -120,6 +147,13 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
     }
     
     @Override
+    public void onRemoved(boolean chunkUnload) {
+        if (Queues.clientThread != null) {
+            Queues.clientThread.enqueue(this::teardownQuartzModel);
+        }
+    }
+    
+    @Override
     public void onAssemblyAttempted() {
         sendFullUpdate = Phosphophyllite.tickNumber() + 10;
     }
@@ -131,5 +165,137 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
             return INFINITE_EXTENT_AABB;
         }
         return AABB;
+    }
+    
+    static {
+        Quartz.EVENT_BUS.addListener(TurbineRotorBearingTile::onQuartzStartup);
+    }
+    
+    private static QuartzStaticMesh shaftMesh;
+    private static QuartzStaticMesh bladeMesh;
+    
+    private static void onQuartzStartup(QuartzEvent.Startup quartzStartup) {
+        shaftMesh = Quartz.createStaticMesh(TurbineRotorShaft.INSTANCE.defaultBlockState());
+        bladeMesh = Quartz.createStaticMesh(TurbineRotorBlade.INSTANCE.defaultBlockState());
+    }
+    
+    private final IntArrayList instanceIDs = new IntArrayList();
+    private final ObjectArrayList<QuartzDynamicLight> lights = new ObjectArrayList<>();
+    QuartzDynamicMatrix matrix;
+    
+    private void setupQuartzModel() {
+        if (level == null || !level.isClientSide) {
+            return;
+        }
+        teardownQuartzModel();
+        if (!USE_QUARTZ) {
+            return;
+        }
+        if (level.getBlockEntity(getBlockPos()) != this) {
+            return;
+        }
+        final Matrix4f jomlMatrix = new Matrix4f();
+        final int blade180RotationMultiplier = -rotationAxis.x() | -rotationAxis.y() | rotationAxis.z();
+        matrix = Quartz.createDynamicMatrix((matrix, nanoSinceLastFrame, partialTicks, playerBlock, playerPartialBlock) -> {
+            double angle = this.angle;
+            
+            double speed = this.speed / 10f;
+            if (speed > 0.001f) {
+                double elapsedTimeMilis = ((double) nanoSinceLastFrame) / 1_000_000;
+                angle += speed * ((float) elapsedTimeMilis / 60000f) * 360f; // RPM * time in minutes * 360 degrees per rotation
+                angle = angle % 360f;
+                this.angle = angle;
+            }
+            
+            if (blade180RotationMultiplier > 0) {
+                angle += 180;
+            }
+            
+            jomlMatrix.identity();
+            jomlMatrix.translate(0.5f, 0.5f, 0.5f);
+            if (rotationAxis.x() != 0) {
+                jomlMatrix.rotate((float) Math.toRadians(-90.0f * rotationAxis.x()), 0, 0, 1);
+                angle -= 90;
+            } else if (rotationAxis.z() != 0) {
+                jomlMatrix.rotate((float) Math.toRadians(90.0f * rotationAxis.z()), 1, 0, 0);
+            } else if (rotationAxis.y() != 1) {
+                jomlMatrix.rotate((float) Math.toRadians(180), 1, 0, 0);
+            }
+            jomlMatrix.rotate((float) Math.toRadians(-angle), 0, 1, 0);
+            jomlMatrix.translate(-0.5f, -0.5f, -0.5f);
+            matrix.write(jomlMatrix);
+        });
+        Vector3i worldPos = new Vector3i(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ());
+        for (Vector4i vector4i : rotorConfiguration) {
+            worldPos.add(rotationAxis);
+            QuartzDynamicLight light = createLight(worldPos);
+            lights.add(light);
+            
+            jomlMatrix.identity();
+            instanceIDs.add(Quartz.registerStaticMeshInstance(shaftMesh, worldPos, matrix, jomlMatrix, light));
+            
+            int i = 0;
+            for (Direction direction : Direction.values()) {
+                switch (direction) {
+                    case UP, DOWN -> {
+                        if (rotationAxis.y() != 0) {
+                            continue;
+                        }
+                    }
+                    case NORTH, SOUTH -> {
+                        if (rotationAxis.z() != 0) {
+                            continue;
+                        }
+                    }
+                    case WEST, EAST -> {
+                        if (rotationAxis.x() != 0) {
+                            continue;
+                        }
+                    }
+                }
+                for (int j = 0; j < vector4i.get(i); j++) {
+                    jomlMatrix.identity();
+                    jomlMatrix.translate(0.5f, 0.5f, 0.5f);
+                    jomlMatrix.rotate((float) Math.toRadians(180 * (i & 1)), 0, 1, 0);
+                    jomlMatrix.rotate((float) Math.toRadians(blade180RotationMultiplier * 135 * (i & 2)), 0, 1, 0);
+                    jomlMatrix.translate(-0.5f, -0.5f, -0.5f);
+                    jomlMatrix.translate(0, 0, -(j + 1));
+                    jomlMatrix.translate(0.5f, 0.5f, 0.5f);
+                    jomlMatrix.rotate((float) Math.toRadians(180), 0, 0, 1);
+                    jomlMatrix.translate(-0.5f, -0.5f, -0.5f);
+                    
+                    instanceIDs.add(Quartz.registerStaticMeshInstance(bladeMesh, worldPos, matrix, jomlMatrix, light));
+                }
+                i++;
+            }
+        }
+    }
+    
+    private void teardownQuartzModel() {
+        if (level == null || !level.isClientSide) {
+            return;
+        }
+        if (matrix == null) {
+            return;
+        }
+        for (int i = 0; i < instanceIDs.size(); i++) {
+            Quartz.unregisterStaticMeshInstance(instanceIDs.getInt(i));
+        }
+        instanceIDs.clear();
+        for (QuartzDynamicLight light : lights) {
+            light.dispose();
+        }
+        lights.clear();
+        matrix.dispose();
+        matrix = null;
+    }
+    
+    private static QuartzDynamicLight createLight(Vector3ic pos) {
+        final var blockPos = new BlockPos(pos.x(), pos.y(), pos.z());
+        return Quartz.createDynamicLight((light, blockAndTintGetter) -> {
+            int skyLight = blockAndTintGetter.getBrightness(LightLayer.SKY, blockPos);
+            int blockLight = blockAndTintGetter.getBrightness(LightLayer.BLOCK, blockPos);
+            light.write((byte) (skyLight * 4), (byte) (blockLight * 4), (byte) 0);
+        });
     }
 }

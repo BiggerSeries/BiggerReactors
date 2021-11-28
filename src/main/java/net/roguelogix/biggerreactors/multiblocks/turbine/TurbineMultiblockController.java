@@ -440,6 +440,13 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     }
     
     @Override
+    protected void onDisassembled() {
+        for (TurbineRotorBearingTile rotorBearing : rotorBearings) {
+            world.sendBlockUpdated(rotorBearing.getBlockPos(), rotorBearing.getBlockState(), rotorBearing.getBlockState(), 0);
+        }
+    }
+    
+    @Override
     public void tick() {
         
         if (updateBlockStates) {

@@ -15,7 +15,6 @@ apply plugin: 'org.parchmentmc.librarian.forgegradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
-apply from: 'https://raw.githubusercontent.com/SizableShrimp/Forge-Class-Remapper/main/classremapper.gradle'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 
@@ -43,6 +42,7 @@ minecraft {
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            arg "-mixin.config=phosphophyllite.mixins.json"
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
@@ -135,6 +135,7 @@ dependencies {
 //    compileOnly "mekanism:Mekanism:${mekanism_mc_version}-${mekanism_version}:api"
 
     runtimeOnly fg.deobf('curse.maven:JEI-238222:3448057')
+    runtimeOnly fg.deobf('curse.maven:CW-399558:3499316')
 
 }
 
