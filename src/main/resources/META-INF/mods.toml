@@ -1,7 +1,7 @@
 modLoader="javafml"
 loaderVersion="[${fmlVersion},)"
 license="LGPL v2.1"
-issueTrackerURL="https://github.com/RogueLogix/BiggerSeries/issues/"
+issueTrackerURL="https://github.com/BiggerSeries/BiggerReactors/issues/"
 
 [[mods]] 
 modId="biggerreactors" 
