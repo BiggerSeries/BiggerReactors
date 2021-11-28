@@ -1,3 +1,13 @@
+# 1.17.1-0.6.0-alpha.7
+Its a bird, its a plane, its a, rock?
+
+# Turbine
+ - Rotor is rendered using Quartz render system
+ - Fix validation
+
+# Misc
+ - Fix recipes that use copper
+
 # 1.17.1-0.6.0-alpha.6
 
 # Reactor
