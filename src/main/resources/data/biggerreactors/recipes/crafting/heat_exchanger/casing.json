@@ -7,7 +7,7 @@
   ],
   "key": {
     "C": {
-      "tag": "forge:ingots/copper"
+      "item": "minecraft:copper_ingot"
     },
     "I": {
       "item": "minecraft:iron_ingot"
@@ -15,6 +15,6 @@
   },
   "result": {
     "item": "biggerreactors:heat_exchanger_casing",
-    "count": 4
+    "count": 2
   }
 }

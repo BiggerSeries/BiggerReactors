@@ -1,5 +1,11 @@
 {
   "type": "mekanism:rotary",
+  "conditions": [
+    {
+      "modid": "mekanism",
+      "type": "forge:mod_loaded"
+    }
+  ],
   "fluidInput": {
     "amount": 1,
     "tag": "forge:superheated_sodium"
