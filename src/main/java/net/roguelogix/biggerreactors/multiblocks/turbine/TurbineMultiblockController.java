@@ -152,14 +152,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         if (marchedBlocks != attachedBladeCount) {
             throw new ValidationError("multiblock.error.biggerreactors.turbine.rotor_blade_off_blade");
         }
-
-//        boolean inCoil = false;
-        boolean inBlades = false;
-        boolean switched = false;
-
-//        final int[] validCoilBlocks = {0};
-
-//        currentPos = bearingPosition;
+        
         Vector3i sliceMin = new Vector3i(minCoord()).add(1, 1, 1);
         Vector3i sliceMax = new Vector3i(maxCoord()).sub(1, 1, 1);
         
@@ -185,27 +178,32 @@ public class TurbineMultiblockController extends RectangularMultiblockController
             }
         });
         
+        boolean inBlades = false;
         boolean bladesLower = false;
-        
+        int switches = 0;
         for (int i = 0; i < layerCount; i++) {
             switch (layerFlags[i]) {
                 case 0 -> {
                 }
                 case 1 -> {
-                    if (!inBlades && switched) {
+                    if (!inBlades && switches >= 2) {
                         throw new ValidationError("multiblock.error.biggerreactors.turbine.multiple_groups");
+                    }
+                    if (!inBlades) {
+                        switches++;
+                        bladesLower = true;
                     }
                     inBlades = true;
-                    switched = true;
-                    bladesLower = true;
                 }
                 case 2 -> {
-                    if (inBlades && switched) {
+                    if (inBlades && switches >= 2) {
                         throw new ValidationError("multiblock.error.biggerreactors.turbine.multiple_groups");
                     }
+                    if (inBlades) {
+                        switches++;
+                        bladesLower = false;
+                    }
                     inBlades = false;
-                    switched = true;
-                    bladesLower = false;
                 }
                 case 3 -> throw new ValidationError("multiblock.error.biggerreactors.turbine.mixed_blades_and_coil");
             }
@@ -221,7 +219,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
             secondaryBearing.isRenderBearing = false;
         }
         
-        if (!switched) {
+        if (switches <= 1) {
             primaryBearing.isRenderBearing = true;
             secondaryBearing.isRenderBearing = false;
         }
