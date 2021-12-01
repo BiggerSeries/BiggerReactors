@@ -16,7 +16,7 @@ apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(16)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
@@ -44,7 +44,7 @@ minecraft {
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            arg "-mixin.config=phosphophyllite.mixins.json"
+//            arg "-mixin.config=phosphophyllite.mixins.json"
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
@@ -131,14 +131,13 @@ dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
     compileOnly project(':Phosphophyllite')
-    implementation project(':Phosphophyllite')
 
-    compileOnly fg.deobf("org.squiddev:cc-tweaked-${cc_mc_version}:${cc_version}")
+//    compileOnly fg.deobf("org.squiddev:cc-tweaked-${cc_mc_version}:${cc_version}")
 //
 //    compileOnly "mekanism:Mekanism:${mekanism_mc_version}-${mekanism_version}:api"
 
-    runtimeOnly fg.deobf('curse.maven:JEI-238222:3448057')
-    runtimeOnly fg.deobf('curse.maven:CW-399558:3499316')
+//    runtimeOnly fg.deobf('curse.maven:JEI-238222:3448057')
+//    runtimeOnly fg.deobf('curse.maven:CW-399558:3499316')
 
 }
 

@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.fmllegacy.network.NetworkHooks;
+import net.minecraftforge.network.NetworkHooks;
 import net.roguelogix.phosphophyllite.modular.block.PhosphophylliteBlock;
 import net.roguelogix.phosphophyllite.multiblock.rectangular.IRectangularMultiblockBlock;
 

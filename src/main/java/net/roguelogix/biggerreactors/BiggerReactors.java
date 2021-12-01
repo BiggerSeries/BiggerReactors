@@ -4,16 +4,16 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.server.ServerResources;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.TagsUpdatedEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLLoader;
-import net.minecraftforge.fmlserverevents.FMLServerStoppedEvent;
 import net.roguelogix.biggerreactors.machine.client.CyaniteReprocessorScreen;
 import net.roguelogix.biggerreactors.machine.containers.CyaniteReprocessorContainer;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.HeatExchangerCoolantPortContainer;
@@ -62,7 +62,7 @@ public class BiggerReactors {
         dataPackRegistries = reloadListenerEvent.getDataPackRegistries();
     }
     
-    public void onServerStopped(FMLServerStoppedEvent serverStoppedEvent){
+    public void onServerStopped(ServerStoppedEvent serverStoppedEvent){
         dataPackRegistries = null;
     }
 
@@ -105,7 +105,7 @@ public class BiggerReactors {
 
     public static long lastRenderTime = 0;
 
-    public void onRenderWorldLast(RenderWorldLastEvent event) {
+    public void onRenderWorldLast(RenderLevelLastEvent event) {
         lastRenderTime = System.nanoTime();
     }
 
