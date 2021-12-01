@@ -20,7 +20,9 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
-version = "${majorVersion}.${minorVersion}.${patchVersion}"
+evaluationDependsOnChildren()
+
+String version = "${majorVersion}.${minorVersion}.${patchVersion}"
 if (!"${postfixVersion}".isEmpty()) {
     version += "-${postfixVersion}"
 }
@@ -129,6 +131,7 @@ dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
     compileOnly project(':Phosphophyllite')
+    implementation project(':Phosphophyllite')
 
     compileOnly fg.deobf("org.squiddev:cc-tweaked-${cc_mc_version}:${cc_version}")
 //
@@ -176,6 +179,7 @@ publish.dependsOn('reobfJar')
 //}
 
 gradle.projectsEvaluated {
+
     def resource_targets = ["META-INF/mods.toml", "pack.mcmeta"]
     def into_targets = ["$rootDir/out/production/resources/", "$rootDir/out/production/${project.name}.main/", "$rootDir/bin/main/"]
     def properties = [
