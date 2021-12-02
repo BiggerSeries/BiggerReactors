@@ -123,7 +123,7 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
             while (true) {
                 mutableBlockPos.move(nextDirection);
                 currentModule = currentModule.getNeighbor(nextDirection);
-                if(currentModule == null){
+                if (currentModule == null) {
                     throw new ValidationError("Unknown channel verification error, this shouldn't be possible " + mutableBlockPos);
                 }
                 HeatExchangerBaseTile channelTile = currentModule.iface;
@@ -368,8 +368,10 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         evaporatorTank.transferWith(evaporatorHeatBody, evaporatorChannels.size() * Config.CONFIG.HeatExchanger.ChannelInternalSurfaceArea);
         airHeatBody.transferWith(ambientHeatBody, airAmbientRFKT);
         coolantPorts.forEach(HeatExchangerCoolantPortTile::pushFluid);
+        if (Phosphophyllite.tickNumber() % 2 == 0) {
+            markDirty();
+        }
     }
-    
     
     @Override
     protected void read(CompoundTag nbt) {
@@ -385,7 +387,6 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         condenserAirRFKT = nbt.getDouble("condenserAirRFKT");
         airAmbientRFKT = nbt.getDouble("airAmbientRFKT");
     }
-    
     
     @Nonnull
     @Override
