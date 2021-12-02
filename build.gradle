@@ -22,7 +22,7 @@ println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getPro
 
 evaluationDependsOnChildren()
 
-String version = "${majorVersion}.${minorVersion}.${patchVersion}"
+version = "${majorVersion}.${minorVersion}.${patchVersion}"
 if (!"${postfixVersion}".isEmpty()) {
     version += "-${postfixVersion}"
 }
