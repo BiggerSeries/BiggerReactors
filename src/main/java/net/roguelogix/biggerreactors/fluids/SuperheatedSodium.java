@@ -5,7 +5,7 @@ import net.roguelogix.phosphophyllite.registry.RegisterFluid;
 
 import javax.annotation.Nonnull;
 
-@RegisterFluid(name = "superheated_sodium", registerBucket = true)
+//@RegisterFluid(name = "superheated_sodium", registerBucket = true)
 public class SuperheatedSodium extends PhosphophylliteFluid {
     
     @RegisterFluid.Instance
