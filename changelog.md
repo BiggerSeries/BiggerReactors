@@ -1,50 +1,63 @@
+# 1.18-0.6.0-alpha.8
+Now **THAT** is a cave
+
+## Turbine
+ - dont double drain water from internal tank
+
+## Heat exchanger
+ - Mark dirty for saving
+
+## Misc
+ - 1.18
+ - updated some ids
+
 # 1.17.1-0.6.0-alpha.7
 Its a bird, its a plane, its a, rock?
 
-# Turbine
+## Turbine
  - Rotor is rendered using Quartz render system
  - Fix validation
 
-# Misc
+## Misc
  - Fix recipes that use copper
 
 # 1.17.1-0.6.0-alpha.6
 
-# Reactor
+## Reactor
  - Fix NPEs caused by new simulation interface
  - Implement simulation description serialization
  - Add version to CC API
  - Temperatures are in Kelvin now
  - Remove range limit for max size
 
-# Turbine
+## Turbine
  - Add version to CC API
  - Remove range limit for max size
 
-# Heat Exchanger
+## Heat Exchanger
  - Add version to CC API
  - Add config options for max size
 
 # 1.17.1-0.6.0-alpha.5
 Not your grandpa's reactors anymore
 
-# Reactor
+## Reactor
  - Remove classic simulation
  - correctly write to rfTransferredLastTick
  - switch to new internal simulation interface
    - allows simulation to be loaded independent of Forge/Minecraft
  - ensure EMTPY_MODERATOR isn't going to cause divide by zero errors
 
-# Turbine
+## Turbine
  - Remove classic simulation
 
-# Misc
+## Misc
  - Move config to new object based system
 
 # 1.17.1-0.6.0-alpha.4
 I'm a strong independent mod that doesn't need any other repository to build me 
 
-# Misc
+## Misc
  - Built directly from BiggerReactors repo, w/ Phosphophyllite submodule
  - Oregen fixed (mostly in Phos)
  - Config format changed to TOML by default, will still read/use json5 for existing configs
@@ -52,7 +65,7 @@ I'm a strong independent mod that doesn't need any other repository to build me
 # 1.17.1-0.6.0-alpha.3.1
 update forge to 37.0.53
 
-# Reactor
+## Reactor
  - improve chunk unload time
 
 # 1.17.1-0.6.0-alpha.3
