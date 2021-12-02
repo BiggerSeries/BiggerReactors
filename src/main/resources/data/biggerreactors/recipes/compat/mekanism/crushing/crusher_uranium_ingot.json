@@ -1,5 +1,5 @@
 {
-    "type": "mekanism:enriching",
+    "type": "mekanism:crushing",
     "conditions": [
         {
             "modid": "mekanism",
@@ -8,11 +8,11 @@
     ],
     "input": {
         "ingredient": {
-            "item": "biggerreactors:yellorite_ore"
+            "item": "biggerreactors:uranium_ingot"
         }
     },
     "output": {
-        "item": "biggerreactors:yellorium_dust",
-        "count": 2
+        "item": "biggerreactors:uranium_dust",
+        "count": 1
     }
 }

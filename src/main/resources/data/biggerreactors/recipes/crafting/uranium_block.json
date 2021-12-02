@@ -7,10 +7,10 @@
   ],
   "key": {
     "I": {
-      "tag": "forge:ingots/yellorium"
+      "tag": "forge:ingots/uranium"
     }
   },
   "result": {
-    "item": "biggerreactors:yellorium_block"
+    "item": "biggerreactors:uranium_block"
   }
 }

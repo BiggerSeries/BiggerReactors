@@ -16,7 +16,7 @@ import net.roguelogix.biggerreactors.multiblocks.reactor.containers.ReactorContr
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorControlRodState;
 import net.roguelogix.biggerreactors.client.CommonButton;
 import net.roguelogix.biggerreactors.client.TextBox;
-import net.roguelogix.biggerreactors.fluids.FluidYellorium;
+import net.roguelogix.biggerreactors.fluids.LiquidUranium;
 import net.roguelogix.phosphophyllite.gui.client.RenderHelper;
 import net.roguelogix.phosphophyllite.gui.client.ScreenBase;
 import net.roguelogix.phosphophyllite.gui.client.elements.Button;
@@ -208,7 +208,7 @@ public class ReactorControlRodScreen extends ScreenBase<ReactorControlRodContain
      */
     public static void renderInsertionLevel(@Nonnull PoseStack mStack, @Nonnull Symbol<ReactorControlRodContainer> symbol, double insertionLevel) {
         // Render fuel background. Offset by 1, otherwise it doesn't align with the frame.
-        RenderHelper.drawFluidGrid(mStack, symbol.x + 1, symbol.y, symbol.getBlitOffset(), 16, 16, FluidYellorium.INSTANCE.getSource(), 1, 4);
+        RenderHelper.drawFluidGrid(mStack, symbol.x + 1, symbol.y, symbol.getBlitOffset(), 16, 16, LiquidUranium.INSTANCE.getSource(), 1, 4);
 
         // If there's nothing inserted, there's no need to draw.
         if (insertionLevel > 0) {

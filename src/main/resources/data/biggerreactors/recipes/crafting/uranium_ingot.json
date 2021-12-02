@@ -2,11 +2,11 @@
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
     {
-      "item": "biggerreactors:yellorium_block"
+      "item": "biggerreactors:uranium_block"
     }
   ],
   "result": {
-    "item": "biggerreactors:yellorium_ingot",
+    "item": "biggerreactors:uranium_ingot",
     "count": 9
   }
 }

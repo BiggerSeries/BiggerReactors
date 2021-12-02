@@ -24,7 +24,7 @@ import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.blocks.materials.BlutoniumBlock;
 import net.roguelogix.biggerreactors.items.ingots.BlutoniumIngot;
 import net.roguelogix.biggerreactors.items.ingots.CyaniteIngot;
-import net.roguelogix.biggerreactors.items.ingots.YelloriumIngot;
+import net.roguelogix.biggerreactors.items.ingots.UraniumIngot;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorAccessPort;
 import net.roguelogix.biggerreactors.multiblocks.reactor.containers.ReactorAccessPortContainer;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorAccessPortState;
@@ -53,8 +53,6 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     
     private static final ResourceLocation uraniumIngotTag = new ResourceLocation("forge:ingots/uranium");
     private static final ResourceLocation uraniumBlockTag = new ResourceLocation("forge:storage_blocks/uranium");
-    private static final ResourceLocation yelloriumIngotTag = new ResourceLocation("forge:ingots/yellorium");
-    private static final ResourceLocation yelloriumBlockTag = new ResourceLocation("forge:storage_blocks/yellorium");
     
     public static final int FUEL_SLOT = 0;
     public static final int WASTE_SLOT = 1;
@@ -143,7 +141,7 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
             return new ItemStack(CyaniteIngot.INSTANCE, (int) availableIngots);
         } else if (slot == FUEL_SLOT) {
             long availableIngots = reactorSim.fuelTank().fuel() / Config.CONFIG.Reactor.FuelMBPerIngot;
-            return new ItemStack(YelloriumIngot.INSTANCE, (int) availableIngots);
+            return new ItemStack(UraniumIngot.INSTANCE, (int) availableIngots);
         } else {
             return ItemStack.EMPTY;
         }
@@ -156,7 +154,7 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
             return stack;
         }
         stack = stack.copy();
-        if (stack.getItem().getTags().contains(uraniumIngotTag) || stack.getItem().getTags().contains(yelloriumIngotTag) || stack.getItem() == BlutoniumIngot.INSTANCE) {
+        if (stack.getItem().getTags().contains(uraniumIngotTag) || stack.getItem().getTags().contains(uraniumIngotTag) || stack.getItem() == BlutoniumIngot.INSTANCE) {
             long maxAcceptable = controller().refuel(stack.getCount() * Config.CONFIG.Reactor.FuelMBPerIngot, true);
             long canAccept = maxAcceptable - (maxAcceptable % Config.CONFIG.Reactor.FuelMBPerIngot);
             controller().refuel(canAccept, simulate);
@@ -164,7 +162,7 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
                 stack.setCount(stack.getCount() - (int) (canAccept / Config.CONFIG.Reactor.FuelMBPerIngot));
             }
         }
-        if (stack.getItem().getTags().contains(uraniumBlockTag) || stack.getItem().getTags().contains(yelloriumBlockTag) || stack.getItem() == BlutoniumBlock.INSTANCE.asItem()) {
+        if (stack.getItem().getTags().contains(uraniumBlockTag) || stack.getItem().getTags().contains(uraniumBlockTag) || stack.getItem() == BlutoniumBlock.INSTANCE.asItem()) {
             long maxAcceptable = controller().refuel(stack.getCount() * (Config.CONFIG.Reactor.FuelMBPerIngot * 9), true);
             long canAccept = maxAcceptable - (maxAcceptable % (Config.CONFIG.Reactor.FuelMBPerIngot * 9));
             controller().refuel(canAccept, simulate);
@@ -193,7 +191,7 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
             long toExtracted = maxExtractable - (maxExtractable % Config.CONFIG.Reactor.FuelMBPerIngot);
             long extracted = controller().extractFuel(toExtracted, simulate);
             
-            return new ItemStack(YelloriumIngot.INSTANCE, (int) Math.min(amount, extracted / Config.CONFIG.Reactor.FuelMBPerIngot));
+            return new ItemStack(UraniumIngot.INSTANCE, (int) Math.min(amount, extracted / Config.CONFIG.Reactor.FuelMBPerIngot));
         }
         
         return ItemStack.EMPTY;
@@ -214,10 +212,10 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     @Override
     public boolean isItemValid(int slot, ItemStack stack) {
         if (slot == FUEL_INSERT_SLOT) {
-            return stack.getItem().getTags().contains(uraniumIngotTag) || stack.getItem().getTags().contains(yelloriumIngotTag) || stack.getItem() == BlutoniumIngot.INSTANCE
-                    || stack.getItem().getTags().contains(uraniumBlockTag) || stack.getItem().getTags().contains(yelloriumBlockTag) || stack.getItem() == BlutoniumBlock.INSTANCE.asItem();
+            return stack.getItem().getTags().contains(uraniumIngotTag) || stack.getItem() == BlutoniumIngot.INSTANCE
+                    || stack.getItem().getTags().contains(uraniumBlockTag) || stack.getItem() == BlutoniumBlock.INSTANCE.asItem();
         } else if (slot == FUEL_SLOT) {
-            return stack.getItem() == YelloriumIngot.INSTANCE;
+            return stack.getItem() == UraniumIngot.INSTANCE;
         } else {
             return stack.getItem() == CyaniteIngot.INSTANCE;
         }
@@ -255,7 +253,7 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
                 if (fuel == 0) {
                     break;
                 }
-                ItemStack toInsertStack = new ItemStack(YelloriumIngot.INSTANCE, fuel);
+                ItemStack toInsertStack = new ItemStack(UraniumIngot.INSTANCE, fuel);
                 ItemStack remainingStack = output.insertItem(i, toInsertStack, simulated);
                 fuelHandled += toInsertStack.getCount() - remainingStack.getCount();
                 fuel -= toInsertStack.getCount() - remainingStack.getCount();

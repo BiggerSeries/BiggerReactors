@@ -9,13 +9,13 @@ import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 import net.roguelogix.phosphophyllite.registry.RegisterOre;
 
 
-public class YelloriteOre extends Block implements IPhosphophylliteOre {
+public class UraniumOre extends Block implements IPhosphophylliteOre {
     
     @RegisterOre
-    @RegisterBlock(name = "yellorite_ore")
-    public static final YelloriteOre INSTANCE = new YelloriteOre();
+    @RegisterBlock(name = "uranium_ore")
+    public static final UraniumOre INSTANCE = new UraniumOre();
     
-    public YelloriteOre() {
+    public UraniumOre() {
         super(
                 Properties.of(Material.METAL)
                         .sound(SoundType.STONE)
@@ -25,17 +25,17 @@ public class YelloriteOre extends Block implements IPhosphophylliteOre {
     
     @Override
     public int size() {
-        return Config.CONFIG.WorldGen.YelloriteMaxOrePerCluster;
+        return Config.CONFIG.WorldGen.UraniumMaxOrePerCluster;
     }
     
     @Override
     public int count() {
-        return Config.CONFIG.WorldGen.YelloriteOreMaxClustersPerChunk;
+        return Config.CONFIG.WorldGen.UraniumOreMaxClustersPerChunk;
     }
     
     @Override
     public int maxLevel() {
-        return Config.CONFIG.WorldGen.YelloriteOreMaxSpawnY;
+        return Config.CONFIG.WorldGen.UraniumOreMaxSpawnY;
     }
     
     @Override
@@ -45,6 +45,6 @@ public class YelloriteOre extends Block implements IPhosphophylliteOre {
     
     @Override
     public boolean doSpawn() {
-        return Config.CONFIG.WorldGen.EnableYelloriteGeneration;
+        return Config.CONFIG.WorldGen.EnableUraniumGeneration;
     }
 }

@@ -5,14 +5,14 @@ import net.roguelogix.phosphophyllite.registry.RegisterItem;
 
 import javax.annotation.Nonnull;
 
-@RegisterItem(name = "yellorium_dust")
-public class YelloriumDust extends Item {
+@RegisterItem(name = "uranium_dust")
+public class UraniumDust extends Item {
     
     @RegisterItem.Instance
-    public static YelloriumDust INSTANCE;
+    public static UraniumDust INSTANCE;
     
     @SuppressWarnings("unused")
-    public YelloriumDust(@Nonnull Properties properties) {
+    public UraniumDust(@Nonnull Properties properties) {
         super(properties);
     }
 }

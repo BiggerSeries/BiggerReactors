@@ -5,13 +5,13 @@ import net.roguelogix.phosphophyllite.registry.RegisterFluid;
 
 import javax.annotation.Nonnull;
 
-@RegisterFluid(name = "fluid_yellorium", color = 0xFFBCBA50)
-public class FluidYellorium extends PhosphophylliteFluid {
+@RegisterFluid(name = "liquid_uranium", color = 0xFFBCBA50)
+public class LiquidUranium extends PhosphophylliteFluid {
     
     @RegisterFluid.Instance
-    public static FluidYellorium INSTANCE;
+    public static LiquidUranium INSTANCE;
     
-    public FluidYellorium(@Nonnull Properties properties) {
+    public LiquidUranium(@Nonnull Properties properties) {
         super(properties);
     }
 }

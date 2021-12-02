@@ -3,13 +3,13 @@
 
   "item.biggerreactors.wrench": "反应堆扳手",
 
-  "item.biggerreactors.fluid_yellorium_bucket": "液态黄铀桶",
-  "fluid.biggerreactors.fluid_irradiated_steam": "辐射蒸汽",
+  "item.biggerreactors.liquid_uranium_bucket": "液态黄铀桶",
+  "fluid.biggerreactors.steam": "辐射蒸汽",
 
-  "block.biggerreactors.yellorite_ore": "黄铀矿石",
-  "block.biggerreactors.yellorium_block": "黄铀块",
-  "item.biggerreactors.yellorium_dust": "黄铀粉",
-  "item.biggerreactors.yellorium_ingot": "黄铀锭",
+  "block.biggerreactors.uranium_ore": "黄铀矿石",
+  "block.biggerreactors.uranium_block": "黄铀块",
+  "item.biggerreactors.uranium_dust": "黄铀粉",
+  "item.biggerreactors.uranium_ingot": "黄铀锭",
 
   "block.biggerreactors.blutonium_block": "蓝钚块",
   "item.biggerreactors.blutonium_dust": "蓝钚粉",

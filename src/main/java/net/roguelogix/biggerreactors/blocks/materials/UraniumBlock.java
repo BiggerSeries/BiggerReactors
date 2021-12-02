@@ -5,12 +5,12 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.Material;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
-public class YelloriumBlock extends Block {
+public class UraniumBlock extends Block {
     
-    @RegisterBlock(name = "yellorium_block")
-    public static final YelloriumBlock INSTANCE = new YelloriumBlock();
+    @RegisterBlock(name = "uranium_block")
+    public static final UraniumBlock INSTANCE = new UraniumBlock();
     
-    public YelloriumBlock() {
+    public UraniumBlock() {
         super(
                 Properties.of(Material.METAL)
                         .sound(SoundType.STONE)

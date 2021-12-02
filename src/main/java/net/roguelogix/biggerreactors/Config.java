@@ -29,13 +29,13 @@ public class Config {
     
     public static final class WorldGen {
         @ConfigValue(range = "[1,)")
-        public final int YelloriteOreMaxClustersPerChunk = 5;
+        public final int UraniumOreMaxClustersPerChunk = 5;
         @ConfigValue(range = "[1,)")
-        public final int YelloriteMaxOrePerCluster = 10;
+        public final int UraniumMaxOrePerCluster = 10;
         @ConfigValue(range = "[5,)")
-        public final int YelloriteOreMaxSpawnY = 50;
+        public final int UraniumOreMaxSpawnY = 50;
         @ConfigValue
-        public final boolean EnableYelloriteGeneration = true;
+        public final boolean EnableUraniumGeneration = true;
     }
     
     @ConfigValue

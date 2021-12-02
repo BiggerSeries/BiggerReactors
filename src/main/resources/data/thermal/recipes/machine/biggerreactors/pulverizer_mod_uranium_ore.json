@@ -7,11 +7,11 @@
         }
     ],
     "ingredient": {
-        "item": "biggerreactors:yellorite_ore"
+        "item": "biggerreactors:uranium_ore"
     },
     "result": [
         {
-            "item": "biggerreactors:yellorium_dust",
+            "item": "biggerreactors:uranium_dust",
             "chance": 2.0
         },
         {

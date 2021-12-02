@@ -7,12 +7,12 @@
         }
     ],
     "input": {
-        "item": "biggerreactors:yellorium_ingot"
+        "item": "biggerreactors:uranium_ore"
     },
     "result": {
         "primary": {
-            "item": "biggerreactors:yellorium_dust",
-            "count": 1
+            "item": "biggerreactors:uranium_dust",
+            "count": 2
         }
     },
     "turns": 8

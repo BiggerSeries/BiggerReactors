@@ -1,7 +1,7 @@
 {
     "textures": {
-        "0": "biggerreactors:fluid/fluid_yellorium_flowing",
-        "1": "biggerreactors:fluid/fluid_yellorium_still"
+        "0": "biggerreactors:fluid/liquid_uranium_flowing",
+        "1": "biggerreactors:fluid/liquid_uranium_still"
     },
     "elements": [
         {
