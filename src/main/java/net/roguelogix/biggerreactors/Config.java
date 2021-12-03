@@ -29,13 +29,20 @@ public class Config {
     
     public static final class WorldGen {
         @ConfigValue(range = "[1,)")
-        public final int UraniumOreMaxClustersPerChunk = 5;
+        public final int UraniumOreMaxClustersPerChunk;
         @ConfigValue(range = "[1,)")
-        public final int UraniumMaxOrePerCluster = 10;
+        public final int UraniumMaxOrePerCluster;
         @ConfigValue(range = "[5,)")
-        public final int UraniumOreMaxSpawnY = 50;
+        public final int UraniumOreMaxSpawnY;
         @ConfigValue
-        public final boolean EnableUraniumGeneration = true;
+        public final boolean EnableUraniumGeneration;
+    
+        {
+            UraniumOreMaxClustersPerChunk = 5;
+            UraniumMaxOrePerCluster = 10;
+            UraniumOreMaxSpawnY = 50;
+            EnableUraniumGeneration = true;
+        }
     }
     
     @ConfigValue
@@ -43,89 +50,141 @@ public class Config {
     
     public static final class Reactor {
         @ConfigValue(range = "[3,)")
-        public final int MaxLength = 128;
+        public final int MaxLength;
         @ConfigValue(range = "[3,)")
-        public final int MaxWidth = 128;
+        public final int MaxWidth;
         @ConfigValue(range = "[3,)")
-        public final int MaxHeight = 192;
+        public final int MaxHeight;
+    
+        {
+            MaxLength = 128;
+            MaxWidth = 128;
+            MaxHeight = 192;
+        }
         
         @ConfigValue(range = "(0,)")
-        public final double FuelUsageMultiplier = 1;
+        public final double FuelUsageMultiplier;
         @ConfigValue(range = "(0,)")
-        public final double OutputMultiplier = 1.0f;
+        public final double OutputMultiplier;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double PassiveOutputMultiplier = 0.5f;
+        public final double PassiveOutputMultiplier;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double ActiveOutputMultiplier = 1.0f;
+        public final double ActiveOutputMultiplier;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final long FuelMBPerIngot = 1000;
-        
+        public final long FuelMBPerIngot;
+    
+        {
+            FuelUsageMultiplier = 1;
+            OutputMultiplier = 1.0f;
+            PassiveOutputMultiplier = 0.5f;
+            ActiveOutputMultiplier = 1.0f;
+            FuelMBPerIngot = 1000;
+        }
+    
         @ConfigValue(range = "[1,)", advanced = true)
-        public final long PerFuelRodCapacity = 4000;
+        public final long PerFuelRodCapacity;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double FuelFertilityMinimumDecay = 0.1f;
+        public final double FuelFertilityMinimumDecay;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double FuelFertilityDecayDenominator = 20;
+        public final double FuelFertilityDecayDenominator;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double FuelFertilityDecayDenominatorInactiveMultiplier = 200;
+        public final double FuelFertilityDecayDenominatorInactiveMultiplier;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final int RayCount = 32;
+        public final int RayCount;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double CasingHeatTransferRFMKT = 0.6;
+        public final double CasingHeatTransferRFMKT;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double FuelToStackRFKTMultiplier = 1.0;
+        public final double FuelToStackRFKTMultiplier;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double StackToCoolantRFMKT = 0.6;
+        public final double StackToCoolantRFMKT;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double StackToAmbientRFMKT = 0.001;
+        public final double StackToAmbientRFMKT;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final long PassiveBatteryPerExternalBlock = 100_000;
+        public final long PassiveBatteryPerExternalBlock;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double PassiveCoolingTransferEfficiency = 0.2f;
+        public final double PassiveCoolingTransferEfficiency;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final long CoolantTankAmountPerFuelRod = 10_000;
+        public final long CoolantTankAmountPerFuelRod;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double RadiationBlocksToLive = 4;
+        public final double RadiationBlocksToLive;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double CaseFEPerUnitVolumeKelvin = 10;
+        public final double CaseFEPerUnitVolumeKelvin;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double RodFEPerUnitVolumeKelvin = 10;
+        public final double RodFEPerUnitVolumeKelvin;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double FuelReactivity = 1.05f;
+        public final double FuelReactivity;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double FissionEventsPerFuelUnit = 0.1f;
+        public final double FissionEventsPerFuelUnit;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double FEPerRadiationUnit = 10f;
+        public final double FEPerRadiationUnit;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double FuelPerRadiationUnit = 0.0007f;
+        public final double FuelPerRadiationUnit;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final long IrradiationDistance = 4;
+        public final long IrradiationDistance;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double FuelHardnessDivisor = 1f;
+        public final double FuelHardnessDivisor;
         @ConfigValue(range = "[0,1]", advanced = true)
-        public final double FuelAbsorptionCoefficient = 0.5f;
+        public final double FuelAbsorptionCoefficient;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double FuelModerationFactor = 1.5f;
+        public final double FuelModerationFactor;
         @ConfigValue(range = "(0,1]", advanced = true)
-        public final double RadIntensityScalingMultiplier = 0.95f;
+        public final double RadIntensityScalingMultiplier;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double RadIntensityScalingRateExponentMultiplier = 1.2f;
+        public final double RadIntensityScalingRateExponentMultiplier;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double RadIntensityScalingShiftMultiplier = 1f;
+        public final double RadIntensityScalingShiftMultiplier;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double RadPenaltyShiftMultiplier = 15f;
+        public final double RadPenaltyShiftMultiplier;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double RadPenaltyRateMultiplier = 2.5f;
+        public final double RadPenaltyRateMultiplier;
         @ConfigValue(range = "(0,1]", advanced = true)
-        public final double FuelAbsorptionScalingMultiplier = 0.95f;
+        public final double FuelAbsorptionScalingMultiplier;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double FuelAbsorptionScalingShiftMultiplier = 1f;
+        public final double FuelAbsorptionScalingShiftMultiplier;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double FuelAbsorptionScalingRateExponentMultiplier = 2.2f;
-        
+        public final double FuelAbsorptionScalingRateExponentMultiplier;
+    
+        {
+            PerFuelRodCapacity = 4000;
+            FuelFertilityMinimumDecay = 0.1f;
+            FuelFertilityDecayDenominator = 20;
+            FuelFertilityDecayDenominatorInactiveMultiplier = 200;
+            RayCount = 32;
+            CasingHeatTransferRFMKT = 0.6;
+            FuelToStackRFKTMultiplier = 1.0;
+            StackToCoolantRFMKT = 0.6;
+            StackToAmbientRFMKT = 0.001;
+            PassiveBatteryPerExternalBlock = 100_000;
+            PassiveCoolingTransferEfficiency = 0.2f;
+            CoolantTankAmountPerFuelRod = 10_000;
+            RadiationBlocksToLive = 4;
+            CaseFEPerUnitVolumeKelvin = 10;
+            RodFEPerUnitVolumeKelvin = 10;
+            FuelReactivity = 1.05f;
+            FissionEventsPerFuelUnit = 0.1f;
+            FEPerRadiationUnit = 10f;
+            FuelPerRadiationUnit = 0.0007f;
+            IrradiationDistance = 4;
+            FuelHardnessDivisor = 1f;
+            FuelAbsorptionCoefficient = 0.5f;
+            FuelModerationFactor = 1.5f;
+            RadIntensityScalingMultiplier = 0.95f;
+            RadIntensityScalingRateExponentMultiplier = 1.2f;
+            RadIntensityScalingShiftMultiplier = 1f;
+            RadPenaltyShiftMultiplier = 15f;
+            RadPenaltyRateMultiplier = 2.5f;
+            FuelAbsorptionScalingMultiplier = 0.95f;
+            FuelAbsorptionScalingShiftMultiplier = 1f;
+            FuelAbsorptionScalingRateExponentMultiplier = 2.2f;
+        }
+    
         public static final class Experimental {
             @ConfigValue(range = "(0,)", advanced = true)
-            public final int RodBatchSize = 4096;
+            public final int RodBatchSize;
+    
+            {
+                RodBatchSize = 4096;
+            }
         }
         
         @ConfigValue
@@ -133,7 +192,11 @@ public class Config {
         
         public static final class GUI {
             @ConfigValue
-            public final long HeatDisplayMax = 2000;
+            public final long HeatDisplayMax;
+    
+            {
+                HeatDisplayMax = 2000;
+            }
         }
         
         @ConfigValue
@@ -145,30 +208,48 @@ public class Config {
     
     public static final class Turbine {
         @ConfigValue(range = "[5,)")
-        public final int MaxLength = 32;
+        public final int MaxLength;
         @ConfigValue(range = "[5,)")
-        public final int MaxWidth = 32;
+        public final int MaxWidth;
         @ConfigValue(range = "[4,)")
-        public final int MaxHeight = 192;
-        
+        public final int MaxHeight;
+    
+        {
+            MaxLength = 32;
+            MaxWidth = 32;
+            MaxHeight = 192;
+        }
+    
         @ConfigValue(range = "(0,)", advanced = true)
-        public final long FlowRatePerBlock = 5000;
+        public final long FlowRatePerBlock;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final long TankVolumePerBlock = 10000;
+        public final long TankVolumePerBlock;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double FluidPerBladeLinerKilometre = 20;
+        public final double FluidPerBladeLinerKilometre;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double RotorAxialMassPerShaft = 100;
+        public final double RotorAxialMassPerShaft;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double RotorAxialMassPerBlade = 100;
+        public final double RotorAxialMassPerBlade;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double FrictionDragMultiplier = 0.0001;
+        public final double FrictionDragMultiplier;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double AerodynamicDragMultiplier = 0.0001;
+        public final double AerodynamicDragMultiplier;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double CoilDragMultiplier = 10;
+        public final double CoilDragMultiplier;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final long BatterySizePerCoilBlock = 300_000;
+        public final long BatterySizePerCoilBlock;
+    
+        {
+            FlowRatePerBlock = 5000;
+            TankVolumePerBlock = 10000;
+            FluidPerBladeLinerKilometre = 20;
+            RotorAxialMassPerShaft = 100;
+            RotorAxialMassPerBlade = 100;
+            FrictionDragMultiplier = 0.0001;
+            AerodynamicDragMultiplier = 0.0001;
+            CoilDragMultiplier = 10;
+            BatterySizePerCoilBlock = 300_000;
+        }
     }
     
     @ConfigValue
@@ -176,32 +257,53 @@ public class Config {
     
     public static final class HeatExchanger {
         @ConfigValue(range = "[3,)")
-        public final int MaxLength = 64;
+        public final int MaxLength;
         @ConfigValue(range = "[3,)")
-        public final int MaxWidth = 64;
+        public final int MaxWidth;
         @ConfigValue(range = "[4,)")
-        public final int MaxHeight = 96;
-        
+        public final int MaxHeight;
+    
+        {
+            MaxLength = 64;
+            MaxWidth = 64;
+            MaxHeight = 96;
+        }
+    
         @ConfigValue(range = "(0,)", advanced = true)
-        public final long ChannelTankVolumePerBlock = 10000;
+        public final long ChannelTankVolumePerBlock;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double ChannelToChannelHeatConductivityMultiplier = 0.5;
+        public final double ChannelToChannelHeatConductivityMultiplier;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double ChannelFEPerKelvinUnitVolume = 1000.0f;
+        public final double ChannelFEPerKelvinUnitVolume;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double ChannelFEPerKelvinMetreSquared = 50.0f;
+        public final double ChannelFEPerKelvinMetreSquared;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double ChannelInternalSurfaceArea = 80;
+        public final double ChannelInternalSurfaceArea;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double AirFEPerKelvinUnitVolume = 10.0f;
+        public final double AirFEPerKelvinUnitVolume;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double AirFEPerKelvinMetreSquared = 0.5f;
+        public final double AirFEPerKelvinMetreSquared;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final double AmbientFEPerKelvinMetreSquared = 0.2f;
-        
+        public final double AmbientFEPerKelvinMetreSquared;
+    
+        {
+            ChannelTankVolumePerBlock = 10000;
+            ChannelToChannelHeatConductivityMultiplier = 0.5;
+            ChannelFEPerKelvinUnitVolume = 1000.0f;
+            ChannelFEPerKelvinMetreSquared = 50.0f;
+            ChannelInternalSurfaceArea = 80;
+            AirFEPerKelvinUnitVolume = 10.0f;
+            AirFEPerKelvinMetreSquared = 0.5f;
+            AmbientFEPerKelvinMetreSquared = 0.2f;
+        }
+    
         public static final class GUI {
             @ConfigValue
-            public final long HeatDisplayMax = 2000;
+            public final long HeatDisplayMax;
+    
+            {
+                HeatDisplayMax = 2000;
+            }
         }
     
         @ConfigValue
@@ -213,17 +315,26 @@ public class Config {
     
     public static final class CyaniteReprocessor {
         @ConfigValue(range = "(0,)", comment = "Max transfer rate of fluids and energy.")
-        public final int TransferRate = 500;
+        public final int TransferRate;
         @ConfigValue(range = "(0,)", comment = "Max energy capacity.")
-        public final int EnergyTankCapacity = 5000;
+        public final int EnergyTankCapacity;
         @ConfigValue(range = "(0,)", comment = "Max water capacity")
-        public final int WaterTankCapacity = 5000;
+        public final int WaterTankCapacity;
         @ConfigValue(range = "(0,)", comment = "Power usage per tick of work.")
-        public final int EnergyConsumptionPerTick = 1;
+        public final int EnergyConsumptionPerTick;
         @ConfigValue(range = "(0,)", comment = "Water usage per tick of work.")
-        public final int WaterConsumptionPerTick = 1;
+        public final int WaterConsumptionPerTick;
         @ConfigValue(range = "(0,)", comment = "Time (in ticks) it takes to complete a job.")
-        public final int TotalWorkTime = 200;
+        public final int TotalWorkTime;
+    
+        {
+            TransferRate = 500;
+            EnergyTankCapacity = 5000;
+            WaterTankCapacity = 5000;
+            EnergyConsumptionPerTick = 1;
+            WaterConsumptionPerTick = 1;
+            TotalWorkTime = 200;
+        }
     }
     
     @ConfigValue
