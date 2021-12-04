@@ -1,4 +1,20 @@
 # 1.18-0.6.0-alpha.8
+ComputerCraft, again
+
+## Reactor
+ - Re-enable computer port
+
+## Turbine
+ - Re-enable computer port
+
+## Heat Exchanger
+ - Re-enable computer port
+
+## Misc
+- Fix config
+   - Don't inline initialize the variables, JVM will inline those
+
+# 1.18-0.6.0-alpha.8
 Now **THAT** is a cave
 
 ## Turbine
