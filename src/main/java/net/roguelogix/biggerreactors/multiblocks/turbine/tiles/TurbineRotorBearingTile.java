@@ -212,6 +212,9 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
             if (blade180RotationMultiplier > 0) {
                 angle += 180;
             }
+            if(rotationAxis.x() != 0){
+                angle += 180;
+            }
             
             jomlMatrix.identity();
             jomlMatrix.translate(0.5f, 0.5f, 0.5f);
