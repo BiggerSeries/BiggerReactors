@@ -179,9 +179,10 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
         bladeMesh = Quartz.createStaticMesh(TurbineRotorBlade.INSTANCE.defaultBlockState());
     }
     
-    private final IntArrayList instanceIDs = new IntArrayList();
+    private final ObjectArrayList<QuartzDrawBatcher.Instance> instances = new ObjectArrayList();
     private final ObjectArrayList<QuartzDynamicLight> lights = new ObjectArrayList<>();
     QuartzDynamicMatrix matrix;
+    QuartzDrawBatcher drawBatcher;
     
     private void setupQuartzModel() {
         if (level == null || !level.isClientSide) {
@@ -196,7 +197,8 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
         }
         final Matrix4f jomlMatrix = new Matrix4f();
         final int blade180RotationMultiplier = -rotationAxis.x() | -rotationAxis.y() | rotationAxis.z();
-        matrix = Quartz.createDynamicMatrix((matrix, nanoSinceLastFrame, partialTicks, playerBlock, playerPartialBlock) -> {
+        drawBatcher = Quartz.createDrawBatcher();
+        matrix = drawBatcher.createDynamicMatrix((matrix, nanoSinceLastFrame, partialTicks, playerBlock, playerPartialBlock) -> {
             double angle = this.angle;
             
             double speed = this.speed / 10f;
@@ -228,11 +230,11 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
         Vector3i worldPos = new Vector3i(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ());
         for (Vector4i vector4i : rotorConfiguration) {
             worldPos.add(rotationAxis);
-            QuartzDynamicLight light = createLight(worldPos);
+            QuartzDynamicLight light = drawBatcher.createLight(worldPos, QuartzDynamicLight.Type.INTERNAL);
             lights.add(light);
             
             jomlMatrix.identity();
-            instanceIDs.add(Quartz.registerStaticMeshInstance(shaftMesh, worldPos, matrix, jomlMatrix, light));
+            instances.add(drawBatcher.createInstance(worldPos, shaftMesh, matrix, jomlMatrix, light, null));
             
             int i = 0;
             for (Direction direction : Direction.values()) {
@@ -264,7 +266,7 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
                     jomlMatrix.rotate((float) Math.toRadians(180), 0, 0, 1);
                     jomlMatrix.translate(-0.5f, -0.5f, -0.5f);
                     
-                    instanceIDs.add(Quartz.registerStaticMeshInstance(bladeMesh, worldPos, matrix, jomlMatrix, light));
+                    instances.add(drawBatcher.createInstance(worldPos, bladeMesh, matrix, jomlMatrix, light, null));
                 }
                 i++;
             }
@@ -275,27 +277,20 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
         if (level == null || !level.isClientSide) {
             return;
         }
-        if (matrix == null) {
+        if (drawBatcher == null) {
             return;
         }
-        for (int i = 0; i < instanceIDs.size(); i++) {
-            Quartz.unregisterStaticMeshInstance(instanceIDs.getInt(i));
+        //noinspection ForLoopReplaceableByForEach
+        for (int i = 0; i < instances.size(); i++) {
+            instances.get(i).dispose();
         }
-        instanceIDs.clear();
+        instances.clear();
         for (QuartzDynamicLight light : lights) {
             light.dispose();
         }
         lights.clear();
         matrix.dispose();
-        matrix = null;
-    }
-    
-    private static QuartzDynamicLight createLight(Vector3ic pos) {
-        final var blockPos = new BlockPos(pos.x(), pos.y(), pos.z());
-        return Quartz.createDynamicLight((light, blockAndTintGetter) -> {
-            int skyLight = blockAndTintGetter.getBrightness(LightLayer.SKY, blockPos);
-            int blockLight = blockAndTintGetter.getBrightness(LightLayer.BLOCK, blockPos);
-            light.write((byte) (skyLight * 4), (byte) (blockLight * 4), (byte) 0);
-        });
+        drawBatcher.dispose();
+        drawBatcher = null;
     }
 }
