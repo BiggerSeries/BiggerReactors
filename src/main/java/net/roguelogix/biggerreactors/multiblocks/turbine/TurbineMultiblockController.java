@@ -212,11 +212,11 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         int primaryAxisPos = primaryBearing.getBlockPos().get(marchDirection.getAxis());
         int secondaryAxisPos = secondaryBearing.getBlockPos().get(marchDirection.getAxis());
         if ((primaryAxisPos < secondaryAxisPos) ^ bladesLower) {
-            primaryBearing.isRenderBearing = false;
-            secondaryBearing.isRenderBearing = true;
-        } else {
             primaryBearing.isRenderBearing = true;
             secondaryBearing.isRenderBearing = false;
+        } else {
+            primaryBearing.isRenderBearing = false;
+            secondaryBearing.isRenderBearing = true;
         }
         
         if (switches <= 1) {
