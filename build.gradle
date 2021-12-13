@@ -133,11 +133,12 @@ dependencies {
     compileOnly project(':Phosphophyllite')
 
     compileOnly fg.deobf("org.squiddev:cc-tweaked-${cc_mc_version}:${cc_version}")
-    runtimeOnly fg.deobf("org.squiddev:cc-tweaked-${cc_mc_version}:${cc_version}")
+//    runtimeOnly fg.deobf("org.squiddev:cc-tweaked-${cc_mc_version}:${cc_version}")
 //
 //    compileOnly "mekanism:Mekanism:${mekanism_mc_version}-${mekanism_version}:api"
 
-//    runtimeOnly fg.deobf('curse.maven:JEI-238222:3448057')
+    runtimeOnly fg.deobf('curse.maven:JEI-238222:3550020')
+    runtimeOnly fg.deobf('curse.maven:WorldStripper-250603:3545856')
 //    runtimeOnly fg.deobf('curse.maven:CW-399558:3499316')
 
 }

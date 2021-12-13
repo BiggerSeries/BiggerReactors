@@ -1,4 +1,10 @@
-# 1.18-0.6.0-alpha.8
+# 1.18.1-0.6.0-alpha.9
+1.18.1
+ 
+## Misc
+ - Phos update
+
+# 1.18-0.6.0-alpha.8.1
 ComputerCraft, again
 
 ## Reactor
