@@ -18,14 +18,12 @@ import net.roguelogix.phosphophyllite.Phosphophyllite;
 import net.roguelogix.phosphophyllite.multiblock.IAssemblyAttemptedTile;
 import net.roguelogix.phosphophyllite.quartz.*;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
-import net.roguelogix.phosphophyllite.repack.org.joml.Matrix4f;
-import net.roguelogix.phosphophyllite.repack.org.joml.Vector3i;
-import net.roguelogix.phosphophyllite.repack.org.joml.Vector3ic;
-import net.roguelogix.phosphophyllite.repack.org.joml.Vector4i;
+import net.roguelogix.phosphophyllite.repack.org.joml.*;
 import net.roguelogix.phosphophyllite.threading.Queues;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.lang.Math;
 import java.util.ArrayList;
 
 import static net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock.ASSEMBLED;
@@ -171,18 +169,17 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
         Quartz.EVENT_BUS.addListener(TurbineRotorBearingTile::onQuartzStartup);
     }
     
-    private static QuartzStaticMesh shaftMesh;
-    private static QuartzStaticMesh bladeMesh;
+    private static StaticMesh shaftMesh;
+    private static StaticMesh bladeMesh;
     
     private static void onQuartzStartup(QuartzEvent.Startup quartzStartup) {
         shaftMesh = Quartz.createStaticMesh(TurbineRotorShaft.INSTANCE.defaultBlockState());
         bladeMesh = Quartz.createStaticMesh(TurbineRotorBlade.INSTANCE.defaultBlockState());
     }
     
-    private final ObjectArrayList<QuartzDrawBatcher.Instance> instances = new ObjectArrayList();
-    private final ObjectArrayList<QuartzDynamicLight> lights = new ObjectArrayList<>();
-    QuartzDynamicMatrix matrix;
-    QuartzDrawBatcher drawBatcher;
+    private final ObjectArrayList<DrawBatch.Instance> instances = new ObjectArrayList();
+    DynamicMatrix matrix;
+    DrawBatch drawBatch;
     
     private void setupQuartzModel() {
         if (level == null || !level.isClientSide) {
@@ -197,8 +194,8 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
         }
         final Matrix4f jomlMatrix = new Matrix4f();
         final int blade180RotationMultiplier = -rotationAxis.x() | -rotationAxis.y() | rotationAxis.z();
-        drawBatcher = Quartz.createDrawBatcher();
-        matrix = drawBatcher.createDynamicMatrix((matrix, nanoSinceLastFrame, partialTicks, playerBlock, playerPartialBlock) -> {
+        drawBatch = Quartz.getDrawBatcherForAABB(new AABBi((int) AABB.minX, (int) AABB.minY, (int) AABB.minZ, (int) AABB.maxX, (int) AABB.maxY, (int) AABB.maxZ));
+        matrix = drawBatch.createDynamicMatrix((matrix, nanoSinceLastFrame, partialTicks, playerBlock, playerPartialBlock) -> {
             double angle = this.angle;
             
             double speed = this.speed / 10f;
@@ -233,11 +230,10 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
         Vector3i worldPos = new Vector3i(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ());
         for (Vector4i vector4i : rotorConfiguration) {
             worldPos.add(rotationAxis);
-            QuartzDynamicLight light = drawBatcher.createLight(worldPos, QuartzDynamicLight.Type.INTERNAL);
-            lights.add(light);
+            var light = drawBatch.createLight(worldPos, DynamicLight.Type.INTERNAL);
             
             jomlMatrix.identity();
-            instances.add(drawBatcher.createInstance(worldPos, shaftMesh, matrix, jomlMatrix, light, null));
+            instances.add(drawBatch.createInstance(worldPos, shaftMesh, matrix, jomlMatrix, light, null));
             
             int i = 0;
             for (Direction direction : Direction.values()) {
@@ -269,7 +265,7 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
                     jomlMatrix.rotate((float) Math.toRadians(180), 0, 0, 1);
                     jomlMatrix.translate(-0.5f, -0.5f, -0.5f);
                     
-                    instances.add(drawBatcher.createInstance(worldPos, bladeMesh, matrix, jomlMatrix, light, null));
+                    instances.add(drawBatch.createInstance(worldPos, bladeMesh, matrix, jomlMatrix, light, null));
                 }
                 i++;
             }
@@ -280,20 +276,13 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
         if (level == null || !level.isClientSide) {
             return;
         }
-        if (drawBatcher == null) {
+        if (drawBatch == null) {
             return;
         }
         //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < instances.size(); i++) {
-            instances.get(i).dispose();
+            instances.get(i).delete();
         }
         instances.clear();
-        for (QuartzDynamicLight light : lights) {
-            light.dispose();
-        }
-        lights.clear();
-        matrix.dispose();
-        drawBatcher.dispose();
-        drawBatcher = null;
     }
 }

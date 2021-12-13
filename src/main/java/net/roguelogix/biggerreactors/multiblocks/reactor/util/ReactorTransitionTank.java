@@ -80,12 +80,17 @@ public class ReactorTransitionTank extends FluidTransitionTank {
     @Override
     public void dumpTank(int tank) {
         super.dumpTank(tank);
-        syncTanks();
+        pushUpdate();
     }
     
-    private void syncTanks() {
+    private void pushUpdate() {
         internalTank.insertLiquid(liquidAmount() - internalTank.liquidAmount());
         internalTank.insertVapor(vaporAmount() - internalTank.vaporAmount());
+    }
+    
+    private void pullUpdate() {
+        inAmount = internalTank.liquidAmount();
+        outAmount = internalTank.vaporAmount();
     }
     
     @Override
@@ -93,15 +98,16 @@ public class ReactorTransitionTank extends FluidTransitionTank {
     public long fill(@Nonnull Fluid fluid, long amount, boolean simulate, @Nullable FluidTransitionRegistry.FluidTransition transition) {
         long filled = super.fill(fluid, amount, simulate, transition);
         if (!simulate) {
-            syncTanks();
+            pushUpdate();
         }
         return filled;
     }
     
     public long drain(@Nonnull Fluid fluid, @Nullable CompoundTag tag, long amount, boolean simulate) {
+        pullUpdate();
         long drained = super.drain(fluid, tag, amount, simulate);
         if (!simulate) {
-            syncTanks();
+            pushUpdate();
         }
         return drained;
     }

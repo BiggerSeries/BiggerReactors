@@ -496,7 +496,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     long currentWasteRenderLevel = 0;
     
     private void updateFuelRenderingLevel() {
-        updateFuelRenderingLevel(false);
+        updateFuelRenderingLevel(true);
     }
     
     private void updateFuelRenderingLevel(boolean forceFullUpdate) {
@@ -542,8 +542,9 @@ public class ReactorMultiblockController extends RectangularMultiblockController
                 BlockState newState = state.setValue(ReactorFuelRod.FUEL_HEIGHT_PROPERTY, levelFuelPixel);
                 
                 final var levelRodCount = rodLevel.size();
+                //noinspection ForLoopReplaceableByForEach
                 for (int j = 0; j < levelRodCount; j++) {
-                    final var currentFuelRod = rodLevel.get(0);
+                    final var currentFuelRod = rodLevel.get(j);
                     if (currentFuelRod.getBlockState() != newState) {
                         newStates.put(currentFuelRod.getBlockPos().asLong(), newState);
                         //noinspection deprecation
@@ -564,8 +565,9 @@ public class ReactorMultiblockController extends RectangularMultiblockController
                 BlockState newState = state.setValue(ReactorFuelRod.WASTE_HEIGHT_PROPERTY, levelWastePixel);
                 
                 final var levelRodCount = rodLevel.size();
+                //noinspection ForLoopReplaceableByForEach
                 for (int j = 0; j < levelRodCount; j++) {
-                    final var currentFuelRod = rodLevel.get(0);
+                    final var currentFuelRod = rodLevel.get(j);
                     if (currentFuelRod.getBlockState() != newState) {
                         newStates.put(currentFuelRod.getBlockPos().asLong(), newState);
                         //noinspection deprecation
@@ -618,7 +620,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             fuelRod.waste = 0;
         }
         simulation.fuelTank().insertFuel(totalFuel, false);
-        simulation.fuelTank().insertFuel(totalWaste, false);
+        simulation.fuelTank().insertWaste(totalWaste, false);
         markDirty();
     }
     
