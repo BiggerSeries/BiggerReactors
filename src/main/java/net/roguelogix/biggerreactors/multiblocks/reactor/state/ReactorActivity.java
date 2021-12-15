@@ -4,6 +4,7 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 
 import javax.annotation.Nonnull;
+import java.util.Locale;
 
 public enum ReactorActivity implements StringRepresentable {
     ACTIVE(1),
@@ -20,7 +21,7 @@ public enum ReactorActivity implements StringRepresentable {
     @Override
     @Nonnull
     public String getSerializedName() {
-        return toString().toLowerCase();
+        return toString().toLowerCase(Locale.US);
     }
 
     /**

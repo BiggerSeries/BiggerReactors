@@ -21,6 +21,7 @@ import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Locale;
 import java.util.Set;
 
 import static net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineCoolantPort.PortDirection.*;
@@ -45,7 +46,7 @@ public class TurbineCoolantPort extends TurbineBaseBlock implements IAssemblySta
         
         @Override
         public String getSerializedName() {
-            return toString().toLowerCase();
+            return toString().toLowerCase(Locale.US);
         }
     }
     

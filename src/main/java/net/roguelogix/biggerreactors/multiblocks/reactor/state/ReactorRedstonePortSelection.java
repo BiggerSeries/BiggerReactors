@@ -3,6 +3,7 @@ package net.roguelogix.biggerreactors.multiblocks.reactor.state;
 import net.minecraft.util.StringRepresentable;
 
 import javax.annotation.Nonnull;
+import java.util.Locale;
 
 public enum ReactorRedstonePortSelection implements StringRepresentable {
     INPUT_ACTIVITY(0),
@@ -24,7 +25,7 @@ public enum ReactorRedstonePortSelection implements StringRepresentable {
     @Override
     @Nonnull
     public String getSerializedName() {
-        return toString().toLowerCase();
+        return toString().toLowerCase(Locale.US);
     }
 
     /**

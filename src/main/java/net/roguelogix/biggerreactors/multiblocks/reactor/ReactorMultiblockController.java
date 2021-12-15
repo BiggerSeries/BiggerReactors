@@ -35,10 +35,7 @@ import net.roguelogix.phosphophyllite.util.Util;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
@@ -306,7 +303,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     
     protected void read(CompoundTag compound) {
         if (compound.contains("reactorState")) {
-            reactorActivity = ReactorActivity.valueOf(compound.getString("reactorState").toUpperCase());
+            reactorActivity = ReactorActivity.valueOf(compound.getString("reactorState").toUpperCase(Locale.US));
         }
         
         if (compound.contains("simulationData")) {

@@ -3,6 +3,8 @@ package net.roguelogix.biggerreactors.multiblocks.turbine.state;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 
+import java.util.Locale;
+
 public enum TurbineShaftRotationState implements StringRepresentable {
     X,
     Y,
@@ -13,6 +15,6 @@ public enum TurbineShaftRotationState implements StringRepresentable {
     
     @Override
     public String getSerializedName() {
-        return toString().toLowerCase();
+        return toString().toLowerCase(Locale.US);
     }
 }

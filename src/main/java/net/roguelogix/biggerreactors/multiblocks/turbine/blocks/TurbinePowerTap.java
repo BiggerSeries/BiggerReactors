@@ -17,6 +17,8 @@ import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import java.util.Locale;
+
 import static net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbinePowerTap.ConnectionState.CONNECTION_STATE_ENUM_PROPERTY;
 
 @ParametersAreNonnullByDefault
@@ -40,7 +42,7 @@ public class TurbinePowerTap extends TurbineBaseBlock implements IAssemblyStateB
         
         @Override
         public String getSerializedName() {
-            return toString().toLowerCase();
+            return toString().toLowerCase(Locale.US);
         }
         
     }

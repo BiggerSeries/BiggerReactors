@@ -21,6 +21,7 @@ import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Locale;
 import java.util.Set;
 
 import static net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorAccessPort.PortDirection.*;
@@ -52,7 +53,7 @@ public class ReactorAccessPort extends ReactorBaseBlock implements IAssemblyStat
         
         @Override
         public String getSerializedName() {
-            return toString().toLowerCase();
+            return toString().toLowerCase(Locale.US);
         }
     }
     

@@ -13,6 +13,7 @@ import net.roguelogix.phosphophyllite.gui.client.RenderHelper;
 import net.roguelogix.phosphophyllite.gui.client.elements.Symbol;
 
 import javax.annotation.Nonnull;
+import java.util.Locale;
 
 @OnlyIn(Dist.CLIENT)
 public class CommonRender {
@@ -88,7 +89,7 @@ public class CommonRender {
         symbol.tooltip = new TextComponent(String.format("%s/%s of %s",
                 RenderHelper.formatValue((fluidStored / 1000.0), "B", true),
                 RenderHelper.formatValue((fluidCapacity / 1000.0), "B", true),
-                new FluidStack(fluid, 1).getDisplayName().getString().toLowerCase()));
+                new FluidStack(fluid, 1).getDisplayName().getString().toLowerCase(Locale.US)));
         // Reset color and restore the previously bound texture.
         RenderHelper.clearRenderColor();
         RenderHelper.bindTexture(preservedResource);
