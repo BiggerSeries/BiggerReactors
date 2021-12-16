@@ -493,7 +493,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     long currentWasteRenderLevel = 0;
     
     private void updateFuelRenderingLevel() {
-        updateFuelRenderingLevel(true);
+        updateFuelRenderingLevel(false);
     }
     
     private void updateFuelRenderingLevel(boolean forceFullUpdate) {
