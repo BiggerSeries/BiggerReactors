@@ -177,9 +177,7 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
         bladeMesh = Quartz.createStaticMesh(TurbineRotorBlade.INSTANCE.defaultBlockState());
     }
     
-    private final ObjectArrayList<DrawBatch.Instance> instances = new ObjectArrayList();
-    DynamicMatrix matrix;
-    DrawBatch drawBatch;
+    private final ObjectArrayList<DrawBatch.Instance> instances = new ObjectArrayList<>();
     
     private void setupQuartzModel() {
         if (level == null || !level.isClientSide) {
@@ -194,8 +192,8 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
         }
         final Matrix4f jomlMatrix = new Matrix4f();
         final int blade180RotationMultiplier = -rotationAxis.x() | -rotationAxis.y() | rotationAxis.z();
-        drawBatch = Quartz.getDrawBatcherForAABB(new AABBi((int) AABB.minX, (int) AABB.minY, (int) AABB.minZ, (int) AABB.maxX, (int) AABB.maxY, (int) AABB.maxZ));
-        matrix = drawBatch.createDynamicMatrix((matrix, nanoSinceLastFrame, partialTicks, playerBlock, playerPartialBlock) -> {
+        final var drawBatch = Quartz.getDrawBatcherForAABB(new AABBi((int) AABB.minX, (int) AABB.minY, (int) AABB.minZ, (int) AABB.maxX, (int) AABB.maxY, (int) AABB.maxZ));
+        final var dynamicMatrix = drawBatch.createDynamicMatrix((matrix, nanoSinceLastFrame, partialTicks, playerBlock, playerPartialBlock) -> {
             double angle = this.angle;
             
             double speed = this.speed / 10f;
@@ -233,7 +231,7 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
             var light = drawBatch.createLight(worldPos, DynamicLight.Type.INTERNAL);
             
             jomlMatrix.identity();
-            instances.add(drawBatch.createInstance(worldPos, shaftMesh, matrix, jomlMatrix, light, null));
+            instances.add(drawBatch.createInstance(worldPos, shaftMesh, dynamicMatrix, jomlMatrix, light, null));
             
             int i = 0;
             for (Direction direction : Direction.values()) {
@@ -265,7 +263,7 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
                     jomlMatrix.rotate((float) Math.toRadians(180), 0, 0, 1);
                     jomlMatrix.translate(-0.5f, -0.5f, -0.5f);
                     
-                    instances.add(drawBatch.createInstance(worldPos, bladeMesh, matrix, jomlMatrix, light, null));
+                    instances.add(drawBatch.createInstance(worldPos, bladeMesh, dynamicMatrix, jomlMatrix, light, null));
                 }
                 i++;
             }
@@ -274,9 +272,6 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
     
     private void teardownQuartzModel() {
         if (level == null || !level.isClientSide) {
-            return;
-        }
-        if (drawBatch == null) {
             return;
         }
         //noinspection ForLoopReplaceableByForEach
