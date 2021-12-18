@@ -1,3 +1,11 @@
+# 1.18.1-0.6.0-alpha.9.1
+
+# Reactor
+ - dont constantly update full fuel rendering level
+
+# Misc
+ - Fix locale issue
+
 # 1.18.1-0.6.0-alpha.9
 1.18.1
  
