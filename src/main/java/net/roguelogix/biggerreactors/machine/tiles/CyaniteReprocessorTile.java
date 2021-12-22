@@ -353,8 +353,8 @@ public class CyaniteReprocessorTile extends BaseContainerBlockEntity implements 
      * @return The updated compound.
      */
     @Override
-    public final CompoundTag save(@Nonnull CompoundTag parentCompound) {
-        parentCompound = super.save(parentCompound);
+    public final void saveAdditional(@Nonnull CompoundTag parentCompound) {
+        super.saveAdditional(parentCompound);
         CompoundTag childCompound = new CompoundTag();
         
         // Write work.
@@ -369,8 +369,6 @@ public class CyaniteReprocessorTile extends BaseContainerBlockEntity implements 
         childCompound.put("fluidTank", fluidTank.writeToNBT(new CompoundTag()));
         
         parentCompound.put("cyaniteReprocessorState", childCompound);
-        
-        return parentCompound;
     }
     
     /**
