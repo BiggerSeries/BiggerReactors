@@ -1,7 +1,7 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.state;
 
 import net.roguelogix.biggerreactors.multiblocks.reactor.tiles.ReactorControlRodTile;
-import net.roguelogix.phosphophyllite.gui.GuiSync;
+import net.roguelogix.phosphophyllite.client.gui.GuiSync;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

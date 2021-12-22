@@ -1,7 +1,7 @@
 package net.roguelogix.biggerreactors.multiblocks.turbine.state;
 
 import net.roguelogix.biggerreactors.multiblocks.turbine.tiles.TurbineCoolantPortTile;
-import net.roguelogix.phosphophyllite.gui.GuiSync;
+import net.roguelogix.phosphophyllite.client.gui.GuiSync;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

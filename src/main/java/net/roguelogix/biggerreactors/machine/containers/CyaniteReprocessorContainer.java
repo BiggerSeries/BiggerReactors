@@ -12,7 +12,7 @@ import net.minecraftforge.items.SlotItemHandler;
 import net.roguelogix.biggerreactors.machine.blocks.CyaniteReprocessor;
 import net.roguelogix.biggerreactors.machine.tiles.CyaniteReprocessorTile;
 import net.roguelogix.biggerreactors.machine.tiles.impl.CyaniteReprocessorItemHandler;
-import net.roguelogix.phosphophyllite.gui.GuiSync;
+import net.roguelogix.phosphophyllite.client.gui.GuiSync;
 import net.roguelogix.phosphophyllite.registry.ContainerSupplier;
 import net.roguelogix.phosphophyllite.registry.RegisterContainer;
 

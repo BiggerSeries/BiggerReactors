@@ -9,19 +9,19 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.BiggerReactors;
+import net.roguelogix.biggerreactors.client.CommonRender;
 import net.roguelogix.biggerreactors.multiblocks.reactor.containers.ReactorTerminalContainer;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorState;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorType;
-import net.roguelogix.biggerreactors.client.CommonRender;
-import net.roguelogix.phosphophyllite.gui.client.RenderHelper;
-import net.roguelogix.phosphophyllite.gui.client.ScreenBase;
-import net.roguelogix.phosphophyllite.gui.client.elements.Symbol;
-import net.roguelogix.phosphophyllite.gui.client.elements.Tooltip;
+import net.roguelogix.phosphophyllite.client.gui.screens.PhosphophylliteScreen;
+import net.roguelogix.phosphophyllite.client.gui.RenderHelper;
+import net.roguelogix.phosphophyllite.client.gui.elements.RenderedElement;
+import net.roguelogix.phosphophyllite.client.gui.elements.TooltipElement;
 
 import javax.annotation.Nonnull;
 
 @OnlyIn(Dist.CLIENT)
-public class PassiveReactorTerminalScreen extends ScreenBase<ReactorTerminalContainer> {
+public class PassiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorTerminalContainer> {
 
     private static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(BiggerReactors.modid, "textures/screen/reactor_terminal_passive.png");
 
@@ -61,17 +61,17 @@ public class PassiveReactorTerminalScreen extends ScreenBase<ReactorTerminalCont
      */
     private void initTooltips() {
         // (Left) RF generation rate tooltip:
-        this.addElement(new Tooltip<>(this, 8, 38, 16, 16, new TranslatableComponent("screen.biggerreactors.reactor_terminal.energy_generation_rate.tooltip")));
+        this.addScreenElement(new TooltipElement<>(this, 8, 38, 16, 16, new TranslatableComponent("screen.biggerreactors.reactor_terminal.energy_generation_rate.tooltip")));
 
         // (Left) RF generation readout tooltip:
-        Tooltip<ReactorTerminalContainer> generationRateReadoutTooltip = new Tooltip<>(this, 26, 38, 53, 16, TextComponent.EMPTY);
+        TooltipElement<ReactorTerminalContainer> generationRateReadoutTooltip = new TooltipElement<>(this, 26, 38, 53, 16, TextComponent.EMPTY);
         generationRateReadoutTooltip.onTick = () -> {
             generationRateReadoutTooltip.tooltip = new TextComponent(String.format("%.3f RF/t", this.reactorState.reactorOutputRate));
         };
-        this.addElement(generationRateReadoutTooltip);
+        this.addScreenElement(generationRateReadoutTooltip);
 
         // (Top) Internal battery tooltip:
-        this.addElement(new Tooltip<>(this, 152, 6, 16, 16, new TranslatableComponent("screen.biggerreactors.reactor_terminal.internal_battery.tooltip")));
+        this.addScreenElement(new TooltipElement<>(this, 152, 6, 16, 16, new TranslatableComponent("screen.biggerreactors.reactor_terminal.internal_battery.tooltip")));
     }
 
     /**
@@ -79,10 +79,10 @@ public class PassiveReactorTerminalScreen extends ScreenBase<ReactorTerminalCont
      */
     private void initGauges() {
         // (Top) Internal battery:
-        Symbol<ReactorTerminalContainer> internalBattery = new Symbol<>(this, 151, 25, 18, 64, 0, 152, TextComponent.EMPTY);
+        RenderedElement<ReactorTerminalContainer> internalBattery = new RenderedElement<>(this, 151, 25, 18, 64, 0, 152, TextComponent.EMPTY);
         internalBattery.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonRender.renderEnergyGauge(mS,
                 internalBattery, reactorState.energyStored, reactorState.energyCapacity);
-        this.addElement(internalBattery);
+        this.addScreenElement(internalBattery);
     }
 
     /**
@@ -94,7 +94,7 @@ public class PassiveReactorTerminalScreen extends ScreenBase<ReactorTerminalCont
         reactorState = (ReactorState) this.getMenu().getGuiPacket();
         super.containerTick();
         // Check if reactor type changed.
-        if(reactorState.reactorType != ReactorType.PASSIVE) {
+        if (reactorState.reactorType != ReactorType.PASSIVE) {
             this.getMinecraft().setScreen(new ActiveReactorTerminalScreen(this.menu, this.inventory, this.title));
         }
     }
@@ -102,20 +102,20 @@ public class PassiveReactorTerminalScreen extends ScreenBase<ReactorTerminalCont
     /**
      * Draw the status text for this screen.
      *
-     * @param mStack       The current matrix stack.
+     * @param poseStack    The current pose stack.
      * @param mouseX       The x position of the mouse.
      * @param mouseY       The y position of the mouse.
      * @param partialTicks Partial ticks.
      */
     @Override
-    public void render(@Nonnull PoseStack mStack, int mouseX, int mouseY, float partialTicks) {
-        super.render(mStack, mouseX, mouseY, partialTicks);
+    public void render(@Nonnull PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+        super.render(poseStack, mouseX, mouseY, partialTicks);
 
         // Render the other text:
-        CommonReactorTerminalScreen.renderStatusText(mStack, this, reactorState.reactorActivity, reactorState.doAutoEject,
+        CommonReactorTerminalScreen.renderStatusText(poseStack, this, reactorState.reactorActivity, reactorState.doAutoEject,
                 reactorState.fuelHeatStored, reactorState.fuelUsageRate, reactorState.reactivityRate);
 
         // Render text for output rate:
-        this.getFont().draw(mStack, RenderHelper.formatValue(reactorState.reactorOutputRate, "RF/t"), this.getGuiLeft() + 27, this.getGuiTop() + 42, 4210752);
+        this.getFont().draw(poseStack, RenderHelper.formatValue(reactorState.reactorOutputRate, "RF/t"), this.getGuiLeft() + 27, this.getGuiTop() + 42, 4210752);
     }
 }

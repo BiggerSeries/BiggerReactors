@@ -1,7 +1,7 @@
 package net.roguelogix.biggerreactors.machine.state;
 
 import net.roguelogix.biggerreactors.machine.tiles.CyaniteReprocessorTile;
-import net.roguelogix.phosphophyllite.gui.GuiSync;
+import net.roguelogix.phosphophyllite.client.gui.GuiSync;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineTerminal;
 import net.roguelogix.biggerreactors.multiblocks.turbine.containers.TurbineTerminalContainer;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineState;
-import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
+import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 
 import javax.annotation.Nullable;

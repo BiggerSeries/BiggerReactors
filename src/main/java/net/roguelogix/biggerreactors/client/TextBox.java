@@ -12,17 +12,16 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.BiggerReactors;
-import net.roguelogix.phosphophyllite.gui.client.RenderHelper;
-import net.roguelogix.phosphophyllite.gui.client.ScreenBase;
-import net.roguelogix.phosphophyllite.gui.client.elements.Button;
+import net.roguelogix.phosphophyllite.client.gui.screens.PhosphophylliteScreen;
+import net.roguelogix.phosphophyllite.client.gui.RenderHelper;
+import net.roguelogix.phosphophyllite.client.gui.elements.InteractiveElement;
 
 import javax.annotation.Nonnull;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.GL_QUADS;
 
 @OnlyIn(Dist.CLIENT)
-public class TextBox<T extends AbstractContainerMenu> extends Button<T> {
+public class TextBox<T extends AbstractContainerMenu> extends InteractiveElement<T> {
 
     /**
      * Whether or not the text box is in focus.
@@ -73,7 +72,7 @@ public class TextBox<T extends AbstractContainerMenu> extends Button<T> {
      * @param width     How wide this element should be.
      * @param charLimit The max number of characters to allow in this box.
      */
-    public TextBox(@Nonnull ScreenBase<T> parent, @Nonnull Font fontRenderer, int x, int y, int width, int charLimit, String initialText) {
+    public TextBox(@Nonnull PhosphophylliteScreen<T> parent, @Nonnull Font fontRenderer, int x, int y, int width, int charLimit, String initialText) {
         super(parent, x, y, width, 16, 0, 158, null);
         this.textBuffer = new StringBuffer(initialText);
         this.fontRenderer = fontRenderer;
@@ -100,12 +99,12 @@ public class TextBox<T extends AbstractContainerMenu> extends Button<T> {
     /**
      * Render element.
      *
-     * @param mStack The current matrix stack.
+     * @param poseStack The current pose stack.
      * @param mouseX The x position of the mouse.
      * @param mouseY The y position of the mouse.
      */
     @Override
-    public void render(@Nonnull PoseStack mStack, int mouseX, int mouseY) {
+    public void render(@Nonnull PoseStack poseStack, int mouseX, int mouseY) {
         // Check conditions.
         if (this.renderEnable) {
             // Preserve the previously selected texture and bind the common texture.
@@ -113,19 +112,19 @@ public class TextBox<T extends AbstractContainerMenu> extends Button<T> {
             RenderHelper.bindTexture(CommonRender.COMMON_RESOURCE_TEXTURE);
 
             // Draw the left side of the text box frame.
-            this.blit(mStack, this.x, this.y, 0, 158, 3, 16);
+            this.blit(poseStack, this.x, this.y, 0, 158, 3, 16);
 
             // Draw the center part of the text box.
             for (int i = 0; i <= this.width; i += 6) {
-                this.blit(mStack, (this.x + 3) + i, this.y, 6, 158, 6, 16);
+                this.blit(poseStack, (this.x + 3) + i, this.y, 6, 158, 6, 16);
             }
 
             // Draw the right side of the text box frame.
-            this.blit(mStack, (this.x + 6) + (6 * this.charLimit), this.y, 3, 158, 3, 16);
+            this.blit(poseStack, (this.x + 6) + (6 * this.charLimit), this.y, 3, 158, 3, 16);
 
             // Draw the text.
             // TODO: Allow for larger text entry by allowing text scrolling.
-            this.fontRenderer.drawShadow(mStack, this.textBuffer.toString(), (this.x + 3), (this.y + 4), 16777215);
+            this.fontRenderer.drawShadow(poseStack, this.textBuffer.toString(), (this.x + 3), (this.y + 4), 16777215);
 
             // Draw cursor and selection box.
             renderCursor();
@@ -137,7 +136,7 @@ public class TextBox<T extends AbstractContainerMenu> extends Button<T> {
 
             // Trigger user-defined render logic.
             if (this.onRender != null) {
-                this.onRender.trigger(mStack, mouseX, mouseY);
+                this.onRender.trigger(poseStack, mouseX, mouseY);
             }
         }
     }

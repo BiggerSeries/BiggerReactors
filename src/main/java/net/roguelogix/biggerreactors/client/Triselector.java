@@ -7,16 +7,16 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.roguelogix.phosphophyllite.gui.client.RenderHelper;
-import net.roguelogix.phosphophyllite.gui.client.ScreenBase;
-import net.roguelogix.phosphophyllite.gui.client.elements.Button;
+import net.roguelogix.phosphophyllite.client.gui.RenderHelper;
+import net.roguelogix.phosphophyllite.client.gui.screens.PhosphophylliteScreen;
+import net.roguelogix.phosphophyllite.client.gui.elements.InteractiveElement;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.IntSupplier;
 
 @OnlyIn(Dist.CLIENT)
-public class Triselector<T extends AbstractContainerMenu> extends Button<T> {
+public class Triselector<T extends AbstractContainerMenu> extends InteractiveElement<T> {
     
     private final IntSupplier renderState;
     
@@ -49,7 +49,7 @@ public class Triselector<T extends AbstractContainerMenu> extends Button<T> {
      * @param tooltip      The tooltip for this element. If null, a tooltip will not render. If you set a tooltip later, use StringTextComponent.EMPTY.
      * @param initialState The initial switch state to use.
      */
-    public Triselector(@Nonnull ScreenBase<T> parent, int x, int y, @Nullable Component tooltip, IntSupplier initialState, SelectorColors leftColor, SelectorColors centerColor, SelectorColors rightColor) {
+    public Triselector(@Nonnull PhosphophylliteScreen<T> parent, int x, int y, @Nullable Component tooltip, IntSupplier initialState, SelectorColors leftColor, SelectorColors centerColor, SelectorColors rightColor) {
         super(parent, x, y, 46, 14, 31, 64, tooltip);
         this.renderState = initialState;
         this.state = initialState.getAsInt();
@@ -70,12 +70,12 @@ public class Triselector<T extends AbstractContainerMenu> extends Button<T> {
     /**
      * Render element.
      *
-     * @param mStack The current matrix stack.
+     * @param poseStack The current pose stack.
      * @param mouseX The x position of the mouse.
      * @param mouseY The y position of the mouse.
      */
     @Override
-    public void render(@Nonnull PoseStack mStack, int mouseX, int mouseY) {
+    public void render(@Nonnull PoseStack poseStack, int mouseX, int mouseY) {
         // Check conditions.
         if (this.renderEnable) {
             // Preserve the previously selected texture and bind the common texture.
@@ -84,52 +84,52 @@ public class Triselector<T extends AbstractContainerMenu> extends Button<T> {
             // Draw the selector frame.
             if (this.renderState.getAsInt() == 0) {
                 // Position is 0 (left), draw left frame.
-                this.blit(mStack, 31, 64);
+                this.blit(poseStack, 31, 64);
                 // Check where the mouse is.
                 if (this.isMouseOver(mouseX, mouseY)) {
                     // Draw active/hovered button.
-                    this.blit(mStack, this.x + 1, this.y + 1, leftColor.uA, leftColor.vA, 14, 12);
+                    this.blit(poseStack, this.x + 1, this.y + 1, leftColor.uA, leftColor.vA, 14, 12);
                 } else {
                     // Draw inactive/non-hovered button.
-                    this.blit(mStack, this.x + 1, this.y + 1, leftColor.uI, leftColor.vI, 14, 12);
+                    this.blit(poseStack, this.x + 1, this.y + 1, leftColor.uI, leftColor.vI, 14, 12);
                 }
                 // Check if the selector is enabled.
                 if (!this.actionEnable) {
                     // Draw disabled color overlay.
-                    this.blit(mStack, this.x, this.y, 210, 0, 46, 14);
+                    this.blit(poseStack, this.x, this.y, 210, 0, 46, 14);
                 }
             } else if (this.renderState.getAsInt() == 1) {
                 // Position is 1 (center), draw center frame.
-                this.blit(mStack, 31, 78);
+                this.blit(poseStack, 31, 78);
                 // Check where the mouse is.
                 if (this.isMouseOver(mouseX, mouseY)) {
                     // Draw active/hovered button.
-                    this.blit(mStack, this.x + 16, this.y + 1, centerColor.uA, centerColor.vA, 14, 12);
+                    this.blit(poseStack, this.x + 16, this.y + 1, centerColor.uA, centerColor.vA, 14, 12);
                 } else {
                     // Draw inactive/non-hovered button.
-                    this.blit(mStack, this.x + 16, this.y + 1, centerColor.uI, centerColor.vI, 14, 12);
+                    this.blit(poseStack, this.x + 16, this.y + 1, centerColor.uI, centerColor.vI, 14, 12);
                 }
                 // Check if the selector is enabled.
                 if (!this.actionEnable) {
                     // Draw disabled color overlay.
-                    this.blit(mStack, this.x, this.y, 210, 0, 46, 14);
+                    this.blit(poseStack, this.x, this.y, 210, 0, 46, 14);
                 }
             } else {
                 // Position is 2 (right), draw right frame.
-                this.blit(mStack, 31, 92);
+                this.blit(poseStack, 31, 92);
                 // Check if the selector is enabled.
                 // Check where the mouse is.
                 if (this.isMouseOver(mouseX, mouseY)) {
                     // Draw active/hovered button.
-                    this.blit(mStack, this.x + 31, this.y + 1, rightColor.uA, rightColor.vA, 14, 12);
+                    this.blit(poseStack, this.x + 31, this.y + 1, rightColor.uA, rightColor.vA, 14, 12);
                 } else {
                     // Draw inactive/non-hovered button.
-                    this.blit(mStack, this.x + 31, this.y + 1, rightColor.uI, rightColor.vI, 14, 12);
+                    this.blit(poseStack, this.x + 31, this.y + 1, rightColor.uI, rightColor.vI, 14, 12);
                 }
                 // Check if the selector is enabled.
                 if (!this.actionEnable) {
                     // Draw disabled color overlay.
-                    this.blit(mStack, this.x, this.y, 210, 0, 46, 14);
+                    this.blit(poseStack, this.x, this.y, 210, 0, 46, 14);
                 }
             }
             // Reset color and restore the previously bound texture.
@@ -137,7 +137,7 @@ public class Triselector<T extends AbstractContainerMenu> extends Button<T> {
             RenderHelper.bindTexture(preservedResource);
             // Trigger user-defined render logic.
             if (this.onRender != null) {
-                this.onRender.trigger(mStack, mouseX, mouseY);
+                this.onRender.trigger(poseStack, mouseX, mouseY);
             }
         }
     }

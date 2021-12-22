@@ -7,15 +7,15 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.roguelogix.phosphophyllite.gui.client.RenderHelper;
-import net.roguelogix.phosphophyllite.gui.client.ScreenBase;
-import net.roguelogix.phosphophyllite.gui.client.elements.Button;
+import net.roguelogix.phosphophyllite.client.gui.RenderHelper;
+import net.roguelogix.phosphophyllite.client.gui.screens.PhosphophylliteScreen;
+import net.roguelogix.phosphophyllite.client.gui.elements.InteractiveElement;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @OnlyIn(Dist.CLIENT)
-public class CommonButton<T extends AbstractContainerMenu> extends Button<T> {
+public class CommonButton<T extends AbstractContainerMenu> extends InteractiveElement<T> {
 
     /**
      * Default constructor.
@@ -29,19 +29,19 @@ public class CommonButton<T extends AbstractContainerMenu> extends Button<T> {
      * @param v       The v offset to use when rendering this element (starting from the top, and moving down).
      * @param tooltip      The tooltip for this element. If null, a tooltip will not render. If you set a tooltip later, use StringTextComponent.EMPTY.
      */
-    public CommonButton(@Nonnull ScreenBase<T> parent, int x, int y, int width, int height, int u, int v, @Nullable Component tooltip) {
+    public CommonButton(@Nonnull PhosphophylliteScreen<T> parent, int x, int y, int width, int height, int u, int v, @Nullable Component tooltip) {
         super(parent, x, y, width, height, u, v, tooltip);
     }
 
     /**
      * Render element.
      *
-     * @param mStack The current matrix stack.
+     * @param poseStack The current pose stack.
      * @param mouseX The x position of the mouse.
      * @param mouseY The y position of the mouse.
      */
     @Override
-    public void render(@Nonnull PoseStack mStack, int mouseX, int mouseY) {
+    public void render(@Nonnull PoseStack poseStack, int mouseX, int mouseY) {
         // Check conditions.
         if (this.renderEnable) {
             // Preserve the previously selected texture and bind the common texture.
@@ -50,22 +50,22 @@ public class CommonButton<T extends AbstractContainerMenu> extends Button<T> {
             // Check where the mouse is.
             if (this.isMouseOver(mouseX, mouseY)) {
                 // Draw active/hovered button.
-                this.blit(mStack, this.u, this.v + this.height);
+                this.blit(poseStack, this.u, this.v + this.height);
             } else {
                 // Draw inactive/non-hovered button.
-                this.blit(mStack, this.u, this.v);
+                this.blit(poseStack, this.u, this.v);
             }
             // Check if the button is enabled.
             if (!this.actionEnable) {
                 // Draw disabled color overlay.
-                this.blit(mStack,210, 0);
+                this.blit(poseStack,210, 0);
             }
             // Reset color and restore the previously bound texture.
             RenderHelper.clearRenderColor();
             RenderHelper.bindTexture(preservedResource);
             // Trigger user-defined render logic.
             if (this.onRender != null) {
-                this.onRender.trigger(mStack, mouseX, mouseY);
+                this.onRender.trigger(poseStack, mouseX, mouseY);
             }
         }
     }

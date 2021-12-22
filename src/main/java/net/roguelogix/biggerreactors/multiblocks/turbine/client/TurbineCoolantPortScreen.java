@@ -8,16 +8,16 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.BiggerReactors;
-import net.roguelogix.biggerreactors.multiblocks.turbine.containers.TurbineCoolantPortContainer;
-import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineCoolantPortState;
 import net.roguelogix.biggerreactors.client.Biselector;
 import net.roguelogix.biggerreactors.client.SelectorColors;
-import net.roguelogix.phosphophyllite.gui.client.ScreenBase;
+import net.roguelogix.biggerreactors.multiblocks.turbine.containers.TurbineCoolantPortContainer;
+import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineCoolantPortState;
+import net.roguelogix.phosphophyllite.client.gui.screens.PhosphophylliteScreen;
 
 import javax.annotation.Nonnull;
 
 @OnlyIn(Dist.CLIENT)
-public class TurbineCoolantPortScreen extends ScreenBase<TurbineCoolantPortContainer> {
+public class TurbineCoolantPortScreen extends PhosphophylliteScreen<TurbineCoolantPortContainer> {
 
     private static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(BiggerReactors.modid, "textures/screen/turbine_coolant_port.png");
 
@@ -62,29 +62,29 @@ public class TurbineCoolantPortScreen extends ScreenBase<TurbineCoolantPortConta
             this.getMenu().executeRequest("setDirection", directionToggle.getState() == 0 ? 1 : 0);
             return true;
         };
-        this.addElement(directionToggle);
+        this.addScreenElement(directionToggle);
     }
 
     /**
      * Draw the status text for this screen.
      *
-     * @param mStack       The current matrix stack.
+     * @param poseStack    The current pose stack.
      * @param mouseX       The x position of the mouse.
      * @param mouseY       The y position of the mouse.
      * @param partialTicks Partial ticks.
      */
     @Override
-    public void render(@Nonnull PoseStack mStack, int mouseX, int mouseY, float partialTicks) {
-        super.render(mStack, mouseX, mouseY, partialTicks);
+    public void render(@Nonnull PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+        super.render(poseStack, mouseX, mouseY, partialTicks);
 
         // Render text for input/output direction:
         if (turbineCoolantPortState.direction) {
             // Text for an inlet:
-            this.getFont().draw(mStack, new TranslatableComponent("screen.biggerreactors.turbine_coolant_port.direction_toggle.input").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
+            this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.turbine_coolant_port.direction_toggle.input").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
 
         } else {
             // Text for an outlet:
-            this.getFont().draw(mStack, new TranslatableComponent("screen.biggerreactors.turbine_coolant_port.direction_toggle.output").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
+            this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.turbine_coolant_port.direction_toggle.output").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
         }
     }
 }

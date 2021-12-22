@@ -18,7 +18,7 @@ import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorActivity;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorRedstonePortSelection;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorRedstonePortState;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorRedstonePortTriggers;
-import net.roguelogix.phosphophyllite.gui.client.api.IHasUpdatableState;
+import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.multiblock.IOnAssemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.IOnDisassemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.ITickableMultiblockTile;

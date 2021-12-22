@@ -6,20 +6,19 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.material.Fluids;
 import net.roguelogix.biggerreactors.BiggerReactors;
+import net.roguelogix.biggerreactors.client.CommonRender;
 import net.roguelogix.biggerreactors.machine.containers.CyaniteReprocessorContainer;
 import net.roguelogix.biggerreactors.machine.state.CyaniteReprocessorState;
-import net.roguelogix.biggerreactors.client.CommonRender;
-import net.roguelogix.phosphophyllite.gui.client.RenderHelper;
-import net.roguelogix.phosphophyllite.gui.client.ScreenBase;
-import net.roguelogix.phosphophyllite.gui.client.elements.Symbol;
-import net.roguelogix.phosphophyllite.gui.client.elements.Tooltip;
+import net.roguelogix.phosphophyllite.client.gui.screens.PhosphophylliteScreen;
+import net.roguelogix.phosphophyllite.client.gui.RenderHelper;
+import net.roguelogix.phosphophyllite.client.gui.elements.RenderedElement;
+import net.roguelogix.phosphophyllite.client.gui.elements.TooltipElement;
 
 import javax.annotation.Nonnull;
 
-public class CyaniteReprocessorScreen extends ScreenBase<CyaniteReprocessorContainer> {
+public class CyaniteReprocessorScreen extends PhosphophylliteScreen<CyaniteReprocessorContainer> {
 
     private static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(BiggerReactors.modid, "textures/screen/cyanite_reprocessor.png");
 
@@ -59,7 +58,7 @@ public class CyaniteReprocessorScreen extends ScreenBase<CyaniteReprocessorConta
      */
     public void initTooltips() {
         // (Left) Internal battery:
-        this.addElement(new Tooltip<>(this, 8, 6, 16, 16, new TranslatableComponent("screen.biggerreactors.cyanite_reprocessor.internal_battery.tooltip")));
+        this.addScreenElement(new TooltipElement<>(this, 8, 6, 16, 16, new TranslatableComponent("screen.biggerreactors.cyanite_reprocessor.internal_battery.tooltip")));
     }
 
     /**
@@ -67,23 +66,23 @@ public class CyaniteReprocessorScreen extends ScreenBase<CyaniteReprocessorConta
      */
     public void initGauges() {
         // (Top) Internal battery:
-        Symbol<CyaniteReprocessorContainer> internalBattery = new Symbol<>(this, 7, 25, 18, 64, 0, 152, TextComponent.EMPTY);
+        RenderedElement<CyaniteReprocessorContainer> internalBattery = new RenderedElement<>(this, 7, 25, 18, 64, 0, 152, TextComponent.EMPTY);
         internalBattery.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonRender.renderEnergyGauge(mS,
                 internalBattery, cyaniteReprocessorState.energyStored, cyaniteReprocessorState.energyCapacity);
-        this.addElement(internalBattery);
+        this.addScreenElement(internalBattery);
 
         // (Top) Water tank:
-        Symbol<CyaniteReprocessorContainer> waterTank = new Symbol<>(this, 151, 25, 18, 64, 0, 152, TextComponent.EMPTY);
+        RenderedElement<CyaniteReprocessorContainer> waterTank = new RenderedElement<>(this, 151, 25, 18, 64, 0, 152, TextComponent.EMPTY);
         waterTank.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonRender.renderFluidGauge(mS,
                 waterTank, cyaniteReprocessorState.waterStored, cyaniteReprocessorState.waterCapacity,
                 Fluids.WATER.getSource());
-        this.addElement(waterTank);
+        this.addScreenElement(waterTank);
 
         // (Center) Progress bar:
-        Symbol<CyaniteReprocessorContainer> progressBar = new Symbol<>(this, 75, 40, 24, 18, 0, 175, null);
+        RenderedElement<CyaniteReprocessorContainer> progressBar = new RenderedElement<>(this, 75, 40, 24, 18, 0, 175, null);
         progressBar.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CyaniteReprocessorScreen.renderProgressBar(mS,
                 progressBar, cyaniteReprocessorState.workTime, cyaniteReprocessorState.workTimeTotal);
-        this.addElement(progressBar);
+        this.addScreenElement(progressBar);
     }
 
     /**
@@ -91,29 +90,29 @@ public class CyaniteReprocessorScreen extends ScreenBase<CyaniteReprocessorConta
      */
     public void initSymbols() {
         // (Right) Water tank symbol:
-        Symbol<CyaniteReprocessorContainer> waterTankSymbol = new Symbol<>(this, 152, 6, 16, 16, 48, 175, new TranslatableComponent("screen.biggerreactors.cyanite_reprocessor.water_tank.tooltip"));
+        RenderedElement<CyaniteReprocessorContainer> waterTankSymbol = new RenderedElement<>(this, 152, 6, 16, 16, 48, 175, new TranslatableComponent("screen.biggerreactors.cyanite_reprocessor.water_tank.tooltip"));
         waterTankSymbol.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> RenderHelper.drawMaskedFluid(mS,
                 waterTankSymbol.x, waterTankSymbol.y, this.getBlitOffset(),
                 waterTankSymbol.width, waterTankSymbol.height,
                 waterTankSymbol.u, waterTankSymbol.v, Fluids.WATER.getSource());
-        this.addElement(waterTankSymbol);
+        this.addScreenElement(waterTankSymbol);
     }
 
     /**
      * Render the progress bar.
      *
-     * @param mStack        The current matrix stack.
+     * @param poseStack     The current pose stack.
      * @param symbol        The symbol to draw as.
      * @param workTime      The time the machine has been working.
      * @param workTimeTotal The total time needed for completion.
      */
-    private static void renderProgressBar(@Nonnull PoseStack mStack, @Nonnull Symbol<CyaniteReprocessorContainer> symbol, int workTime, int workTimeTotal) {
+    private static void renderProgressBar(@Nonnull PoseStack poseStack, @Nonnull RenderedElement<CyaniteReprocessorContainer> symbol, int workTime, int workTimeTotal) {
         // If there's no progress, there's no need to draw.
         if ((workTime > 0) && (workTimeTotal > 0)) {
             // Calculate how much needs to be rendered.
             int renderSize = (int) ((symbol.width * workTime) / workTimeTotal);
             // Render progress.
-            symbol.blit(mStack, renderSize, symbol.height, symbol.u + 24, symbol.v);
+            symbol.blit(poseStack, renderSize, symbol.height, symbol.u + 24, symbol.v);
         }
     }
 }
