@@ -1,12 +1,10 @@
 package net.roguelogix.biggerreactors.multiblocks.turbine.tiles;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -18,12 +16,14 @@ import net.roguelogix.phosphophyllite.Phosphophyllite;
 import net.roguelogix.phosphophyllite.multiblock.IAssemblyAttemptedTile;
 import net.roguelogix.phosphophyllite.quartz.*;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
-import net.roguelogix.phosphophyllite.repack.org.joml.*;
+import net.roguelogix.phosphophyllite.repack.org.joml.AABBi;
+import net.roguelogix.phosphophyllite.repack.org.joml.Matrix4f;
+import net.roguelogix.phosphophyllite.repack.org.joml.Vector3i;
+import net.roguelogix.phosphophyllite.repack.org.joml.Vector4i;
 import net.roguelogix.phosphophyllite.threading.Queues;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.lang.Math;
 import java.util.ArrayList;
 
 import static net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock.ASSEMBLED;
@@ -207,7 +207,7 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
             if (blade180RotationMultiplier > 0) {
                 angle += 180;
             }
-            if(rotationAxis.x() != 0){
+            if (rotationAxis.x() != 0) {
                 angle += 180;
             }
             
@@ -221,7 +221,7 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
             } else if (rotationAxis.y() != 1) {
                 jomlMatrix.rotate((float) Math.toRadians(180), 1, 0, 0);
             }
-            jomlMatrix.rotate((float) Math.toRadians(-angle), 0, 1, 0);
+            jomlMatrix.rotate((float) Math.toRadians(angle), 0, 1, 0);
             jomlMatrix.translate(-0.5f, -0.5f, -0.5f);
             matrix.write(jomlMatrix);
         });
