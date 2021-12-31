@@ -14,7 +14,7 @@ import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorBlad
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorShaft;
 import net.roguelogix.phosphophyllite.Phosphophyllite;
 import net.roguelogix.phosphophyllite.multiblock.IAssemblyAttemptedTile;
-import net.roguelogix.phosphophyllite.quartz.*;
+import net.roguelogix.quartz.*;
 import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
 import net.roguelogix.phosphophyllite.repack.org.joml.AABBi;
 import net.roguelogix.phosphophyllite.repack.org.joml.Matrix4f;

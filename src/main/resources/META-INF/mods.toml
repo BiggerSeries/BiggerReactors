@@ -37,4 +37,10 @@ Official continuation of Big Reactors
     versionRange="${phosVersionRange}"
     ordering="NONE"
     side="BOTH"
+[[dependencies.biggerreactors]]
+    modId="quartz"
+    mandatory=true
+    versionRange="${quartzVersionRange}"
+    ordering="NONE"
+    side="BOTH"
 

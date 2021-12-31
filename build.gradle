@@ -53,6 +53,9 @@ minecraft {
                 BiggerReactors {
                     source sourceSets.main
                 }
+                Quartz {
+                    source project(':Quartz').sourceSets.main
+                }
                 Phosphophyllite {
                     source project(':Phosphophyllite').sourceSets.main
                 }
@@ -71,6 +74,9 @@ minecraft {
             mods {
                 BiggerReactors {
                     source sourceSets.main
+                }
+                Quartz {
+                    source project(':Quartz').sourceSets.main
                 }
                 Phosphophyllite {
                     source project(':Phosphophyllite').sourceSets.main
@@ -92,6 +98,9 @@ minecraft {
             mods {
                 BiggerReactors {
                     source sourceSets.main
+                }
+                Quartz {
+                    source project(':Quartz').sourceSets.main
                 }
                 Phosphophyllite {
                     source project(':Phosphophyllite').sourceSets.main
@@ -131,6 +140,7 @@ dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
     compileOnly project(':Phosphophyllite')
+    compileOnly project(':Quartz')
 
     compileOnly fg.deobf("org.squiddev:cc-tweaked-${cc_mc_version}:${cc_version}")
 //    runtimeOnly fg.deobf("org.squiddev:cc-tweaked-${cc_mc_version}:${cc_version}")
@@ -188,7 +198,8 @@ gradle.projectsEvaluated {
             fmlVersion      : forge_version.substring(0, forge_version.indexOf('.')),
             forgeVersion    : forge_version,
             mcVersion       : mc_version,
-            phosVersionRange: project.project(":Phosphophyllite").property("compatibility").toString()
+            phosVersionRange: project.project(":Phosphophyllite").property("compatibility").toString(),
+            quartzVersionRange: project.project(":Quartz").property("compatibility").toString()
     ]
     processResources {
         duplicatesStrategy = 'INCLUDE'
