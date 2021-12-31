@@ -113,7 +113,6 @@ public class SimUtil {
             final ArrayList<RayStep> raySteps = new ArrayList<>();
             
             radiationDirection.set(rayDirection);
-            radiationDirection.sub(0.5, 0.5, 0.5);
             radiationDirection.normalize();
             
             // radiation extends for RadiationBlocksToLive from the outside of the fuel rod
