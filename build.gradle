@@ -45,6 +45,7 @@ minecraft {
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             arg "-mixin.config=phosphophyllite.mixins.json"
+            arg "-mixin.config=quartz.mixins.json"
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
