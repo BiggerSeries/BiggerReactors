@@ -220,8 +220,13 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         }
         
         if (switches <= 1) {
-            primaryBearing.isRenderBearing = true;
-            secondaryBearing.isRenderBearing = false;
+            if (primaryAxisPos > secondaryAxisPos) {
+                primaryBearing.isRenderBearing = true;
+                secondaryBearing.isRenderBearing = false;
+            } else {
+                primaryBearing.isRenderBearing = false;
+                secondaryBearing.isRenderBearing = true;
+            }
         }
         
         return true;
