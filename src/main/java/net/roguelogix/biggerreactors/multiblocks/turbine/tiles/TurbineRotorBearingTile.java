@@ -169,8 +169,8 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
         Quartz.EVENT_BUS.addListener(TurbineRotorBearingTile::onQuartzStartup);
     }
     
-    private static StaticMesh shaftMesh;
-    private static StaticMesh bladeMesh;
+    private static Mesh shaftMesh;
+    private static Mesh bladeMesh;
     
     private static void onQuartzStartup(QuartzEvent.Startup quartzStartup) {
         shaftMesh = Quartz.createStaticMesh(TurbineRotorShaft.INSTANCE.defaultBlockState());
