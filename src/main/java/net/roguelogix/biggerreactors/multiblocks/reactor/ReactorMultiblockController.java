@@ -463,12 +463,21 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             long totalPowerRequested = 0;
             final long startingPower = battery.stored();
             for (ReactorPowerTapTile powerPort : powerPorts) {
-                totalPowerRequested += powerPort.distributePower(startingPower, true);
+                final long requested = powerPort.distributePower(startingPower, true);
+                if(requested > startingPower){
+                    // bugged impl, ignoring
+                    continue;
+                }
+                totalPowerRequested += requested;
             }
             
             float distributionMultiplier = Math.min(1f, (float) startingPower / (float) totalPowerRequested);
             for (ReactorPowerTapTile powerPort : powerPorts) {
                 long powerRequested = powerPort.distributePower(startingPower, true);
+                if(powerRequested > startingPower){
+                    // bugged impl, ignoring
+                    continue;
+                }
                 powerRequested *= distributionMultiplier;
                 powerRequested = Math.min(battery.stored(), powerRequested); // just in casei
                 long powerAccepted = powerPort.distributePower(powerRequested, false);

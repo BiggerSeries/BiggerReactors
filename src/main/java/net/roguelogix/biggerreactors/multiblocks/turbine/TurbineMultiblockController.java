@@ -462,14 +462,24 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         simulation.tick();
         
         long totalPowerRequested = 0;
+        long stored = simulation.battery().stored();
         for (TurbinePowerTapTile powerPort : powerTaps) {
-            totalPowerRequested += powerPort.distributePower(simulation.battery().stored(), true);
+            long requested = powerPort.distributePower(stored, true);
+            if(requested > stored){
+                // bugged impl, ignoring
+                continue;
+            }
+            totalPowerRequested += requested;
         }
         long startingPower = simulation.battery().stored();
         
         double distributionMultiplier = Math.min(1f, (double) startingPower / (double) totalPowerRequested);
         for (TurbinePowerTapTile powerPort : powerTaps) {
             long powerRequested = powerPort.distributePower(startingPower, true);
+            if(powerRequested > startingPower){
+                // bugged impl, ignoring
+                continue;
+            }
             powerRequested *= distributionMultiplier;
             powerRequested = Math.min(simulation.battery().stored(), powerRequested); // just in case
             simulation.battery().extract(powerPort.distributePower(powerRequested, false));
