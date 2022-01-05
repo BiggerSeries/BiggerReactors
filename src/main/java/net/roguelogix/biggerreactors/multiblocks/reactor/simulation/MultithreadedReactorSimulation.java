@@ -110,14 +110,14 @@ public class MultithreadedReactorSimulation implements IReactorSimulation {
             for (int j = 0; j < y; j++) {
                 for (int k = 0; k < z; k++) {
                     var newProperties = simulationDescription.moderatorProperties[i][j][k];
+                    if (simulationDescription.manifoldLocations[i][j][k]) {
+                        newProperties = coolantTank;
+                    }
                     if (newProperties == null) {
                         newProperties = simulationDescription.defaultModeratorProperties;
                     }
                     if (controlRodsXZ[i][k] != null) {
                         newProperties = null;
-                    }
-                    if (simulationDescription.manifoldLocations[i][j][k]) {
-                        newProperties = coolantTank;
                     }
                     moderatorProperties[i][j][k] = newProperties;
                 }
