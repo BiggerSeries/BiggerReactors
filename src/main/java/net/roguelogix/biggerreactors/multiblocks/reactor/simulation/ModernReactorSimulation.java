@@ -95,11 +95,11 @@ public class ModernReactorSimulation implements IReactorSimulation {
                     if (simulationDescription.manifoldLocations[i][j][k]) {
                         newProperties = coolantTank;
                     }
-                    if (controlRodsXZ[i][k] != null) {
-                        newProperties = null;
-                    }
                     if(newProperties == null){
                         newProperties = simulationDescription.defaultModeratorProperties;
+                    }
+                    if (controlRodsXZ[i][k] != null) {
+                        newProperties = null;
                     }
                     moderatorProperties[i][j][k] = newProperties;
                 }
