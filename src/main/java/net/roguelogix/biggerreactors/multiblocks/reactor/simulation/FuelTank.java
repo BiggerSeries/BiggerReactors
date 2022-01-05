@@ -124,7 +124,6 @@ class FuelTank implements IReactorSimulation.IFuelTank, IPhosphophylliteSerializ
     @Override
     public PhosphophylliteCompound save() {
         PhosphophylliteCompound compound = new PhosphophylliteCompound();
-        compound.put("capacity", capacity);
         compound.put("fuel", fuel);
         compound.put("waste", waste);
         compound.put("partialUsed", partialUsed);
@@ -133,7 +132,6 @@ class FuelTank implements IReactorSimulation.IFuelTank, IPhosphophylliteSerializ
     
     @Override
     public void load(@Nonnull PhosphophylliteCompound compound) {
-        capacity = compound.getLong("capacity");
         fuel = compound.getLong("fuel");
         waste = compound.getLong("waste");
         partialUsed = compound.getDouble("partialUsed");
