@@ -62,7 +62,7 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IPhosphophyl
     
     public long distributePower(long toDistribute, boolean simulate) {
         if (outputOptional.isPresent()) {
-            return output.insertEnergy(toDistribute, simulate);
+            return Math.max(0, output.insertEnergy(toDistribute, simulate));
         }
         return 0;
     }
@@ -74,7 +74,7 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IPhosphophyl
     
     @Override
     public long extractEnergy(long maxExtract, boolean simulate) {
-        if (nullableController() == null || controller().assemblyState() != ASSEMBLED) {
+        if (maxExtract <= 0 || nullableController() == null || controller().assemblyState() != ASSEMBLED) {
             return 0;
         }
         long toExtract = controller().simulation().battery().stored();
@@ -88,7 +88,7 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IPhosphophyl
     @Override
     public long energyStored() {
         if (nullableController() != null) {
-            return controller().simulation().battery().stored();
+            return Math.max(0, controller().simulation().battery().stored());
         }
         return 0;
     }
@@ -96,7 +96,7 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IPhosphophyl
     @Override
     public long maxEnergyStored() {
         if (nullableController() != null) {
-            return controller().simulation().battery().capacity();
+            return Math.max(0, controller().simulation().battery().capacity());
         }
         return 0;
     }

@@ -64,7 +64,7 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophyl
     
     public long distributePower(long toDistribute, boolean simulate) {
         if (outputOptional.isPresent()) {
-            return output.insertEnergy(toDistribute, simulate);
+            return Math.max(0, output.insertEnergy(toDistribute, simulate));
         }
         return 0;
     }
@@ -76,7 +76,7 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophyl
     
     @Override
     public long extractEnergy(long maxExtract, boolean simulate) {
-        if (nullableController() == null || controller().assemblyState() != MultiblockController.AssemblyState.ASSEMBLED) {
+        if (maxExtract <= 0 || nullableController() == null || controller().assemblyState() != MultiblockController.AssemblyState.ASSEMBLED) {
             return 0;
         }
         var reactorSim = controller().simulation();
@@ -106,7 +106,7 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophyl
             if (battery == null) {
                 return 0;
             }
-            return battery.stored();
+            return Math.max(0, battery.stored());
         }
         return 0;
     }
@@ -122,7 +122,7 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophyl
             if (battery == null) {
                 return 0;
             }
-            return battery.capacity();
+            return Math.max(0, battery.capacity());
         }
         return 0;
     }
