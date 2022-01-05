@@ -1,3 +1,20 @@
+# 1.18.1-0.6.0-beta
+
+# Reactgor
+ - Fix sim issue where the ray origin was offset
+ - Fix manifolds crashing passive reactors
+ - Don't save fuel tank capacity
+ - Distribute fuel/waste residual instead of voiding it
+ - Add RF checks to ensure buffers dont go negative
+
+# Turbine
+ - Ensure rotor direction is consistent
+ - Add RF checks to ensure buffers dont go negative
+
+# Misc
+ - Cyanite reprocessor saving fixed
+ - Quartz mod dependency, previously part of Phosphophyllite
+
 # 1.18.1-0.6.0-alpha.9.1
 
 # Reactor
