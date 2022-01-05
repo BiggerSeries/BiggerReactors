@@ -587,7 +587,9 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         }
         if (simulation.fuelTank().totalStored() > 0 && !fuelRods.isEmpty()) {
             long fuelToDistribute = simulation.fuelTank().fuel();
+            long fuelLeft = simulation.fuelTank().fuel();
             long wasteToDistribute = simulation.fuelTank().waste();
+            long wasteLeft = simulation.fuelTank().waste();
             simulation.fuelTank().extractFuel(fuelToDistribute, false);
             simulation.fuelTank().extractWaste(wasteToDistribute, false);
             fuelToDistribute /= fuelRods.size();
@@ -596,7 +598,30 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             for (int i = 0; i < fuelRods.size(); i++) {
                 final var fuelRod = fuelRods.get(i);
                 fuelRod.fuel = fuelToDistribute;
+                fuelLeft -= fuelToDistribute;
                 fuelRod.waste = wasteToDistribute;
+                wasteLeft -= wasteToDistribute;
+            }
+            if (fuelLeft > 0 || wasteLeft > 0) {
+                // got some residual, hose it out to whatever rod still has room
+                final var fuelRodCapacity = Config.CONFIG.Reactor.PerFuelRodCapacity;
+                for (int i = 0; i < fuelRods.size(); i++) {
+                    final var fuelRod = fuelRods.get(i);
+                    long spaceLeft = fuelRodCapacity - fuelRod.waste - fuelRod.fuel;
+                    if (spaceLeft <= 0) {
+                        continue;
+                    }
+                    long fuelToAdd = Math.min(spaceLeft, fuelLeft);
+                    fuelLeft -= fuelToAdd;
+                    spaceLeft -= fuelToAdd;
+                    fuelRod.fuel += fuelToAdd;
+                    long wasteToAdd = Math.min(spaceLeft, wasteLeft);
+                    wasteLeft -= wasteToAdd;
+                    fuelRod.waste += wasteToAdd;
+                    if (fuelLeft <= 0 && wasteLeft <= 0) {
+                        break;
+                    }
+                }
             }
             markDirty();
         }
@@ -612,7 +637,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         for (int i = 0; i < fuelRods.size(); i++) {
             final var fuelRod = fuelRods.get(i);
             totalFuel += fuelRod.fuel;
-            totalFuel += fuelRod.waste;
+            totalWaste += fuelRod.waste;
             fuelRod.fuel = 0;
             fuelRod.waste = 0;
         }
