@@ -310,7 +310,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             simulationData = new PhosphophylliteCompound(compound.getByteArray("simulationData"));
         }
         if (compound.contains("coolantTankWrapper")) {
-            coolantTankNBT = compound.getCompound("");
+            coolantTankNBT = compound.getCompound("coolantTankWrapper");
         }
         
         updateBlockStates = true;
