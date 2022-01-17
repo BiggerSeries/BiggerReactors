@@ -1,26 +1,32 @@
+# 1.18.1-0.6.0-beta.0.1
+
+## Reactor
+ - Fix coolant tank saving
+ - Switch simulations to using Fibonacci sphere for ray generation
+
 # 1.18.1-0.6.0-beta
 
-# Reactgor
+## Reactor
  - Fix sim issue where the ray origin was offset
  - Fix manifolds crashing passive reactors
  - Don't save fuel tank capacity
  - Distribute fuel/waste residual instead of voiding it
  - Add RF checks to ensure buffers dont go negative
 
-# Turbine
+## Turbine
  - Ensure rotor direction is consistent
  - Add RF checks to ensure buffers dont go negative
 
-# Misc
+## Misc
  - Cyanite reprocessor saving fixed
  - Quartz mod dependency, previously part of Phosphophyllite
 
 # 1.18.1-0.6.0-alpha.9.1
 
-# Reactor
+## Reactor
  - dont constantly update full fuel rendering level
 
-# Misc
+## Misc
  - Fix locale issue
 
 # 1.18.1-0.6.0-alpha.9
