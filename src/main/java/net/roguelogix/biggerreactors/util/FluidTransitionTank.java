@@ -276,6 +276,7 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
             outFluid = newOutFluid;
             inAmount = nbt.getLong("inAmount");
             outAmount = nbt.getLong("outAmount");
+            transitionUpdate();
         }
     }
     
