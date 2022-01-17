@@ -58,31 +58,6 @@ public class SimUtil {
     
     public static final ArrayList<ArrayList<RayStep>> rays = new ArrayList<>();
     
-    public static final Vector3dc[] rayDirections = new Vector3dc[]{
-            new Vector3d(+1, 0, 0),
-            new Vector3d(-1, 0, 0),
-            new Vector3d(0, +1, 0),
-            new Vector3d(0, -1, 0),
-            new Vector3d(0, 0, +1),
-            new Vector3d(0, 0, -1),
-            
-            
-            new Vector3d(+1, +1, 0),
-            new Vector3d(+1, -1, 0),
-            new Vector3d(-1, +1, 0),
-            new Vector3d(-1, -1, 0),
-            
-            new Vector3d(0, +1, +1),
-            new Vector3d(0, +1, -1),
-            new Vector3d(0, -1, +1),
-            new Vector3d(0, -1, -1),
-            
-            new Vector3d(+1, 0, +1),
-            new Vector3d(-1, 0, +1),
-            new Vector3d(+1, 0, -1),
-            new Vector3d(-1, 0, -1),
-    };
-    
     @OnModLoad
     private static void onModLoad() {
         // trigger classload on mod load, so this doesnt happen at runtime
@@ -91,6 +66,20 @@ public class SimUtil {
     static {
         // Config is registered before any @OnModLoad classes are loaded/called, so, the the config is loaded first
         final double TTL = Config.CONFIG.Reactor.IrradiationDistance;
+        
+        // generate ray directions using Fibonacci sphere
+        final int SimulationRays = Config.CONFIG.Reactor.SimulationRays;
+        final double SimulationRaysDouble = SimulationRays - 1;
+        final var rayDirections = new Vector3d[SimulationRays];
+        final double phi = Math.PI * (3.0 - Math.sqrt(5));
+        for (int i = 0; i < SimulationRays; i++) {
+            double y = 1.0 - ((double) i * 2.0 / SimulationRaysDouble);
+            double radius = Math.sqrt(1.0 - y * y);
+            double theta = phi * (double) i;
+            double x = Math.cos(theta) * radius;
+            double z = Math.sin(theta) * radius;
+            rayDirections[i] = new Vector3d(x, y, z).normalize();
+        }
         
         final Vector3d radiationDirection = new Vector3d();
         final Vector3d currentSegment = new Vector3d();

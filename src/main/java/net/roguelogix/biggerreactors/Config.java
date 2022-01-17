@@ -22,6 +22,7 @@ public class Config {
         // Experimental, but allowed to use multiple threads
         // don't blame me if you end up pissing off your server host
         MULTITHREADED,
+        OPENCL,
     }
     
     @ConfigValue(advanced = true)
@@ -36,7 +37,7 @@ public class Config {
         public final int UraniumOreMaxSpawnY;
         @ConfigValue
         public final boolean EnableUraniumGeneration;
-    
+        
         {
             UraniumOreMaxClustersPerChunk = 5;
             UraniumMaxOrePerCluster = 10;
@@ -55,7 +56,7 @@ public class Config {
         public final int MaxWidth;
         @ConfigValue(range = "[3,)")
         public final int MaxHeight;
-    
+        
         {
             MaxLength = 128;
             MaxWidth = 128;
@@ -72,7 +73,7 @@ public class Config {
         public final double ActiveOutputMultiplier;
         @ConfigValue(range = "(0,)", advanced = true)
         public final long FuelMBPerIngot;
-    
+        
         {
             FuelUsageMultiplier = 1;
             OutputMultiplier = 1.0f;
@@ -80,7 +81,7 @@ public class Config {
             ActiveOutputMultiplier = 1.0f;
             FuelMBPerIngot = 1000;
         }
-    
+        
         @ConfigValue(range = "[1,)", advanced = true)
         public final long PerFuelRodCapacity;
         @ConfigValue(range = "(0,)", advanced = true)
@@ -143,7 +144,7 @@ public class Config {
         public final double FuelAbsorptionScalingShiftMultiplier;
         @ConfigValue(range = "(0,)", advanced = true)
         public final double FuelAbsorptionScalingRateExponentMultiplier;
-    
+        
         {
             PerFuelRodCapacity = 4000;
             FuelFertilityMinimumDecay = 0.1f;
@@ -177,11 +178,18 @@ public class Config {
             FuelAbsorptionScalingShiftMultiplier = 1f;
             FuelAbsorptionScalingRateExponentMultiplier = 2.2f;
         }
-    
+        
+        @ConfigValue(range = "[18,)", advanced = true)
+        public final int SimulationRays;
+        
+        {
+            SimulationRays = 100;
+        }
+        
         public static final class Experimental {
             @ConfigValue(range = "(0,)", advanced = true)
             public final int RodBatchSize;
-    
+            
             {
                 RodBatchSize = 4096;
             }
@@ -193,7 +201,7 @@ public class Config {
         public static final class GUI {
             @ConfigValue
             public final long HeatDisplayMax;
-    
+            
             {
                 HeatDisplayMax = 2000;
             }
@@ -213,13 +221,13 @@ public class Config {
         public final int MaxWidth;
         @ConfigValue(range = "[4,)")
         public final int MaxHeight;
-    
+        
         {
             MaxLength = 32;
             MaxWidth = 32;
             MaxHeight = 192;
         }
-    
+        
         @ConfigValue(range = "(0,)", advanced = true)
         public final long FlowRatePerBlock;
         @ConfigValue(range = "(0,)", advanced = true)
@@ -238,7 +246,7 @@ public class Config {
         public final double CoilDragMultiplier;
         @ConfigValue(range = "(0,)", advanced = true)
         public final long BatterySizePerCoilBlock;
-    
+        
         {
             FlowRatePerBlock = 5000;
             TankVolumePerBlock = 10000;
@@ -262,13 +270,13 @@ public class Config {
         public final int MaxWidth;
         @ConfigValue(range = "[4,)")
         public final int MaxHeight;
-    
+        
         {
             MaxLength = 64;
             MaxWidth = 64;
             MaxHeight = 96;
         }
-    
+        
         @ConfigValue(range = "(0,)", advanced = true)
         public final long ChannelTankVolumePerBlock;
         @ConfigValue(range = "(0,)", advanced = true)
@@ -285,7 +293,7 @@ public class Config {
         public final double AirFEPerKelvinMetreSquared;
         @ConfigValue(range = "(0,)", advanced = true)
         public final double AmbientFEPerKelvinMetreSquared;
-    
+        
         {
             ChannelTankVolumePerBlock = 10000;
             ChannelToChannelHeatConductivityMultiplier = 0.5;
@@ -296,16 +304,16 @@ public class Config {
             AirFEPerKelvinMetreSquared = 0.5f;
             AmbientFEPerKelvinMetreSquared = 0.2f;
         }
-    
+        
         public static final class GUI {
             @ConfigValue
             public final long HeatDisplayMax;
-    
+            
             {
                 HeatDisplayMax = 2000;
             }
         }
-    
+        
         @ConfigValue
         public final Reactor.GUI gui = new Reactor.GUI();
     }
@@ -326,7 +334,7 @@ public class Config {
         public final int WaterConsumptionPerTick;
         @ConfigValue(range = "(0,)", comment = "Time (in ticks) it takes to complete a job.")
         public final int TotalWorkTime;
-    
+        
         {
             TransferRate = 500;
             EnergyTankCapacity = 5000;
