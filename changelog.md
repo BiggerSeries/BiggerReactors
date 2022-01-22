@@ -1,3 +1,8 @@
+# 1.18.1-0.6.0-beta.0.2
+
+## Reactor
+ - Fix crash when placing computerport when computercraft is not installed
+
 # 1.18.1-0.6.0-beta.0.1
 
 ## Reactor
