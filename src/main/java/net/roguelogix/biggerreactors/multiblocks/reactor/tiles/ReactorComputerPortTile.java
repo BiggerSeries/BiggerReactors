@@ -38,7 +38,7 @@ public class ReactorComputerPortTile extends ReactorBaseTile implements IOnAssem
 
     {
         // avoids classloading without CC existing
-        if (CAPABILITY_PERIPHERAL != null) {
+        if (CAPABILITY_PERIPHERAL.isRegistered()) {
             peripheralCapability = ReactorPeripheral.create(this::controller);
         }
     }
