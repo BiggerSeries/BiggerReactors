@@ -15,6 +15,7 @@ public class UraniumBlock extends Block {
                 Properties.of(Material.METAL)
                         .sound(SoundType.STONE)
                         .explosionResistance(1.0F)
+						.requiresCorrectToolForDrops()
         );
     }
 }

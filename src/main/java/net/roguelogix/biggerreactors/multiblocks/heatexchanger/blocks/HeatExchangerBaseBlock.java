@@ -33,7 +33,7 @@ public abstract class HeatExchangerBaseBlock extends PhosphophylliteBlock implem
     }
     
     public HeatExchangerBaseBlock(Properties properties) {
-        super(properties);
+        super(properties.requiresCorrectToolForDrops());
     }
     
     @Override
