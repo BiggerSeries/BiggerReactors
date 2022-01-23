@@ -27,8 +27,8 @@ import static net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock.ASSE
 @MethodsReturnNonnullByDefault
 public abstract class ReactorBaseBlock extends PhosphophylliteBlock implements IRectangularMultiblockBlock {
     
-    public static final Properties PROPERTIES_SOLID = Properties.of(Material.METAL).sound(SoundType.METAL).destroyTime(2).explosionResistance(10).isValidSpawn((a, b, c, d) -> false);
-    public static final Properties PROPERTIES_GLASS = Properties.of(Material.METAL).sound(SoundType.GLASS).noOcclusion().destroyTime(2).explosionResistance(2).isValidSpawn((a, b, c, d) -> false);
+    public static final Properties PROPERTIES_SOLID = Properties.of(Material.METAL).sound(SoundType.METAL).destroyTime(2).explosionResistance(10).isValidSpawn((a, b, c, d) -> false).requiresCorrectToolForDrops();
+    public static final Properties PROPERTIES_GLASS = Properties.of(Material.METAL).sound(SoundType.GLASS).noOcclusion().destroyTime(2).explosionResistance(2).isValidSpawn((a, b, c, d) -> false).requiresCorrectToolForDrops();
     
     public ReactorBaseBlock() {
         this(true);

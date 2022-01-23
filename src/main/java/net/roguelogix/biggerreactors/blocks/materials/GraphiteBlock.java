@@ -16,6 +16,7 @@ public class GraphiteBlock extends Block {
                 BlockBehaviour.Properties.of(Material.METAL)
                         .sound(SoundType.STONE)
                         .explosionResistance(1.0F)
+						.requiresCorrectToolForDrops()
         );
     }
 }
