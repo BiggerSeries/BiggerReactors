@@ -21,7 +21,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.EmptyHandler;
 import net.roguelogix.biggerreactors.Config;
-import net.roguelogix.biggerreactors.blocks.materials.BlutoniumBlock;
+import net.roguelogix.biggerreactors.blocks.materials.MaterialBlock;
 import net.roguelogix.biggerreactors.items.ingots.BlutoniumIngot;
 import net.roguelogix.biggerreactors.items.ingots.CyaniteIngot;
 import net.roguelogix.biggerreactors.items.ingots.UraniumIngot;
@@ -162,7 +162,7 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
                 stack.setCount(stack.getCount() - (int) (canAccept / Config.CONFIG.Reactor.FuelMBPerIngot));
             }
         }
-        if (stack.getItem().getTags().contains(uraniumBlockTag) || stack.getItem().getTags().contains(uraniumBlockTag) || stack.getItem() == BlutoniumBlock.INSTANCE.asItem()) {
+        if (stack.getItem().getTags().contains(uraniumBlockTag) || stack.getItem().getTags().contains(uraniumBlockTag) || stack.getItem() == MaterialBlock.BLUTONIUM.asItem()) {
             long maxAcceptable = controller().refuel(stack.getCount() * (Config.CONFIG.Reactor.FuelMBPerIngot * 9), true);
             long canAccept = maxAcceptable - (maxAcceptable % (Config.CONFIG.Reactor.FuelMBPerIngot * 9));
             controller().refuel(canAccept, simulate);
@@ -213,7 +213,7 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     public boolean isItemValid(int slot, ItemStack stack) {
         if (slot == FUEL_INSERT_SLOT) {
             return stack.getItem().getTags().contains(uraniumIngotTag) || stack.getItem() == BlutoniumIngot.INSTANCE
-                    || stack.getItem().getTags().contains(uraniumBlockTag) || stack.getItem() == BlutoniumBlock.INSTANCE.asItem();
+                    || stack.getItem().getTags().contains(uraniumBlockTag) || stack.getItem() == MaterialBlock.BLUTONIUM.asItem();
         } else if (slot == FUEL_SLOT) {
             return stack.getItem() == UraniumIngot.INSTANCE;
         } else {
