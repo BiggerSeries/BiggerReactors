@@ -20,6 +20,7 @@ public class UraniumOre extends Block implements IPhosphophylliteOre {
                 Properties.of(Material.METAL)
                         .sound(SoundType.STONE)
                         .explosionResistance(1.0F)
+                        .destroyTime(2.0f)
 						.requiresCorrectToolForDrops()
         );
     }
