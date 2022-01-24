@@ -38,7 +38,8 @@ public class CyaniteReprocessor extends BaseEntityBlock implements EntityBlock{
         super(Properties.of(Material.METAL)
                 .sound(SoundType.STONE)
                 .destroyTime(1.0F)
-                .explosionResistance(1.0F));
+                .explosionResistance(1.0F)
+                .requiresCorrectToolForDrops());
         this.registerDefaultState(this.getStateDefinition().any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(ENABLED, Boolean.FALSE));
