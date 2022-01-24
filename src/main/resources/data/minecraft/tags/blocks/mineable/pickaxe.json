@@ -1,4 +1,5 @@
 {
+	"replace": false,
 	"values": [
 		"biggerreactors:reactor_power_tap",
 		"biggerreactors:reactor_glass",
@@ -33,6 +34,6 @@
 		"biggerreactors:blutonium_block",
 		"biggerreactors:uranium_ore",
 		"biggerreactors:cyanite_block",
-		"biggerreactors:graphite_block",
+		"biggerreactors:graphite_block"
 	]
 }

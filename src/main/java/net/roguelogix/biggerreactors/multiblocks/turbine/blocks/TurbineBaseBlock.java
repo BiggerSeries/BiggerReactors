@@ -28,7 +28,7 @@ import static net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock.ASSE
 @MethodsReturnNonnullByDefault
 public abstract class TurbineBaseBlock extends PhosphophylliteBlock implements IRectangularMultiblockBlock, EntityBlock {
     public static final Block.Properties PROPERTIES_SOLID = Block.Properties.of(Material.METAL).sound(SoundType.METAL).destroyTime(2).explosionResistance(10).isValidSpawn((a, b, c, d) -> false).requiresCorrectToolForDrops();
-    public static final Block.Properties PROPERTIES_GLASS = Block.Properties.of(Material.METAL).sound(SoundType.METAL).noOcclusion().destroyTime(2).explosionResistance(2).isValidSpawn((a, b, c, d) -> false.requiresCorrectToolForDrops());
+    public static final Block.Properties PROPERTIES_GLASS = Block.Properties.of(Material.METAL).sound(SoundType.METAL).noOcclusion().destroyTime(2).explosionResistance(2).isValidSpawn((a, b, c, d) -> false).requiresCorrectToolForDrops();
     
     public TurbineBaseBlock() {
         this(true);
