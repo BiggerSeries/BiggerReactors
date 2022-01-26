@@ -243,11 +243,15 @@ public class ModernReactorSimulation implements IReactorSimulation {
     
     private void radiate() {
         
+        if (fuelTank.fuel() <= 0) {
+            return;
+        }
+        
         currentRod++;
-        if(currentRod >= controlRods.length){
+        if (currentRod >= controlRods.length) {
             currentRod = 0;
             currentY++;
-            if(currentY >= y){
+            if (currentY >= y) {
                 currentY = 0;
             }
         }

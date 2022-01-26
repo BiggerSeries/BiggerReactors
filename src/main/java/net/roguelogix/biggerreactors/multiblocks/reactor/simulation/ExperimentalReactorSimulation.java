@@ -210,6 +210,10 @@ public class ExperimentalReactorSimulation implements IReactorSimulation {
     
     private void radiate() {
         
+        if (fuelTank.fuel() <= 0) {
+            return;
+        }
+    
         // Base value for radiation production penalties. 0-1, caps at about 3000C;
         final double radiationPenaltyBase = Math.exp(-Config.CONFIG.Reactor.RadPenaltyShiftMultiplier * Math.exp(-0.001 * Config.CONFIG.Reactor.RadPenaltyRateMultiplier * (fuelHeat.temperature() - 273.15)));
         

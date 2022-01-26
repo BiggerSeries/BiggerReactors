@@ -474,8 +474,15 @@ public class MultithreadedReactorSimulation implements IReactorSimulation {
             RodBatch.Results results = batch.results();
             
             fuelRFAdded += results.fuelRFAdded;
+            batch.results.fuelRFAdded = 0;
             fuelRadAdded += results.fuelRadAdded;
+            batch.results.fuelRadAdded = 0;
             caseRFAdded += results.caseRFAdded;
+            batch.results.caseRFAdded = 0;
+        }
+    
+        if (fuelTank.fuel() <= 0) {
+            return;
         }
         
         // Base value for radiation production penalties. 0-1, caps at about 3000C;
