@@ -126,8 +126,8 @@ public class ReactorMultiblockController extends RectangularMultiblockController
                 BlockPos pos = manifold.getBlockPos();
                 
                 if (pos.getX() == minx || pos.getX() == maxx ||
-                        pos.getY() == miny || pos.getY() == maxy ||
-                        pos.getZ() == minz || pos.getZ() == maxz) {
+                            pos.getY() == miny || pos.getY() == maxy ||
+                            pos.getZ() == minz || pos.getZ() == maxz) {
                     var manifoldModule = manifold.multiblockModule();
                     for (int i = 0; i < 6; i++) {
                         final var direction = directions[i];
@@ -336,7 +336,9 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     
     @Override
     protected void onMerge(ReactorMultiblockController otherController) {
-        setActive(ReactorActivity.INACTIVE);
+        if (state != AssemblyState.PAUSED) {
+            setActive(ReactorActivity.INACTIVE);
+        }
         distributeFuel();
         otherController.distributeFuel();
     }
@@ -464,7 +466,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             final long startingPower = battery.stored();
             for (ReactorPowerTapTile powerPort : powerPorts) {
                 final long requested = powerPort.distributePower(startingPower, true);
-                if(requested > startingPower){
+                if (requested > startingPower) {
                     // bugged impl, ignoring
                     continue;
                 }
@@ -474,7 +476,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             float distributionMultiplier = Math.min(1f, (float) startingPower / (float) totalPowerRequested);
             for (ReactorPowerTapTile powerPort : powerPorts) {
                 long powerRequested = powerPort.distributePower(startingPower, true);
-                if(powerRequested > startingPower){
+                if (powerRequested > startingPower) {
                     // bugged impl, ignoring
                     continue;
                 }
