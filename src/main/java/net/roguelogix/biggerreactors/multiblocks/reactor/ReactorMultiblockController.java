@@ -305,6 +305,9 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         if (compound.contains("reactorState")) {
             reactorActivity = ReactorActivity.valueOf(compound.getString("reactorState").toUpperCase(Locale.US));
         }
+        if (compound.contains("autoEjectWaste")) {
+            autoEjectWaste = compound.getBoolean("autoEjectWaste");
+        }
         
         if (compound.contains("simulationData")) {
             simulationData = new PhosphophylliteCompound(compound.getByteArray("simulationData"));
@@ -321,6 +324,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         CompoundTag compound = new CompoundTag();
         {
             compound.putString("reactorState", reactorActivity.toString());
+            compound.putBoolean("autoEjectWaste", autoEjectWaste);
             if (simulation != null) {
                 var phosCompound = simulation.save();
                 if (phosCompound != null) {
@@ -795,43 +799,43 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     public String getDebugString() {
         if (simulation == null) {
             return super.getDebugString() +
-                    "State: " + reactorActivity.toString() + "\n" +
-                    "AutoEjectWaste: " + autoEjectWaste + "\n" +
-                    "Simulation is null" +
-                    "";
+                           "State: " + reactorActivity.toString() + "\n" +
+                           "AutoEjectWaste: " + autoEjectWaste + "\n" +
+                           "Simulation is null" +
+                           "";
         }
         final var battery = simulation.battery();
         return super.getDebugString() +
-                "State: " + reactorActivity.toString() + "\n" +
-                "AutoEjectWaste: " + autoEjectWaste + "\n" +
-                "FuelUsage: " + simulation.fuelTank().burnedLastTick() + "\n" +
-                "ReactantCapacity: " + simulation.fuelTank().capacity() + "\n" +
-                "TotalReactant: " + simulation.fuelTank().totalStored() + "\n" +
-                "PercentFull: " + (float) simulation.fuelTank().totalStored() * 100 / simulation.fuelTank().capacity() + "\n" +
-                "Fuel: " + simulation.fuelTank().fuel() + "\n" +
-                "Waste: " + simulation.fuelTank().waste() + "\n" +
-                "Fertility: " + simulation.fertility() + "\n" +
-                "FuelHeat: " + simulation.fuelHeat() + "\n" +
-                "ReactorHeat: " + simulation.stackHeat() + "\n" +
-                (
-                        battery != null ?
-                                (
-                                        "StoredPower: " + battery.stored() + "\n" +
-                                                "PowerProduction: " + battery.generatedLastTick() + "\n"
-                                ) : ""
-                ) +
-                (
-                        coolantTank != null ?
-                                (
-                                        "MBProduction: " + coolantTank.transitionedLastTick() + "\n" +
-                                                "CoolantTankSize: " + coolantTank.perSideCapacity() + "\n" +
-                                                "LiquidType: " + coolantTank.liquidType() + "\n" +
-                                                "Liquid: " + coolantTank.liquidAmount() + "\n" +
-                                                "VaporType: " + coolantTank.vaporType() + "\n" +
-                                                "Vapor: " + coolantTank.vaporAmount() + "\n"
-                                ) : ""
-                ) +
-                "";
+                       "State: " + reactorActivity.toString() + "\n" +
+                       "AutoEjectWaste: " + autoEjectWaste + "\n" +
+                       "FuelUsage: " + simulation.fuelTank().burnedLastTick() + "\n" +
+                       "ReactantCapacity: " + simulation.fuelTank().capacity() + "\n" +
+                       "TotalReactant: " + simulation.fuelTank().totalStored() + "\n" +
+                       "PercentFull: " + (float) simulation.fuelTank().totalStored() * 100 / simulation.fuelTank().capacity() + "\n" +
+                       "Fuel: " + simulation.fuelTank().fuel() + "\n" +
+                       "Waste: " + simulation.fuelTank().waste() + "\n" +
+                       "Fertility: " + simulation.fertility() + "\n" +
+                       "FuelHeat: " + simulation.fuelHeat() + "\n" +
+                       "ReactorHeat: " + simulation.stackHeat() + "\n" +
+                       (
+                               battery != null ?
+                                       (
+                                               "StoredPower: " + battery.stored() + "\n" +
+                                                       "PowerProduction: " + battery.generatedLastTick() + "\n"
+                                       ) : ""
+                       ) +
+                       (
+                               coolantTank != null ?
+                                       (
+                                               "MBProduction: " + coolantTank.transitionedLastTick() + "\n" +
+                                                       "CoolantTankSize: " + coolantTank.perSideCapacity() + "\n" +
+                                                       "LiquidType: " + coolantTank.liquidType() + "\n" +
+                                                       "Liquid: " + coolantTank.liquidAmount() + "\n" +
+                                                       "VaporType: " + coolantTank.vaporType() + "\n" +
+                                                       "Vapor: " + coolantTank.vaporAmount() + "\n"
+                                       ) : ""
+                       ) +
+                       "";
     }
     
     public synchronized void setAllControlRodLevels(double newLevel) {
