@@ -1,3 +1,14 @@
+# 1.18.1-0.6.0-beta.0.3
+
+## Reactor
+ - Ensure reactors dont reset themselves to inactive when reloading
+ - Fix waste ejection state saving
+ - Add out of fuel simulation bypass
+
+## Misc
+ - Tool requirements and block break times, they exist again
+ - Dont register tag for deleted fluid
+
 # 1.18.1-0.6.0-beta.0.2
 
 ## Reactor
