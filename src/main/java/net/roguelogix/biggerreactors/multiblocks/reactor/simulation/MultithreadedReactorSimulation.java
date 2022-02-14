@@ -436,7 +436,7 @@ public class MultithreadedReactorSimulation implements IReactorSimulation {
                             // Fuel absorptiveness is determined by control rod + a heat modifier.
                             // Starts at 1 and decays towards 0.05, reaching 0.6 at 1000 and just under 0.2 at 2000. Inflection point at about 500-600.
                             // Harder radiation makes absorption more difficult.
-                            final double baseAbsorption = fuelAbsorptionTemperatureCoefficient * (1f - (neutronHardness / fuelHardnessMultiplier));
+                            final double baseAbsorption = fuelAbsorptionTemperatureCoefficient * (1f - (neutronHardness * fuelHardnessMultiplier));
                             
                             // Some fuels are better at absorbing radiation than others
                             final double scaledAbsorption = baseAbsorption * FuelAbsorptionCoefficient * rayStep.length;
