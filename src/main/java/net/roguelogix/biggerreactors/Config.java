@@ -91,8 +91,6 @@ public class Config {
         @ConfigValue(range = "(0,)", advanced = true)
         public final double FuelFertilityDecayDenominatorInactiveMultiplier;
         @ConfigValue(range = "(0,)", advanced = true)
-        public final int RayCount;
-        @ConfigValue(range = "(0,)", advanced = true)
         public final double CasingHeatTransferRFMKT;
         @ConfigValue(range = "(0,)", advanced = true)
         public final double FuelToStackRFKTMultiplier;
@@ -106,8 +104,6 @@ public class Config {
         public final double PassiveCoolingTransferEfficiency;
         @ConfigValue(range = "(0,)", advanced = true)
         public final long CoolantTankAmountPerFuelRod;
-        @ConfigValue(range = "(0,)", advanced = true)
-        public final double RadiationBlocksToLive;
         @ConfigValue(range = "(0,)", advanced = true)
         public final double CaseFEPerUnitVolumeKelvin;
         @ConfigValue(range = "(0,)", advanced = true)
@@ -150,7 +146,6 @@ public class Config {
             FuelFertilityMinimumDecay = 0.1f;
             FuelFertilityDecayDenominator = 20;
             FuelFertilityDecayDenominatorInactiveMultiplier = 200;
-            RayCount = 32;
             CasingHeatTransferRFMKT = 0.6;
             FuelToStackRFKTMultiplier = 1.0;
             StackToCoolantRFMKT = 0.6;
@@ -158,7 +153,6 @@ public class Config {
             PassiveBatteryPerExternalBlock = 100_000;
             PassiveCoolingTransferEfficiency = 0.2f;
             CoolantTankAmountPerFuelRod = 10_000;
-            RadiationBlocksToLive = 4;
             CaseFEPerUnitVolumeKelvin = 10;
             RodFEPerUnitVolumeKelvin = 10;
             FuelReactivity = 1.05f;
