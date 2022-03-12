@@ -14,7 +14,7 @@ import net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.HeatExchan
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.HeatExchangerTerminalContainer;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.state.HeatExchangerState;
 import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
-import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.RegisterTile;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,17 +22,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-@RegisterTileEntity(name = "heat_exchanger_terminal")
 public class HeatExchangerTerminalTile extends HeatExchangerBaseTile implements MenuProvider, IHasUpdatableState<HeatExchangerState> {
     
-    @RegisterTileEntity.Type
-    public static BlockEntityType<?> TYPE;
+    @RegisterTile("heat_exchanger_terminal")
+    public static final BlockEntityType.BlockEntitySupplier<HeatExchangerTerminalTile> SUPPLIER = new RegisterTile.Producer<>(HeatExchangerTerminalTile::new);
     
-    @RegisterTileEntity.Supplier
-    public static final BlockEntityType.BlockEntitySupplier<HeatExchangerTerminalTile> SUPPLIER = HeatExchangerTerminalTile::new;
-    
-    public HeatExchangerTerminalTile(BlockPos pos, BlockState state) {
-        super(TYPE, pos, state);
+    public HeatExchangerTerminalTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
     }
     
     HeatExchangerState state = new HeatExchangerState(this);

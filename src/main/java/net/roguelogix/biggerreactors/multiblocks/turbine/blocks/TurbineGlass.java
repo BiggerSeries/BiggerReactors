@@ -30,7 +30,7 @@ public class TurbineGlass extends TurbineBaseBlock implements IAssemblyStateBloc
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new TurbineGlassTile(pos, state);
+        return TurbineGlassTile.SUPPLIER.create(pos, state);
     }
     
     @OnlyIn(Dist.CLIENT)

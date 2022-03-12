@@ -31,7 +31,7 @@ public class ReactorManifold extends ReactorBaseBlock implements IConnectedTextu
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new ReactorManifoldTile(pos, state);
+        return ReactorManifoldTile.SUPPLIER.create(pos, state);
     }
     
     @OnlyIn(Dist.CLIENT)

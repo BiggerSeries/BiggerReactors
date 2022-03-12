@@ -31,7 +31,7 @@ import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorAccessPort
 import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.multiblock.IOnAssemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.IOnDisassemblyTile;
-import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.RegisterTile;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
 import javax.annotation.Nonnull;
@@ -42,14 +42,10 @@ import static net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorAc
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-@RegisterTileEntity(name = "reactor_access_port")
 public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandler, MenuProvider, IHasUpdatableState<ReactorAccessPortState>, IOnAssemblyTile, IOnDisassemblyTile {
     
-    @RegisterTileEntity.Type
-    public static BlockEntityType<?> TYPE;
-    
-    @RegisterTileEntity.Supplier
-    public static final BlockEntityType.BlockEntitySupplier<ReactorAccessPortTile> SUPPLIER = ReactorAccessPortTile::new;
+    @RegisterTile("reactor_access_port")
+    public static final BlockEntityType.BlockEntitySupplier<ReactorAccessPortTile> SUPPLIER = new RegisterTile.Producer<>(ReactorAccessPortTile::new);
     
     private static final ResourceLocation uraniumIngotTag = new ResourceLocation("forge:ingots/uranium");
     private static final ResourceLocation uraniumBlockTag = new ResourceLocation("forge:storage_blocks/uranium");
@@ -58,8 +54,8 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     public static final int WASTE_SLOT = 1;
     public static final int FUEL_INSERT_SLOT = 2;
     
-    public ReactorAccessPortTile(BlockPos pos, BlockState state) {
-        super(TYPE, pos, state);
+    public ReactorAccessPortTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
     }
     
     private ReactorAccessPort.PortDirection direction = INLET;

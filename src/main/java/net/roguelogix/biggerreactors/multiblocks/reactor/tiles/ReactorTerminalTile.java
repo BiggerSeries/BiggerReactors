@@ -14,23 +14,19 @@ import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorTerminal;
 import net.roguelogix.biggerreactors.multiblocks.reactor.containers.ReactorTerminalContainer;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorState;
 import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
-import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.RegisterTile;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-@RegisterTileEntity(name = "reactor_terminal")
 public class ReactorTerminalTile extends ReactorBaseTile implements MenuProvider, IHasUpdatableState<ReactorState> {
     
-    @RegisterTileEntity.Type
-    public static BlockEntityType<?> TYPE;
+    @RegisterTile("reactor_terminal")
+    public static final BlockEntityType.BlockEntitySupplier<ReactorTerminalTile> SUPPLIER = new RegisterTile.Producer<>(ReactorTerminalTile::new);
     
-    @RegisterTileEntity.Supplier
-    public static final BlockEntityType.BlockEntitySupplier<ReactorTerminalTile> SUPPLIER = ReactorTerminalTile::new;
-    
-    public ReactorTerminalTile(BlockPos pos, BlockState state) {
+    public ReactorTerminalTile(BlockEntityType<?> TYPE, BlockPos pos, BlockState state) {
         super(TYPE, pos, state);
     }
     

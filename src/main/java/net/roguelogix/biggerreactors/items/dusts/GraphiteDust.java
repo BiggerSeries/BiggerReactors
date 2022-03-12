@@ -5,11 +5,10 @@ import net.roguelogix.phosphophyllite.registry.RegisterItem;
 
 import javax.annotation.Nonnull;
 
-@RegisterItem(name = "graphite_dust")
 public class GraphiteDust extends Item {
     
-    @RegisterItem.Instance
-    public static GraphiteDust INSTANCE;
+    @RegisterItem(name = "graphite_dust")
+    public static final GraphiteDust INSTANCE = new GraphiteDust(new Properties());
     
     @SuppressWarnings("unused")
     public GraphiteDust(@Nonnull Properties properties) {

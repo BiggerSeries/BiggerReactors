@@ -26,7 +26,7 @@ public class ReactorCasing extends ReactorBaseBlock implements IAssemblyStateBlo
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new ReactorCasingTile(pos, state);
+        return ReactorCasingTile.SUPPLIER.create(pos, state);
     }
     
     @Override

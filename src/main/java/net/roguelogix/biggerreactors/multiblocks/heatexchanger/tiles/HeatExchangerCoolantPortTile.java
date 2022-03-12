@@ -23,12 +23,12 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.HeatExchangerCoolantPortBlock;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.HeatExchangerCoolantPortContainer;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.state.HeatExchangerCoolantPortState;
+import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.fluids.FluidHandlerWrapper;
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
-import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.multiblock.IOnAssemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.IOnDisassemblyTile;
-import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.RegisterTile;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
 import javax.annotation.Nullable;
@@ -40,20 +40,17 @@ import static net.roguelogix.phosphophyllite.util.BlockStates.PORT_DIRECTION;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-@RegisterTileEntity(name = "heat_exchanger_coolant_port")
 public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implements IPhosphophylliteFluidHandler, IOnAssemblyTile, IOnDisassemblyTile, MenuProvider, IHasUpdatableState<HeatExchangerCoolantPortState> {
     
     public long lastCheckedTick;
     
-    @RegisterTileEntity.Type
-    public static BlockEntityType<?> TYPE;
+    @RegisterTile("heat_exchanger_coolant_port")
+    public static final BlockEntityType.BlockEntitySupplier<HeatExchangerCoolantPortTile> SUPPLIER = new RegisterTile.Producer<>(HeatExchangerCoolantPortTile::new);
     
-    @RegisterTileEntity.Supplier
-    public static final BlockEntityType.BlockEntitySupplier<HeatExchangerCoolantPortTile> SUPPLIER = HeatExchangerCoolantPortTile::new;
-    
-    public HeatExchangerCoolantPortTile(BlockPos pos, BlockState state) {
-        super(TYPE, pos, state);
+    public HeatExchangerCoolantPortTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
     }
+
 
 //    @CapabilityInject(IGasHandler.class)
 //    public static Capability<IGasHandler> GAS_HANDLER_CAPABILITY = null;

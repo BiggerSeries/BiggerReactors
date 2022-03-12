@@ -22,6 +22,6 @@ public class ReactorControlRod extends ReactorBaseBlock implements IAssemblyStat
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new ReactorControlRodTile(pos, state);
+        return ReactorControlRodTile.SUPPLIER.create(pos, state);
     }
 }

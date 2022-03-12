@@ -12,23 +12,19 @@ import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.util.LazyOptional;
 import net.roguelogix.biggerreactors.multiblocks.reactor.deps.ReactorPeripheral;
 import net.roguelogix.phosphophyllite.multiblock.IOnAssemblyTile;
-import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.RegisterTile;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-@RegisterTileEntity(name = "reactor_computer_port")
 public class ReactorComputerPortTile extends ReactorBaseTile implements IOnAssemblyTile {
     
-    @RegisterTileEntity.Type
-    public static BlockEntityType<?> TYPE;
+    @RegisterTile("reactor_computer_port")
+    public static final BlockEntityType.BlockEntitySupplier<ReactorComputerPortTile> SUPPLIER = new RegisterTile.Producer<>(ReactorComputerPortTile::new);
     
-    @RegisterTileEntity.Supplier
-    public static final BlockEntityType.BlockEntitySupplier<ReactorComputerPortTile> SUPPLIER = ReactorComputerPortTile::new;
-    
-    public ReactorComputerPortTile(BlockPos pos, BlockState state) {
+    public ReactorComputerPortTile(BlockEntityType<?> TYPE, BlockPos pos, BlockState state) {
         super(TYPE, pos, state);
     }
     

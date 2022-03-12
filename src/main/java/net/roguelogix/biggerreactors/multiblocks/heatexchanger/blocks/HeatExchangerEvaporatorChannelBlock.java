@@ -31,7 +31,7 @@ public class HeatExchangerEvaporatorChannelBlock extends HeatExchangerBaseBlock 
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new HeatExchangerEvaporatorChannelTile(pos, state);
+        return HeatExchangerEvaporatorChannelTile.SUPPLIER.create(pos, state);
     }
     
     @OnlyIn(Dist.CLIENT)

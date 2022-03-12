@@ -23,6 +23,6 @@ public class HeatExchangerComputerPortBlock extends HeatExchangerBaseBlock imple
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new HeatExchangerComputerPortTile(pos, state);
+        return HeatExchangerComputerPortTile.SUPPLIER.create(pos, state);
     }
 }

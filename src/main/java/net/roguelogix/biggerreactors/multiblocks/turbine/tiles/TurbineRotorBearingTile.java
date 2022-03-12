@@ -14,13 +14,13 @@ import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorBlad
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorShaft;
 import net.roguelogix.phosphophyllite.Phosphophyllite;
 import net.roguelogix.phosphophyllite.multiblock.IAssemblyAttemptedTile;
-import net.roguelogix.quartz.*;
-import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.RegisterTile;
 import net.roguelogix.phosphophyllite.repack.org.joml.AABBi;
 import net.roguelogix.phosphophyllite.repack.org.joml.Matrix4f;
 import net.roguelogix.phosphophyllite.repack.org.joml.Vector3i;
 import net.roguelogix.phosphophyllite.repack.org.joml.Vector4i;
 import net.roguelogix.phosphophyllite.threading.Queues;
+import net.roguelogix.quartz.*;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -30,18 +30,14 @@ import static net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock.ASSE
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@RegisterTileEntity(name = "turbine_rotor_bearing")
 public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssemblyAttemptedTile {
     
     public static boolean USE_QUARTZ = true;
     
-    @RegisterTileEntity.Type
-    public static BlockEntityType<TurbineRotorBearingTile> TYPE;
+    @RegisterTile("turbine_rotor_bearing")
+    public static final RegisterTile.Producer<TurbineRotorBearingTile> SUPPLIER = new RegisterTile.Producer<>(TurbineRotorBearingTile::new);
     
-    @RegisterTileEntity.Supplier
-    public static final BlockEntityType.BlockEntitySupplier<TurbineRotorBearingTile> SUPPLIER = TurbineRotorBearingTile::new;
-    
-    public TurbineRotorBearingTile(BlockPos pos, BlockState state) {
+    public TurbineRotorBearingTile(BlockEntityType<?> TYPE, BlockPos pos, BlockState state) {
         super(TYPE, pos, state);
     }
     

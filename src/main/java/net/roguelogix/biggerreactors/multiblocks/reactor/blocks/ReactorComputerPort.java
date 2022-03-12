@@ -26,6 +26,6 @@ public class ReactorComputerPort extends ReactorBaseBlock implements IAssemblySt
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new ReactorComputerPortTile(pos, state);
+        return ReactorComputerPortTile.SUPPLIER.create(pos, state);
     }
 }

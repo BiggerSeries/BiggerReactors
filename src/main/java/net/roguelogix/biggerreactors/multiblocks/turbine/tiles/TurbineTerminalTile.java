@@ -14,22 +14,19 @@ import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineTerminal;
 import net.roguelogix.biggerreactors.multiblocks.turbine.containers.TurbineTerminalContainer;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineState;
 import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
-import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.RegisterTile;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@RegisterTileEntity(name = "turbine_terminal")
 public class TurbineTerminalTile extends TurbineBaseTile implements MenuProvider, IHasUpdatableState<TurbineState> {
-    @RegisterTileEntity.Type
-    public static BlockEntityType<?> TYPE;
     
-    @RegisterTileEntity.Supplier
-    public static final BlockEntityType.BlockEntitySupplier<TurbineTerminalTile> SUPPLIER = TurbineTerminalTile::new;
+    @RegisterTile("turbine_terminal")
+    public static final BlockEntityType.BlockEntitySupplier<TurbineTerminalTile> SUPPLIER = new RegisterTile.Producer<>(TurbineTerminalTile::new);
     
-    public TurbineTerminalTile(BlockPos pos, BlockState state) {
+    public TurbineTerminalTile(BlockEntityType<?> TYPE, BlockPos pos, BlockState state) {
         super(TYPE, pos, state);
     }
     

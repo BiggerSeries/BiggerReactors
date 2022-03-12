@@ -31,7 +31,7 @@ import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.multiblock.IAssemblyAttemptedTile;
 import net.roguelogix.phosphophyllite.multiblock.IOnAssemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.IOnDisassemblyTile;
-import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.RegisterTile;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
 import javax.annotation.Nullable;
@@ -41,16 +41,12 @@ import static net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorAc
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-@RegisterTileEntity(name = "reactor_coolant_port")
 public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphophylliteFluidHandler, MenuProvider, IHasUpdatableState<ReactorCoolantPortState>, IAssemblyAttemptedTile, IOnAssemblyTile, IOnDisassemblyTile {
     
-    @RegisterTileEntity.Type
-    public static BlockEntityType<?> TYPE;
+    @RegisterTile("reactor_coolant_port")
+    public static final BlockEntityType.BlockEntitySupplier<ReactorCoolantPortTile> SUPPLIER = new RegisterTile.Producer<>(ReactorCoolantPortTile::new);
     
-    @RegisterTileEntity.Supplier
-    public static final BlockEntityType.BlockEntitySupplier<ReactorCoolantPortTile> SUPPLIER = ReactorCoolantPortTile::new;
-    
-    public ReactorCoolantPortTile(BlockPos pos, BlockState state) {
+    public ReactorCoolantPortTile(BlockEntityType<?> TYPE, BlockPos pos, BlockState state) {
         super(TYPE, pos, state);
     }
 

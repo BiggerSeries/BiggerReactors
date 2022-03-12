@@ -37,7 +37,7 @@ public class TurbineRotorShaft extends TurbineBaseBlock implements IAssemblyStat
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new TurbineRotorShaftTile(pos, state);
+        return TurbineRotorShaftTile.SUPPLIER.create(pos, state);
     }
     
     @SuppressWarnings("deprecation")

@@ -4,21 +4,18 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.RegisterTile;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-@RegisterTileEntity(name = "reactor_manifold")
 public class ReactorManifoldTile extends ReactorBaseTile {
-    @RegisterTileEntity.Type
-    public static BlockEntityType<?> TYPE;
     
-    @RegisterTileEntity.Supplier
-    public static final BlockEntityType.BlockEntitySupplier<ReactorManifoldTile> SUPPLIER = ReactorManifoldTile::new;
+    @RegisterTile("reactor_manifold")
+    public static final BlockEntityType.BlockEntitySupplier<ReactorManifoldTile> SUPPLIER = new RegisterTile.Producer<>(ReactorManifoldTile::new);
     
-    public ReactorManifoldTile(BlockPos pos, BlockState state) {
+    public ReactorManifoldTile(BlockEntityType<?> TYPE, BlockPos pos, BlockState state) {
         super(TYPE, pos, state);
     }
     

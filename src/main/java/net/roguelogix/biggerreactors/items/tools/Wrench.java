@@ -5,11 +5,10 @@ import net.roguelogix.phosphophyllite.registry.RegisterItem;
 
 import javax.annotation.Nonnull;
 
-@RegisterItem(name = "wrench")
 public class Wrench extends Item {
     
-    @RegisterItem.Instance
-    public static Wrench INSTANCE;
+    @RegisterItem(name = "wrench")
+    public static final Wrench INSTANCE = new Wrench(new Properties());
     
     @SuppressWarnings("unused")
     public Wrench(@Nonnull Properties properties) {

@@ -26,7 +26,7 @@ public class TurbineCasing extends TurbineBaseBlock implements IAssemblyStateBlo
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new TurbineCasingTile(pos, state);
+        return TurbineCasingTile.SUPPLIER.create(pos, state);
     }
     
     @Override

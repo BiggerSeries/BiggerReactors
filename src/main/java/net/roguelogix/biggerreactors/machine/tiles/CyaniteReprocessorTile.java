@@ -44,20 +44,16 @@ import net.roguelogix.biggerreactors.machine.tiles.impl.CyaniteReprocessorItemHa
 import net.roguelogix.biggerreactors.items.ingots.BlutoniumIngot;
 import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.debug.DebugTool;
-import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.RegisterTile;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-@RegisterTileEntity(name = "cyanite_reprocessor")
 public class CyaniteReprocessorTile extends BaseContainerBlockEntity implements MenuProvider, IHasUpdatableState<CyaniteReprocessorState> {
     
-    @RegisterTileEntity.Type
-    public static BlockEntityType<CyaniteReprocessorTile> INSTANCE;
-    
-    @RegisterTileEntity.Supplier
-    public static final BlockEntityType.BlockEntitySupplier<CyaniteReprocessorTile> SUPPLIER = CyaniteReprocessorTile::new;
+    @RegisterTile("cyanite_reprocessor")
+    public static final BlockEntityType.BlockEntitySupplier<CyaniteReprocessorTile> SUPPLIER = new RegisterTile.Producer<>(CyaniteReprocessorTile::new);
     
     /**
      * The (mostly) current state of the machine.
@@ -102,8 +98,8 @@ public class CyaniteReprocessorTile extends BaseContainerBlockEntity implements 
      */
     private ItemStack itemPresentLastTick = ItemStack.EMPTY;
     
-    public CyaniteReprocessorTile(BlockPos pos, BlockState state) {
-        super(CyaniteReprocessorTile.INSTANCE, pos, state);
+    public CyaniteReprocessorTile(BlockEntityType<CyaniteReprocessorTile> TYPE, BlockPos pos, BlockState state) {
+        super(TYPE, pos, state);
         this.clearContent();
         this.updateState();
     }

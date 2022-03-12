@@ -26,7 +26,7 @@ public class TurbineTerminal extends TurbineBaseBlock implements IAssemblyStateB
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new TurbineTerminalTile(pos, state);
+        return TurbineTerminalTile.SUPPLIER.create(pos, state);
     }
     
     @Override

@@ -5,22 +5,18 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.RegisterTile;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-@RegisterTileEntity(name = "reactor_fuel_rod")
 public class ReactorFuelRodTile extends ReactorBaseTile {
     
-    @RegisterTileEntity.Type
-    public static BlockEntityType<?> TYPE;
+    @RegisterTile("reactor_fuel_rod")
+    public static final BlockEntityType.BlockEntitySupplier<ReactorFuelRodTile> SUPPLIER = new RegisterTile.Producer<>(ReactorFuelRodTile::new);
     
-    @RegisterTileEntity.Supplier
-    public static final BlockEntityType.BlockEntitySupplier<ReactorFuelRodTile> SUPPLIER = ReactorFuelRodTile::new;
-    
-    public ReactorFuelRodTile(BlockPos pos, BlockState state) {
+    public ReactorFuelRodTile(BlockEntityType<?> TYPE, BlockPos pos, BlockState state) {
         super(TYPE, pos, state);
     }
     

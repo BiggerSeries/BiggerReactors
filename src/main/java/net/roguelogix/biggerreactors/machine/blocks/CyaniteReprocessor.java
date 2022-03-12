@@ -58,7 +58,7 @@ public class CyaniteReprocessor extends BaseEntityBlock implements EntityBlock{
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new CyaniteReprocessorTile(pos, state);
+        return CyaniteReprocessorTile.SUPPLIER.create(pos, state);
     }
     
     @Nullable

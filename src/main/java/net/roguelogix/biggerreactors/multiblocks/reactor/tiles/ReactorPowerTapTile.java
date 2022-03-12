@@ -16,7 +16,7 @@ import net.roguelogix.phosphophyllite.energy.IPhosphophylliteEnergyStorage;
 import net.roguelogix.phosphophyllite.multiblock.IOnAssemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.IOnDisassemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.MultiblockController;
-import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.RegisterTile;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
 import javax.annotation.Nullable;
@@ -26,15 +26,12 @@ import static net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorPo
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-@RegisterTileEntity(name = "reactor_power_tap")
 public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophylliteEnergyStorage, IOnAssemblyTile, IOnDisassemblyTile {
-    @RegisterTileEntity.Type
-    public static BlockEntityType<?> TYPE;
     
-    @RegisterTileEntity.Supplier
-    public static final BlockEntityType.BlockEntitySupplier<ReactorPowerTapTile> SUPPLIER = ReactorPowerTapTile::new;
+    @RegisterTile("reactor_power_tap")
+    public static final BlockEntityType.BlockEntitySupplier<ReactorPowerTapTile> SUPPLIER = new RegisterTile.Producer<>(ReactorPowerTapTile::new);
     
-    public ReactorPowerTapTile(BlockPos pos, BlockState state) {
+    public ReactorPowerTapTile(BlockEntityType<?> TYPE, BlockPos pos, BlockState state) {
         super(TYPE, pos, state);
     }
     

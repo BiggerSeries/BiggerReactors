@@ -4,22 +4,18 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.RegisterTile;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-@RegisterTileEntity(name = "reactor_casing")
 public class ReactorCasingTile extends ReactorBaseTile {
     
-    @RegisterTileEntity.Type
-    public static BlockEntityType<?> TYPE;
+    @RegisterTile("reactor_casing")
+    public static final BlockEntityType.BlockEntitySupplier<ReactorCasingTile> SUPPLIER = new RegisterTile.Producer<>(ReactorCasingTile::new);
     
-    @RegisterTileEntity.Supplier
-    public static final BlockEntityType.BlockEntitySupplier<ReactorCasingTile> SUPPLIER = ReactorCasingTile::new;
-    
-    public ReactorCasingTile(BlockPos pos, BlockState state) {
-        super(TYPE, pos, state);
+    public ReactorCasingTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
     }
 }

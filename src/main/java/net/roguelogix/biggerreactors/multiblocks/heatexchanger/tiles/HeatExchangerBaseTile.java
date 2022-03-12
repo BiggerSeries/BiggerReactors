@@ -14,7 +14,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 public class HeatExchangerBaseTile extends PhosphophylliteTile implements IRectangularMultiblockTile<HeatExchangerBaseTile, HeatExchangerMultiblockController> {
-    public HeatExchangerBaseTile(@Nonnull BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+    public HeatExchangerBaseTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
         super(tileEntityTypeIn, pos, state);
     }
     

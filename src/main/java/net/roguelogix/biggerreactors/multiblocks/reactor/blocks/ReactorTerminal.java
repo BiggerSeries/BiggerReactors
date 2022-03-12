@@ -24,7 +24,7 @@ public class ReactorTerminal extends ReactorBaseBlock implements IAssemblyStateB
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new ReactorTerminalTile(pos, state);
+        return ReactorTerminalTile.SUPPLIER.create(pos, state);
     }
     
     @Override

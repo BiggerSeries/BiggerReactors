@@ -28,6 +28,6 @@ public class HeatExchangerCasingBlock extends HeatExchangerBaseBlock implements 
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new HeatExchangerCasingTile(pos, state);
+        return HeatExchangerCasingTile.SUPPLIER.create(pos, state);
     }
 }

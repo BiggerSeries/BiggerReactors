@@ -16,23 +16,19 @@ import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorControlRo
 import net.roguelogix.biggerreactors.multiblocks.reactor.containers.ReactorControlRodContainer;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorControlRodState;
 import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
-import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.RegisterTile;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-@RegisterTileEntity(name = "reactor_control_rod")
 public class ReactorControlRodTile extends ReactorBaseTile implements MenuProvider, IHasUpdatableState<ReactorControlRodState> {
     
-    @RegisterTileEntity.Type
-    public static BlockEntityType<?> TYPE;
+    @RegisterTile("reactor_control_rod")
+    public static final BlockEntityType.BlockEntitySupplier<ReactorControlRodTile> SUPPLIER = new RegisterTile.Producer<>(ReactorControlRodTile::new);
     
-    @RegisterTileEntity.Supplier
-    public static final BlockEntityType.BlockEntitySupplier<ReactorControlRodTile> SUPPLIER = ReactorControlRodTile::new;
-    
-    public ReactorControlRodTile(BlockPos pos, BlockState state) {
+    public ReactorControlRodTile(BlockEntityType<?> TYPE, BlockPos pos, BlockState state) {
         super(TYPE, pos, state);
     }
     

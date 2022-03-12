@@ -29,7 +29,7 @@ import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
 import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.multiblock.IOnAssemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.IOnDisassemblyTile;
-import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.RegisterTile;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
 import javax.annotation.Nullable;
@@ -39,16 +39,12 @@ import static net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineCo
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@RegisterTileEntity(name = "turbine_coolant_port")
 public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphophylliteFluidHandler, MenuProvider, IHasUpdatableState<TurbineCoolantPortState>, IOnAssemblyTile, IOnDisassemblyTile {
     
-    @RegisterTileEntity.Type
-    public static BlockEntityType<?> TYPE;
+    @RegisterTile("turbine_coolant_port")
+    public static final BlockEntityType.BlockEntitySupplier<TurbineCoolantPortTile> SUPPLIER = new RegisterTile.Producer<>(TurbineCoolantPortTile::new);
     
-    @RegisterTileEntity.Supplier
-    public static final BlockEntityType.BlockEntitySupplier<TurbineCoolantPortTile> SUPPLIER = TurbineCoolantPortTile::new;
-    
-    public TurbineCoolantPortTile(BlockPos pos, BlockState state) {
+    public TurbineCoolantPortTile(BlockEntityType<?> TYPE, BlockPos pos, BlockState state) {
         super(TYPE, pos, state);
     }
 

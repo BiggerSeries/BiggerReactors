@@ -38,7 +38,7 @@ public class ReactorCoolantPort extends ReactorBaseBlock implements IAssemblySta
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new ReactorCoolantPortTile(pos, state);
+        return ReactorCoolantPortTile.SUPPLIER.create(pos, state);
     }
     
     @Override

@@ -31,7 +31,7 @@ public class HeatExchangerGlassBlock extends HeatExchangerBaseBlock implements I
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new HeatExchangerGlassTile(pos, state);
+        return HeatExchangerGlassTile.SUPPLIER.create(pos, state);
     }
     
     @OnlyIn(Dist.CLIENT)

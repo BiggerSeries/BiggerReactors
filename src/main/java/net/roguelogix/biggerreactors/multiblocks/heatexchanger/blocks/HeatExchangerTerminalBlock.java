@@ -23,6 +23,6 @@ public class HeatExchangerTerminalBlock extends HeatExchangerBaseBlock implement
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new HeatExchangerTerminalTile(pos, state);
+        return HeatExchangerTerminalTile.SUPPLIER.create(pos, state);
     }
 }

@@ -9,7 +9,7 @@ import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorBlad
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorShaft;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineShaftRotationState;
 import net.roguelogix.phosphophyllite.multiblock.IAssemblyAttemptedTile;
-import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.RegisterTile;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -18,16 +18,12 @@ import static net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineSha
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@RegisterTileEntity(name = "turbine_rotor_shaft")
 public class TurbineRotorShaftTile extends TurbineBaseTile implements IAssemblyAttemptedTile {
     
-    @RegisterTileEntity.Type
-    public static BlockEntityType<?> TYPE;
+    @RegisterTile("turbine_rotor_shaft")
+    public static final BlockEntityType.BlockEntitySupplier<TurbineRotorShaftTile> SUPPLIER = new RegisterTile.Producer<>(TurbineRotorShaftTile::new);
     
-    @RegisterTileEntity.Supplier
-    public static final BlockEntityType.BlockEntitySupplier<TurbineRotorShaftTile> SUPPLIER = TurbineRotorShaftTile::new;
-    
-    public TurbineRotorShaftTile(BlockPos pos, BlockState state) {
+    public TurbineRotorShaftTile(BlockEntityType<?> TYPE, BlockPos pos, BlockState state) {
         super(TYPE, pos, state);
     }
     

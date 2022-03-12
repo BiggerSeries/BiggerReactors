@@ -100,7 +100,7 @@ public class BiggerReactors {
                 HeatExchangerCoolantPortScreen::new);
     
     
-        BlockEntityRenderers.register(TurbineRotorBearingTile.TYPE, BladeRenderer::new);
+        BlockEntityRenderers.register(TurbineRotorBearingTile.SUPPLIER.TYPE, BladeRenderer::new);
     }
 
     public static long lastRenderTime = 0;

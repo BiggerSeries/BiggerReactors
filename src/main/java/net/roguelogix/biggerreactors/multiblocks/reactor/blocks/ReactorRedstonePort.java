@@ -35,7 +35,7 @@ public class ReactorRedstonePort extends ReactorBaseBlock implements IAssemblySt
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new ReactorRedstonePortTile(pos, state);
+        return ReactorRedstonePortTile.SUPPLIER.create(pos, state);
     }
     
     @Override

@@ -11,24 +11,21 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.util.LazyOptional;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.deps.HeatExchangerPeripheral;
-import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.RegisterTile;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-@RegisterTileEntity(name = "heat_exchanger_computer_port")
 public class HeatExchangerComputerPortTile extends HeatExchangerBaseTile {
     
-    @RegisterTileEntity.Type
-    public static BlockEntityType<?> TYPE;
     
-    @RegisterTileEntity.Supplier
-    public static final BlockEntityType.BlockEntitySupplier<HeatExchangerComputerPortTile> SUPPLIER = HeatExchangerComputerPortTile::new;
+    @RegisterTile("heat_exchanger_computer_port")
+    public static final BlockEntityType.BlockEntitySupplier<HeatExchangerComputerPortTile> SUPPLIER = new RegisterTile.Producer<>(HeatExchangerComputerPortTile::new);
     
-    public HeatExchangerComputerPortTile(BlockPos pos, BlockState state) {
-        super(TYPE, pos, state);
+    public HeatExchangerComputerPortTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
     }
     
     private static final Capability<IPeripheral> CAPABILITY_PERIPHERAL = CapabilityManager.get(new CapabilityToken<>(){});

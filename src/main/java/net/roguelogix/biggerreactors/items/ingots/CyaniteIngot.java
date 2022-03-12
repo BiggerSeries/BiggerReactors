@@ -5,11 +5,10 @@ import net.roguelogix.phosphophyllite.registry.RegisterItem;
 
 import javax.annotation.Nonnull;
 
-@RegisterItem(name = "cyanite_ingot")
 public class CyaniteIngot extends Item {
     
-    @RegisterItem.Instance
-    public static CyaniteIngot INSTANCE;
+    @RegisterItem(name = "cyanite_ingot")
+    public static final CyaniteIngot INSTANCE = new CyaniteIngot(new Properties());
     
     @SuppressWarnings("unused")
     public CyaniteIngot(@Nonnull Properties properties) {

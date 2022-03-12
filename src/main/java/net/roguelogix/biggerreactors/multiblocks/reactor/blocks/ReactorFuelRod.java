@@ -35,7 +35,7 @@ public class ReactorFuelRod extends ReactorBaseBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new ReactorFuelRodTile(pos, state);
+        return ReactorFuelRodTile.SUPPLIER.create(pos, state);
     }
     
     @OnlyIn(Dist.CLIENT)

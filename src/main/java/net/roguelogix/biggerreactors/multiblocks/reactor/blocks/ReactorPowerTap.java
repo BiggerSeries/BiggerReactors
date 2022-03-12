@@ -54,7 +54,7 @@ public class ReactorPowerTap extends ReactorBaseBlock implements IAssemblyStateB
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new ReactorPowerTapTile(pos, state);
+        return ReactorPowerTapTile.SUPPLIER.create(pos, state);
     }
     
     @Override

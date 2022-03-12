@@ -53,7 +53,7 @@ public class TurbineCoolantPort extends TurbineBaseBlock implements IAssemblySta
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new TurbineCoolantPortTile(pos, state);
+        return TurbineCoolantPortTile.SUPPLIER.create(pos, state);
     }
     
     @Override

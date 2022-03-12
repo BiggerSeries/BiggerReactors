@@ -26,6 +26,6 @@ public class TurbineComputerPort extends TurbineBaseBlock implements IAssemblySt
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new TurbineComputerPortTile(pos, state);
+        return TurbineComputerPortTile.SUPPLIER.create(pos, state);
     }
 }

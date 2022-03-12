@@ -42,7 +42,7 @@ public class ReactorAccessPort extends ReactorBaseBlock implements IAssemblyStat
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new ReactorAccessPortTile(pos, state);
+        return ReactorAccessPortTile.SUPPLIER.create(pos, state);
     }
     
     public enum PortDirection implements StringRepresentable {

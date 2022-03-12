@@ -22,7 +22,7 @@ import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.multiblock.IOnAssemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.IOnDisassemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.ITickableMultiblockTile;
-import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.RegisterTile;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
 import javax.annotation.Nullable;
@@ -30,18 +30,14 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-@RegisterTileEntity(name = "reactor_redstone_port")
 public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProvider, ITickableMultiblockTile, IHasUpdatableState<ReactorRedstonePortState>, IOnAssemblyTile, IOnDisassemblyTile {
     
-    @RegisterTileEntity.Type
-    public static BlockEntityType<?> TYPE;
-    
-    @RegisterTileEntity.Supplier
-    public static final BlockEntityType.BlockEntitySupplier<ReactorRedstonePortTile> SUPPLIER = ReactorRedstonePortTile::new;
+    @RegisterTile("reactor_redstone_port")
+    public static final BlockEntityType.BlockEntitySupplier<ReactorRedstonePortTile> SUPPLIER = new RegisterTile.Producer<>(ReactorRedstonePortTile::new);
     
     public final ReactorRedstonePortState reactorRedstonePortState = new ReactorRedstonePortState(this);
     
-    public ReactorRedstonePortTile(BlockPos pos, BlockState state) {
+    public ReactorRedstonePortTile(BlockEntityType<?> TYPE, BlockPos pos, BlockState state) {
         super(TYPE, pos, state);
     }
     

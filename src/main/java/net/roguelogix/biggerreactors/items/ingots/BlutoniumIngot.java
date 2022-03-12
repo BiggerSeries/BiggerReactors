@@ -5,11 +5,10 @@ import net.roguelogix.phosphophyllite.registry.RegisterItem;
 
 import javax.annotation.Nonnull;
 
-@RegisterItem(name = "blutonium_ingot")
 public class BlutoniumIngot extends Item {
     
-    @RegisterItem.Instance
-    public static BlutoniumIngot INSTANCE;
+    @RegisterItem(name = "blutonium_ingot")
+    public static final BlutoniumIngot INSTANCE = new BlutoniumIngot(new Properties());
     
     @SuppressWarnings("unused")
     public BlutoniumIngot(@Nonnull Properties properties) {

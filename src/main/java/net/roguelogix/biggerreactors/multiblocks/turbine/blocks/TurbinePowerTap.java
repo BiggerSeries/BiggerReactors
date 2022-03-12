@@ -55,7 +55,7 @@ public class TurbinePowerTap extends TurbineBaseBlock implements IAssemblyStateB
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new TurbinePowerTapTile(pos, state);
+        return TurbinePowerTapTile.SUPPLIER.create(pos, state);
     }
     
     @Override

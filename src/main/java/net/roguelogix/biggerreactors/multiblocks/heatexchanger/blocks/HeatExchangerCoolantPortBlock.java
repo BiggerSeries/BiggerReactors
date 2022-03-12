@@ -50,7 +50,7 @@ public class HeatExchangerCoolantPortBlock extends HeatExchangerBaseBlock implem
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new HeatExchangerCoolantPortTile(pos, state);
+        return HeatExchangerCoolantPortTile.SUPPLIER.create(pos, state);
     }
     
     @Override

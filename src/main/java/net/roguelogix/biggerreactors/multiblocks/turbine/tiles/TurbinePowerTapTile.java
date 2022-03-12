@@ -13,7 +13,7 @@ import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.roguelogix.phosphophyllite.energy.EnergyStorageWrapper;
 import net.roguelogix.phosphophyllite.energy.IPhosphophylliteEnergyStorage;
-import net.roguelogix.phosphophyllite.registry.RegisterTileEntity;
+import net.roguelogix.phosphophyllite.registry.RegisterTile;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -24,15 +24,12 @@ import static net.roguelogix.phosphophyllite.multiblock.MultiblockController.Ass
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@RegisterTileEntity(name = "turbine_power_tap")
 public class TurbinePowerTapTile extends TurbineBaseTile implements IPhosphophylliteEnergyStorage {
-    @RegisterTileEntity.Type
-    public static BlockEntityType<?> TYPE;
     
-    @RegisterTileEntity.Supplier
-    public static final BlockEntityType.BlockEntitySupplier<TurbinePowerTapTile> SUPPLIER = TurbinePowerTapTile::new;
+    @RegisterTile("turbine_power_tap")
+    public static final BlockEntityType.BlockEntitySupplier<TurbinePowerTapTile> SUPPLIER = new RegisterTile.Producer<>(TurbinePowerTapTile::new);
     
-    public TurbinePowerTapTile(BlockPos pos, BlockState state) {
+    public TurbinePowerTapTile(BlockEntityType<?> TYPE, BlockPos pos, BlockState state) {
         super(TYPE, pos, state);
     }
     

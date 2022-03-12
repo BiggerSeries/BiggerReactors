@@ -5,11 +5,11 @@ import net.roguelogix.phosphophyllite.registry.RegisterItem;
 
 import javax.annotation.Nonnull;
 
-@RegisterItem(name = "ludicrite_dust")
+
 public class LudicriteDust extends Item {
     
-    @RegisterItem.Instance
-    public static LudicriteDust INSTANCE;
+    @RegisterItem(name = "ludicrite_dust")
+    public static final LudicriteDust INSTANCE = new LudicriteDust(new Properties());
     
     @SuppressWarnings("unused")
     public LudicriteDust(@Nonnull Properties properties) {

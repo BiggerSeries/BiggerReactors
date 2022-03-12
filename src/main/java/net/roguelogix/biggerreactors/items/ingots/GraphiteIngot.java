@@ -5,11 +5,10 @@ import net.roguelogix.phosphophyllite.registry.RegisterItem;
 
 import javax.annotation.Nonnull;
 
-@RegisterItem(name = "graphite_ingot")
 public class GraphiteIngot extends Item {
     
-    @RegisterItem.Instance
-    public static GraphiteIngot INSTANCE;
+    @RegisterItem(name = "graphite_ingot")
+    public static final GraphiteIngot INSTANCE = new GraphiteIngot(new Properties());
     
     @SuppressWarnings("unused")
     public GraphiteIngot(@Nonnull Properties properties) {

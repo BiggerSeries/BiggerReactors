@@ -26,6 +26,6 @@ public class TurbineRotorBearing extends TurbineBaseBlock implements IAssemblySt
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new TurbineRotorBearingTile(pos, state);
+        return TurbineRotorBearingTile.SUPPLIER.create(pos, state);
     }
 }

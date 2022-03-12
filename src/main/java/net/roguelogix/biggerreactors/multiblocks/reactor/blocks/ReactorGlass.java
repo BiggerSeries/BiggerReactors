@@ -30,7 +30,7 @@ public class ReactorGlass extends ReactorBaseBlock implements IAssemblyStateBloc
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new ReactorGlassTile(pos, state);
+        return ReactorGlassTile.SUPPLIER.create(pos, state);
     }
     
     @OnlyIn(Dist.CLIENT)
