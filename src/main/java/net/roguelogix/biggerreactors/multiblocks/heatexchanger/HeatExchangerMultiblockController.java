@@ -266,7 +266,6 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
     
     @Override
     protected void onAssembled() {
-        onUnpaused();
         // its in kelvin, 150C and 20C
         double ambientTemperature = world.dimensionType().ultraWarm() ? 423.15 : 293.15; // TODO config these, also the end
         ambientHeatBody.setTemperature(ambientTemperature);
@@ -276,7 +275,7 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
     }
     
     @Override
-    protected void onUnpaused() {
+    protected void onValidationPassed() {
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         
         condenserHeatBody.setRfPerKelvin(condenserChannels.size() * Config.CONFIG.HeatExchanger.ChannelFEPerKelvinUnitVolume);

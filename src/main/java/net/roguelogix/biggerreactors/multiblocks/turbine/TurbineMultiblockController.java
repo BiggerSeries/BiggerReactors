@@ -321,7 +321,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     public final ArrayList<Vector4i> rotorConfiguration = new ArrayList<>();
     public Vec3i rotationAxis = new Vec3i(0, 0, 0);
     
-    ITurbineSimulation simulation = createSimulation();
+    private final ITurbineSimulation simulation = createSimulation();
     
     private static ITurbineSimulation createSimulation() {
         return new ModernTurbineSimulation();
@@ -333,12 +333,11 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     
     @Override
     protected void onAssembled() {
-        onUnpaused();
         simulation.reset();
     }
     
     @Override
-    protected void onUnpaused() {
+    protected void onValidationPassed() {
         for (TurbinePowerTapTile powerPort : powerTaps) {
             powerPort.updateOutputDirection();
         }

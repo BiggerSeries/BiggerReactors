@@ -310,6 +310,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         }
         
         if (compound.contains("simulationData")) {
+            simulation = null;
             simulationData = new PhosphophylliteCompound(compound.getByteArray("simulationData"));
         }
         if (compound.contains("coolantTankWrapper")) {
@@ -348,7 +349,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     }
     
     @Override
-    protected void onAssembled() {
+    protected void onValidationPassed() {
         SimulationDescription simulationDescription = new SimulationDescription();
         simulationDescription.setSize(maxCoord().x() - minCoord().x() - 1, maxCoord().y() - minCoord().y() - 1, maxCoord().z() - minCoord().z() - 1);
         Vector3i start = new Vector3i(1).add(minCoord());
@@ -376,6 +377,10 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             airProperties = ReactorModeratorRegistry.ModeratorProperties.EMPTY_MODERATOR;
         }
         simulationDescription.setDefaultIModeratorProperties(airProperties);
+        // if we already have a simulation, it is the reference
+        if(simulation != null){
+            simulationData = simulation.save();
+        }
         simulation = simulationDescription.build(Config.CONFIG.mode);
         if (simulationData != null) {
             simulation.load(simulationData);
@@ -413,16 +418,12 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     }
     
     @Override
-    protected void onUnpaused() {
-        onAssembled();
-    }
-    
-    @Override
     protected void onDisassembled() {
         distributeFuel();
         setActive(ReactorActivity.INACTIVE);
         if (simulation != null) {
             simulationData = simulation.save();
+            simulation = null;
         }
     }
     
