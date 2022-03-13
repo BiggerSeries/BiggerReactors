@@ -40,7 +40,7 @@ public class Config {
         
         {
             UraniumOreMaxClustersPerChunk = 5;
-            UraniumMaxOrePerCluster = 10;
+            UraniumMaxOrePerCluster = 6;
             UraniumOreMaxSpawnY = 50;
             EnableUraniumGeneration = true;
         }
