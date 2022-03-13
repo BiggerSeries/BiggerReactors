@@ -1,9 +1,11 @@
 package net.roguelogix.biggerreactors.registries;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.Tag;
-import net.minecraft.tags.TagCollection;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
@@ -133,29 +135,25 @@ public class FluidTransitionRegistry {
     
     private static final DataLoader<FluidTransitionJsonData> loader = new DataLoader<>(FluidTransitionJsonData.class);
     
-    public static void loadRegistry(TagCollection<Fluid> fluidTags) {
+    public static void loadRegistry() {
         BiggerReactors.LOGGER.info("Loading fluid transitions");
         liquidTransitions.clear();
         gasTransitions.clear();
         
-        List<FluidTransitionJsonData> data = loader.loadAll(new ResourceLocation("biggerreactors:transitions"));
+        final List<FluidTransitionJsonData> data = loader.loadAll(new ResourceLocation("biggerreactors:transitions"));
         BiggerReactors.LOGGER.info("Loaded " + data.size() + " transitions data entries");
         
         for (FluidTransitionJsonData transitionData : data) {
-            List<Fluid> liquids = new ArrayList<>();
+            final List<Fluid> liquids = new ArrayList<>();
             
             if (transitionData.liquidType.equals("tag")) {
-                Tag<Fluid> tag = fluidTags.getTag(transitionData.liquid);
-                
-                if (tag == null) {
-                    continue;
-                }
-                
-                for (Fluid fluid : tag.getValues()) {
+                var fluidTagOptional = Registry.FLUID.getTag(TagKey.create(Registry.FLUID_REGISTRY, transitionData.liquid));
+                fluidTagOptional.ifPresent(holders -> holders.forEach(fluidHolder -> {
+                    var fluid = fluidHolder.value();
                     if (fluid.isSource(fluid.defaultFluidState())) {
                         liquids.add(fluid);
                     }
-                }
+                }));
             } else {
                 if (ForgeRegistries.FLUIDS.containsKey(transitionData.liquid)) {
                     Fluid fluid = ForgeRegistries.FLUIDS.getValue(transitionData.liquid);
@@ -168,20 +166,16 @@ public class FluidTransitionRegistry {
                 continue;
             }
             
-            List<Fluid> gases = new ArrayList<>();
+            final List<Fluid> gases = new ArrayList<>();
             
             if (transitionData.gasType.equals("tag")) {
-                Tag<Fluid> tag = fluidTags.getTag(transitionData.gas);
-                
-                if (tag == null) {
-                    continue;
-                }
-                
-                for (Fluid fluid : tag.getValues()) {
+                var fluidTagOptional = Registry.FLUID.getTag(TagKey.create(Registry.FLUID_REGISTRY, transitionData.gas));
+                fluidTagOptional.ifPresent(holders -> holders.forEach(fluidHolder -> {
+                    var fluid = fluidHolder.value();
                     if (fluid.isSource(fluid.defaultFluidState())) {
                         gases.add(fluid);
                     }
-                }
+                }));
             } else {
                 if (ForgeRegistries.FLUIDS.containsKey(transitionData.gas)) {
                     Fluid fluid = ForgeRegistries.FLUIDS.getValue(transitionData.gas);

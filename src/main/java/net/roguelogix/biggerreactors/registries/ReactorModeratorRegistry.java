@@ -2,9 +2,7 @@ package net.roguelogix.biggerreactors.registries;
 
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.Tag;
-import net.minecraft.tags.TagCollection;
-import net.minecraft.tags.TagContainer;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -120,11 +118,7 @@ public class ReactorModeratorRegistry {
     
     private static final DataLoader<ReactorModeratorJsonData> dataLoader = new DataLoader<>(ReactorModeratorJsonData.class);
     
-    public static void loadRegistry(TagContainer tags) {
-        
-        TagCollection<Block> blockTags = tags.getOrEmpty(net.minecraft.core.Registry.BLOCK_REGISTRY);
-        TagCollection<Fluid> fluidTags = tags.getOrEmpty(Registry.FLUID_REGISTRY);
-        
+    public static void loadRegistry() {
         BiggerReactors.LOGGER.info("Loading reactor moderators");
         registry.clear();
         
@@ -137,14 +131,12 @@ public class ReactorModeratorRegistry {
             
             switch (moderatorData.type) {
                 case "tag": {
-                    Tag<Block> blockTag = blockTags.getTag(moderatorData.location);
-                    if (blockTag == null) {
-                        continue;
-                    }
-                    for (Block element : blockTag.getValues()) {
+                    var blockTagOptional = Registry.BLOCK.getTag(TagKey.create(Registry.BLOCK_REGISTRY, moderatorData.location));
+                    blockTagOptional.ifPresent(holders -> holders.forEach(blockHolder -> {
+                        var element = blockHolder.value();
                         registry.put(element, properties);
-                        BiggerReactors.LOGGER.debug("Loaded moderator " + element.getRegistryName().toString());
-                    }
+                        BiggerReactors.LOGGER.debug("Loaded moderator " + element.getRegistryName());
+                    }));
                     break;
                 }
                 case "registry":
@@ -155,15 +147,13 @@ public class ReactorModeratorRegistry {
                     }
                     break;
                 case "fluidtag": {
-                    Tag<Fluid> blockTag = fluidTags.getTag(moderatorData.location);
-                    if (blockTag == null) {
-                        continue;
-                    }
-                    for (Fluid element : blockTag.getValues()) {
+                    var fluidTagOptional = Registry.FLUID.getTag(TagKey.create(Registry.FLUID_REGISTRY, moderatorData.location));
+                    fluidTagOptional.ifPresent(holders -> holders.forEach(fluidHolder -> {
+                        var element = fluidHolder.value();
                         Block elementBlock = element.defaultFluidState().createLegacyBlock().getBlock();
                         registry.put(elementBlock, properties);
-                        BiggerReactors.LOGGER.debug("Loaded moderator " + element.getRegistryName().toString());
-                    }
+                        BiggerReactors.LOGGER.debug("Loaded moderator " + element.getRegistryName());
+                    }));
                     break;
                 }
                 case "fluid":

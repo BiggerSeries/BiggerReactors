@@ -1,14 +1,17 @@
 package net.roguelogix.biggerreactors.registries;
 
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.Tag;
-import net.minecraft.tags.TagCollection;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.phosphophyllite.data.DataLoader;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TurbineCoilRegistry {
     
@@ -57,7 +60,7 @@ public class TurbineCoilRegistry {
     
     private static final DataLoader<TurbineCoilJsonData> dataLoader = new DataLoader<>(TurbineCoilJsonData.class);
     
-    public static void loadRegistry(TagCollection<Block> blockTags) {
+    public static void loadRegistry() {
         BiggerReactors.LOGGER.info("Loading turbine coils");
         registry.clear();
         
@@ -69,14 +72,12 @@ public class TurbineCoilRegistry {
             CoilData properties = new CoilData(coilData.efficiency, coilData.bonus, coilData.extractionRate);
             
             if (coilData.type.equals("tag")) {
-                Tag<Block> blockTag = blockTags.getTag(coilData.location);
-                if (blockTag == null) {
-                    continue;
-                }
-                for (Block element : blockTag.getValues()) {
+                var blockTagOptional = Registry.BLOCK.getTag(TagKey.create(Registry.BLOCK_REGISTRY, coilData.location));
+                blockTagOptional.ifPresent(holders -> holders.forEach(blockHolder -> {
+                    var element = blockHolder.value();
                     registry.put(element, properties);
-                    BiggerReactors.LOGGER.debug("Loaded coil " + element.getRegistryName().toString());
-                }
+                    BiggerReactors.LOGGER.debug("Loaded moderator " + element.getRegistryName());
+                }));
             } else {
                 // cant check against air, because air is a valid thing to load
                 if (ForgeRegistries.BLOCKS.containsKey(coilData.location)) {

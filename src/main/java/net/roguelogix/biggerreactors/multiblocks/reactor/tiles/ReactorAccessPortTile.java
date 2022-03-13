@@ -3,14 +3,17 @@ package net.roguelogix.biggerreactors.multiblocks.reactor.tiles;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -47,8 +50,8 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     @RegisterTile("reactor_access_port")
     public static final BlockEntityType.BlockEntitySupplier<ReactorAccessPortTile> SUPPLIER = new RegisterTile.Producer<>(ReactorAccessPortTile::new);
     
-    private static final ResourceLocation uraniumIngotTag = new ResourceLocation("forge:ingots/uranium");
-    private static final ResourceLocation uraniumBlockTag = new ResourceLocation("forge:storage_blocks/uranium");
+    private static final TagKey<Item> uraniumIngotTag = TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation("forge:ingots/uranium"));
+    private static final TagKey<Item> uraniumBlockTag = TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation("forge:storage_blocks/uranium"));
     
     public static final int FUEL_SLOT = 0;
     public static final int WASTE_SLOT = 1;
@@ -150,7 +153,7 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
             return stack;
         }
         stack = stack.copy();
-        if (stack.getItem().getTags().contains(uraniumIngotTag) || stack.getItem().getTags().contains(uraniumIngotTag) || stack.getItem() == BlutoniumIngot.INSTANCE) {
+        if (stack.getItem().builtInRegistryHolder().is(uraniumIngotTag) || stack.getItem().builtInRegistryHolder().is(uraniumIngotTag) || stack.getItem() == BlutoniumIngot.INSTANCE) {
             long maxAcceptable = controller().refuel(stack.getCount() * Config.CONFIG.Reactor.FuelMBPerIngot, true);
             long canAccept = maxAcceptable - (maxAcceptable % Config.CONFIG.Reactor.FuelMBPerIngot);
             controller().refuel(canAccept, simulate);
@@ -158,7 +161,7 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
                 stack.setCount(stack.getCount() - (int) (canAccept / Config.CONFIG.Reactor.FuelMBPerIngot));
             }
         }
-        if (stack.getItem().getTags().contains(uraniumBlockTag) || stack.getItem().getTags().contains(uraniumBlockTag) || stack.getItem() == MaterialBlock.BLUTONIUM.asItem()) {
+        if (stack.getItem().builtInRegistryHolder().is(uraniumBlockTag) || stack.getItem().builtInRegistryHolder().is(uraniumBlockTag) || stack.getItem() == MaterialBlock.BLUTONIUM.asItem()) {
             long maxAcceptable = controller().refuel(stack.getCount() * (Config.CONFIG.Reactor.FuelMBPerIngot * 9), true);
             long canAccept = maxAcceptable - (maxAcceptable % (Config.CONFIG.Reactor.FuelMBPerIngot * 9));
             controller().refuel(canAccept, simulate);
@@ -208,8 +211,8 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     @Override
     public boolean isItemValid(int slot, ItemStack stack) {
         if (slot == FUEL_INSERT_SLOT) {
-            return stack.getItem().getTags().contains(uraniumIngotTag) || stack.getItem() == BlutoniumIngot.INSTANCE
-                    || stack.getItem().getTags().contains(uraniumBlockTag) || stack.getItem() == MaterialBlock.BLUTONIUM.asItem();
+            return stack.getItem().builtInRegistryHolder().is(uraniumIngotTag) || stack.getItem() == BlutoniumIngot.INSTANCE
+                    || stack.getItem().builtInRegistryHolder().is(uraniumBlockTag) || stack.getItem() == MaterialBlock.BLUTONIUM.asItem();
         } else if (slot == FUEL_SLOT) {
             return stack.getItem() == UraniumIngot.INSTANCE;
         } else {

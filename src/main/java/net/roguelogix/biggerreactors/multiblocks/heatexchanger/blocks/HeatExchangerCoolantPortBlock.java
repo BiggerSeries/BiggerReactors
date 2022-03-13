@@ -18,6 +18,7 @@ import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchang
 import net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock;
 import net.roguelogix.phosphophyllite.multiblock.rectangular.IFaceDirectionBlock;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
+import net.roguelogix.phosphophyllite.util.Util;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -56,8 +57,7 @@ public class HeatExchangerCoolantPortBlock extends HeatExchangerBaseBlock implem
     @Override
     public InteractionResult onUse(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
         if (handIn == InteractionHand.MAIN_HAND) {
-            Set<ResourceLocation> tags = player.getMainHandItem().getItem().getTags();
-            if (tags.contains(new ResourceLocation("forge:tools/wrench")) || tags.contains(new ResourceLocation("forge:wrenches"))) {
+            if (Util.isWrench(player.getMainHandItem().getItem())) {
                 boolean direction = !state.getValue(PORT_DIRECTION);
                 state = state.setValue(PORT_DIRECTION, direction);
                 worldIn.setBlock(pos, state, 3);

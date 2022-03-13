@@ -2,13 +2,10 @@ package net.roguelogix.biggerreactors;
 
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
-import net.minecraft.server.ServerResources;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.TagsUpdatedEvent;
-import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -31,6 +28,7 @@ import net.roguelogix.biggerreactors.multiblocks.turbine.tiles.TurbineRotorBeari
 import net.roguelogix.biggerreactors.registries.FluidTransitionRegistry;
 import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
 import net.roguelogix.biggerreactors.registries.TurbineCoilRegistry;
+import net.roguelogix.phosphophyllite.Phosphophyllite;
 import net.roguelogix.phosphophyllite.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,31 +46,16 @@ public class BiggerReactors {
 //        SimBench.main(null);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onClientSetup);
         MinecraftForge.EVENT_BUS.addListener(this::onTagsUpdatedEvent);
-        MinecraftForge.EVENT_BUS.addListener(this::onAddReloadListenerEvent);
-        MinecraftForge.EVENT_BUS.addListener(this::onServerStopped);
         if (FMLEnvironment.dist == Dist.CLIENT) {
             MinecraftForge.EVENT_BUS.addListener(this::onRenderWorldLast);
         }
         version = FMLLoader.getLoadingModList().getModFileById(modid).versionString();
     }
-
-    public static ServerResources dataPackRegistries;
-
-    public void onAddReloadListenerEvent(AddReloadListenerEvent reloadListenerEvent) {
-        dataPackRegistries = reloadListenerEvent.getDataPackRegistries();
-    }
     
-    public void onServerStopped(ServerStoppedEvent serverStoppedEvent){
-        dataPackRegistries = null;
-    }
-
     public void onTagsUpdatedEvent(final TagsUpdatedEvent tagsUpdatedEvent) {
-        if(dataPackRegistries == null){
-            return;
-        }
-        ReactorModeratorRegistry.loadRegistry(tagsUpdatedEvent.getTagManager());
-        TurbineCoilRegistry.loadRegistry(tagsUpdatedEvent.getTagManager().getOrEmpty(net.minecraft.core.Registry.BLOCK_REGISTRY));
-        FluidTransitionRegistry.loadRegistry(tagsUpdatedEvent.getTagManager().getOrEmpty(net.minecraft.core.Registry.FLUID_REGISTRY));
+        ReactorModeratorRegistry.loadRegistry();
+        TurbineCoilRegistry.loadRegistry();
+        FluidTransitionRegistry.loadRegistry();
     }
 
     public void onClientSetup(final FMLClientSetupEvent e) {
