@@ -1,3 +1,21 @@
+# 1.18.2-0.6.0-beta.1
+ - 1.18.2
+
+## Reactor
+ - handle re-validation
+
+## Turbine
+ - handle re-validation
+ - coolant port renamed to fluid port
+
+## Heat Exchanger
+ - handle re-validation
+ - coolant port renamed to fluid port
+
+## Misc
+ - lower default uranium generation amount
+ - better reload handling
+
 # 1.18.1-0.6.0-beta.0.3
 
 ## Reactor
