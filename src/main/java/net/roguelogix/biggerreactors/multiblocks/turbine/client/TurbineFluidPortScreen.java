@@ -10,24 +10,24 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.client.Biselector;
 import net.roguelogix.biggerreactors.client.SelectorColors;
-import net.roguelogix.biggerreactors.multiblocks.turbine.containers.TurbineCoolantPortContainer;
-import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineCoolantPortState;
+import net.roguelogix.biggerreactors.multiblocks.turbine.containers.TurbineFluidPortContainer;
+import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineFluidPortState;
 import net.roguelogix.phosphophyllite.client.gui.screens.PhosphophylliteScreen;
 
 import javax.annotation.Nonnull;
 
 @OnlyIn(Dist.CLIENT)
-public class TurbineCoolantPortScreen extends PhosphophylliteScreen<TurbineCoolantPortContainer> {
+public class TurbineFluidPortScreen extends PhosphophylliteScreen<TurbineFluidPortContainer> {
 
-    private static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(BiggerReactors.modid, "textures/screen/turbine_coolant_port.png");
+    private static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(BiggerReactors.modid, "textures/screen/turbine_fluid_port.png");
 
-    private TurbineCoolantPortState turbineCoolantPortState;
+    private TurbineFluidPortState turbineFluidPortState;
 
-    public TurbineCoolantPortScreen(TurbineCoolantPortContainer container, Inventory playerInventory, Component title) {
+    public TurbineFluidPortScreen(TurbineFluidPortContainer container, Inventory playerInventory, Component title) {
         super(container, playerInventory, title, DEFAULT_TEXTURE, 142, 40);
 
         // Initialize access port state.
-        turbineCoolantPortState = (TurbineCoolantPortState) this.getMenu().getGuiPacket();
+        turbineFluidPortState = (TurbineFluidPortState) this.getMenu().getGuiPacket();
     }
 
     /**
@@ -55,8 +55,8 @@ public class TurbineCoolantPortScreen extends PhosphophylliteScreen<TurbineCoola
      */
     public void initControls() {
         // (Left) Direction toggle:
-        Biselector<TurbineCoolantPortContainer> directionToggle = new Biselector<>(this, 8, 18, new TranslatableComponent("screen.biggerreactors.turbine_coolant_port.direction_toggle.tooltip"),
-                () -> turbineCoolantPortState.direction ? 0 : 1, SelectorColors.RED, SelectorColors.BLUE);
+        Biselector<TurbineFluidPortContainer> directionToggle = new Biselector<>(this, 8, 18, new TranslatableComponent("screen.biggerreactors.turbine_fluid_port.direction_toggle.tooltip"),
+                () -> turbineFluidPortState.direction ? 0 : 1, SelectorColors.RED, SelectorColors.BLUE);
         directionToggle.onMouseReleased = (mX, mY, btn) -> {
             // Click logic.
             this.getMenu().executeRequest("setDirection", directionToggle.getState() == 0 ? 1 : 0);
@@ -78,13 +78,13 @@ public class TurbineCoolantPortScreen extends PhosphophylliteScreen<TurbineCoola
         super.render(poseStack, mouseX, mouseY, partialTicks);
 
         // Render text for input/output direction:
-        if (turbineCoolantPortState.direction) {
+        if (turbineFluidPortState.direction) {
             // Text for an inlet:
-            this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.turbine_coolant_port.direction_toggle.input").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
+            this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.turbine_fluid_port.direction_toggle.input").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
 
         } else {
             // Text for an outlet:
-            this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.turbine_coolant_port.direction_toggle.output").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
+            this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.turbine_fluid_port.direction_toggle.output").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
         }
     }
 }

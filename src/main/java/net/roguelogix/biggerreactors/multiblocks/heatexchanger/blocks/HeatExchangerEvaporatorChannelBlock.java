@@ -53,7 +53,7 @@ public class HeatExchangerEvaporatorChannelBlock extends HeatExchangerBaseBlock 
     
     @Override
     public boolean connectToBlock(Block block) {
-        return IConnectedTexture.super.connectToBlock(block) || block == HeatExchangerCoolantPortBlock.INSTANCE;
+        return IConnectedTexture.super.connectToBlock(block) || block == HeatExchangerFluidPortBlock.INSTANCE;
     }
     
     @Override

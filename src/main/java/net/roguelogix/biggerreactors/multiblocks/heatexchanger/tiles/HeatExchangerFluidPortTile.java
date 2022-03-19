@@ -20,9 +20,9 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.HeatExchangerCoolantPortBlock;
-import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.HeatExchangerCoolantPortContainer;
-import net.roguelogix.biggerreactors.multiblocks.heatexchanger.state.HeatExchangerCoolantPortState;
+import net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.HeatExchangerFluidPortBlock;
+import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.HeatExchangerFluidPortContainer;
+import net.roguelogix.biggerreactors.multiblocks.heatexchanger.state.HeatExchangerFluidPortState;
 import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.fluids.FluidHandlerWrapper;
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
@@ -34,20 +34,20 @@ import net.roguelogix.phosphophyllite.util.BlockStates;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import static net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.HeatExchangerCoolantPortBlock.CONDENSER;
+import static net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.HeatExchangerFluidPortBlock.CONDENSER;
 import static net.roguelogix.phosphophyllite.util.BlockStates.PORT_DIRECTION;
 
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implements IPhosphophylliteFluidHandler, IOnAssemblyTile, IOnDisassemblyTile, MenuProvider, IHasUpdatableState<HeatExchangerCoolantPortState> {
+public class HeatExchangerFluidPortTile extends HeatExchangerBaseTile implements IPhosphophylliteFluidHandler, IOnAssemblyTile, IOnDisassemblyTile, MenuProvider, IHasUpdatableState<HeatExchangerFluidPortState> {
     
     public long lastCheckedTick;
     
-    @RegisterTile("heat_exchanger_coolant_port")
-    public static final BlockEntityType.BlockEntitySupplier<HeatExchangerCoolantPortTile> SUPPLIER = new RegisterTile.Producer<>(HeatExchangerCoolantPortTile::new);
+    @RegisterTile("heat_exchanger_fluid_port")
+    public static final BlockEntityType.BlockEntitySupplier<HeatExchangerFluidPortTile> SUPPLIER = new RegisterTile.Producer<>(HeatExchangerFluidPortTile::new);
     
-    public HeatExchangerCoolantPortTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+    public HeatExchangerFluidPortTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
         super(tileEntityTypeIn, pos, state);
     }
 
@@ -250,10 +250,10 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
         neighborChanged();
     }
     
-    private final HeatExchangerCoolantPortState state = new HeatExchangerCoolantPortState(this);
+    private final HeatExchangerFluidPortState state = new HeatExchangerFluidPortState(this);
     
     @Override
-    public HeatExchangerCoolantPortState getState() {
+    public HeatExchangerFluidPortState getState() {
         return state;
     }
     
@@ -265,13 +265,13 @@ public class HeatExchangerCoolantPortTile extends HeatExchangerBaseTile implemen
     
     @Override
     public Component getDisplayName() {
-        return new TranslatableComponent(HeatExchangerCoolantPortBlock.INSTANCE.getDescriptionId());
+        return new TranslatableComponent(HeatExchangerFluidPortBlock.INSTANCE.getDescriptionId());
     }
     
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
-        return new HeatExchangerCoolantPortContainer(windowId, this.worldPosition, player);
+        return new HeatExchangerFluidPortContainer(windowId, this.worldPosition, player);
     }
     
     public void runRequest(String requestName, Object requestData) {

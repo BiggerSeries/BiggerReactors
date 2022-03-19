@@ -6,8 +6,8 @@
     "CPC"
   ],
   "key": {
-    "C" : {
-      "item": "biggerreactors:turbine_casing"
+    "C": {
+      "item": "biggerreactors:heat_exchanger_casing"
     },
     "I": {
       "item": "minecraft:iron_ingot"
@@ -20,6 +20,6 @@
     }
   },
   "result": {
-    "item": "biggerreactors:turbine_coolant_port"
+    "item": "biggerreactors:heat_exchanger_fluid_port"
   }
 }

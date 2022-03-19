@@ -10,24 +10,24 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.client.Biselector;
 import net.roguelogix.biggerreactors.client.SelectorColors;
-import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.HeatExchangerCoolantPortContainer;
-import net.roguelogix.biggerreactors.multiblocks.heatexchanger.state.HeatExchangerCoolantPortState;
+import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.HeatExchangerFluidPortContainer;
+import net.roguelogix.biggerreactors.multiblocks.heatexchanger.state.HeatExchangerFluidPortState;
 import net.roguelogix.phosphophyllite.client.gui.screens.PhosphophylliteScreen;
 
 import javax.annotation.Nonnull;
 
 @OnlyIn(Dist.CLIENT)
-public class HeatExchangerCoolantPortScreen extends PhosphophylliteScreen<HeatExchangerCoolantPortContainer> {
+public class HeatExchangerFluidPortScreen extends PhosphophylliteScreen<HeatExchangerFluidPortContainer> {
 
-    private static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(BiggerReactors.modid, "textures/screen/heat_exchanger_coolant_port.png");
+    private static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(BiggerReactors.modid, "textures/screen/heat_exchanger_fluid_port.png");
 
-    private HeatExchangerCoolantPortState heatExchangerCoolantPortState;
+    private HeatExchangerFluidPortState heatExchangerFluidPortState;
 
-    public HeatExchangerCoolantPortScreen(HeatExchangerCoolantPortContainer container, Inventory playerInventory, Component title) {
+    public HeatExchangerFluidPortScreen(HeatExchangerFluidPortContainer container, Inventory playerInventory, Component title) {
         super(container, playerInventory, title, DEFAULT_TEXTURE, 176, 52);
 
         // Initialize access port state.
-        heatExchangerCoolantPortState = (HeatExchangerCoolantPortState) this.getMenu().getGuiPacket();
+        heatExchangerFluidPortState = (HeatExchangerFluidPortState) this.getMenu().getGuiPacket();
     }
 
     /**
@@ -55,8 +55,8 @@ public class HeatExchangerCoolantPortScreen extends PhosphophylliteScreen<HeatEx
      */
     public void initControls() {
         // (Left) Direction toggle:
-        Biselector<HeatExchangerCoolantPortContainer> directionToggle = new Biselector<>(this, 8, 18, new TranslatableComponent("screen.biggerreactors.heat_exchanger_coolant_port.direction_toggle.tooltip"),
-                () -> heatExchangerCoolantPortState.direction ? 0 : 1, SelectorColors.CYAN, SelectorColors.RED);
+        Biselector<HeatExchangerFluidPortContainer> directionToggle = new Biselector<>(this, 8, 18, new TranslatableComponent("screen.biggerreactors.heat_exchanger_fluid_port.direction_toggle.tooltip"),
+                () -> heatExchangerFluidPortState.direction ? 0 : 1, SelectorColors.CYAN, SelectorColors.RED);
         directionToggle.onMouseReleased = (mX, mY, btn) -> {
             // Click logic.
             this.getMenu().executeRequest("setDirection", directionToggle.getState() == 0 ? 1 : 0);
@@ -78,21 +78,21 @@ public class HeatExchangerCoolantPortScreen extends PhosphophylliteScreen<HeatEx
         super.render(poseStack, mouseX, mouseY, partialTicks);
 
         // Render text to show what channel this is connected to.
-        if (heatExchangerCoolantPortState.condenser) {
+        if (heatExchangerFluidPortState.condenser) {
             // Text for when connected to a condenser:
-            this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.heat_exchanger_coolant_port.channel_type.condenser").getString(), this.getGuiLeft() + 8, this.getGuiTop() + 37, 4210752);
+            this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.heat_exchanger_fluid_port.channel_type.condenser").getString(), this.getGuiLeft() + 8, this.getGuiTop() + 37, 4210752);
         } else {
             // Text for when connected to an evaporator.
-            this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.heat_exchanger_coolant_port.channel_type.evaporator").getString(), this.getGuiLeft() + 8, this.getGuiTop() + 37, 4210752);
+            this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.heat_exchanger_fluid_port.channel_type.evaporator").getString(), this.getGuiLeft() + 8, this.getGuiTop() + 37, 4210752);
         }
 
         // Render text for input/output direction:
-        if (heatExchangerCoolantPortState.direction) {
+        if (heatExchangerFluidPortState.direction) {
             // Text for an inlet:
-            this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.heat_exchanger_coolant_port.direction_toggle.input").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
+            this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.heat_exchanger_fluid_port.direction_toggle.input").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
         } else {
             // Text for an outlet:
-            this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.heat_exchanger_coolant_port.direction_toggle.output").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
+            this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.heat_exchanger_fluid_port.direction_toggle.output").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
         }
     }
 }

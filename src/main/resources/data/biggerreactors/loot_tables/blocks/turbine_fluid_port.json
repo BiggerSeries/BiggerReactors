@@ -7,7 +7,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "biggerreactors:heat_exchanger_coolant_port"
+          "name": "biggerreactors:turbine_fluid_port"
         }
       ],
       "conditions": [

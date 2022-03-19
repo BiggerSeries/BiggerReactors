@@ -14,7 +14,7 @@ import net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.HeatExchan
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.HeatExchangerCasingBlock;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerBaseTile;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerCondenserChannelTile;
-import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerCoolantPortTile;
+import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerFluidPortTile;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerEvaporatorChannelTile;
 import net.roguelogix.biggerreactors.util.FluidTransitionTank;
 import net.roguelogix.phosphophyllite.Phosphophyllite;
@@ -51,7 +51,7 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
     
     public final Set<HeatExchangerCondenserChannelTile> condenserChannels = new LinkedHashSet<>();
     public final Set<HeatExchangerEvaporatorChannelTile> evaporatorChannels = new LinkedHashSet<>();
-    private final Set<HeatExchangerCoolantPortTile> coolantPorts = new LinkedHashSet<>();
+    private final Set<HeatExchangerFluidPortTile> fluidPorts = new LinkedHashSet<>();
     
     private boolean validate() {
         //TODO lang file the errors
@@ -60,7 +60,7 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
             throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.heat_exchanger.missing_channel_type"));
         }
         
-        if (coolantPorts.size() != 4) {
+        if (fluidPorts.size() != 4) {
             throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.heat_exchanger.invalid_port_count"));
         }
         
@@ -69,8 +69,8 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         int condenserPorts = 0;
         int evaporatorPorts = 0;
         
-        for (HeatExchangerCoolantPortTile coolantPort : coolantPorts) {
-            BlockPos portPos = coolantPort.getBlockPos();
+        for (HeatExchangerFluidPortTile fluidPort : fluidPorts) {
+            BlockPos portPos = fluidPort.getBlockPos();
             boolean channelFound = false;
             for (Direction value : Direction.values()) {
                 mutableBlockPos.set(portPos);
@@ -87,7 +87,7 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
                 }
             }
             if (!channelFound) {
-                throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.heat_exchanger.coolant_port_unconnected", portPos.getX(), portPos.getY(), portPos.getZ()));
+                throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.heat_exchanger.fluid_port_unconnected", portPos.getX(), portPos.getY(), portPos.getZ()));
             }
         }
         if (condenserPorts != 2 || evaporatorPorts != 2) {
@@ -101,13 +101,13 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         long tick = Phosphophyllite.tickNumber();
         
         // *not that i dont have to march them anyway*
-        for (HeatExchangerCoolantPortTile coolantPort : coolantPorts) {
-            if (coolantPort.lastCheckedTick == tick) {
+        for (HeatExchangerFluidPortTile fluidPort : fluidPorts) {
+            if (fluidPort.lastCheckedTick == tick) {
                 continue;
             }
             Direction nextDirection = null;
             for (Direction value : Direction.values()) {
-                mutableBlockPos.set(coolantPort.getBlockPos());
+                mutableBlockPos.set(fluidPort.getBlockPos());
                 mutableBlockPos.move(value);
                 HeatExchangerBaseTile tile = blocks.getTile(mutableBlockPos);
                 if (tile instanceof HeatExchangerCondenserChannelTile || tile instanceof HeatExchangerEvaporatorChannelTile) {
@@ -115,11 +115,11 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
                     break;
                 }
             }
-            mutableBlockPos.set(coolantPort.getBlockPos());
+            mutableBlockPos.set(fluidPort.getBlockPos());
             if (nextDirection == null) {
                 throw new ValidationError("Unknown channel verification error, this shouldn't be possible " + mutableBlockPos);
             }
-            MultiblockTileModule<HeatExchangerBaseTile, HeatExchangerMultiblockController> currentModule = coolantPort.multiblockModule();
+            MultiblockTileModule<HeatExchangerBaseTile, HeatExchangerMultiblockController> currentModule = fluidPort.multiblockModule();
             while (true) {
                 mutableBlockPos.move(nextDirection);
                 currentModule = currentModule.getNeighbor(nextDirection);
@@ -127,7 +127,7 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
                     throw new ValidationError("Unknown channel verification error, this shouldn't be possible " + mutableBlockPos);
                 }
                 HeatExchangerBaseTile channelTile = currentModule.iface;
-                if (channelTile instanceof HeatExchangerCoolantPortTile) {
+                if (channelTile instanceof HeatExchangerFluidPortTile) {
                     break;
                 }
                 if (!(channelTile instanceof HeatExchangerCondenserChannelTile || channelTile instanceof HeatExchangerEvaporatorChannelTile)) {
@@ -226,8 +226,8 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         if (toAttach instanceof HeatExchangerEvaporatorChannelTile) {
             evaporatorChannels.add((HeatExchangerEvaporatorChannelTile) toAttach);
         }
-        if (toAttach instanceof HeatExchangerCoolantPortTile) {
-            coolantPorts.add((HeatExchangerCoolantPortTile) toAttach);
+        if (toAttach instanceof HeatExchangerFluidPortTile) {
+            fluidPorts.add((HeatExchangerFluidPortTile) toAttach);
         }
     }
     
@@ -244,8 +244,8 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         if (toDetach instanceof HeatExchangerEvaporatorChannelTile) {
             evaporatorChannels.remove(toDetach);
         }
-        if (toDetach instanceof HeatExchangerCoolantPortTile) {
-            coolantPorts.remove(toDetach);
+        if (toDetach instanceof HeatExchangerFluidPortTile) {
+            fluidPorts.remove(toDetach);
         }
     }
     
@@ -327,7 +327,7 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         evaporatorAirRFKT = evaporatorAirContactArea * Config.CONFIG.HeatExchanger.AirFEPerKelvinMetreSquared;
         airAmbientRFKT = airAmbientContactArea * Config.CONFIG.HeatExchanger.AmbientFEPerKelvinMetreSquared;
         
-        for (HeatExchangerCoolantPortTile coolantPort : coolantPorts) {
+        for (HeatExchangerFluidPortTile coolantPort : fluidPorts) {
             BlockPos portPos = coolantPort.getBlockPos();
             for (Direction value : Direction.values()) {
                 mutableBlockPos.set(portPos);
@@ -347,8 +347,8 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         
         // ensure that we only have one inlet and one outlet port for each channel type
         // if you already have them configured, this wont modify your settings
-        for (HeatExchangerCoolantPortTile coolantPort : coolantPorts) {
-            for (HeatExchangerCoolantPortTile port : coolantPorts) {
+        for (HeatExchangerFluidPortTile coolantPort : fluidPorts) {
+            for (HeatExchangerFluidPortTile port : fluidPorts) {
                 if (port.isCondenser() == coolantPort.isCondenser() && port != coolantPort) {
                     port.setInlet(!coolantPort.isInlet());
                 }
@@ -366,7 +366,7 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         evaporatorHeatBody.transferWith(airHeatBody, evaporatorAirRFKT);
         evaporatorTank.transferWith(evaporatorHeatBody, evaporatorChannels.size() * Config.CONFIG.HeatExchanger.ChannelInternalSurfaceArea);
         airHeatBody.transferWith(ambientHeatBody, airAmbientRFKT);
-        coolantPorts.forEach(HeatExchangerCoolantPortTile::pushFluid);
+        fluidPorts.forEach(HeatExchangerFluidPortTile::pushFluid);
         if (Phosphophyllite.tickNumber() % 2 == 0) {
             markDirty();
         }
@@ -404,9 +404,9 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         return nbt;
     }
     
-    public void setInletPort(HeatExchangerCoolantPortTile port, boolean inlet) {
+    public void setInletPort(HeatExchangerFluidPortTile port, boolean inlet) {
         port.setInlet(inlet);
-        for (HeatExchangerCoolantPortTile coolantPort : coolantPorts) {
+        for (HeatExchangerFluidPortTile coolantPort : fluidPorts) {
             if (coolantPort != port && coolantPort.isCondenser() == port.isCondenser()) {
                 coolantPort.setInlet(!inlet);
             }

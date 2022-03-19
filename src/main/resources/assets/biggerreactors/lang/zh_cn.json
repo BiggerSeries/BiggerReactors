@@ -77,7 +77,7 @@
 
   "screen.biggerreactors.reactor_coolant_port": "反应堆冷却端口",
   "screen.biggerreactors.reactor_access_port": "反应堆访问端口",
-  "screen.biggerreactors.turbine_coolant_port": "涡轮机冷却端口",
+  "screen.biggerreactors.turbine_fluid_port": "涡轮机冷却端口",
 
   "tooltip.biggerreactors.status.io.input": "§2接受输入",
   "tooltip.biggerreactors.status.io.output": "§c提供输出",
@@ -95,7 +95,7 @@
   "block.biggerreactors.turbine_rotor_shaft": "涡轮机转轴",
   "block.biggerreactors.turbine_rotor_blade": "涡轮机叶片",
   "block.biggerreactors.turbine_rotor_bearing": "涡轮机转子轴承",
-  "block.biggerreactors.turbine_coolant_port": "涡轮机冷却端口",
+  "block.biggerreactors.turbine_fluid_port": "涡轮机冷却端口",
   "block.biggerreactors.turbine_power_tap": "涡轮机能量接口",
   "block.biggerreactors.turbine_computer_port": "涡轮机电脑端口",
 

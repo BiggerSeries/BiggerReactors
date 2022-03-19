@@ -9,7 +9,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.material.Fluids;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineBaseBlock;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorBlade;
@@ -238,7 +237,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     private boolean updateBlockStates = false;
     
     private final Set<TurbineTerminalTile> terminals = new HashSet<>();
-    private final Set<TurbineCoolantPortTile> coolantPorts = new HashSet<>();
+    private final Set<TurbineFluidPortTile> fluidPorts = new HashSet<>();
     private final Set<TurbineRotorBearingTile> rotorBearings = new HashSet<>();
     private final ObjectArrayList<TurbineRotorShaftTile> rotorShafts = new ObjectArrayList<>();
     private int attachedBladeCount = 0;
@@ -255,8 +254,8 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         if (tile instanceof TurbineTerminalTile) {
             terminals.add((TurbineTerminalTile) tile);
         }
-        if (tile instanceof TurbineCoolantPortTile) {
-            coolantPorts.add((TurbineCoolantPortTile) tile);
+        if (tile instanceof TurbineFluidPortTile) {
+            fluidPorts.add((TurbineFluidPortTile) tile);
         }
         if (tile instanceof TurbineRotorBearingTile) {
             rotorBearings.add((TurbineRotorBearingTile) tile);
@@ -286,8 +285,8 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         if (tile instanceof TurbineTerminalTile) {
             terminals.remove(tile);
         }
-        if (tile instanceof TurbineCoolantPortTile) {
-            coolantPorts.remove(tile);
+        if (tile instanceof TurbineFluidPortTile) {
+            fluidPorts.remove(tile);
         }
         if (tile instanceof TurbineRotorBearingTile) {
             rotorBearings.remove(tile);
@@ -484,7 +483,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
             simulation.battery().extract(powerPort.distributePower(powerRequested, false));
         }
         
-        for (TurbineCoolantPortTile coolantPort : coolantPorts) {
+        for (TurbineFluidPortTile coolantPort : fluidPorts) {
             if (simulation.fluidTank().liquidAmount() < 0) {
                 break;
             }

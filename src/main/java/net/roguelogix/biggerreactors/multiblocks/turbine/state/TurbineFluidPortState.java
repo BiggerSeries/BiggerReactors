@@ -1,6 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.turbine.state;
 
-import net.roguelogix.biggerreactors.multiblocks.turbine.tiles.TurbineCoolantPortTile;
+import net.roguelogix.biggerreactors.multiblocks.turbine.tiles.TurbineFluidPortTile;
 import net.roguelogix.phosphophyllite.client.gui.GuiSync;
 
 import javax.annotation.Nonnull;
@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TurbineCoolantPortState implements GuiSync.IGUIPacket {
+public class TurbineFluidPortState implements GuiSync.IGUIPacket {
 
     /**
      * The direction of the port. True for input, false for output.
@@ -18,10 +18,10 @@ public class TurbineCoolantPortState implements GuiSync.IGUIPacket {
     /**
      * The tile whose information this belongs to.
      */
-    TurbineCoolantPortTile turbineCoolantPortTile;
+    TurbineFluidPortTile turbineFluidPortTile;
 
-    public TurbineCoolantPortState(TurbineCoolantPortTile turbineCoolantPortTile) {
-        this.turbineCoolantPortTile = turbineCoolantPortTile;
+    public TurbineFluidPortState(TurbineFluidPortTile turbineFluidPortTile) {
+        this.turbineFluidPortTile = turbineFluidPortTile;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class TurbineCoolantPortState implements GuiSync.IGUIPacket {
     @Override
     @Nullable
     public Map<?, ?> write() {
-        turbineCoolantPortTile.updateState();
+        turbineFluidPortTile.updateState();
         HashMap<String, Object> data = new HashMap<>();
 
         data.put("direction", direction);

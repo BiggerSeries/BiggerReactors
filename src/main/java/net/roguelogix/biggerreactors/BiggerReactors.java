@@ -12,16 +12,16 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.roguelogix.biggerreactors.machine.client.CyaniteReprocessorScreen;
 import net.roguelogix.biggerreactors.machine.containers.CyaniteReprocessorContainer;
-import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.HeatExchangerCoolantPortContainer;
+import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.HeatExchangerFluidPortContainer;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.HeatExchangerTerminalContainer;
-import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.screen.HeatExchangerCoolantPortScreen;
+import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.screen.HeatExchangerFluidPortScreen;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.screen.HeatExchangerTerminalScreen;
 import net.roguelogix.biggerreactors.multiblocks.reactor.client.*;
 import net.roguelogix.biggerreactors.multiblocks.reactor.containers.*;
 import net.roguelogix.biggerreactors.multiblocks.turbine.client.BladeRenderer;
-import net.roguelogix.biggerreactors.multiblocks.turbine.client.TurbineCoolantPortScreen;
+import net.roguelogix.biggerreactors.multiblocks.turbine.client.TurbineFluidPortScreen;
 import net.roguelogix.biggerreactors.multiblocks.turbine.client.TurbineTerminalScreen;
-import net.roguelogix.biggerreactors.multiblocks.turbine.containers.TurbineCoolantPortContainer;
+import net.roguelogix.biggerreactors.multiblocks.turbine.containers.TurbineFluidPortContainer;
 import net.roguelogix.biggerreactors.multiblocks.turbine.containers.TurbineTerminalContainer;
 import net.roguelogix.biggerreactors.multiblocks.turbine.tiles.TurbineRotorBearingTile;
 import net.roguelogix.biggerreactors.registries.FluidTransitionRegistry;
@@ -74,12 +74,12 @@ public class BiggerReactors {
                 ReactorRedstonePortScreen::new);
         MenuScreens.register(TurbineTerminalContainer.INSTANCE,
                 TurbineTerminalScreen::new);
-        MenuScreens.register(TurbineCoolantPortContainer.INSTANCE,
-                TurbineCoolantPortScreen::new);
+        MenuScreens.register(TurbineFluidPortContainer.INSTANCE,
+                TurbineFluidPortScreen::new);
         MenuScreens.register(HeatExchangerTerminalContainer.INSTANCE,
                 HeatExchangerTerminalScreen::new);
-        MenuScreens.register(HeatExchangerCoolantPortContainer.INSTANCE,
-                HeatExchangerCoolantPortScreen::new);
+        MenuScreens.register(HeatExchangerFluidPortContainer.INSTANCE,
+                HeatExchangerFluidPortScreen::new);
     
     
         BlockEntityRenderers.register(TurbineRotorBearingTile.SUPPLIER.TYPE, BladeRenderer::new);

@@ -1,6 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.heatexchanger.state;
 
-import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerCoolantPortTile;
+import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerFluidPortTile;
 import net.roguelogix.phosphophyllite.client.gui.GuiSync;
 
 import javax.annotation.Nonnull;
@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HeatExchangerCoolantPortState implements GuiSync.IGUIPacket {
+public class HeatExchangerFluidPortState implements GuiSync.IGUIPacket {
 
     /**
      * The direction of the port. True for input, false for output.
@@ -25,10 +25,10 @@ public class HeatExchangerCoolantPortState implements GuiSync.IGUIPacket {
     /**
      * The tile whose information this belongs to.
      */
-    HeatExchangerCoolantPortTile heatExchangerCoolantPortTile;
+    HeatExchangerFluidPortTile heatExchangerFluidPortTile;
 
-    public HeatExchangerCoolantPortState(HeatExchangerCoolantPortTile heatExchangerCoolantPortTile) {
-        this.heatExchangerCoolantPortTile = heatExchangerCoolantPortTile;
+    public HeatExchangerFluidPortState(HeatExchangerFluidPortTile heatExchangerFluidPortTile) {
+        this.heatExchangerFluidPortTile = heatExchangerFluidPortTile;
     }
 
     @Override
@@ -40,7 +40,7 @@ public class HeatExchangerCoolantPortState implements GuiSync.IGUIPacket {
     @Override
     @Nullable
     public Map<?, ?> write() {
-        this.heatExchangerCoolantPortTile.updateState();
+        this.heatExchangerFluidPortTile.updateState();
         HashMap<String, Object> data = new HashMap<>();
 
         data.put("direction", this.direction);

@@ -20,10 +20,10 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineCoolantPort;
-import net.roguelogix.biggerreactors.multiblocks.turbine.containers.TurbineCoolantPortContainer;
+import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineFluidPort;
+import net.roguelogix.biggerreactors.multiblocks.turbine.containers.TurbineFluidPortContainer;
 import net.roguelogix.biggerreactors.multiblocks.turbine.simulation.ITurbineFluidTank;
-import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineCoolantPortState;
+import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineFluidPortState;
 import net.roguelogix.phosphophyllite.fluids.FluidHandlerWrapper;
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
 import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
@@ -35,16 +35,16 @@ import net.roguelogix.phosphophyllite.util.BlockStates;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import static net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineCoolantPort.PortDirection.*;
+import static net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineFluidPort.PortDirection.*;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphophylliteFluidHandler, MenuProvider, IHasUpdatableState<TurbineCoolantPortState>, IOnAssemblyTile, IOnDisassemblyTile {
+public class TurbineFluidPortTile extends TurbineBaseTile implements IPhosphophylliteFluidHandler, MenuProvider, IHasUpdatableState<TurbineFluidPortState>, IOnAssemblyTile, IOnDisassemblyTile {
     
-    @RegisterTile("turbine_coolant_port")
-    public static final BlockEntityType.BlockEntitySupplier<TurbineCoolantPortTile> SUPPLIER = new RegisterTile.Producer<>(TurbineCoolantPortTile::new);
+    @RegisterTile("turbine_fluid_port")
+    public static final BlockEntityType.BlockEntitySupplier<TurbineFluidPortTile> SUPPLIER = new RegisterTile.Producer<>(TurbineFluidPortTile::new);
     
-    public TurbineCoolantPortTile(BlockEntityType<?> TYPE, BlockPos pos, BlockState state) {
+    public TurbineFluidPortTile(BlockEntityType<?> TYPE, BlockPos pos, BlockState state) {
         super(TYPE, pos, state);
     }
 
@@ -155,8 +155,8 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphop
     LazyOptional<?> handlerOptional = LazyOptional.empty();
     IPhosphophylliteFluidHandler handler = null;
     FluidTank EMPTY_TANK = new FluidTank(0);
-    private TurbineCoolantPort.PortDirection direction = INLET;
-    public final TurbineCoolantPortState coolantPortState = new TurbineCoolantPortState(this);
+    private TurbineFluidPort.PortDirection direction = INLET;
+    public final TurbineFluidPortState fluidPortState = new TurbineFluidPortState(this);
     
     @SuppressWarnings("DuplicatedCode")
     public void neighborChanged() {
@@ -189,7 +189,7 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphop
         }
     }
     
-    public void setDirection(TurbineCoolantPort.PortDirection direction) {
+    public void setDirection(TurbineFluidPort.PortDirection direction) {
         this.direction = direction;
         this.setChanged();
     }
@@ -197,7 +197,7 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphop
     @Override
     protected void readNBT(CompoundTag compound) {
         if (compound.contains("direction")) {
-            direction = TurbineCoolantPort.PortDirection.valueOf(compound.getString("direction"));
+            direction = TurbineFluidPort.PortDirection.valueOf(compound.getString("direction"));
         }
     }
     
@@ -221,25 +221,25 @@ public class TurbineCoolantPortTile extends TurbineBaseTile implements IPhosphop
     
     @Override
     public Component getDisplayName() {
-        return new TranslatableComponent(TurbineCoolantPort.INSTANCE.getDescriptionId());
+        return new TranslatableComponent(TurbineFluidPort.INSTANCE.getDescriptionId());
     }
     
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
-        return new TurbineCoolantPortContainer(windowId, this.worldPosition, player);
+        return new TurbineFluidPortContainer(windowId, this.worldPosition, player);
     }
     
     @Nullable
     @Override
-    public TurbineCoolantPortState getState() {
+    public TurbineFluidPortState getState() {
         this.updateState();
-        return this.coolantPortState;
+        return this.fluidPortState;
     }
     
     @Override
     public void updateState() {
-        coolantPortState.direction = (this.direction == INLET);
+        fluidPortState.direction = (this.direction == INLET);
     }
     
     @Override

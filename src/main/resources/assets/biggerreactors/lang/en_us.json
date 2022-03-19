@@ -154,7 +154,7 @@
   "block.biggerreactors.turbine_rotor_shaft": "Turbine Rotor Shaft",
   "block.biggerreactors.turbine_rotor_blade": "Turbine Rotor Blade",
   "block.biggerreactors.turbine_rotor_bearing": "Turbine Rotor Bearing",
-  "block.biggerreactors.turbine_coolant_port": "Turbine Coolant Port",
+  "block.biggerreactors.turbine_fluid_port": "Turbine Fluid Port",
   "block.biggerreactors.turbine_power_tap": "Turbine Power Tap",
   "block.biggerreactors.turbine_computer_port": "Turbine Computer Port",
 
@@ -180,10 +180,10 @@
   "screen.biggerreactors.turbine_terminal.flow_rate_increase.tooltip": "Increase Flow Rate\n§7Higher flow rates increase rotor speed.\n§8[Shift]: Increase by 10 mB.\n§8[Ctrl]: Increase by 50 mB.\n§8[Ctrl + Shift]: Increase by 100 mB.",
   "screen.biggerreactors.turbine_terminal.flow_rate_decrease.tooltip": "Decrease Flow Rate\n§7Lower flow rates decrease rotor speed.\n§8[Shift]: Decrease by 10 mB.\n§8[Ctrl]: Decrease by 50 mB.\n§8[Ctrl + Shift]: Decrease by 100 mB.",
 
-  "screen.biggerreactors.turbine_coolant_port": "Turbine Coolant Port",
-  "screen.biggerreactors.turbine_coolant_port.direction_toggle.input": "Direction: §cInput",
-  "screen.biggerreactors.turbine_coolant_port.direction_toggle.output": "Direction: §9Output",
-  "screen.biggerreactors.turbine_coolant_port.direction_toggle.tooltip": "Toggle Direction\n§7Change which direction this port flows.",
+  "screen.biggerreactors.turbine_fluid_port": "Turbine Fluid Port",
+  "screen.biggerreactors.turbine_fluid_port.direction_toggle.input": "Direction: §cInput",
+  "screen.biggerreactors.turbine_fluid_port.direction_toggle.output": "Direction: §9Output",
+  "screen.biggerreactors.turbine_fluid_port.direction_toggle.tooltip": "Toggle Direction\n§7Change which direction this port flows.",
 
   "block.biggerreactors.heat_exchanger_casing": "Heat Exchanger Casing",
   "block.biggerreactors.heat_exchanger_glass": "Heat Exchanger Glass",
@@ -204,21 +204,21 @@
 
 
   "multiblock.error.biggerreactors.heat_exchanger.dangling_internal_part": "There appears to be another heat exchanger inside this one, is something wrong? (%d, %d, %d).",
-  "multiblock.error.biggerreactors.heat_exchanger.dangling_channel": "All channels must be connected to a coolant port. (%d, %d, %d)",
-  "multiblock.error.biggerreactors.heat_exchanger.duplicate_port_types": "Both the evaporator and condenser must connect to two coolant ports.",
-  "multiblock.error.biggerreactors.heat_exchanger.coolant_port_unconnected": "All coolant ports must have a connected channel.",
-  "multiblock.error.biggerreactors.heat_exchanger.invalid_port_count": "Exactly 4 coolant ports are required.",
+  "multiblock.error.biggerreactors.heat_exchanger.dangling_channel": "All channels must be connected to a fluid port. (%d, %d, %d)",
+  "multiblock.error.biggerreactors.heat_exchanger.duplicate_port_types": "Both the evaporator and condenser must connect to two fluid ports.",
+  "multiblock.error.biggerreactors.heat_exchanger.fluid_port_unconnected": "All fluid ports must have a connected channel.",
+  "multiblock.error.biggerreactors.heat_exchanger.invalid_port_count": "Exactly 4 fluid ports are required.",
   "multiblock.error.biggerreactors.heat_exchanger.missing_channel_type": "At least one evaporator and one condenser channel are required.",
 
 
   "block.biggerreactors.heat_exchanger_computer_port": "Heat Exchanger Computer Port",
-  "block.biggerreactors.heat_exchanger_coolant_port": "Heat Exchanger Coolant Port",
-  "screen.biggerreactors.heat_exchanger_coolant_port": "Heat Exchanger Coolant Port",
-  "screen.biggerreactors.heat_exchanger_coolant_port.channel_type.condenser": "Channel Connection: §cCondenser",
-  "screen.biggerreactors.heat_exchanger_coolant_port.channel_type.evaporator": "Channel Connection: §9Evaporator",
-  "screen.biggerreactors.heat_exchanger_coolant_port.direction_toggle.input": "Direction: §cInput",
-  "screen.biggerreactors.heat_exchanger_coolant_port.direction_toggle.output": "Direction: §9Output",
-  "screen.biggerreactors.heat_exchanger_coolant_port.direction_toggle.tooltip": "Toggle Direction\n§7Change which direction this port flows.",
+  "block.biggerreactors.heat_exchanger_fluid_port": "Heat Exchanger Fluid Port",
+  "screen.biggerreactors.heat_exchanger_fluid_port": "Heat Exchanger Fluid Port",
+  "screen.biggerreactors.heat_exchanger_fluid_port.channel_type.condenser": "Channel Connection: §cCondenser",
+  "screen.biggerreactors.heat_exchanger_fluid_port.channel_type.evaporator": "Channel Connection: §9Evaporator",
+  "screen.biggerreactors.heat_exchanger_fluid_port.direction_toggle.input": "Direction: §cInput",
+  "screen.biggerreactors.heat_exchanger_fluid_port.direction_toggle.output": "Direction: §9Output",
+  "screen.biggerreactors.heat_exchanger_fluid_port.direction_toggle.tooltip": "Toggle Direction\n§7Change which direction this port flows.",
 
   "jei.biggerreactors.classic.turbine_coil_block": "Turbine Coil Blocks",
   "jei.biggerreactors.classic.turbine_coil_bonus": "Bonus: %s",
