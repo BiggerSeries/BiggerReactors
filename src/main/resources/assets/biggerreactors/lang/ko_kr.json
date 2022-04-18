@@ -35,12 +35,12 @@
     "item.biggerreactors.ludicrite_ingot": "루디크라이트 주괴",
   
     "multiblock.error.biggerreactors.no_terminal": "원자로는 적어도 하나의 터미널이 필요합니다.",
-    "multiblock.error.biggerreactors.no_rods": "원자로는 적어도 하나의 연료 요소가 필요합니다.",
+    "multiblock.error.biggerreactors.no_rods": "원자로는 적어도 하나의 연료봉이 필요합니다.",
     "multiblock.error.biggerreactors.control_rod_not_on_top": "제어봉은 원자로 상단에만 놓을 수 있습니다. (%d, %d, %d).",
-    "multiblock.error.biggerreactors.fuel_rod_gap": "모든 연료 요소는 원자로 상단에서 하단까지 이어져있어야 합니다. (%d, %d, %d).",
+    "multiblock.error.biggerreactors.fuel_rod_gap": "모든 연료봉은 원자로 상단에서 하단까지 이어져있어야 합니다. (%d, %d, %d).",
     "multiblock.error.biggerreactors.no_control_rod_for_fuel_rod": "모든 연료 요소에는 위에 제어봉이 있어야 합니다. (%d, %d).",
     "multiblock.error.biggerreactors.dangling_internal_part": "이 안에 또 다른 원자로가 있는 것 같은데, 뭔가 잘못된 건가요? (%d, %d, %d).",
-    "multiblock.error.biggerreactors.coolant_and_power_ports": "Reactors may only have coolant ports (actively-cooled type) or power taps (passively-cooled type), not both.",
+    "multiblock.error.biggerreactors.coolant_and_power_ports": "원자로에는 냉각수 포트(능동 냉각 유형) 또는 전원 탭(수동 냉각 유형)만 있을 수 있으며 둘 다 가질 수는 없습니다.",
     "multiblock.error.biggerreactors.no_manifold_neighbor": "원자로 냉각수 매니폴드는 다른 매니폴드 또는 케이싱과 인접해야 합니다.",
   
     "screen.biggerreactors.disabled": "비활성화",
