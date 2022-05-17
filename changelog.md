@@ -1,3 +1,9 @@
+# 1.18.2-0.6.0-beta.1.1
+ hot not-a-fix
+
+## Misc
+ - handle a CME better to give better debug info
+
 # 1.18.2-0.6.0-beta.1
  - 1.18.2
 
