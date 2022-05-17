@@ -280,10 +280,15 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     }
     
     public void updateBlockStates() {
-        terminals.forEach(terminal -> {
-            world.setBlock(terminal.getBlockPos(), terminal.getBlockState().setValue(ReactorActivity.REACTOR_ACTIVITY_ENUM_PROPERTY, reactorActivity), 3);
-            terminal.setChanged();
-        });
+        try {
+            isUpdatingState = true;
+            terminals.forEach(terminal -> {
+                world.setBlock(terminal.getBlockPos(), terminal.getBlockState().setValue(ReactorActivity.REACTOR_ACTIVITY_ENUM_PROPERTY, reactorActivity), 3);
+                terminal.setChanged();
+            });
+        } finally {
+            isUpdatingState = false;
+        }
     }
     
     public synchronized void setActive(ReactorActivity newState) {

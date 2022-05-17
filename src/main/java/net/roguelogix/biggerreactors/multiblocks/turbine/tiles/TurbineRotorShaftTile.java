@@ -44,7 +44,9 @@ public class TurbineRotorShaftTile extends TurbineBaseTile implements IAssemblyA
             } else if (neighbor.getX() == worldPosition.getX() && neighbor.getY() == worldPosition.getY() && neighbor.getZ() != worldPosition.getZ()) {
                 newRotation = Z;
             }
-            level.setBlockAndUpdate(worldPosition, getBlockState().setValue(TURBINE_SHAFT_ROTATION_STATE_ENUM_PROPERTY, newRotation));
+            if(level.isLoaded(worldPosition)) {
+                level.setBlockAndUpdate(worldPosition, getBlockState().setValue(TURBINE_SHAFT_ROTATION_STATE_ENUM_PROPERTY, newRotation));
+            }
         }
         
         // propagate it out to the blades
@@ -61,7 +63,9 @@ public class TurbineRotorShaftTile extends TurbineBaseTile implements IAssemblyA
                 if (state.getBlock() != TurbineRotorBlade.INSTANCE) {
                     break;
                 }
-                level.setBlockAndUpdate(pos, state.setValue(TURBINE_SHAFT_ROTATION_STATE_ENUM_PROPERTY, newRotation).setValue(BLADE_POSITION, i));
+                if(level.isLoaded(worldPosition)) {
+                    level.setBlockAndUpdate(pos, state.setValue(TURBINE_SHAFT_ROTATION_STATE_ENUM_PROPERTY, newRotation).setValue(BLADE_POSITION, i));
+                }
             }
             i++;
         }
