@@ -1,6 +1,7 @@
-package net.roguelogix.biggerreactors.multiblocks.reactor.simulation;
+package net.roguelogix.biggerreactors.multiblocks.reactor.simulation.base;
 
 import net.roguelogix.biggerreactors.Config;
+import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorSimulation;
 import net.roguelogix.phosphophyllite.registry.OnModLoad;
 import net.roguelogix.phosphophyllite.repack.org.joml.*;
 
@@ -9,16 +10,16 @@ import java.util.ArrayList;
 
 public class SimUtil {
     
-    public static class ControlRod implements IReactorSimulation.ControlRod{
-        final int x;
-        final int z;
-        double insertion = 0;
+    public static class ControlRod implements IReactorSimulation.ControlRod {
+        public final int x;
+        public final int z;
+        public double insertion = 0;
         
         public ControlRod(int x, int z) {
             this.x = x;
             this.z = z;
         }
-    
+        
         @Override
         public double insertion() {
             return insertion;
@@ -47,8 +48,8 @@ public class SimUtil {
     };
     
     public static class RayStep {
-        final Vector3i offset;
-        final double length;
+        public final Vector3i offset;
+        public final double length;
         
         private RayStep(Vector3i offset, double length) {
             this.offset = offset;
@@ -63,6 +64,7 @@ public class SimUtil {
         // trigger classload on mod load, so this doesnt happen at runtime
     }
     
+    // TODO: reloadable
     static {
         // Config is registered before any @OnModLoad classes are loaded/called, so, the the config is loaded first
         final double TTL = Config.CONFIG.Reactor.IrradiationDistance;

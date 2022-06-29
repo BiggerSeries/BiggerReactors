@@ -1,18 +1,15 @@
-package net.roguelogix.biggerreactors.multiblocks.reactor.simulation;
+package net.roguelogix.biggerreactors.multiblocks.reactor.simulation.base;
 
 import net.roguelogix.biggerreactors.Config;
+import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorSimulation;
 import net.roguelogix.phosphophyllite.serialization.IPhosphophylliteSerializable;
 import net.roguelogix.phosphophyllite.serialization.PhosphophylliteCompound;
 import net.roguelogix.phosphophyllite.util.HeatBody;
-import net.roguelogix.phosphophyllite.util.MethodsReturnNonnullByDefault;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 
-@ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
-class Battery extends HeatBody implements IReactorSimulation.IBattery, IPhosphophylliteSerializable {
+public class Battery extends HeatBody implements IReactorSimulation.IBattery, IPhosphophylliteSerializable {
     private final long capacity;
     private long stored;
     private long generatedLastTick;
@@ -21,7 +18,7 @@ class Battery extends HeatBody implements IReactorSimulation.IBattery, IPhosphop
         setInfinite(true);
     }
     
-    Battery(long capacity) {
+    public Battery(long capacity) {
         this.capacity = capacity;
     }
     

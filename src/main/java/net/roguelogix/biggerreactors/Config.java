@@ -14,15 +14,8 @@ public class Config {
     private final boolean EnableAdvancedConfig = false;
     
     public enum Mode {
-        // Modern BiR, familiar yet different
         MODERN,
-        // Mechanics of modern, usually, may be unstable, may be more resource intensive, may not even run
-        // if not applicable to multiblock, defaults to modern
         EXPERIMENTAL,
-        // Experimental, but allowed to use multiple threads
-        // don't blame me if you end up pissing off your server host
-        MULTITHREADED,
-        OPENCL,
     }
     
     @ConfigValue(advanced = true)
@@ -82,6 +75,22 @@ public class Config {
             FuelMBPerIngot = 1000;
         }
         
+        @ConfigValue(advanced = true)
+        public final boolean useFullPassSimulation;
+        @ConfigValue(advanced = true)
+        public final boolean allowOffThreadSimulation;
+        @ConfigValue(advanced = true)
+        public final boolean allowMultiThreadSimulation;
+        @ConfigValue(advanced = true)
+        public final boolean allowAcceleratedSimulation;
+    
+        {
+            useFullPassSimulation = false;
+            allowOffThreadSimulation = true;
+            allowMultiThreadSimulation = true;
+            allowAcceleratedSimulation = true;
+        }
+    
         @ConfigValue(range = "[1,)", advanced = true)
         public final long PerFuelRodCapacity;
         @ConfigValue(range = "(0,)", advanced = true)
@@ -173,24 +182,24 @@ public class Config {
             FuelAbsorptionScalingRateExponentMultiplier = 2.2f;
         }
         
-        @ConfigValue(range = "[18,)", advanced = true)
+        @ConfigValue(range = "[16,)", advanced = true, comment = "Powers of two recommended")
         public final int SimulationRays;
         
         {
-            SimulationRays = 100;
+            SimulationRays = 64;
         }
         
-        public static final class Experimental {
+        public static final class ModeSpecific {
             @ConfigValue(range = "(0,)", advanced = true)
-            public final int RodBatchSize;
+            public final int ControlRodBatchSize;
             
             {
-                RodBatchSize = 4096;
+                ControlRodBatchSize = 32;
             }
         }
         
         @ConfigValue
-        public final Experimental Experimental = new Experimental();
+        public final ModeSpecific ModeSpecific = new ModeSpecific();
         
         public static final class GUI {
             @ConfigValue

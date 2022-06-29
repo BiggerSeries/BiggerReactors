@@ -1,6 +1,10 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.simulation;
 
 import net.roguelogix.biggerreactors.Config;
+import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.accellerated.ocl.SingleQueueOpenCL12Simulation;
+import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.accellerated.ocl.CLUtil;
+import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.cpu.FullPassReactorSimulation;
+import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.cpu.TimeSlicedReactorSimulation;
 import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
 import net.roguelogix.phosphophyllite.serialization.IPhosphophylliteSerializable;
 import net.roguelogix.phosphophyllite.serialization.PhosphophylliteCompound;
@@ -123,14 +127,92 @@ public class SimulationDescription implements IPhosphophylliteSerializable {
         this.ambientTemperature = ambientTemperature;
     }
     
-    public IReactorSimulation build(Config.Mode mode) {
-        return switch (mode) {
-            case MODERN -> new ModernReactorSimulation(this);
-            case EXPERIMENTAL -> new ExperimentalReactorSimulation(this);
-            case MULTITHREADED -> new MultithreadedReactorSimulation(this);
-            //noinspection UnnecessaryDefault
-            default -> throw new IllegalArgumentException();
-        };
+    public record Builder(boolean experimental, boolean fullPass, boolean allowOffThread, boolean allowMultiThread, boolean allowAccelerated) {
+        
+        public IReactorSimulation build(SimulationDescription description) {
+            description.ensureValid();
+    
+            if (experimental) {
+                return new SingleQueueOpenCL12Simulation(description);
+            }
+            if (!fullPass) {
+                return new TimeSlicedReactorSimulation(description);
+            }
+            
+            var rodMultiple = description.controlRodCount / Config.CONFIG.Reactor.ModeSpecific.ControlRodBatchSize;
+            
+            if (allowAccelerated && rodMultiple >= 16) {
+                if (CLUtil.available) {
+                    return new SingleQueueOpenCL12Simulation(description);
+                }
+            }
+            if (allowMultiThread && rodMultiple >= 2) {
+                return new FullPassReactorSimulation.MultiThreaded(description, false);
+            }
+            if (allowOffThread) {
+                return new FullPassReactorSimulation.MultiThreaded(description, true);
+            }
+            return new FullPassReactorSimulation(description);
+        }
+    }
+    
+    public void ensureValid() {
+        if (controlRodLocations == null) {
+            throw new IllegalArgumentException();
+        }
+        if (moderatorProperties == null) {
+            throw new IllegalArgumentException();
+        }
+        if (manifoldLocations == null) {
+            throw new IllegalArgumentException();
+        }
+    }
+    
+    public int x() {
+        return x;
+    }
+    
+    public int y() {
+        return y;
+    }
+    
+    public int z() {
+        return z;
+    }
+    
+    public ReactorModeratorRegistry.IModeratorProperties defaultModeratorProperties() {
+        return defaultModeratorProperties;
+    }
+    
+    public int controlRodCount() {
+        return controlRodCount;
+    }
+    
+    public boolean isControlRodAt(int x, int z) {
+        assert controlRodLocations != null;
+        return controlRodLocations[x][z];
+    }
+    
+    public boolean passivelyCooled() {
+        return passivelyCooled;
+    }
+    
+    public int manifoldCount() {
+        return manifoldCount;
+    }
+    
+    public ReactorModeratorRegistry.IModeratorProperties moderatorPropertiesAt(int x, int y, int z) {
+        assert moderatorProperties != null;
+        return moderatorProperties[x][y][z];
+    }
+    
+    public boolean isManifoldAt(int x, int y, int z) {
+        assert manifoldLocations != null;
+        return manifoldLocations[x][y][z];
+    }
+    
+    public double ambientTemperature(){
+        return ambientTemperature;
     }
     
     @Override

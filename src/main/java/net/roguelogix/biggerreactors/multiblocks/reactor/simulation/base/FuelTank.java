@@ -1,18 +1,15 @@
-package net.roguelogix.biggerreactors.multiblocks.reactor.simulation;
+package net.roguelogix.biggerreactors.multiblocks.reactor.simulation.base;
 
+import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorSimulation;
 import net.roguelogix.phosphophyllite.serialization.IPhosphophylliteSerializable;
 import net.roguelogix.phosphophyllite.serialization.PhosphophylliteCompound;
-import net.roguelogix.phosphophyllite.util.MethodsReturnNonnullByDefault;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 
-@ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
-class FuelTank implements IReactorSimulation.IFuelTank, IPhosphophylliteSerializable {
+public class FuelTank implements IReactorSimulation.IFuelTank, IPhosphophylliteSerializable {
     
-    private long capacity;
+    private final long capacity;
     
     private long fuel = 0;
     private long waste = 0;
@@ -21,11 +18,11 @@ class FuelTank implements IReactorSimulation.IFuelTank, IPhosphophylliteSerializ
     
     private double burnedLastTick = 0;
     
-    void setCapacity(long capacity) {
+    public FuelTank(long capacity) {
         this.capacity = capacity;
     }
     
-    void burn(double amount) {
+    public void burn(double amount) {
         if (Double.isInfinite(amount) || Double.isNaN(amount) || amount == 0) {
             burnedLastTick = 0;
             return;

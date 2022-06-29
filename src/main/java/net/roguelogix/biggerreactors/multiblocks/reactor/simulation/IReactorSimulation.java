@@ -37,6 +37,10 @@ public interface IReactorSimulation extends IPhosphophylliteSerializable {
     
     double ambientTemperature();
     
+    default boolean isAsync() {
+        return false;
+    }
+    
     interface ControlRod {
         double insertion();
         

@@ -1,19 +1,17 @@
-package net.roguelogix.biggerreactors.multiblocks.reactor.simulation;
+package net.roguelogix.biggerreactors.multiblocks.reactor.simulation.base;
 
+import net.roguelogix.biggerreactors.Config;
+import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorSimulation;
 import net.roguelogix.biggerreactors.registries.FluidTransitionRegistry;
 import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
 import net.roguelogix.phosphophyllite.serialization.IPhosphophylliteSerializable;
 import net.roguelogix.phosphophyllite.serialization.PhosphophylliteCompound;
 import net.roguelogix.phosphophyllite.util.HeatBody;
-import net.roguelogix.phosphophyllite.util.MethodsReturnNonnullByDefault;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 
-@ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
-class CoolantTank extends HeatBody implements IReactorSimulation.ICoolantTank, ReactorModeratorRegistry.IModeratorProperties, IPhosphophylliteSerializable {
+public class CoolantTank extends HeatBody implements IReactorSimulation.ICoolantTank, ReactorModeratorRegistry.IModeratorProperties, IPhosphophylliteSerializable {
     
     private final long perSideCapacity;
     private long liquidAmount = 0;
@@ -34,6 +32,7 @@ class CoolantTank extends HeatBody implements IReactorSimulation.ICoolantTank, R
         this.setInfinite(true);
     }
     
+    @Override
     public double transferWith(HeatBody body, double rfkt) {
         if (transitionProperties == null) {
             maxTransitionedLastTick = 0;
@@ -72,14 +71,16 @@ class CoolantTank extends HeatBody implements IReactorSimulation.ICoolantTank, R
         rf = Math.abs(rf);
         
         long toTransition = (long) (rf / transitionProperties.latentHeat());
-        long maxTransitionable = Math.min(liquidAmount, perSideCapacity - vaporAmount);
+        final long maxTransitionable = Math.min(liquidAmount, perSideCapacity - vaporAmount);
+    
+        final double transitionMultiplier = Config.CONFIG.Reactor.OutputMultiplier * Config.CONFIG.Reactor.ActiveOutputMultiplier;
         
-        maxTransitionedLastTick = toTransition;
+        maxTransitionedLastTick = (long) (toTransition * transitionMultiplier);
         toTransition = Math.min(maxTransitionable, toTransition);
-        transitionedLastTick = toTransition;
+        transitionedLastTick = (long) (toTransition * transitionMultiplier);
         
-        liquidAmount -= toTransition;
-        vaporAmount += toTransition;
+        liquidAmount -= transitionedLastTick;
+        vaporAmount += transitionedLastTick;
         
         rf = toTransition * transitionProperties.latentHeat();
         rfTransferredLastTick = (long) rf;

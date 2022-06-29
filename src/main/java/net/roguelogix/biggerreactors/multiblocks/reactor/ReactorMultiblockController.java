@@ -386,7 +386,8 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         if(simulation != null){
             simulationData = simulation.save();
         }
-        simulation = simulationDescription.build(Config.CONFIG.mode);
+        final var simulationBuilder = new SimulationDescription.Builder(Config.CONFIG.mode == Config.Mode.EXPERIMENTAL, Config.CONFIG.Reactor.useFullPassSimulation, Config.CONFIG.Reactor.allowOffThreadSimulation, Config.CONFIG.Reactor.allowMultiThreadSimulation, Config.CONFIG.Reactor.allowAcceleratedSimulation);
+        simulation = simulationBuilder.build(simulationDescription);
         if (simulationData != null) {
             simulation.load(simulationData);
         }
