@@ -3,14 +3,13 @@ package net.roguelogix.biggerreactors.multiblocks.reactor.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.client.CommonRender;
 import net.roguelogix.biggerreactors.multiblocks.reactor.containers.ReactorTerminalContainer;
@@ -75,9 +74,9 @@ public class ActiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
      */
     private void initTooltips() {
         // (Left) Exhaust generation readout tooltip:
-        TooltipElement<ReactorTerminalContainer> generationRateReadoutTooltip = new TooltipElement<>(this, 26, 38, 53, 16, TextComponent.EMPTY);
+        TooltipElement<ReactorTerminalContainer> generationRateReadoutTooltip = new TooltipElement<>(this, 26, 38, 53, 16, Component.empty());
         generationRateReadoutTooltip.onTick = () -> {
-            generationRateReadoutTooltip.tooltip = new TextComponent(String.format("%.3f mB/t", this.reactorState.reactorOutputRate));
+            generationRateReadoutTooltip.tooltip = Component.literal(String.format("%.3f mB/t", this.reactorState.reactorOutputRate));
         };
         this.addScreenElement(generationRateReadoutTooltip);
     }
@@ -87,13 +86,13 @@ public class ActiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
      */
     private void initGauges() {
         // (Top) Coolant intake tank:
-        RenderedElement<ReactorTerminalContainer> coolantIntakeTank = new RenderedElement<>(this, 151, 25, 18, 64, 0, 152, TextComponent.EMPTY);
+        RenderedElement<ReactorTerminalContainer> coolantIntakeTank = new RenderedElement<>(this, 151, 25, 18, 64, 0, 152, Component.empty());
         coolantIntakeTank.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonRender.renderFluidGauge(mS,
                 coolantIntakeTank, reactorState.coolantStored, reactorState.coolantCapacity, coolantFluid);
         this.addScreenElement(coolantIntakeTank);
 
         // (Top) Hot exhaust tank:
-        RenderedElement<ReactorTerminalContainer> hotExhaustTank = new RenderedElement<>(this, 173, 25, 18, 64, 0, 152, TextComponent.EMPTY);
+        RenderedElement<ReactorTerminalContainer> hotExhaustTank = new RenderedElement<>(this, 173, 25, 18, 64, 0, 152, Component.empty());
         hotExhaustTank.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonRender.renderFluidGauge(mS,
                 hotExhaustTank, reactorState.exhaustStored, reactorState.exhaustCapacity, exhaustFluid);
         this.addScreenElement(hotExhaustTank);
@@ -117,7 +116,7 @@ public class ActiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
      */
     private void initSymbols() {
         // (Top) Coolant intake tank symbol:
-        RenderedElement<ReactorTerminalContainer> coolantIntakeTankSymbol = new RenderedElement<>(this, 152, 6, 16, 16, 174, 152, new TranslatableComponent("screen.biggerreactors.reactor_terminal.coolant_intake_tank.tooltip"));
+        RenderedElement<ReactorTerminalContainer> coolantIntakeTankSymbol = new RenderedElement<>(this, 152, 6, 16, 16, 174, 152, Component.translatable("screen.biggerreactors.reactor_terminal.coolant_intake_tank.tooltip"));
         coolantIntakeTankSymbol.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> RenderHelper.drawMaskedFluid(mS,
                 coolantIntakeTankSymbol.x, coolantIntakeTankSymbol.y, this.getBlitOffset(),
                 coolantIntakeTankSymbol.width, coolantIntakeTankSymbol.height,
@@ -125,7 +124,7 @@ public class ActiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
         this.addScreenElement(coolantIntakeTankSymbol);
 
         // (Top) Hot exhaust tank symbol:
-        RenderedElement<ReactorTerminalContainer> hotExhaustTankSymbol = new RenderedElement<>(this, 174, 6, 16, 16, 158, 152, new TranslatableComponent("screen.biggerreactors.reactor_terminal.exhaust_tank.tooltip"));
+        RenderedElement<ReactorTerminalContainer> hotExhaustTankSymbol = new RenderedElement<>(this, 174, 6, 16, 16, 158, 152, Component.translatable("screen.biggerreactors.reactor_terminal.exhaust_tank.tooltip"));
         hotExhaustTankSymbol.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> RenderHelper.drawMaskedFluid(mS,
                 hotExhaustTankSymbol.x, hotExhaustTankSymbol.y, this.getBlitOffset(),
                 hotExhaustTankSymbol.width, hotExhaustTankSymbol.height,
@@ -133,7 +132,7 @@ public class ActiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
         this.addScreenElement(hotExhaustTankSymbol);
 
         // (Left) Exhaust generation rate symbol:
-        RenderedElement<ReactorTerminalContainer> exhaustGenerationRateSymbol = new RenderedElement<>(this, 8, 38, 16, 16, 142, 152, new TranslatableComponent("screen.biggerreactors.reactor_terminal.exhaust_generation_rate.tooltip"));
+        RenderedElement<ReactorTerminalContainer> exhaustGenerationRateSymbol = new RenderedElement<>(this, 8, 38, 16, 16, 142, 152, Component.translatable("screen.biggerreactors.reactor_terminal.exhaust_generation_rate.tooltip"));
         exhaustGenerationRateSymbol.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> RenderHelper.drawMaskedFluid(mS,
                 exhaustGenerationRateSymbol.x, exhaustGenerationRateSymbol.y, this.getBlitOffset(),
                 exhaustGenerationRateSymbol.width, exhaustGenerationRateSymbol.height,
@@ -154,11 +153,11 @@ public class ActiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
             this.getMinecraft().setScreen(new PassiveReactorTerminalScreen(this.menu, this.inventory, this.title));
         }
         // Check if coolant type changed.
-        if (!reactorState.coolantResourceLocation.equals(Objects.requireNonNull(coolantFluid.getRegistryName()).toString())) {
+        if (!reactorState.coolantResourceLocation.equals(Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(coolantFluid)).toString())) {
             coolantFluid = Registry.FLUID.get(new ResourceLocation(reactorState.coolantResourceLocation));
         }
         // Check if exhaust type changed.
-        if (!reactorState.exhaustResourceLocation.equals(Objects.requireNonNull(exhaustFluid.getRegistryName()).toString())) {
+        if (!reactorState.exhaustResourceLocation.equals(Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(exhaustFluid)).toString())) {
             exhaustFluid = Registry.FLUID.get(new ResourceLocation(reactorState.exhaustResourceLocation));
         }
     }

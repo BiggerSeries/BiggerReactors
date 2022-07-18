@@ -5,6 +5,7 @@ import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.lua.LuaFunction;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.HeatExchangerMultiblockController;
 import net.roguelogix.biggerreactors.util.FluidTransitionTank;
@@ -93,7 +94,7 @@ public class HeatExchangerPeripheral implements IPeripheral {
 
             @LuaFunction
             public String name() throws LuaException {
-                return transitionTankSupplier.get().fluidTypeInTank(tankNum).getRegistryName().toString();
+                return ForgeRegistries.FLUIDS.getKey(transitionTankSupplier.get().fluidTypeInTank(tankNum)).toString();
             }
 
             @LuaFunction

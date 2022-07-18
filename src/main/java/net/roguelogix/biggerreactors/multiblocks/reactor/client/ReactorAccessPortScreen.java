@@ -2,7 +2,6 @@ package net.roguelogix.biggerreactors.multiblocks.reactor.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
@@ -57,7 +56,7 @@ public class ReactorAccessPortScreen extends PhosphophylliteScreen<ReactorAccess
      */
     public void initControls() {
         // (Left) Direction toggle:
-        Biselector<ReactorAccessPortContainer> directionToggle = new Biselector<>(this, 8, 18, new TranslatableComponent("screen.biggerreactors.reactor_access_port.direction_toggle.tooltip"),
+        Biselector<ReactorAccessPortContainer> directionToggle = new Biselector<>(this, 8, 18, Component.translatable("screen.biggerreactors.reactor_access_port.direction_toggle.tooltip"),
                 () -> reactorAccessPortState.direction ? 0 : 1, SelectorColors.YELLOW, SelectorColors.BLUE);
         directionToggle.onMouseReleased = (mX, mY, btn) -> {
             // Click logic.
@@ -67,7 +66,7 @@ public class ReactorAccessPortScreen extends PhosphophylliteScreen<ReactorAccess
         this.addScreenElement(directionToggle);
 
         // (Left) Fuel mode toggle:
-        Biselector<ReactorAccessPortContainer> fuelModeToggle = new Biselector<>(this, 8, 34, new TranslatableComponent("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.tooltip"),
+        Biselector<ReactorAccessPortContainer> fuelModeToggle = new Biselector<>(this, 8, 34, Component.translatable("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.tooltip"),
                 () -> reactorAccessPortState.fuelMode ? 1 : 0, SelectorColors.CYAN, SelectorColors.YELLOW);
         fuelModeToggle.onMouseReleased = (mX, mY, btn) -> {
             // Click logic.
@@ -81,7 +80,7 @@ public class ReactorAccessPortScreen extends PhosphophylliteScreen<ReactorAccess
         this.addScreenElement(fuelModeToggle);
 
         // (Left) Manual eject button:
-        InteractiveElement<ReactorAccessPortContainer> manualEjectButton = new InteractiveElement<>(this, 8, 50, 15, 15, 226, 0, new TranslatableComponent("screen.biggerreactors.reactor_access_port.manual_eject.tooltip"));
+        InteractiveElement<ReactorAccessPortContainer> manualEjectButton = new InteractiveElement<>(this, 8, 50, 15, 15, 226, 0, Component.translatable("screen.biggerreactors.reactor_access_port.manual_eject.tooltip"));
         manualEjectButton.onMouseReleased = (mX, mY, btn) -> {
             // Click logic. Extra check necessary since this is an "in-class" button.
             if (manualEjectButton.isMouseOver(mX, mY)) {
@@ -123,11 +122,11 @@ public class ReactorAccessPortScreen extends PhosphophylliteScreen<ReactorAccess
         // Render text for input/output direction:
         if (reactorAccessPortState.direction) {
             // Text for an inlet:
-            this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_access_port.direction_toggle.input").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
+            this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_access_port.direction_toggle.input").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
 
         } else {
             // Text for an outlet:
-            this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_access_port.direction_toggle.output").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
+            this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_access_port.direction_toggle.output").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
         }
 
         // Check if we render output type:
@@ -135,18 +134,18 @@ public class ReactorAccessPortScreen extends PhosphophylliteScreen<ReactorAccess
             // Render text for fuel/waste mode:
             if (reactorAccessPortState.fuelMode) {
                 // Text for an inlet:
-                this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.fuel").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 38, 4210752);
+                this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.fuel").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 38, 4210752);
 
             } else {
                 // Text for an outlet:
-                this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.waste").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 38, 4210752);
+                this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.waste").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 38, 4210752);
             }
         } else {
             // Text for no output:
-            this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.nope").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 38, 4210752);
+            this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.nope").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 38, 4210752);
         }
 
         // Render text for manual waste eject:
-        this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_access_port.manual_eject").getString(), this.getGuiLeft() + 26, this.getGuiTop() + 54, 4210752);
+        this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_access_port.manual_eject").getString(), this.getGuiLeft() + 26, this.getGuiTop() + 54, 4210752);
     }
 }

@@ -12,6 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.model.data.ModelData;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorBlade;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorShaft;
@@ -103,7 +104,7 @@ public class BladeRenderer implements BlockEntityRenderer<TurbineRotorBearingTil
                 combinedLight *= 16;
                 bearingNum++;
                 
-                Minecraft.getInstance().getBlockRenderer().renderSingleBlock(TurbineRotorShaft.INSTANCE.defaultBlockState(), matrixStackIn, bufferIn, combinedLight, 0xA0000, net.minecraftforge.client.model.data.EmptyModelData.INSTANCE);
+                Minecraft.getInstance().getBlockRenderer().renderSingleBlock(TurbineRotorShaft.INSTANCE.defaultBlockState(), matrixStackIn, bufferIn, combinedLight, 0xA0000, ModelData.EMPTY, null);
                 
                 int i = 0;
                 for (Direction direction : Direction.values()) {
@@ -139,7 +140,7 @@ public class BladeRenderer implements BlockEntityRenderer<TurbineRotorBearingTil
                         matrixStackIn.translate(0.5, 0.5, 0.5);
                         matrixStackIn.mulPose(new Quaternion(Vector3f.ZP, 180, true));
                         matrixStackIn.translate(-0.5, -0.5, -0.5);
-                        Minecraft.getInstance().getBlockRenderer().renderSingleBlock(TurbineRotorBlade.INSTANCE.defaultBlockState(), matrixStackIn, bufferIn, combinedLight, 0xA0000, net.minecraftforge.client.model.data.EmptyModelData.INSTANCE);
+                        Minecraft.getInstance().getBlockRenderer().renderSingleBlock(TurbineRotorBlade.INSTANCE.defaultBlockState(), matrixStackIn, bufferIn, combinedLight, 0xA0000, ModelData.EMPTY, null);
                         matrixStackIn.popPose();
                     }
                     i++;

@@ -231,9 +231,9 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
         if (inFluid != null) {
-            nbt.putString("inFluid", inFluid.getRegistryName().toString());
+            nbt.putString("inFluid", ForgeRegistries.FLUIDS.getKey(inFluid).toString());
             nbt.putLong("inAmount", inAmount);
-            nbt.putString("outFluid", outFluid.getRegistryName().toString());
+            nbt.putString("outFluid", ForgeRegistries.FLUIDS.getKey(outFluid).toString());
             nbt.putLong("outAmount", outAmount);
         }
         return nbt;

@@ -2,8 +2,6 @@ package net.roguelogix.biggerreactors.multiblocks.reactor.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
@@ -100,7 +98,7 @@ public class ReactorRedstonePortScreen extends PhosphophylliteScreen<ReactorReds
         // (Left) Add input tab buttons:
         for (int i = 0; i < 3; i++) {
             final int cI = i;
-            final InteractiveElement<ReactorRedstonePortContainer> inputTab = new InteractiveElement<>(this, 0, (cI * 25), 25, 24, 206, (cI * 24), new TranslatableComponent(INPUT_TRANSLATIONS[cI] + ".tooltip"));
+            final InteractiveElement<ReactorRedstonePortContainer> inputTab = new InteractiveElement<>(this, 0, (cI * 25), 25, 24, 206, (cI * 24), Component.translatable(INPUT_TRANSLATIONS[cI] + ".tooltip"));
             inputTab.onMouseReleased = (mX, mY, btn) -> {
                 // Click logic. Extra check necessary since this is an "in-class" button.
                 if (inputTab.isMouseOver(mX, mY)) {
@@ -135,7 +133,7 @@ public class ReactorRedstonePortScreen extends PhosphophylliteScreen<ReactorReds
         // (Right) Add output tab buttons:
         for (int i = 0; i < 6; i++) {
             final int cI = i;
-            InteractiveElement<ReactorRedstonePortContainer> outputTab = new InteractiveElement<>(this, 175, (cI * 25), 25, 24, 206, (cI * 24) + 72, new TranslatableComponent(OUTPUT_TRANSLATIONS[cI] + ".tooltip"));
+            InteractiveElement<ReactorRedstonePortContainer> outputTab = new InteractiveElement<>(this, 175, (cI * 25), 25, 24, 206, (cI * 24) + 72, Component.translatable(OUTPUT_TRANSLATIONS[cI] + ".tooltip"));
             outputTab.onMouseReleased = (mX, mY, btn) -> {
                 // Click logic. Extra check necessary since this is an "in-class" button.
                 if (outputTab.isMouseOver(mX, mY)) {
@@ -168,7 +166,7 @@ public class ReactorRedstonePortScreen extends PhosphophylliteScreen<ReactorReds
         }
 
         // (Bottom) Apply changes button:
-        this.applyChangesButton = new InteractiveElement<>(this, 156, 156, 15, 15, 226, 216, new TranslatableComponent("screen.biggerreactors.reactor_redstone_port.apply_changes.tooltip"));
+        this.applyChangesButton = new InteractiveElement<>(this, 156, 156, 15, 15, 226, 216, Component.translatable("screen.biggerreactors.reactor_redstone_port.apply_changes.tooltip"));
         this.applyChangesButton.onMouseReleased = (mX, mY, btn) -> {
             // Click logic. Extra check necessary since this is an "in-class" button.
             if (this.applyChangesButton.isMouseOver(mX, mY)) {
@@ -210,7 +208,7 @@ public class ReactorRedstonePortScreen extends PhosphophylliteScreen<ReactorReds
         this.addScreenElement(this.applyChangesButton);
 
         // (Bottom) Revert changes button:
-        this.revertChangesButton = new InteractiveElement<>(this, 138, 156, 15, 15, 226, 231, new TranslatableComponent("screen.biggerreactors.reactor_redstone_port.revert_changes.tooltip"));
+        this.revertChangesButton = new InteractiveElement<>(this, 138, 156, 15, 15, 226, 231, Component.translatable("screen.biggerreactors.reactor_redstone_port.revert_changes.tooltip"));
         this.revertChangesButton.onMouseReleased = (mX, mY, btn) -> {
             // Click logic. Extra check necessary since this is an "in-class" button.
             if (this.revertChangesButton.isMouseOver(mX, mY)) {
@@ -237,7 +235,7 @@ public class ReactorRedstonePortScreen extends PhosphophylliteScreen<ReactorReds
         //this.addElement(this.revertChangesButton);
 
         // (Left) Trigger type toggle:
-        this.triggerTypeToggle = new Biselector<>(this, 29, 42, TextComponent.EMPTY,
+        this.triggerTypeToggle = new Biselector<>(this, 29, 42, Component.empty(),
                 () -> (this.reactorRedstonePortState.triggerPS.toBool() || this.reactorRedstonePortState.triggerAB.toBool())
                         ? 1 : 0, SelectorColors.YELLOW, SelectorColors.RED);
         this.triggerTypeToggle.onMouseReleased = (mX, mY, btn) -> {
@@ -255,16 +253,16 @@ public class ReactorRedstonePortScreen extends PhosphophylliteScreen<ReactorReds
             // Check if the element should be PS or AB, and update.
             if (this.reactorRedstonePortState.isInput()) {
                 // This is an input, so use the PS tooltip.
-                this.triggerTypeToggle.tooltip = new TranslatableComponent("screen.biggerreactors.reactor_redstone_port.trigger_type_toggle.ps.tooltip");
+                this.triggerTypeToggle.tooltip = Component.translatable("screen.biggerreactors.reactor_redstone_port.trigger_type_toggle.ps.tooltip");
             } else {
                 // This is an output, so use the AB tooltip.
-                this.triggerTypeToggle.tooltip = new TranslatableComponent("screen.biggerreactors.reactor_redstone_port.trigger_type_toggle.ab.tooltip");
+                this.triggerTypeToggle.tooltip = Component.translatable("screen.biggerreactors.reactor_redstone_port.trigger_type_toggle.ab.tooltip");
             }
         };
         this.addScreenElement(triggerTypeToggle);
 
         // (Left) Trigger mode toggle:
-        this.triggerModeToggle = new Triselector<>(this, 29, 58, new TranslatableComponent("screen.biggerreactors.reactor_terminal.auto_eject_toggle.tooltip"),
+        this.triggerModeToggle = new Triselector<>(this, 29, 58, Component.translatable("screen.biggerreactors.reactor_terminal.auto_eject_toggle.tooltip"),
                 () -> this.reactorRedstonePortState.triggerMode, SelectorColors.GREEN, SelectorColors.RED, SelectorColors.YELLOW);
         this.triggerModeToggle.onMouseReleased = (mX, mY, btn) -> {
             // Click logic.
@@ -278,7 +276,7 @@ public class ReactorRedstonePortScreen extends PhosphophylliteScreen<ReactorReds
         this.addScreenElement(this.textBufferA);
 
         // (Top) Text buffer A enter button:
-        this.textEnterButtonA = new CommonButton<>(this, 135, 92, 17, 14, 61, 130, new TranslatableComponent("screen.biggerreactors.reactor_redstone_port.apply.tooltip"));
+        this.textEnterButtonA = new CommonButton<>(this, 135, 92, 17, 14, 61, 130, Component.translatable("screen.biggerreactors.reactor_redstone_port.apply.tooltip"));
         this.textEnterButtonA.onMouseReleased = (mX, mY, btn) -> {
             // Click logic.
             this.getMenu().executeRequest("setTextBufferA", this.textBufferA.getContents().replaceAll("[^\\d.]", ""));
@@ -291,7 +289,7 @@ public class ReactorRedstonePortScreen extends PhosphophylliteScreen<ReactorReds
         this.addScreenElement(textBufferB);
 
         // (Top) Text buffer B enter button:
-        this.textEnterButtonB = new CommonButton<>(this, 135, 123, 17, 14, 61, 130, new TranslatableComponent("screen.biggerreactors.reactor_redstone_port.apply.tooltip"));
+        this.textEnterButtonB = new CommonButton<>(this, 135, 123, 17, 14, 61, 130, Component.translatable("screen.biggerreactors.reactor_redstone_port.apply.tooltip"));
         this.textEnterButtonB.onMouseReleased = (mX, mY, btn) -> {
             // Click logic.
             this.getMenu().executeRequest("setTextBufferB", this.textBufferB.getContents().replaceAll("[^\\d.]", ""));
@@ -304,10 +302,10 @@ public class ReactorRedstonePortScreen extends PhosphophylliteScreen<ReactorReds
      * Initialize symbols.
      */
     public void initSymbols() {
-        this.selectedTabSymbol = new RenderedElement<>(this, 92, 20, 16, 16, 25, 4, TextComponent.EMPTY);
+        this.selectedTabSymbol = new RenderedElement<>(this, 92, 20, 16, 16, 25, 4, Component.empty());
         this.selectedTabSymbol.onTick = () -> {
             // Set tooltip based on type.
-            this.selectedTabSymbol.tooltip = new TranslatableComponent((this.reactorRedstonePortState.isInput())
+            this.selectedTabSymbol.tooltip = Component.translatable((this.reactorRedstonePortState.isInput())
                     ? INPUT_TRANSLATIONS[this.reactorRedstonePortState.selectedTab.toInt()]
                     : OUTPUT_TRANSLATIONS[this.reactorRedstonePortState.selectedTab.toInt() - 3]);
             // Set new uv offset.
@@ -392,19 +390,19 @@ public class ReactorRedstonePortScreen extends PhosphophylliteScreen<ReactorReds
             // Check what type of trigger is used (pulse or signal):
             if (this.reactorRedstonePortState.triggerPS == ReactorRedstonePortTriggers.PULSE_OR_ABOVE) {
                 // Text for on pulse:
-                this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_redstone_port.trigger_type_toggle.ps.on_pulse").getString(), this.getGuiLeft() + 63, this.getGuiTop() + 45, 4210752);
+                this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.trigger_type_toggle.ps.on_pulse").getString(), this.getGuiLeft() + 63, this.getGuiTop() + 45, 4210752);
             } else {
                 // Text for on signal:
-                this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_redstone_port.trigger_type_toggle.ps.on_signal").getString(), this.getGuiLeft() + 63, this.getGuiTop() + 45, 4210752);
+                this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.trigger_type_toggle.ps.on_signal").getString(), this.getGuiLeft() + 63, this.getGuiTop() + 45, 4210752);
             }
         } else {
             // Check what type of trigger is used (above or below):
             if (this.reactorRedstonePortState.triggerAB == ReactorRedstonePortTriggers.PULSE_OR_ABOVE) {
                 // Text for on above:
-                this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_redstone_port.trigger_type_toggle.ab.while_above").getString(), this.getGuiLeft() + 63, this.getGuiTop() + 45, 4210752);
+                this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.trigger_type_toggle.ab.while_above").getString(), this.getGuiLeft() + 63, this.getGuiTop() + 45, 4210752);
             } else {
                 // Text for on below:
-                this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_redstone_port.trigger_type_toggle.ab.while_below").getString(), this.getGuiLeft() + 63, this.getGuiTop() + 45, 4210752);
+                this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.trigger_type_toggle.ab.while_below").getString(), this.getGuiLeft() + 63, this.getGuiTop() + 45, 4210752);
             }
         }
 
@@ -417,39 +415,39 @@ public class ReactorRedstonePortScreen extends PhosphophylliteScreen<ReactorReds
                     // When set to pulse:
                     if (this.reactorRedstonePortState.triggerMode == 0) {
                         // Insert by (mode A/0):
-                        this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_redstone_port.trigger_mode_toggle.mode_a").getString(), this.getGuiLeft() + 80, this.getGuiTop() + 62, 4210752);
-                        this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_redstone_port.text_buffer_a.mode_a").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
+                        this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.trigger_mode_toggle.mode_a").getString(), this.getGuiLeft() + 80, this.getGuiTop() + 62, 4210752);
+                        this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.text_buffer_a.mode_a").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
                     } else if (this.reactorRedstonePortState.triggerMode == 1) {
                         // Retract by (mode B/1):
-                        this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_redstone_port.trigger_mode_toggle.mode_b").getString(), this.getGuiLeft() + 80, this.getGuiTop() + 62, 4210752);
-                        this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_redstone_port.text_buffer_a.mode_b").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
+                        this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.trigger_mode_toggle.mode_b").getString(), this.getGuiLeft() + 80, this.getGuiTop() + 62, 4210752);
+                        this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.text_buffer_a.mode_b").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
                     } else {
                         // Set to (mode C/2):
-                        this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_redstone_port.trigger_mode_toggle.mode_c").getString(), this.getGuiLeft() + 80, this.getGuiTop() + 62, 4210752);
-                        this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_redstone_port.text_buffer_a.mode_c").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
+                        this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.trigger_mode_toggle.mode_c").getString(), this.getGuiLeft() + 80, this.getGuiTop() + 62, 4210752);
+                        this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.text_buffer_a.mode_c").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
                     }
                 } else {
                     // When set to signal:
-                    this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_redstone_port.input_control_rod_insertion.while_on").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
-                    this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_redstone_port.input_control_rod_insertion.while_off").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 113, 4210752);
+                    this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.input_control_rod_insertion.while_on").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
+                    this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.input_control_rod_insertion.while_off").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 113, 4210752);
                 }
                 break;
             }
             case OUTPUT_FUEL_TEMP:
             case OUTPUT_CASING_TEMP: {
-                this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_redstone_port.text_buffer_a.trigger_at").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
+                this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.text_buffer_a.trigger_at").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
                 this.getFont().draw(poseStack, "\u00B0C", this.getGuiLeft() + 155, this.getGuiTop() + 96, 4210752);
                 break;
             }
             case OUTPUT_FUEL_ENRICHMENT:
             case OUTPUT_ENERGY_AMOUNT: {
-                this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_redstone_port.text_buffer_a.trigger_at").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
+                this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.text_buffer_a.trigger_at").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
                 this.getFont().draw(poseStack, "%", this.getGuiLeft() + 155, this.getGuiTop() + 96, 4210752);
                 break;
             }
             case OUTPUT_FUEL_AMOUNT:
             case OUTPUT_WASTE_AMOUNT: {
-                this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_redstone_port.text_buffer_a.trigger_at").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
+                this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.text_buffer_a.trigger_at").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
                 this.getFont().draw(poseStack, "mB", this.getGuiLeft() + 155, this.getGuiTop() + 96, 4210752);
                 break;
             }

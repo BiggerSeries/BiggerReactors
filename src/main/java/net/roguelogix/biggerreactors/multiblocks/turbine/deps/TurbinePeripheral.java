@@ -5,6 +5,7 @@ import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.lua.LuaFunction;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.multiblocks.turbine.TurbineMultiblockController;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.VentState;
@@ -146,7 +147,7 @@ public class TurbinePeripheral implements IPeripheral {
 
             @LuaFunction
             public String name() throws LuaException {
-                return controllerSupplier.get().simulation().fluidTank().fluidTypeInTank(tankNum).getRegistryName().toString();
+                return ForgeRegistries.FLUIDS.getKey(controllerSupplier.get().simulation().fluidTank().fluidTypeInTank(tankNum)).toString();
             }
 
             @LuaFunction

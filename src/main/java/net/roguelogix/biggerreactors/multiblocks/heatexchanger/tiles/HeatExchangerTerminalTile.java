@@ -3,13 +3,13 @@ package net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.HeatExchangerTerminalBlock;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.HeatExchangerTerminalContainer;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.state.HeatExchangerState;
@@ -48,19 +48,19 @@ public class HeatExchangerTerminalTile extends HeatExchangerBaseTile implements 
         
         state.condenserTankSize = controller().condenserTank.perSideCapacity;
         
-        state.condenserIntakeFluid = controller().condenserTank.fluidTypeInTank(0).getRegistryName().toString();
+        state.condenserIntakeFluid = ForgeRegistries.FLUIDS.getKey(controller().condenserTank.fluidTypeInTank(0)).toString();
         state.condenserIntakeFluidAmount = controller().condenserTank.fluidAmountInTank(0);
         
-        state.condenserExhaustFluid = controller().condenserTank.fluidTypeInTank(1).getRegistryName().toString();
+        state.condenserExhaustFluid = ForgeRegistries.FLUIDS.getKey(controller().condenserTank.fluidTypeInTank(1)).toString();
         state.condenserExhaustFluidAmount = controller().condenserTank.fluidAmountInTank(1);
         
         
         state.evaporatorTankSize = controller().evaporatorTank.perSideCapacity;
         
-        state.evaporatorIntakeFluid = controller().evaporatorTank.fluidTypeInTank(0).getRegistryName().toString();
+        state.evaporatorIntakeFluid = ForgeRegistries.FLUIDS.getKey(controller().evaporatorTank.fluidTypeInTank(0)).toString();
         state.evaporatorIntakeFluidAmount = controller().evaporatorTank.fluidAmountInTank(0);
         
-        state.evaporatorExhaustFluid = controller().evaporatorTank.fluidTypeInTank(1).getRegistryName().toString();
+        state.evaporatorExhaustFluid = ForgeRegistries.FLUIDS.getKey(controller().evaporatorTank.fluidTypeInTank(1)).toString();
         state.evaporatorExhaustFluidAmount = controller().evaporatorTank.fluidAmountInTank(1);
         
         
@@ -73,7 +73,7 @@ public class HeatExchangerTerminalTile extends HeatExchangerBaseTile implements 
     
     @Override
     public Component getDisplayName() {
-        return new TranslatableComponent(HeatExchangerTerminalBlock.INSTANCE.getDescriptionId());
+        return Component.translatable(HeatExchangerTerminalBlock.INSTANCE.getDescriptionId());
     }
     
     @Nullable

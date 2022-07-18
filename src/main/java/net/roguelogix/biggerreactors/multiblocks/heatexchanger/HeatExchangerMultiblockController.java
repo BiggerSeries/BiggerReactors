@@ -4,7 +4,7 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -57,11 +57,11 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         //TODO lang file the errors
         
         if (condenserChannels.isEmpty() || evaporatorChannels.isEmpty()) {
-            throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.heat_exchanger.missing_channel_type"));
+            throw new ValidationError(Component.translatable("multiblock.error.biggerreactors.heat_exchanger.missing_channel_type"));
         }
         
         if (fluidPorts.size() != 4) {
-            throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.heat_exchanger.invalid_port_count"));
+            throw new ValidationError(Component.translatable("multiblock.error.biggerreactors.heat_exchanger.invalid_port_count"));
         }
         
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
@@ -87,12 +87,12 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
                 }
             }
             if (!channelFound) {
-                throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.heat_exchanger.fluid_port_unconnected", portPos.getX(), portPos.getY(), portPos.getZ()));
+                throw new ValidationError(Component.translatable("multiblock.error.biggerreactors.heat_exchanger.fluid_port_unconnected", portPos.getX(), portPos.getY(), portPos.getZ()));
             }
         }
         if (condenserPorts != 2 || evaporatorPorts != 2) {
             // technically this isn't the problem im checking, but this is a secondary check that happens, without having to march the channels
-            throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.heat_exchanger.duplicate_port_types"));
+            throw new ValidationError(Component.translatable("multiblock.error.biggerreactors.heat_exchanger.duplicate_port_types"));
         }
         
         verifyFluidChannels(condenserChannels);
@@ -173,14 +173,14 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
         for (HeatExchangerCondenserChannelTile condenserChannel : condenserChannels) {
             if (condenserChannel.lastCheckedTick != tick) {
                 BlockPos channelPos = condenserChannel.getBlockPos();
-                throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.heat_exchanger.dangling_channel", channelPos.getX(), channelPos.getY(), channelPos.getZ()));
+                throw new ValidationError(Component.translatable("multiblock.error.biggerreactors.heat_exchanger.dangling_channel", channelPos.getX(), channelPos.getY(), channelPos.getZ()));
             }
         }
         
         for (HeatExchangerEvaporatorChannelTile evaporatorChannel : evaporatorChannels) {
             if (evaporatorChannel.lastCheckedTick != tick) {
                 BlockPos channelPos = evaporatorChannel.getBlockPos();
-                throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.heat_exchanger.dangling_channel", channelPos.getX(), channelPos.getY(), channelPos.getZ()));
+                throw new ValidationError(Component.translatable("multiblock.error.biggerreactors.heat_exchanger.dangling_channel", channelPos.getX(), channelPos.getY(), channelPos.getZ()));
             }
         }
         
@@ -188,7 +188,7 @@ public class HeatExchangerMultiblockController extends RectangularMultiblockCont
             if (block.getBlock() instanceof HeatExchangerBaseBlock) {
                 mutableBlockPos.set(pos.x, pos.y, pos.z);
                 if (!blocks.containsPos(mutableBlockPos)) {
-                    throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.heat_exchanger.dangling_internal_part", pos.x, pos.y, pos.z));
+                    throw new ValidationError(Component.translatable("multiblock.error.biggerreactors.heat_exchanger.dangling_internal_part", pos.x, pos.y, pos.z));
                 }
             }
         });

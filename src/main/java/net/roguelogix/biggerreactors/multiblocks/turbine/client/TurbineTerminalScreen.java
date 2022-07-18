@@ -4,13 +4,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.client.Biselector;
 import net.roguelogix.biggerreactors.client.CommonRender;
@@ -39,7 +38,7 @@ public class TurbineTerminalScreen extends PhosphophylliteScreen<TurbineTerminal
     private Fluid exhaustFluid = Fluids.EMPTY;
 
     public TurbineTerminalScreen(TurbineTerminalContainer container, Inventory playerInventory, Component title) {
-        super(container, playerInventory, new TranslatableComponent("screen.biggerreactors.turbine_terminal"), DEFAULT_TEXTURE, 176, 152);
+        super(container, playerInventory, Component.translatable("screen.biggerreactors.turbine_terminal"), DEFAULT_TEXTURE, 176, 152);
 
         // Initialize turbine state.
         turbineState = (TurbineState) this.getMenu().getGuiPacket();
@@ -72,50 +71,50 @@ public class TurbineTerminalScreen extends PhosphophylliteScreen<TurbineTerminal
      **/
     private void initTooltips() {
         // (Left) Tachometer tooltip:
-        this.addScreenElement(new TooltipElement<>(this, 8, 19, 16, 16, new TranslatableComponent("screen.biggerreactors.turbine_terminal.tachometer.tooltip")));
+        this.addScreenElement(new TooltipElement<>(this, 8, 19, 16, 16, Component.translatable("screen.biggerreactors.turbine_terminal.tachometer.tooltip")));
 
         // (Left) Tachometer readout tooltip:
-        TooltipElement<TurbineTerminalContainer> tachometerReadoutTooltip = new TooltipElement<>(this, 26, 19, 53, 16, TextComponent.EMPTY);
+        TooltipElement<TurbineTerminalContainer> tachometerReadoutTooltip = new TooltipElement<>(this, 26, 19, 53, 16, Component.empty());
         tachometerReadoutTooltip.onTick = () -> {
-            tachometerReadoutTooltip.tooltip = new TextComponent(String.format("%.3f RPM", this.turbineState.currentRPM));
+            tachometerReadoutTooltip.tooltip = Component.literal(String.format("%.3f RPM", this.turbineState.currentRPM));
         };
         this.addScreenElement(tachometerReadoutTooltip);
 
         // (Left) RF generation rate tooltip:
-        this.addScreenElement(new TooltipElement<>(this, 8, 38, 16, 16, new TranslatableComponent("screen.biggerreactors.turbine_terminal.energy_generation_rate.tooltip")));
+        this.addScreenElement(new TooltipElement<>(this, 8, 38, 16, 16, Component.translatable("screen.biggerreactors.turbine_terminal.energy_generation_rate.tooltip")));
 
         // (Left) RF generation readout tooltip:
-        TooltipElement<TurbineTerminalContainer> generationRateReadoutTooltip = new TooltipElement<>(this, 26, 38, 53, 16, TextComponent.EMPTY);
+        TooltipElement<TurbineTerminalContainer> generationRateReadoutTooltip = new TooltipElement<>(this, 26, 38, 53, 16, Component.empty());
         generationRateReadoutTooltip.onTick = () -> {
-            generationRateReadoutTooltip.tooltip = new TextComponent(String.format("%.3f RF/t", this.turbineState.turbineOutputRate));
+            generationRateReadoutTooltip.tooltip = Component.literal(String.format("%.3f RF/t", this.turbineState.turbineOutputRate));
         };
         this.addScreenElement(generationRateReadoutTooltip);
 
         // (Left) Flow rate governor tooltip:
-        this.addScreenElement(new TooltipElement<>(this, 8, 57, 16, 16, new TranslatableComponent("screen.biggerreactors.turbine_terminal.flow_rate_governor.tooltip")));
+        this.addScreenElement(new TooltipElement<>(this, 8, 57, 16, 16, Component.translatable("screen.biggerreactors.turbine_terminal.flow_rate_governor.tooltip")));
 
         // (Left) Flow rate governor readout tooltip:
-        TooltipElement<TurbineTerminalContainer> flowRateReadoutTooltip = new TooltipElement<>(this, 26, 57, 53, 16, TextComponent.EMPTY);
+        TooltipElement<TurbineTerminalContainer> flowRateReadoutTooltip = new TooltipElement<>(this, 26, 57, 53, 16, Component.empty());
         flowRateReadoutTooltip.onTick = () -> {
-            flowRateReadoutTooltip.tooltip = new TextComponent(String.format("%d mB/t", this.turbineState.flowRate));
+            flowRateReadoutTooltip.tooltip = Component.literal(String.format("%d mB/t", this.turbineState.flowRate));
         };
         this.addScreenElement(flowRateReadoutTooltip);
 
         // (Left) Rotor efficiency tooltip:
-        this.addScreenElement(new TooltipElement<>(this, 8, 76, 16, 16, new TranslatableComponent("screen.biggerreactors.turbine_terminal.rotor_efficiency.tooltip")));
+        this.addScreenElement(new TooltipElement<>(this, 8, 76, 16, 16, Component.translatable("screen.biggerreactors.turbine_terminal.rotor_efficiency.tooltip")));
 
         // (Left) Rotor efficiency readout tooltip:
-        TooltipElement<TurbineTerminalContainer> rotorEfficiencyReadoutTooltip = new TooltipElement<>(this, 26, 76, 53, 16, TextComponent.EMPTY);
+        TooltipElement<TurbineTerminalContainer> rotorEfficiencyReadoutTooltip = new TooltipElement<>(this, 26, 76, 53, 16, Component.empty());
         rotorEfficiencyReadoutTooltip.onTick = () -> {
-            rotorEfficiencyReadoutTooltip.tooltip = new TextComponent(String.format("%.1f%%", (turbineState.efficiencyRate * 100.0D)));
+            rotorEfficiencyReadoutTooltip.tooltip = Component.literal(String.format("%.1f%%", (turbineState.efficiencyRate * 100.0D)));
         };
         this.addScreenElement(rotorEfficiencyReadoutTooltip);
 
         // (Top) Tachometer gauge tooltip:
-        this.addScreenElement(new TooltipElement<>(this, 86, 6, 16, 16, new TranslatableComponent("screen.biggerreactors.turbine_terminal.tachometer.tooltip")));
+        this.addScreenElement(new TooltipElement<>(this, 86, 6, 16, 16, Component.translatable("screen.biggerreactors.turbine_terminal.tachometer.tooltip")));
 
         // (Top) Internal battery tooltip:
-        this.addScreenElement(new TooltipElement<>(this, 152, 6, 16, 16, new TranslatableComponent("screen.biggerreactors.turbine_terminal.internal_battery.tooltip")));
+        this.addScreenElement(new TooltipElement<>(this, 152, 6, 16, 16, Component.translatable("screen.biggerreactors.turbine_terminal.internal_battery.tooltip")));
     }
 
     /**
@@ -123,7 +122,7 @@ public class TurbineTerminalScreen extends PhosphophylliteScreen<TurbineTerminal
      */
     private void initControls() {
         // (Left) Activity toggle:
-        Biselector<TurbineTerminalContainer> activityToggle = new Biselector<>(this, 8, 98, new TranslatableComponent("screen.biggerreactors.turbine_terminal.activity_toggle.tooltip"),
+        Biselector<TurbineTerminalContainer> activityToggle = new Biselector<>(this, 8, 98, Component.translatable("screen.biggerreactors.turbine_terminal.activity_toggle.tooltip"),
                 () -> turbineState.turbineActivity.toInt(), SelectorColors.RED, SelectorColors.GREEN);
         activityToggle.onMouseReleased = (mX, mY, btn) -> {
             // Click logic.
@@ -133,7 +132,7 @@ public class TurbineTerminalScreen extends PhosphophylliteScreen<TurbineTerminal
         this.addScreenElement(activityToggle);
 
         // (Left) Coil engage toggle:
-        Biselector<TurbineTerminalContainer> coilEngageToggle = new Biselector<>(this, 8, 114, new TranslatableComponent("screen.biggerreactors.turbine_terminal.coil_engage_toggle.tooltip"),
+        Biselector<TurbineTerminalContainer> coilEngageToggle = new Biselector<>(this, 8, 114, Component.translatable("screen.biggerreactors.turbine_terminal.coil_engage_toggle.tooltip"),
                 () -> turbineState.coilStatus ? 1 : 0, SelectorColors.RED, SelectorColors.GREEN);
         coilEngageToggle.onMouseReleased = (mX, mY, btn) -> {
             // Click logic.
@@ -143,7 +142,7 @@ public class TurbineTerminalScreen extends PhosphophylliteScreen<TurbineTerminal
         this.addScreenElement(coilEngageToggle);
 
         // (Left) Vent state toggle:
-        Triselector<TurbineTerminalContainer> ventStateToggle = new Triselector<>(this, 8, 130, new TranslatableComponent("screen.biggerreactors.turbine_terminal.vent_state_toggle.tooltip"),
+        Triselector<TurbineTerminalContainer> ventStateToggle = new Triselector<>(this, 8, 130, Component.translatable("screen.biggerreactors.turbine_terminal.vent_state_toggle.tooltip"),
                 () -> turbineState.ventState.toInt(), SelectorColors.YELLOW, SelectorColors.RED, SelectorColors.GREEN);
         ventStateToggle.onMouseReleased = (mX, mY, btn) -> {
             // Click logic.
@@ -153,7 +152,7 @@ public class TurbineTerminalScreen extends PhosphophylliteScreen<TurbineTerminal
         this.addScreenElement(ventStateToggle);
 
         // (Right) Flow rate increase button:
-        InteractiveElement<TurbineTerminalContainer> flowRateIncreaseButton = new InteractiveElement<>(this, 153, 92, 14, 15, 226, 0, new TranslatableComponent("screen.biggerreactors.turbine_terminal.flow_rate_increase.tooltip"));
+        InteractiveElement<TurbineTerminalContainer> flowRateIncreaseButton = new InteractiveElement<>(this, 153, 92, 14, 15, 226, 0, Component.translatable("screen.biggerreactors.turbine_terminal.flow_rate_increase.tooltip"));
         flowRateIncreaseButton.onMouseReleased = (mX, mY, btn) -> {
             // Click logic. Extra check necessary since this is an "in-class" button.
             if (flowRateIncreaseButton.isMouseOver(mX, mY)) {
@@ -186,7 +185,7 @@ public class TurbineTerminalScreen extends PhosphophylliteScreen<TurbineTerminal
         this.addScreenElement(flowRateIncreaseButton);
 
         // (Right) Flow rate decrease button:
-        InteractiveElement<TurbineTerminalContainer> flowRateDecreaseButton = new InteractiveElement<>(this, 153, 108, 14, 15, 226, 0, new TranslatableComponent("screen.biggerreactors.turbine_terminal.flow_rate_decrease.tooltip"));
+        InteractiveElement<TurbineTerminalContainer> flowRateDecreaseButton = new InteractiveElement<>(this, 153, 108, 14, 15, 226, 0, Component.translatable("screen.biggerreactors.turbine_terminal.flow_rate_decrease.tooltip"));
         flowRateDecreaseButton.onMouseReleased = (mX, mY, btn) -> {
             // Click logic. Extra check necessary since this is an "in-class" button.
             if (flowRateDecreaseButton.isMouseOver(mX, mY)) {
@@ -224,24 +223,24 @@ public class TurbineTerminalScreen extends PhosphophylliteScreen<TurbineTerminal
      */
     private void initGauges() {
         // (Top) Tachometer gauge:
-        RenderedElement<TurbineTerminalContainer> tachometerGauge = new RenderedElement<>(this, 85, 25, 18, 64, 0, 152, TextComponent.EMPTY);
+        RenderedElement<TurbineTerminalContainer> tachometerGauge = new RenderedElement<>(this, 85, 25, 18, 64, 0, 152, Component.empty());
         tachometerGauge.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> TurbineTerminalScreen.renderTachometerGauge(mS, tachometerGauge, turbineState.currentRPM, turbineState.maxRPM);
         this.addScreenElement(tachometerGauge);
 
         // (Top) Hot intake tank:
-        RenderedElement<TurbineTerminalContainer> intakeTank = new RenderedElement<>(this, 107, 25, 18, 64, 0, 152, TextComponent.EMPTY);
+        RenderedElement<TurbineTerminalContainer> intakeTank = new RenderedElement<>(this, 107, 25, 18, 64, 0, 152, Component.empty());
         intakeTank.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonRender.renderFluidGauge(mS,
                 intakeTank, turbineState.intakeStored, turbineState.intakeCapacity, intakeFluid);
         this.addScreenElement(intakeTank);
 
         // (Top) Cold exhaust tank:
-        RenderedElement<TurbineTerminalContainer> exhaustTank = new RenderedElement<>(this, 129, 25, 18, 64, 0, 152, TextComponent.EMPTY);
+        RenderedElement<TurbineTerminalContainer> exhaustTank = new RenderedElement<>(this, 129, 25, 18, 64, 0, 152, Component.empty());
         exhaustTank.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonRender.renderFluidGauge(mS,
                 exhaustTank, turbineState.exhaustStored, turbineState.exhaustCapacity, exhaustFluid);
         this.addScreenElement(exhaustTank);
 
         // (Top) Internal battery:
-        RenderedElement<TurbineTerminalContainer> internalBattery = new RenderedElement<>(this, 151, 25, 18, 64, 0, 152, TextComponent.EMPTY);
+        RenderedElement<TurbineTerminalContainer> internalBattery = new RenderedElement<>(this, 151, 25, 18, 64, 0, 152, Component.empty());
         internalBattery.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonRender.renderEnergyGauge(mS,
                 internalBattery, turbineState.energyStored, turbineState.energyCapacity);
         this.addScreenElement(internalBattery);
@@ -252,7 +251,7 @@ public class TurbineTerminalScreen extends PhosphophylliteScreen<TurbineTerminal
      */
     private void initSymbols() {
         // (Top) Intake tank symbol:
-        RenderedElement<TurbineTerminalContainer> intakeTankSymbol = new RenderedElement<>(this, 108, 6, 16, 16, 54, 152, new TranslatableComponent("screen.biggerreactors.turbine_terminal.intake_tank.tooltip"));
+        RenderedElement<TurbineTerminalContainer> intakeTankSymbol = new RenderedElement<>(this, 108, 6, 16, 16, 54, 152, Component.translatable("screen.biggerreactors.turbine_terminal.intake_tank.tooltip"));
         intakeTankSymbol.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> RenderHelper.drawMaskedFluid(mS,
                 intakeTankSymbol.x, intakeTankSymbol.y, this.getBlitOffset(),
                 intakeTankSymbol.width, intakeTankSymbol.height,
@@ -260,7 +259,7 @@ public class TurbineTerminalScreen extends PhosphophylliteScreen<TurbineTerminal
         this.addScreenElement(intakeTankSymbol);
 
         // (Top) Exhaust tank symbol:
-        RenderedElement<TurbineTerminalContainer> exhaustTankSymbol = new RenderedElement<>(this, 130, 6, 16, 16, 70, 152, new TranslatableComponent("screen.biggerreactors.turbine_terminal.exhaust_tank.tooltip"));
+        RenderedElement<TurbineTerminalContainer> exhaustTankSymbol = new RenderedElement<>(this, 130, 6, 16, 16, 70, 152, Component.translatable("screen.biggerreactors.turbine_terminal.exhaust_tank.tooltip"));
         exhaustTankSymbol.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> RenderHelper.drawMaskedFluid(mS,
                 exhaustTankSymbol.x, exhaustTankSymbol.y, this.getBlitOffset(),
                 exhaustTankSymbol.width, exhaustTankSymbol.height,
@@ -278,11 +277,11 @@ public class TurbineTerminalScreen extends PhosphophylliteScreen<TurbineTerminal
         turbineState = (TurbineState) this.getMenu().getGuiPacket();
         super.containerTick();
         // Check if intake type changed.
-        if (!turbineState.intakeResourceLocation.equals(Objects.requireNonNull(intakeFluid.getRegistryName()).toString())) {
+        if (!turbineState.intakeResourceLocation.equals(Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(intakeFluid)).toString())) {
             intakeFluid = Registry.FLUID.get(new ResourceLocation(turbineState.intakeResourceLocation));
         }
         // Check if exhaust type changed.
-        if (!turbineState.exhaustResourceLocation.equals(Objects.requireNonNull(exhaustFluid.getRegistryName()).toString())) {
+        if (!turbineState.exhaustResourceLocation.equals(Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(exhaustFluid)).toString())) {
             exhaustFluid = Registry.FLUID.get(new ResourceLocation(turbineState.exhaustResourceLocation));
         }
     }
@@ -308,7 +307,7 @@ public class TurbineTerminalScreen extends PhosphophylliteScreen<TurbineTerminal
         // Draw frame.
         symbol.blit(poseStack);
         // Update tooltip.
-        symbol.tooltip = new TextComponent(String.format("%.1f/%.1f RPM", currentRPM, maxRPM));
+        symbol.tooltip = Component.literal(String.format("%.1f/%.1f RPM", currentRPM, maxRPM));
     }
 
     /**
@@ -338,32 +337,32 @@ public class TurbineTerminalScreen extends PhosphophylliteScreen<TurbineTerminal
         // Render text for online/offline status:
         if (this.turbineState.turbineActivity == TurbineActivity.ACTIVE) {
             // Text for an online turbine:
-            this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.turbine_terminal.activity_toggle.online").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 102, 4210752);
+            this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.turbine_terminal.activity_toggle.online").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 102, 4210752);
 
         } else {
             // Text for an offline turbine:
-            this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.turbine_terminal.activity_toggle.offline").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 102, 4210752);
+            this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.turbine_terminal.activity_toggle.offline").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 102, 4210752);
         }
 
         // Render text for coil engage status:
         if (this.turbineState.coilStatus) {
             // Text for engaged coils:
-            this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.turbine_terminal.coil_engage_toggle.engaged").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 118, 4210752);
+            this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.turbine_terminal.coil_engage_toggle.engaged").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 118, 4210752);
         } else {
             // Text for disengaged coils:
-            this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.turbine_terminal.coil_engage_toggle.disengaged").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 118, 4210752);
+            this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.turbine_terminal.coil_engage_toggle.disengaged").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 118, 4210752);
         }
 
         // Render text for vent state:
         if (this.turbineState.ventState == VentState.OVERFLOW) {
             // Text for venting overflow exhaust:
-            this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.turbine_terminal.vent_state_toggle.overflow").getString(), this.getGuiLeft() + 58, this.getGuiTop() + 134, 4210752);
+            this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.turbine_terminal.vent_state_toggle.overflow").getString(), this.getGuiLeft() + 58, this.getGuiTop() + 134, 4210752);
         } else if (this.turbineState.ventState == VentState.ALL) {
             // Text for venting all exhaust:
-            this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.turbine_terminal.vent_state_toggle.all").getString(), this.getGuiLeft() + 58, this.getGuiTop() + 134, 4210752);
+            this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.turbine_terminal.vent_state_toggle.all").getString(), this.getGuiLeft() + 58, this.getGuiTop() + 134, 4210752);
         } else {
             // Text for venting no exhaust:
-            this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.turbine_terminal.vent_state_toggle.closed").getString(), this.getGuiLeft() + 58, this.getGuiTop() + 134, 4210752);
+            this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.turbine_terminal.vent_state_toggle.closed").getString(), this.getGuiLeft() + 58, this.getGuiTop() + 134, 4210752);
         }
     }
 }

@@ -135,7 +135,7 @@ public class ReactorModeratorRegistry {
                     blockTagOptional.ifPresent(holders -> holders.forEach(blockHolder -> {
                         var element = blockHolder.value();
                         registry.put(element, properties);
-                        BiggerReactors.LOGGER.debug("Loaded moderator " + element.getRegistryName());
+                        BiggerReactors.LOGGER.debug("Loaded moderator " + ForgeRegistries.BLOCKS.getKey(element));
                     }));
                     break;
                 }
@@ -152,7 +152,7 @@ public class ReactorModeratorRegistry {
                         var element = fluidHolder.value();
                         Block elementBlock = element.defaultFluidState().createLegacyBlock().getBlock();
                         registry.put(elementBlock, properties);
-                        BiggerReactors.LOGGER.debug("Loaded moderator " + element.getRegistryName());
+                        BiggerReactors.LOGGER.debug("Loaded moderator " + ForgeRegistries.FLUIDS.getKey(element));
                     }));
                     break;
                 }

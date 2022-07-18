@@ -5,6 +5,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorRedstonePort;
 import net.roguelogix.biggerreactors.multiblocks.reactor.tiles.ReactorRedstonePortTile;
 import net.roguelogix.phosphophyllite.client.gui.GuiSync;
@@ -56,5 +57,10 @@ public class ReactorRedstonePortContainer extends AbstractContainerMenu implemen
         }
 
         tileEntity.runRequest(requestName, requestData);
+    }
+    
+    @Override
+    public ItemStack quickMoveStack(Player p_38941_, int p_38942_) {
+        return ItemStack.EMPTY;
     }
 }

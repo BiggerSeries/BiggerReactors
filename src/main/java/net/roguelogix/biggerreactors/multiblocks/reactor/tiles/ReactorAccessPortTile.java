@@ -6,7 +6,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.MenuProvider;
@@ -32,6 +31,7 @@ import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorAccessPor
 import net.roguelogix.biggerreactors.multiblocks.reactor.containers.ReactorAccessPortContainer;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorAccessPortState;
 import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
+import net.roguelogix.phosphophyllite.multiblock.IAssemblyAttemptedTile;
 import net.roguelogix.phosphophyllite.multiblock.IOnAssemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.IOnDisassemblyTile;
 import net.roguelogix.phosphophyllite.registry.RegisterTile;
@@ -45,7 +45,7 @@ import static net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorAc
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandler, MenuProvider, IHasUpdatableState<ReactorAccessPortState>, IOnAssemblyTile, IOnDisassemblyTile {
+public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandler, MenuProvider, IHasUpdatableState<ReactorAccessPortState>, IAssemblyAttemptedTile, IOnDisassemblyTile {
     
     @RegisterTile("reactor_access_port")
     public static final BlockEntityType.BlockEntitySupplier<ReactorAccessPortTile> SUPPLIER = new RegisterTile.Producer<>(ReactorAccessPortTile::new);
@@ -97,7 +97,7 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     }
     
     @Override
-    public void onAssembly() {
+    public void onAssemblyAttempted() {
         assert level != null;
         level.setBlock(worldPosition, getBlockState().setValue(PORT_DIRECTION_ENUM_PROPERTY, direction), 3);
         itemOutputDirection = getBlockState().getValue(BlockStates.FACING);
@@ -322,7 +322,7 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     
     @Override
     public Component getDisplayName() {
-        return new TranslatableComponent(ReactorAccessPort.INSTANCE.getDescriptionId());
+        return Component.translatable(ReactorAccessPort.INSTANCE.getDescriptionId());
     }
     
     @Nullable

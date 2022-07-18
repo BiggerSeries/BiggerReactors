@@ -3,9 +3,7 @@ package net.roguelogix.biggerreactors.registries;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
@@ -192,13 +190,14 @@ public class FluidTransitionRegistry {
             
             for (Fluid liquid : transition.liquids) {
                 if (liquidTransitions.put(liquid, transition) != null) {
-                    BiggerReactors.LOGGER.error("Duplicate transitions given for liquid fluid " + liquid.getRegistryName().toString());
+                    
+                    BiggerReactors.LOGGER.error("Duplicate transitions given for liquid fluid " + ForgeRegistries.FLUIDS.getKey(liquid).toString());
                 }
             }
             
             for (Fluid gas : transition.gases) {
                 if (gasTransitions.put(gas, transition) != null) {
-                    BiggerReactors.LOGGER.error("Duplicate transitions given for gas fluid " + gas.getRegistryName().toString());
+                    BiggerReactors.LOGGER.error("Duplicate transitions given for gas fluid " + ForgeRegistries.FLUIDS.getKey(gas).toString());
                 }
             }
             

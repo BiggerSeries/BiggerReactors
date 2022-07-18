@@ -5,12 +5,13 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorBaseBlock;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorFuelRod;
@@ -29,7 +30,7 @@ import net.roguelogix.phosphophyllite.multiblock.ValidationError;
 import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblockController;
 import net.roguelogix.phosphophyllite.repack.org.joml.Vector3i;
 import net.roguelogix.phosphophyllite.serialization.PhosphophylliteCompound;
-import net.roguelogix.phosphophyllite.util.MethodsReturnNonnullByDefault;
+import net.roguelogix.phosphophyllite.util.NonnullDefault;
 import net.roguelogix.phosphophyllite.util.Util;
 
 import javax.annotation.Nonnull;
@@ -37,7 +38,7 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 
-@MethodsReturnNonnullByDefault
+@NonnullDefault
 @ParametersAreNonnullByDefault
 public class ReactorMultiblockController extends RectangularMultiblockController<ReactorBaseTile, ReactorMultiblockController> {
     
@@ -64,10 +65,10 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     
     private boolean validate() {
         if (foundRods > fuelRods.size()) {
-            throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.dangling_rod"));
+            throw new ValidationError(Component.translatable("multiblock.error.biggerreactors.dangling_rod"));
         }
         if (foundManifolds > manifolds.size()) {
-            throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.dangling_manifold"));
+            throw new ValidationError(Component.translatable("multiblock.error.biggerreactors.dangling_manifold"));
         }
         if (terminals.isEmpty()) {
             throw new ValidationError("multiblock.error.biggerreactors.no_terminal");
@@ -90,14 +91,14 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         for (int j = 0; j < controlRods.size(); j++) {
             var controlRodPos = controlRods.get(j).getBlockPos();
             if (controlRodPos.getY() != maxCoord().y()) {
-                throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.control_rod_not_on_top", controlRodPos.getX(), controlRodPos.getY(), controlRodPos.getZ()));
+                throw new ValidationError(Component.translatable("multiblock.error.biggerreactors.control_rod_not_on_top", controlRodPos.getX(), controlRodPos.getY(), controlRodPos.getZ()));
             }
             final int x = controlRodPos.getX(), z = controlRodPos.getZ();
             for (int i = internalMinY; i < maxY; i++) {
                 final var tile = blocks.getTile(x, i, z);
                 
                 if (!(tile instanceof ReactorFuelRodTile)) {
-                    throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.fuel_rod_gap", controlRodPos.getX(), controlRodPos.getY() + (-1 - i), controlRodPos.getZ()));
+                    throw new ValidationError(Component.translatable("multiblock.error.biggerreactors.fuel_rod_gap", controlRodPos.getX(), controlRodPos.getY() + (-1 - i), controlRodPos.getZ()));
                 }
                 
                 ((ReactorFuelRodTile) tile).lastCheckedTick = tick;
@@ -110,7 +111,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             for (int i = 0; i < fuelRods.size(); i++) {
                 final var fuelRod = fuelRods.get(i);
                 if (fuelRod.lastCheckedTick != tick) {
-                    throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.no_control_rod_for_fuel_rod", fuelRod.getBlockPos().getX(), fuelRod.getBlockPos().getZ()));
+                    throw new ValidationError(Component.translatable("multiblock.error.biggerreactors.no_control_rod_for_fuel_rod", fuelRod.getBlockPos().getX(), fuelRod.getBlockPos().getZ()));
                 }
             }
         }
@@ -167,7 +168,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             for (ReactorManifoldTile manifold : manifolds) {
                 if (manifold.lastCheckedTick != tick) {
                     BlockPos pos = manifold.getBlockPos();
-                    throw new ValidationError(new TranslatableComponent("multiblock.error.biggerreactors.disconnected_manifold", pos.getX(), pos.getY(), pos.getZ()));
+                    throw new ValidationError(Component.translatable("multiblock.error.biggerreactors.disconnected_manifold", pos.getX(), pos.getY(), pos.getZ()));
                 }
             }
         }
@@ -755,20 +756,20 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             reactorState.coolantStored = coolantTank.liquidAmount();
             reactorState.coolantCapacity = coolantTank.perSideCapacity();
             coolantTankWrapper.liquidType();
-            reactorState.coolantResourceLocation = Objects.requireNonNull(coolantTankWrapper.liquidType().getRegistryName()).toString();
+            reactorState.coolantResourceLocation = Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(coolantTankWrapper.liquidType())).toString();
             
             reactorState.exhaustStored = coolantTank.vaporAmount();
             reactorState.exhaustCapacity = coolantTank.perSideCapacity();
             coolantTankWrapper.vaporType();
-            reactorState.exhaustResourceLocation = Objects.requireNonNull(coolantTankWrapper.vaporType().getRegistryName()).toString();
+            reactorState.exhaustResourceLocation = Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(coolantTankWrapper.vaporType())).toString();
         } else {
             reactorState.coolantStored = 0;
             reactorState.coolantCapacity = 0;
-            reactorState.coolantResourceLocation = Objects.requireNonNull(Fluids.EMPTY.getRegistryName()).toString();
+            reactorState.coolantResourceLocation = Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(Fluids.EMPTY)).toString();
             
             reactorState.exhaustStored = 0;
             reactorState.exhaustCapacity = 0;
-            reactorState.exhaustResourceLocation = Objects.requireNonNull(Fluids.EMPTY.getRegistryName()).toString();
+            reactorState.exhaustResourceLocation = Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(Fluids.EMPTY)).toString();
         }
         reactorState.caseHeatStored = simulation.stackHeat();
         reactorState.fuelHeatStored = simulation.fuelHeat();

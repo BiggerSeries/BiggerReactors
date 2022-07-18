@@ -2,8 +2,6 @@ package net.roguelogix.biggerreactors.multiblocks.reactor.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.api.distmarker.Dist;
@@ -61,17 +59,17 @@ public class PassiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorT
      */
     private void initTooltips() {
         // (Left) RF generation rate tooltip:
-        this.addScreenElement(new TooltipElement<>(this, 8, 38, 16, 16, new TranslatableComponent("screen.biggerreactors.reactor_terminal.energy_generation_rate.tooltip")));
+        this.addScreenElement(new TooltipElement<>(this, 8, 38, 16, 16, Component.translatable("screen.biggerreactors.reactor_terminal.energy_generation_rate.tooltip")));
 
         // (Left) RF generation readout tooltip:
-        TooltipElement<ReactorTerminalContainer> generationRateReadoutTooltip = new TooltipElement<>(this, 26, 38, 53, 16, TextComponent.EMPTY);
+        TooltipElement<ReactorTerminalContainer> generationRateReadoutTooltip = new TooltipElement<>(this, 26, 38, 53, 16, Component.empty());
         generationRateReadoutTooltip.onTick = () -> {
-            generationRateReadoutTooltip.tooltip = new TextComponent(String.format("%.3f RF/t", this.reactorState.reactorOutputRate));
+            generationRateReadoutTooltip.tooltip = Component.literal(String.format("%.3f RF/t", this.reactorState.reactorOutputRate));
         };
         this.addScreenElement(generationRateReadoutTooltip);
 
         // (Top) Internal battery tooltip:
-        this.addScreenElement(new TooltipElement<>(this, 152, 6, 16, 16, new TranslatableComponent("screen.biggerreactors.reactor_terminal.internal_battery.tooltip")));
+        this.addScreenElement(new TooltipElement<>(this, 152, 6, 16, 16, Component.translatable("screen.biggerreactors.reactor_terminal.internal_battery.tooltip")));
     }
 
     /**
@@ -79,7 +77,7 @@ public class PassiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorT
      */
     private void initGauges() {
         // (Top) Internal battery:
-        RenderedElement<ReactorTerminalContainer> internalBattery = new RenderedElement<>(this, 151, 25, 18, 64, 0, 152, TextComponent.EMPTY);
+        RenderedElement<ReactorTerminalContainer> internalBattery = new RenderedElement<>(this, 151, 25, 18, 64, 0, 152, Component.empty());
         internalBattery.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonRender.renderEnergyGauge(mS,
                 internalBattery, reactorState.energyStored, reactorState.energyCapacity);
         this.addScreenElement(internalBattery);

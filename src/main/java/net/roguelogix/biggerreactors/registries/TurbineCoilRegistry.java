@@ -76,7 +76,7 @@ public class TurbineCoilRegistry {
                 blockTagOptional.ifPresent(holders -> holders.forEach(blockHolder -> {
                     var element = blockHolder.value();
                     registry.put(element, properties);
-                    BiggerReactors.LOGGER.debug("Loaded moderator " + element.getRegistryName());
+                    BiggerReactors.LOGGER.debug("Loaded coil " + ForgeRegistries.BLOCKS.getKey(element));
                 }));
             } else {
                 // cant check against air, because air is a valid thing to load

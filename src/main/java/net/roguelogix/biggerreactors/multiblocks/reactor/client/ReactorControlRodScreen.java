@@ -4,8 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
@@ -68,7 +66,7 @@ public class ReactorControlRodScreen extends PhosphophylliteScreen<ReactorContro
         this.addScreenElement(textBox);
 
         // (Top) Name text box enter button:
-        InteractiveElement<ReactorControlRodContainer> textBoxEnterButton = new InteractiveElement<>(this, 114, 27, 17, 14, 194, 0, new TranslatableComponent("screen.biggerreactors.reactor_control_rod.apply.tooltip"));
+        InteractiveElement<ReactorControlRodContainer> textBoxEnterButton = new InteractiveElement<>(this, 114, 27, 17, 14, 194, 0, Component.translatable("screen.biggerreactors.reactor_control_rod.apply.tooltip"));
         textBoxEnterButton.onMouseReleased = (mX, mY, btn) -> {
             // Click logic. Extra check necessary since this is an "in-class" button.
             if (textBoxEnterButton.isMouseOver(mX, mY)) {
@@ -95,7 +93,7 @@ public class ReactorControlRodScreen extends PhosphophylliteScreen<ReactorContro
         //this.addElement(textBoxEnterButton);
 
         // (Top) Name text box enter button:
-        CommonButton<ReactorControlRodContainer> textEnterButton = new CommonButton<>(this, 114, 27, 17, 14, 61, 130, new TranslatableComponent("screen.biggerreactors.reactor_redstone_port.apply.tooltip"));
+        CommonButton<ReactorControlRodContainer> textEnterButton = new CommonButton<>(this, 114, 27, 17, 14, 61, 130, Component.translatable("screen.biggerreactors.reactor_redstone_port.apply.tooltip"));
         textEnterButton.onMouseReleased = (mX, mY, btn) -> {
             // Click logic.
             this.getMenu().executeRequest("setName", textBox.getContents());
@@ -104,7 +102,7 @@ public class ReactorControlRodScreen extends PhosphophylliteScreen<ReactorContro
         this.addScreenElement(textEnterButton);
 
         // (Center) Rod retract button:
-        InteractiveElement<ReactorControlRodContainer> rodRetractButton = new InteractiveElement<>(this, 58, 82, 14, 15, 226, 0, new TranslatableComponent("screen.biggerreactors.reactor_control_rod.retract_rod.tooltip"));
+        InteractiveElement<ReactorControlRodContainer> rodRetractButton = new InteractiveElement<>(this, 58, 82, 14, 15, 226, 0, Component.translatable("screen.biggerreactors.reactor_control_rod.retract_rod.tooltip"));
         rodRetractButton.onMouseReleased = (mX, mY, btn) -> {
             // Click logic. Extra check necessary since this is an "in-class" button.
             if (rodRetractButton.isMouseOver(mX, mY)) {
@@ -137,7 +135,7 @@ public class ReactorControlRodScreen extends PhosphophylliteScreen<ReactorContro
         this.addScreenElement(rodRetractButton);
 
         // (Center) Rod insert button:
-        InteractiveElement<ReactorControlRodContainer> rodInsertButton = new InteractiveElement<>(this, 58, 64, 14, 15, 226, 0, new TranslatableComponent("screen.biggerreactors.reactor_control_rod.insert_rod.tooltip"));
+        InteractiveElement<ReactorControlRodContainer> rodInsertButton = new InteractiveElement<>(this, 58, 64, 14, 15, 226, 0, Component.translatable("screen.biggerreactors.reactor_control_rod.insert_rod.tooltip"));
         rodInsertButton.onMouseReleased = (mX, mY, btn) -> {
             // Click logic. Extra check necessary since this is an "in-class" button.
             if (rodInsertButton.isMouseOver(mX, mY)) {
@@ -175,7 +173,7 @@ public class ReactorControlRodScreen extends PhosphophylliteScreen<ReactorContro
      */
     public void initGauges() {
         // (Center) Control rod insertion gauge:
-        RenderedElement<ReactorControlRodContainer> rodInsertionGauge = new RenderedElement<>(this, 36, 50, 18, 64, 0, 126, TextComponent.EMPTY);
+        RenderedElement<ReactorControlRodContainer> rodInsertionGauge = new RenderedElement<>(this, 36, 50, 18, 64, 0, 126, Component.empty());
         rodInsertionGauge.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> ReactorControlRodScreen.renderInsertionLevel(mS, rodInsertionGauge, this.reactorControlRodState.insertionLevel);
         this.addScreenElement(rodInsertionGauge);
     }
@@ -193,7 +191,7 @@ public class ReactorControlRodScreen extends PhosphophylliteScreen<ReactorContro
         super.render(poseStack, mouseX, mouseY, partialTicks);
 
         // Render text for text box:
-        this.font.draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_control_rod.name").getString(), this.getGuiLeft() + 8, this.getGuiTop() + 17, 4210752);
+        this.font.draw(poseStack, Component.translatable("screen.biggerreactors.reactor_control_rod.name").getString(), this.getGuiLeft() + 8, this.getGuiTop() + 17, 4210752);
 
         // Render text for insertion level:
         this.font.draw(poseStack, String.format("%.1f%%", reactorControlRodState.insertionLevel), this.getGuiLeft() + 76, this.getGuiTop() + 77, 4210752);
@@ -220,6 +218,6 @@ public class ReactorControlRodScreen extends PhosphophylliteScreen<ReactorContro
         // Draw frame.
         symbol.blit(poseStack);
         // Update tooltip.
-        symbol.tooltip = new TextComponent(String.format("%.1f%%", insertionLevel));
+        symbol.tooltip = Component.literal(String.format("%.1f%%", insertionLevel));
     }
 }

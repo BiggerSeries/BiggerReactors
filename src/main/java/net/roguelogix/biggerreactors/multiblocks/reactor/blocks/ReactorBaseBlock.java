@@ -72,7 +72,7 @@ public abstract class ReactorBaseBlock extends PhosphophylliteBlock implements I
         if (hand == InteractionHand.MAIN_HAND && state.hasProperty(ASSEMBLED) && state.getValue(ASSEMBLED)) {
             if (level.getBlockEntity(pos) instanceof MenuProvider menuProvider) {
                 if (!level.isClientSide) {
-                    NetworkHooks.openGui((ServerPlayer) player, menuProvider, pos);
+                    NetworkHooks.openScreen((ServerPlayer) player, menuProvider, pos);
                 }
                 return InteractionResult.SUCCESS;
             }

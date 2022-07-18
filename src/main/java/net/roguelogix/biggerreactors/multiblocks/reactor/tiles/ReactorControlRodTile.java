@@ -5,7 +5,6 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -49,7 +48,7 @@ public class ReactorControlRodTile extends ReactorBaseTile implements MenuProvid
     @Override
     
     public Component getDisplayName() {
-        return new TranslatableComponent(ReactorControlRod.INSTANCE.getDescriptionId());
+        return Component.translatable(ReactorControlRod.INSTANCE.getDescriptionId());
     }
     
     @Nullable

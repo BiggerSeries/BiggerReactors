@@ -158,11 +158,11 @@ dependencies {
 //
 //    compileOnly "mekanism:Mekanism:${mekanism_mc_version}-${mekanism_version}:api"
 
-    runtimeOnly fg.deobf('curse.maven:JEI-238222:3683240')
-    runtimeOnly fg.deobf('curse.maven:WorldStripper-250603:3545856')
+//    runtimeOnly fg.deobf('curse.maven:JEI-238222:3683240')
+//    runtimeOnly fg.deobf('curse.maven:WorldStripper-250603:3545856')
 //    runtimeOnly fg.deobf('curse.maven:CW-399558:3562331')
 
-    library "org.lwjgl:lwjgl-opencl:3.2.2"
+    compileOnly "org.lwjgl:lwjgl-opencl:3.3.1"
 }
 
 jar {

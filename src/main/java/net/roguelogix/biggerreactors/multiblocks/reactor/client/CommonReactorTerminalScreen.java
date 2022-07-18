@@ -3,8 +3,6 @@ package net.roguelogix.biggerreactors.multiblocks.reactor.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.api.distmarker.Dist;
@@ -32,7 +30,7 @@ public class CommonReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
 
     public CommonReactorTerminalScreen(ReactorTerminalContainer container, Inventory playerInventory, Component title) {
         // We override whatever Minecraft wants to set the title to. It wants "Reactor Terminal," but that's too long.
-        super(container, playerInventory, new TranslatableComponent("screen.biggerreactors.reactor_terminal"), RenderHelper.getBlankTextureResource(), 176, 152);
+        super(container, playerInventory, Component.translatable("screen.biggerreactors.reactor_terminal"), RenderHelper.getBlankTextureResource(), 176, 152);
 
         // Initialize reactor terminal state.
         initialState = (ReactorState) this.getMenu().getGuiPacket();
@@ -59,43 +57,43 @@ public class CommonReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
      */
     public static void initTooltips(@Nonnull PhosphophylliteScreen<ReactorTerminalContainer> screen, ReactorState reactorState) {
         // (Left) Temperature tooltip:
-        screen.addScreenElement(new TooltipElement<>(screen, 8, 19, 16, 16, new TranslatableComponent("screen.biggerreactors.reactor_terminal.temperature.tooltip")));
+        screen.addScreenElement(new TooltipElement<>(screen, 8, 19, 16, 16, Component.translatable("screen.biggerreactors.reactor_terminal.temperature.tooltip")));
 
         // (Left) Temperature readout tooltip:
-        TooltipElement<ReactorTerminalContainer> temperatureReadoutTooltip = new TooltipElement<>(screen, 26, 19, 53, 16, TextComponent.EMPTY);
+        TooltipElement<ReactorTerminalContainer> temperatureReadoutTooltip = new TooltipElement<>(screen, 26, 19, 53, 16, Component.empty());
         temperatureReadoutTooltip.onTick = () -> {
-            temperatureReadoutTooltip.tooltip = new TextComponent(String.format("%.3f K", reactorState.fuelHeatStored));
+            temperatureReadoutTooltip.tooltip = Component.literal(String.format("%.3f K", reactorState.fuelHeatStored));
         };
         screen.addScreenElement(temperatureReadoutTooltip);
 
         // (Left) Fuel consumption rate tooltip:
-        screen.addScreenElement(new TooltipElement<>(screen, 8, 57, 16, 16, new TranslatableComponent("screen.biggerreactors.reactor_terminal.fuel_usage_rate.tooltip")));
+        screen.addScreenElement(new TooltipElement<>(screen, 8, 57, 16, 16, Component.translatable("screen.biggerreactors.reactor_terminal.fuel_usage_rate.tooltip")));
 
         // (Left) Fuel consumption readout tooltip:
-        TooltipElement<ReactorTerminalContainer> fuelConsumptionReadoutTooltip = new TooltipElement<>(screen, 26, 57, 53, 16, TextComponent.EMPTY);
+        TooltipElement<ReactorTerminalContainer> fuelConsumptionReadoutTooltip = new TooltipElement<>(screen, 26, 57, 53, 16, Component.empty());
         fuelConsumptionReadoutTooltip.onTick = () -> {
-            fuelConsumptionReadoutTooltip.tooltip = new TextComponent(String.format("%.3f mB/t", reactorState.fuelUsageRate));
+            fuelConsumptionReadoutTooltip.tooltip = Component.literal(String.format("%.3f mB/t", reactorState.fuelUsageRate));
         };
         screen.addScreenElement(fuelConsumptionReadoutTooltip);
 
         // (Left) Reactivity rate tooltip:
-        screen.addScreenElement(new TooltipElement<>(screen, 8, 76, 16, 16, new TranslatableComponent("screen.biggerreactors.reactor_terminal.reactivity_rate.tooltip")));
+        screen.addScreenElement(new TooltipElement<>(screen, 8, 76, 16, 16, Component.translatable("screen.biggerreactors.reactor_terminal.reactivity_rate.tooltip")));
 
         // (Left) Reactivity rate readout tooltip:
-        TooltipElement<ReactorTerminalContainer> reactivityRateTooltip = new TooltipElement<>(screen, 26, 76, 53, 16, TextComponent.EMPTY);
+        TooltipElement<ReactorTerminalContainer> reactivityRateTooltip = new TooltipElement<>(screen, 26, 76, 53, 16, Component.empty());
         reactivityRateTooltip.onTick = () -> {
-            reactivityRateTooltip.tooltip = new TextComponent(String.format("%.1f%%", (reactorState.reactivityRate * 100.0)));
+            reactivityRateTooltip.tooltip = Component.literal(String.format("%.1f%%", (reactorState.reactivityRate * 100.0)));
         };
         screen.addScreenElement(reactivityRateTooltip);
 
         // (Top) Fuel mix gauge tooltip:
-        screen.addScreenElement(new TooltipElement<>(screen, 86, 6, 16, 16, new TranslatableComponent("screen.biggerreactors.reactor_terminal.fuel_mix.tooltip")));
+        screen.addScreenElement(new TooltipElement<>(screen, 86, 6, 16, 16, Component.translatable("screen.biggerreactors.reactor_terminal.fuel_mix.tooltip")));
 
         // (Top) Case heat gauge tooltip:
-        screen.addScreenElement(new TooltipElement<>(screen, 108, 6, 16, 16, new TranslatableComponent("screen.biggerreactors.reactor_terminal.case_heat.tooltip")));
+        screen.addScreenElement(new TooltipElement<>(screen, 108, 6, 16, 16, Component.translatable("screen.biggerreactors.reactor_terminal.case_heat.tooltip")));
 
         // (Top) Fuel heat gauge tooltip:
-        screen.addScreenElement(new TooltipElement<>(screen, 130, 6, 16, 16, new TranslatableComponent("screen.biggerreactors.reactor_terminal.fuel_heat.tooltip")));
+        screen.addScreenElement(new TooltipElement<>(screen, 130, 6, 16, 16, Component.translatable("screen.biggerreactors.reactor_terminal.fuel_heat.tooltip")));
     }
 
     /**
@@ -105,7 +103,7 @@ public class CommonReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
      */
     public static void initControls(@Nonnull PhosphophylliteScreen<ReactorTerminalContainer> screen, ReactorState reactorState) {
         // (Left) Activity toggle:
-        Biselector<ReactorTerminalContainer> activityToggle = new Biselector<>(screen, 8, 98, new TranslatableComponent("screen.biggerreactors.reactor_terminal.activity_toggle.tooltip"),
+        Biselector<ReactorTerminalContainer> activityToggle = new Biselector<>(screen, 8, 98, Component.translatable("screen.biggerreactors.reactor_terminal.activity_toggle.tooltip"),
                 () -> reactorState.reactorActivity.toInt(), SelectorColors.RED, SelectorColors.GREEN);
         activityToggle.onMouseReleased = (mX, mY, btn) -> {
             // Click logic.
@@ -115,7 +113,7 @@ public class CommonReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
         screen.addScreenElement(activityToggle);
 
         // (Left) Auto-eject toggle:
-        Biselector<ReactorTerminalContainer> autoEjectToggle = new Biselector<>(screen, 8, 114, new TranslatableComponent("screen.biggerreactors.reactor_terminal.auto_eject_toggle.tooltip"),
+        Biselector<ReactorTerminalContainer> autoEjectToggle = new Biselector<>(screen, 8, 114, Component.translatable("screen.biggerreactors.reactor_terminal.auto_eject_toggle.tooltip"),
                 () -> reactorState.doAutoEject ? 1 : 0, SelectorColors.RED, SelectorColors.CYAN);
         autoEjectToggle.onMouseReleased = (mX, mY, btn) -> {
             // Click logic.
@@ -125,7 +123,7 @@ public class CommonReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
         screen.addScreenElement(autoEjectToggle);
 
         // (Left) Manual eject button:
-        InteractiveElement<ReactorTerminalContainer> manualEjectButton = new InteractiveElement<>(screen, 8, 130, 15, 15, 226, 0, new TranslatableComponent("screen.biggerreactors.reactor_terminal.manual_eject.tooltip"));
+        InteractiveElement<ReactorTerminalContainer> manualEjectButton = new InteractiveElement<>(screen, 8, 130, 15, 15, 226, 0, Component.translatable("screen.biggerreactors.reactor_terminal.manual_eject.tooltip"));
         manualEjectButton.onMouseReleased = (mX, mY, btn) -> {
             // Click logic. Extra check necessary since this is an "in-class" button.
             if (manualEjectButton.isMouseOver(mX, mY)) {
@@ -163,17 +161,17 @@ public class CommonReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
      */
     public static void initGauges(@Nonnull PhosphophylliteScreen<ReactorTerminalContainer> screen, ReactorState reactorState) {
         // (Top) Fuel mix gauge:
-        RenderedElement<ReactorTerminalContainer> fuelMixGauge = new RenderedElement<>(screen, 85, 25, 18, 64, 0, 152, TextComponent.EMPTY);
+        RenderedElement<ReactorTerminalContainer> fuelMixGauge = new RenderedElement<>(screen, 85, 25, 18, 64, 0, 152, Component.empty());
         fuelMixGauge.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonReactorTerminalScreen.renderFuelMixGauge(mS, fuelMixGauge, reactorState.wasteStored, reactorState.fuelStored, reactorState.fuelCapacity);
         screen.addScreenElement(fuelMixGauge);
 
         // (Top) Case heat gauge:
-        RenderedElement<ReactorTerminalContainer> caseHeatGauge = new RenderedElement<>(screen, 107, 25, 18, 64, 0, 152, TextComponent.EMPTY);
+        RenderedElement<ReactorTerminalContainer> caseHeatGauge = new RenderedElement<>(screen, 107, 25, 18, 64, 0, 152, Component.empty());
         caseHeatGauge.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonReactorTerminalScreen.renderHeatGauge(mS, caseHeatGauge, reactorState.caseHeatStored, Config.CONFIG.Reactor.GUI.HeatDisplayMax);
         screen.addScreenElement(caseHeatGauge);
 
         // (Top) Fuel heat gauge:
-        RenderedElement<ReactorTerminalContainer> fuelHeatGauge = new RenderedElement<>(screen, 129, 25, 18, 64, 0, 152, TextComponent.EMPTY);
+        RenderedElement<ReactorTerminalContainer> fuelHeatGauge = new RenderedElement<>(screen, 129, 25, 18, 64, 0, 152, Component.empty());
         fuelHeatGauge.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonReactorTerminalScreen.renderHeatGauge(mS, fuelHeatGauge, reactorState.fuelHeatStored, Config.CONFIG.Reactor.GUI.HeatDisplayMax);
         screen.addScreenElement(fuelHeatGauge);
     }
@@ -208,7 +206,7 @@ public class CommonReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
         // Draw frame.
         symbol.blit(poseStack);
         // Update tooltip.
-        symbol.tooltip = new TextComponent(String.format("%.1f/%.1f K", heatStored, heatCapacity));
+        symbol.tooltip = Component.literal(String.format("%.1f/%.1f K", heatStored, heatCapacity));
     }
 
     /**
@@ -236,8 +234,8 @@ public class CommonReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
         // Draw frame.
         symbol.blit(poseStack);
         // Update tooltip.
-        symbol.tooltip = new TextComponent(String.format(
-                new TranslatableComponent("screen.biggerreactors.reactor_terminal.fuel_mix_gauge.tooltip").getString(),
+        symbol.tooltip = Component.literal(String.format(
+                Component.translatable("screen.biggerreactors.reactor_terminal.fuel_mix_gauge.tooltip").getString(),
                 RenderHelper.formatValue((fuelStored + wasteStored) / 1000.0, "B", true),
                 RenderHelper.formatValue(fuelCapacity / 1000.0, "B", true),
                 RenderHelper.formatValue(fuelStored / 1000.0, "B", true),
@@ -268,24 +266,24 @@ public class CommonReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
         // Render text for online/offline status:
         if (reactorActivity == ReactorActivity.ACTIVE) {
             // Text for an online reactor:
-            screen.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_terminal.activity_toggle.online").getString(), screen.getGuiLeft() + 42, screen.getGuiTop() + 102, 4210752);
+            screen.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_terminal.activity_toggle.online").getString(), screen.getGuiLeft() + 42, screen.getGuiTop() + 102, 4210752);
 
         } else {
             // Text for an offline reactor:
-            screen.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_terminal.activity_toggle.offline").getString(), screen.getGuiLeft() + 42, screen.getGuiTop() + 102, 4210752);
+            screen.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_terminal.activity_toggle.offline").getString(), screen.getGuiLeft() + 42, screen.getGuiTop() + 102, 4210752);
         }
 
         // Render text for auto-eject status:
         if (doAutoEject) {
             // Text for enabled auto-ejection:
-            screen.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_terminal.auto_eject_toggle.enabled").getString(), screen.getGuiLeft() + 42, screen.getGuiTop() + 118, 4210752);
+            screen.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_terminal.auto_eject_toggle.enabled").getString(), screen.getGuiLeft() + 42, screen.getGuiTop() + 118, 4210752);
         } else {
             // Text for disabled auto-ejection:
-            screen.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_terminal.auto_eject_toggle.disabled").getString(), screen.getGuiLeft() + 42, screen.getGuiTop() + 118, 4210752);
+            screen.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_terminal.auto_eject_toggle.disabled").getString(), screen.getGuiLeft() + 42, screen.getGuiTop() + 118, 4210752);
         }
 
         // Render text for manual eject button:
         // TODO: Remove with reactor manual eject.
-        //screen.getFont().drawString(mStack, new TranslatableComponent("screen.biggerreactors.reactor_terminal.manual_eject").getString(), screen.getGuiLeft() + 26, screen.getGuiTop() + 134, 4210752);
+        //screen.getFont().drawString(mStack, Component.translatable("screen.biggerreactors.reactor_terminal.manual_eject").getString(), screen.getGuiLeft() + 26, screen.getGuiTop() + 134, 4210752);
     }
 }

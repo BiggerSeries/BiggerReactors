@@ -5,8 +5,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.*;
 import net.minecraft.world.entity.player.Inventory;
@@ -116,9 +114,9 @@ public class CyaniteReprocessorTile extends BaseContainerBlockEntity implements 
         
         // Print tile data.
         if (ItemStack.isSame(player.getMainHandItem(), new ItemStack(DebugTool.INSTANCE))) {
-            player.sendMessage(new TextComponent(String.format("[%s] Progress: %s/%s", BiggerReactors.modid, this.cyaniteReprocessorState.workTime, this.cyaniteReprocessorState.workTimeTotal)), player.getUUID());
-            player.sendMessage(new TextComponent(String.format("[%s] Energy: %s/%s RF", BiggerReactors.modid, this.cyaniteReprocessorState.energyStored, this.cyaniteReprocessorState.energyCapacity)), player.getUUID());
-            player.sendMessage(new TextComponent(String.format("[%s] Fluid Tank: %s/%s mB", BiggerReactors.modid, this.cyaniteReprocessorState.waterStored, this.cyaniteReprocessorState.waterCapacity)), player.getUUID());
+            player.sendSystemMessage(Component.literal(String.format("[%s] Progress: %s/%s", BiggerReactors.modid, this.cyaniteReprocessorState.workTime, this.cyaniteReprocessorState.workTimeTotal)));
+            player.sendSystemMessage(Component.literal(String.format("[%s] Energy: %s/%s RF", BiggerReactors.modid, this.cyaniteReprocessorState.energyStored, this.cyaniteReprocessorState.energyCapacity)));
+            player.sendSystemMessage(Component.literal(String.format("[%s] Fluid Tank: %s/%s mB", BiggerReactors.modid, this.cyaniteReprocessorState.waterStored, this.cyaniteReprocessorState.waterCapacity)));
             return InteractionResult.SUCCESS;
         }
         
@@ -132,7 +130,7 @@ public class CyaniteReprocessorTile extends BaseContainerBlockEntity implements 
         }
         
         // Get container and open GUI.
-        NetworkHooks.openGui((ServerPlayer) player, this, blockPos);
+        NetworkHooks.openScreen((ServerPlayer) player, this, blockPos);
         return InteractionResult.SUCCESS;
     }
     
@@ -164,7 +162,7 @@ public class CyaniteReprocessorTile extends BaseContainerBlockEntity implements 
      */
     @Override
     protected Component getDefaultName() {
-        return new TranslatableComponent("block.biggerreactors.cyanite_reprocessor");
+        return Component.translatable("block.biggerreactors.cyanite_reprocessor");
     }
     
     /**

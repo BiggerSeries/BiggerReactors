@@ -2,8 +2,6 @@ package net.roguelogix.biggerreactors.machine.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.material.Fluids;
@@ -58,7 +56,7 @@ public class CyaniteReprocessorScreen extends PhosphophylliteScreen<CyaniteRepro
      */
     public void initTooltips() {
         // (Left) Internal battery:
-        this.addScreenElement(new TooltipElement<>(this, 8, 6, 16, 16, new TranslatableComponent("screen.biggerreactors.cyanite_reprocessor.internal_battery.tooltip")));
+        this.addScreenElement(new TooltipElement<>(this, 8, 6, 16, 16, Component.translatable("screen.biggerreactors.cyanite_reprocessor.internal_battery.tooltip")));
     }
 
     /**
@@ -66,13 +64,13 @@ public class CyaniteReprocessorScreen extends PhosphophylliteScreen<CyaniteRepro
      */
     public void initGauges() {
         // (Top) Internal battery:
-        RenderedElement<CyaniteReprocessorContainer> internalBattery = new RenderedElement<>(this, 7, 25, 18, 64, 0, 152, TextComponent.EMPTY);
+        RenderedElement<CyaniteReprocessorContainer> internalBattery = new RenderedElement<>(this, 7, 25, 18, 64, 0, 152, Component.empty());
         internalBattery.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonRender.renderEnergyGauge(mS,
                 internalBattery, cyaniteReprocessorState.energyStored, cyaniteReprocessorState.energyCapacity);
         this.addScreenElement(internalBattery);
 
         // (Top) Water tank:
-        RenderedElement<CyaniteReprocessorContainer> waterTank = new RenderedElement<>(this, 151, 25, 18, 64, 0, 152, TextComponent.EMPTY);
+        RenderedElement<CyaniteReprocessorContainer> waterTank = new RenderedElement<>(this, 151, 25, 18, 64, 0, 152, Component.empty());
         waterTank.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonRender.renderFluidGauge(mS,
                 waterTank, cyaniteReprocessorState.waterStored, cyaniteReprocessorState.waterCapacity,
                 Fluids.WATER.getSource());
@@ -90,7 +88,7 @@ public class CyaniteReprocessorScreen extends PhosphophylliteScreen<CyaniteRepro
      */
     public void initSymbols() {
         // (Right) Water tank symbol:
-        RenderedElement<CyaniteReprocessorContainer> waterTankSymbol = new RenderedElement<>(this, 152, 6, 16, 16, 48, 175, new TranslatableComponent("screen.biggerreactors.cyanite_reprocessor.water_tank.tooltip"));
+        RenderedElement<CyaniteReprocessorContainer> waterTankSymbol = new RenderedElement<>(this, 152, 6, 16, 16, 48, 175, Component.translatable("screen.biggerreactors.cyanite_reprocessor.water_tank.tooltip"));
         waterTankSymbol.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> RenderHelper.drawMaskedFluid(mS,
                 waterTankSymbol.x, waterTankSymbol.y, this.getBlitOffset(),
                 waterTankSymbol.width, waterTankSymbol.height,

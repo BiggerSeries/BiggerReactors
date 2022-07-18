@@ -1,7 +1,7 @@
 package net.roguelogix.biggerreactors.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.material.Fluid;
@@ -49,7 +49,7 @@ public class CommonRender {
         // Draw frame.
         symbol.blit(poseStack, 0, 0);
         // Update tooltip.
-        symbol.tooltip = new TextComponent(String.format("%s/%s",
+        symbol.tooltip = Component.literal(String.format("%s/%s",
                 RenderHelper.formatValue(energyStored, "RF"),
                 RenderHelper.formatValue(energyCapacity, "RF")));
         // Reset color and restore the previously bound texture.
@@ -86,7 +86,7 @@ public class CommonRender {
         // Draw level marks.
         symbol.blit(poseStack, 72, 0);
         // Update tooltip.
-        symbol.tooltip = new TextComponent(String.format("%s/%s of %s",
+        symbol.tooltip = Component.literal(String.format("%s/%s of %s",
                 RenderHelper.formatValue((fluidStored / 1000.0), "B", true),
                 RenderHelper.formatValue((fluidCapacity / 1000.0), "B", true),
                 new FluidStack(fluid, 1).getDisplayName().getString().toLowerCase(Locale.US)));
