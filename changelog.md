@@ -1,3 +1,9 @@
+# 1.18.2-0.6.0-beta.1.2
+ mekanism, its a thing again
+
+## Misc
+ - re-enable mekanism gas integration
+
 # 1.18.2-0.6.0-beta.1.1
  hot not-a-fix
 
