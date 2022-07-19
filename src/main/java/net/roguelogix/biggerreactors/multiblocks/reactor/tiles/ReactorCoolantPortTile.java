@@ -1,5 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.tiles;
 
+import mekanism.api.chemical.gas.IGasHandler;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -16,6 +17,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -28,6 +31,7 @@ import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorCoolantPor
 import net.roguelogix.phosphophyllite.fluids.FluidHandlerWrapper;
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
 import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
+import net.roguelogix.phosphophyllite.fluids.MekanismGasWrappers;
 import net.roguelogix.phosphophyllite.multiblock.IAssemblyAttemptedTile;
 import net.roguelogix.phosphophyllite.multiblock.IOnAssemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.IOnDisassemblyTile;
@@ -49,18 +53,17 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
     public ReactorCoolantPortTile(BlockEntityType<?> TYPE, BlockPos pos, BlockState state) {
         super(TYPE, pos, state);
     }
-
-//    @CapabilityInject(IGasHandler.class)
-//    public static Capability<IGasHandler> GAS_HANDLER_CAPABILITY = null;
+    
+    private static final Capability<IGasHandler> GAS_HANDLER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
     
     @Override
     public <T> LazyOptional<T> capability(Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
             return LazyOptional.of(() -> this).cast();
         }
-//        if (cap == GAS_HANDLER_CAPABILITY) {
-//            return LazyOptional.of(() -> MekanismGasWrappers.wrap(this)).cast();
-//        }
+        if (cap == GAS_HANDLER_CAPABILITY) {
+            return LazyOptional.of(() -> MekanismGasWrappers.wrap(this)).cast();
+        }
         return super.capability(cap, side);
     }
     
