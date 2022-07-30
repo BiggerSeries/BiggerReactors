@@ -24,8 +24,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @NonnullDefault
-public class ReactorMultiblockController extends MultiblockController<ReactorBaseTile, ReactorMultiblockController> implements IPersistentMultiblock<ReactorBaseTile, ReactorMultiblockController>, IRectangularMultiblock<ReactorBaseTile, ReactorMultiblockController>, ITouchingMultiblock<ReactorBaseTile, ReactorMultiblockController> {
-    
+public class ReactorMultiblockController extends MultiblockController<ReactorBaseTile, ReactorBaseBlock, ReactorMultiblockController> implements IPersistentMultiblock<ReactorBaseTile, ReactorBaseBlock, ReactorMultiblockController>, IRectangularMultiblock<ReactorBaseTile, ReactorBaseBlock, ReactorMultiblockController>, ITouchingMultiblock<ReactorBaseTile, ReactorBaseBlock, ReactorMultiblockController> {
     
     private final FastArraySet<ReactorControlRodTile> controlRods = new FastArraySet<>();
     private final FastArraySet<ReactorBaseTile> fuelRods = new FastArraySet<>();
@@ -34,7 +33,7 @@ public class ReactorMultiblockController extends MultiblockController<ReactorBas
     private int foundManifolds = 0;
     
     public ReactorMultiblockController(Level level) {
-        super(level, tile -> tile instanceof ReactorBaseTile, block -> block instanceof ReactorBaseBlock);
+        super(level, ReactorBaseTile.class, ReactorBaseBlock.class);
     }
     
     @Override
