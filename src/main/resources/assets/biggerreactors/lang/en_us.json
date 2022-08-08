@@ -177,8 +177,8 @@
   "screen.biggerreactors.turbine_terminal.vent_state_toggle.all": "Vent: §2All Exhaust",
   "screen.biggerreactors.turbine_terminal.vent_state_toggle.closed": "Vent: §4No Exhaust",
   "screen.biggerreactors.turbine_terminal.vent_state_toggle.tooltip": "Toggle Exhaust Venting\n§7Set how or whether exhaust will be vented.",
-  "screen.biggerreactors.turbine_terminal.flow_rate_increase.tooltip": "Increase Flow Rate\n§7Higher flow rates increase rotor speed.\n§8[Shift]: Increase by 10 mB.\n§8[Ctrl]: Increase by 50 mB.\n§8[Ctrl + Shift]: Increase by 100 mB.",
-  "screen.biggerreactors.turbine_terminal.flow_rate_decrease.tooltip": "Decrease Flow Rate\n§7Lower flow rates decrease rotor speed.\n§8[Shift]: Decrease by 10 mB.\n§8[Ctrl]: Decrease by 50 mB.\n§8[Ctrl + Shift]: Decrease by 100 mB.",
+  "screen.biggerreactors.turbine_terminal.flow_rate_increase.tooltip": "Increase Flow Rate\n§7Higher flow rates increase rotor speed.\n§8[Shift]: Increase by %s mB.\n§8[Ctrl]: Increase by %s mB.\n§8[Ctrl + Shift]: Increase by %s mB.",
+  "screen.biggerreactors.turbine_terminal.flow_rate_decrease.tooltip": "Decrease Flow Rate\n§7Lower flow rates decrease rotor speed.\n§8[Shift]: Decrease by %s mB.\n§8[Ctrl]: Decrease by %s mB.\n§8[Ctrl + Shift]: Decrease by %s mB.",
 
   "screen.biggerreactors.turbine_fluid_port": "Turbine Fluid Port",
   "screen.biggerreactors.turbine_fluid_port.direction_toggle.input": "Direction: §cInput",

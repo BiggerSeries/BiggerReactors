@@ -12,6 +12,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.roguelogix.biggerreactors.BiggerReactors;
+import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.client.Biselector;
 import net.roguelogix.biggerreactors.client.CommonRender;
 import net.roguelogix.biggerreactors.client.SelectorColors;
@@ -153,16 +154,16 @@ public class TurbineTerminalScreen extends PhosphophylliteScreen<TurbineTerminal
         this.addScreenElement(ventStateToggle);
 
         // (Right) Flow rate increase button:
-        InteractiveElement<TurbineTerminalContainer> flowRateIncreaseButton = new InteractiveElement<>(this, 153, 92, 14, 15, 226, 0, new TranslatableComponent("screen.biggerreactors.turbine_terminal.flow_rate_increase.tooltip"));
+        InteractiveElement<TurbineTerminalContainer> flowRateIncreaseButton = new InteractiveElement<>(this, 153, 92, 14, 15, 226, 0, new TranslatableComponent("screen.biggerreactors.turbine_terminal.flow_rate_increase.tooltip", Config.CONFIG.Turbine.GUI.DeltaMBShift, Config.CONFIG.Turbine.GUI.DeltaMBCtrl, Config.CONFIG.Turbine.GUI.DeltaMBHCtrlShift));
         flowRateIncreaseButton.onMouseReleased = (mX, mY, btn) -> {
             // Click logic. Extra check necessary since this is an "in-class" button.
             if (flowRateIncreaseButton.isMouseOver(mX, mY)) {
                 // Calculate amount of change:
                 long delta;
-                if (Screen.hasShiftDown() && Screen.hasControlDown()) delta = 100L;
-                else if (Screen.hasControlDown()) delta = 50L;
-                else if (Screen.hasShiftDown()) delta = 10L;
-                else delta = 1L;
+                if (Screen.hasShiftDown() && Screen.hasControlDown()) delta = Config.CONFIG.Turbine.GUI.DeltaMBHCtrlShift;
+                else if (Screen.hasControlDown()) delta = Config.CONFIG.Turbine.GUI.DeltaMBCtrl;
+                else if (Screen.hasShiftDown()) delta = Config.CONFIG.Turbine.GUI.DeltaMBShift;
+                else delta = Config.CONFIG.Turbine.GUI.DeltaMB;
                 // Mouse is hovering, do the thing.
                 this.getMenu().executeRequest("changeFlowRate", delta);
                 // Play the selection sound.
@@ -186,16 +187,16 @@ public class TurbineTerminalScreen extends PhosphophylliteScreen<TurbineTerminal
         this.addScreenElement(flowRateIncreaseButton);
 
         // (Right) Flow rate decrease button:
-        InteractiveElement<TurbineTerminalContainer> flowRateDecreaseButton = new InteractiveElement<>(this, 153, 108, 14, 15, 226, 0, new TranslatableComponent("screen.biggerreactors.turbine_terminal.flow_rate_decrease.tooltip"));
+        InteractiveElement<TurbineTerminalContainer> flowRateDecreaseButton = new InteractiveElement<>(this, 153, 108, 14, 15, 226, 0, new TranslatableComponent("screen.biggerreactors.turbine_terminal.flow_rate_decrease.tooltip", Config.CONFIG.Turbine.GUI.DeltaMBShift, Config.CONFIG.Turbine.GUI.DeltaMBCtrl, Config.CONFIG.Turbine.GUI.DeltaMBHCtrlShift));
         flowRateDecreaseButton.onMouseReleased = (mX, mY, btn) -> {
             // Click logic. Extra check necessary since this is an "in-class" button.
             if (flowRateDecreaseButton.isMouseOver(mX, mY)) {
                 // Calculate amount of change:
                 long delta;
-                if (Screen.hasShiftDown() && Screen.hasControlDown()) delta = -100L;
-                else if (Screen.hasControlDown()) delta = -50L;
-                else if (Screen.hasShiftDown()) delta = -10L;
-                else delta = -1L;
+                if (Screen.hasShiftDown() && Screen.hasControlDown()) delta = -Config.CONFIG.Turbine.GUI.DeltaMBHCtrlShift;
+                else if (Screen.hasControlDown()) delta = -Config.CONFIG.Turbine.GUI.DeltaMBCtrl;
+                else if (Screen.hasShiftDown()) delta = -Config.CONFIG.Turbine.GUI.DeltaMBShift;
+                else delta = -Config.CONFIG.Turbine.GUI.DeltaMB;
                 // Mouse is hovering, do the thing.
                 this.getMenu().executeRequest("changeFlowRate", delta);
                 // Play the selection sound.
