@@ -183,14 +183,14 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
             connected = true;
             handlerOptional = fluidOptional;
             handler = FluidHandlerWrapper.wrap(fluidOptional.orElse(EMPTY_TANK));
-//        } else if (GAS_HANDLER_CAPABILITY != null) {
-//            LazyOptional<IGasHandler> gasOptional = te.getCapability(GAS_HANDLER_CAPABILITY, steamOutputDirection.getOpposite());
-//            if (gasOptional.isPresent()) {
-//                IGasHandler gasHandler = gasOptional.orElse(MekanismGasWrappers.EMPTY_TANK);
-//                connected = true;
-//                handlerOptional = gasOptional;
-//                handler = MekanismGasWrappers.wrap(gasHandler);
-//            }
+        } else if (GAS_HANDLER_CAPABILITY != null) {
+            LazyOptional<IGasHandler> gasOptional = te.getCapability(GAS_HANDLER_CAPABILITY, steamOutputDirection.getOpposite());
+            if (gasOptional.isPresent()) {
+                IGasHandler gasHandler = gasOptional.orElse(MekanismGasWrappers.EMPTY_TANK);
+                connected = true;
+                handlerOptional = gasOptional;
+                handler = MekanismGasWrappers.wrap(gasHandler);
+            }
         }
     }
     

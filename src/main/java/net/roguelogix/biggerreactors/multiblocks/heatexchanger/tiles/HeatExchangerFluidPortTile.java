@@ -215,14 +215,14 @@ public class HeatExchangerFluidPortTile extends HeatExchangerBaseTile implements
             connected = true;
             handlerOptional = waterOutput;
             handler = FluidHandlerWrapper.wrap(waterOutput.orElse(EMPTY_TANK));
-//        } else if (GAS_HANDLER_CAPABILITY != null) {
-//            LazyOptional<IGasHandler> gasOptional = te.getCapability(GAS_HANDLER_CAPABILITY, outputDirection.getOpposite());
-//            if (gasOptional.isPresent()) {
-//                IGasHandler gasHandler = gasOptional.orElse(MekanismGasWrappers.EMPTY_TANK);
-//                connected = true;
-//                handlerOptional = gasOptional;
-//                handler = MekanismGasWrappers.wrap(gasHandler);
-//            }
+        } else if (GAS_HANDLER_CAPABILITY != null) {
+            LazyOptional<IGasHandler> gasOptional = te.getCapability(GAS_HANDLER_CAPABILITY, outputDirection.getOpposite());
+            if (gasOptional.isPresent()) {
+                IGasHandler gasHandler = gasOptional.orElse(MekanismGasWrappers.EMPTY_TANK);
+                connected = true;
+                handlerOptional = gasOptional;
+                handler = MekanismGasWrappers.wrap(gasHandler);
+            }
         }
     }
     
