@@ -141,6 +141,12 @@ public class HeatExchangerPeripheral implements IPeripheral {
         public double transitionEnergy() throws LuaException {
             return transitionTankSupplier.get().activeTransition().latentHeat;
         }
+        
+        @LuaFunction
+        public void dump() throws LuaException {
+            transitionTankSupplier.get().dumpTank(0);
+            transitionTankSupplier.get().dumpTank(1);
+        }
     }
 
     @LuaFunction
