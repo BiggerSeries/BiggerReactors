@@ -1,4 +1,4 @@
-package net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container;
+package net.roguelogix.biggerreactors.multiblocks.heatexchanger.containers;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;

@@ -1,16 +1,19 @@
-package net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.screen;
+package net.roguelogix.biggerreactors.multiblocks.heatexchanger.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.client.Biselector;
 import net.roguelogix.biggerreactors.client.SelectorColors;
-import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.HeatExchangerFluidPortContainer;
+import net.roguelogix.biggerreactors.multiblocks.heatexchanger.containers.HeatExchangerFluidPortContainer;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.state.HeatExchangerFluidPortState;
+import net.roguelogix.biggerreactors.multiblocks.reactor.containers.ReactorCoolantPortContainer;
+import net.roguelogix.phosphophyllite.client.gui.elements.InteractiveElement;
 import net.roguelogix.phosphophyllite.client.gui.screens.PhosphophylliteScreen;
 
 import javax.annotation.Nonnull;
@@ -23,7 +26,7 @@ public class HeatExchangerFluidPortScreen extends PhosphophylliteScreen<HeatExch
     private HeatExchangerFluidPortState heatExchangerFluidPortState;
 
     public HeatExchangerFluidPortScreen(HeatExchangerFluidPortContainer container, Inventory playerInventory, Component title) {
-        super(container, playerInventory, title, DEFAULT_TEXTURE, 176, 52);
+        super(container, playerInventory, title, DEFAULT_TEXTURE, 176, 72);
 
         // Initialize access port state.
         heatExchangerFluidPortState = (HeatExchangerFluidPortState) this.getMenu().getGuiPacket();
@@ -54,7 +57,7 @@ public class HeatExchangerFluidPortScreen extends PhosphophylliteScreen<HeatExch
      */
     public void initControls() {
         // (Left) Direction toggle:
-        Biselector<HeatExchangerFluidPortContainer> directionToggle = new Biselector<>(this, 8, 18, Component.translatable("screen.biggerreactors.heat_exchanger_fluid_port.direction_toggle.tooltip"),
+        Biselector<HeatExchangerFluidPortContainer> directionToggle = new Biselector<>(this, 8, 33, Component.translatable("screen.biggerreactors.heat_exchanger_fluid_port.direction_toggle.tooltip"),
                 () -> heatExchangerFluidPortState.direction ? 0 : 1, SelectorColors.CYAN, SelectorColors.RED);
         directionToggle.onMouseReleased = (mX, mY, btn) -> {
             // Click logic.
@@ -62,6 +65,33 @@ public class HeatExchangerFluidPortScreen extends PhosphophylliteScreen<HeatExch
             return true;
         };
         this.addScreenElement(directionToggle);
+
+        // (Left) Manual dump button:
+        InteractiveElement<HeatExchangerFluidPortContainer> manualEjectButton = new InteractiveElement<>(this, 8, 49, 15, 15, 226, 0, new TranslatableComponent("screen.biggerreactors.heat_exchanger_fluid_port.manual_dump.tooltip"));
+        manualEjectButton.onMouseReleased = (mX, mY, btn) -> {
+            // Click logic. Extra check necessary since this is an "in-class" button.
+            if (manualEjectButton.isMouseOver(mX, mY)) {
+                // Mouse is hovering, do the thing.
+                this.getMenu().executeRequest("dumpTanks", this.heatExchangerFluidPortState.condenser);
+                // Play the selection sound.
+                manualEjectButton.playSound(SoundEvents.UI_BUTTON_CLICK);
+                return true;
+            } else {
+                // It ain't hovered, don't do the thing.
+                return false;
+            }
+        };
+        manualEjectButton.onRender = ((mS, mX, mY) -> {
+            // Custom rendering.
+            if (manualEjectButton.isMouseOver(mX, mY)) {
+                // Mouse is hovering, highlight it.
+                manualEjectButton.blit(mS, 241, 0);
+            } else {
+                // It ain't hovered, don't highlight.
+                manualEjectButton.blit(mS, 226, 0);
+            }
+        });
+        this.addScreenElement(manualEjectButton);
     }
 
     /**
@@ -93,5 +123,8 @@ public class HeatExchangerFluidPortScreen extends PhosphophylliteScreen<HeatExch
             // Text for an outlet:
             this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.heat_exchanger_fluid_port.direction_toggle.output").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
         }
+
+        // Render text for manual tank eject:
+        this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.heat_exchanger_fluid_port.manual_dump").getString(), this.getGuiLeft() + 26, this.getGuiTop() + 53, 4210752);
     }
 }

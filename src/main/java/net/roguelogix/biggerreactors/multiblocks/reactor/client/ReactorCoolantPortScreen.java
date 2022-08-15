@@ -65,7 +65,7 @@ public class ReactorCoolantPortScreen extends PhosphophylliteScreen<ReactorCoola
         };
         this.addScreenElement(directionToggle);
 
-        // (Left) Manual eject button:
+        // (Left) Manual dump button:
         InteractiveElement<ReactorCoolantPortContainer> manualEjectButton = new InteractiveElement<>(this, 8, 34, 15, 15, 226, 0, new TranslatableComponent("screen.biggerreactors.reactor_coolant_port.manual_dump.tooltip"));
         manualEjectButton.onMouseReleased = (mX, mY, btn) -> {
             // Click logic. Extra check necessary since this is an "in-class" button.

@@ -221,6 +221,8 @@
   "screen.biggerreactors.heat_exchanger_fluid_port.direction_toggle.input": "Direction: §cInput",
   "screen.biggerreactors.heat_exchanger_fluid_port.direction_toggle.output": "Direction: §9Output",
   "screen.biggerreactors.heat_exchanger_fluid_port.direction_toggle.tooltip": "Toggle Direction\n§7Change which direction this port flows.",
+  "screen.biggerreactors.heat_exchanger_fluid_port.manual_dump": "Manual Channel Fluids Dump",
+  "screen.biggerreactors.heat_exchanger_fluid_port.manual_dump.tooltip": "Dump Channel Fluids\n§7Manually dump all fluids in the connected channel.",
 
   "jei.biggerreactors.classic.turbine_coil_block": "Turbine Coil Blocks",
   "jei.biggerreactors.classic.turbine_coil_bonus": "Bonus: %s",
