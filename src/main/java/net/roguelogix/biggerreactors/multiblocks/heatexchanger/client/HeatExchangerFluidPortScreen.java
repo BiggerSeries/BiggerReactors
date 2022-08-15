@@ -59,7 +59,7 @@ public class HeatExchangerFluidPortScreen extends PhosphophylliteScreen<HeatExch
     public void initControls() {
         // (Left) Direction toggle:
         Biselector<HeatExchangerFluidPortContainer> directionToggle = new Biselector<>(this, 8, 33, new TranslatableComponent("screen.biggerreactors.heat_exchanger_fluid_port.direction_toggle.tooltip"),
-                () -> heatExchangerFluidPortState.direction ? 0 : 1, SelectorColors.CYAN, SelectorColors.RED);
+                () -> heatExchangerFluidPortState.direction ? 0 : 1, SelectorColors.RED, SelectorColors.BLUE);
         directionToggle.onMouseReleased = (mX, mY, btn) -> {
             // Click logic.
             this.getMenu().executeRequest("setDirection", directionToggle.getState() == 0 ? 1 : 0);
