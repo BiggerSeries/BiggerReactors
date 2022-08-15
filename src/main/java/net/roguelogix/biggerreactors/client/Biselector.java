@@ -79,15 +79,18 @@ public class Biselector<T extends AbstractContainerMenu> extends InteractiveElem
                 // Check where the mouse is.
                 if (this.isMouseOver(mouseX, mouseY)) {
                     // Draw active/hovered button.
-                    this.blit(poseStack, this.x + 1, this.y + 1, leftColor.uA, leftColor.vA, 14, 12);
+                    if(this.actionEnable) {
+                        this.blit(poseStack, this.x + 1, this.y + 1, leftColor.uA, leftColor.vA, 14, 12);
+                    } else {
+                        this.blit(poseStack, this.x + 1, this.y + 1, SelectorColors.DISABLED.uA, SelectorColors.DISABLED.vA, 14, 12);
+                    }
                 } else {
                     // Draw inactive/non-hovered button.
-                    this.blit(poseStack, this.x + 1, this.y + 1, leftColor.uI, leftColor.vI, 14, 12);
-                }
-                // Check if the selector is enabled.
-                if (!this.actionEnable) {
-                    // Draw disabled color overlay.
-                    this.blit(poseStack, this.x, this.y, 210, 0, 31, 14);
+                    if(this.actionEnable) {
+                        this.blit(poseStack, this.x + 1, this.y + 1, leftColor.uI, leftColor.vI, 14, 12);
+                    } else {
+                        this.blit(poseStack, this.x + 1, this.y + 1, SelectorColors.DISABLED.uI, SelectorColors.DISABLED.vI, 14, 12);
+                    }
                 }
 
             } else {
@@ -97,15 +100,18 @@ public class Biselector<T extends AbstractContainerMenu> extends InteractiveElem
                 // Check where the mouse is.
                 if (this.isMouseOver(mouseX, mouseY)) {
                     // Draw active/hovered button.
-                    this.blit(poseStack, this.x + 16, this.y + 1, rightColor.uA, rightColor.vA, 14, 12);
+                    if(this.actionEnable) {
+                        this.blit(poseStack, this.x + 16, this.y + 1, rightColor.uA, rightColor.vA, 14, 12);
+                    } else {
+                        this.blit(poseStack, this.x + 16, this.y + 1, SelectorColors.DISABLED.uA, rightColor.vA, 14, 12);
+                    }
                 } else {
                     // Draw inactive/non-hovered button.
-                    this.blit(poseStack, this.x + 16, this.y + 1, rightColor.uI, rightColor.vI, 14, 12);
-                }
-                // Check if the selector is enabled.
-                if (!this.actionEnable) {
-                    // Draw disabled color overlay.
-                    this.blit(poseStack, this.x, this.y, 210, 0, 31, 14);
+                    if(this.actionEnable) {
+                        this.blit(poseStack, this.x + 16, this.y + 1, rightColor.uI, rightColor.vI, 14, 12);
+                    } else {
+                        this.blit(poseStack, this.x + 16, this.y + 1, SelectorColors.DISABLED.uI, rightColor.vI, 14, 12);
+                    }
                 }
             }
             // Reset color and restore the previously bound texture.
