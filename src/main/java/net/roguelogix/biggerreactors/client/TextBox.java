@@ -73,7 +73,7 @@ public class TextBox<T extends AbstractContainerMenu> extends InteractiveElement
      * @param charLimit The max number of characters to allow in this box.
      */
     public TextBox(@Nonnull PhosphophylliteScreen<T> parent, @Nonnull Font fontRenderer, int x, int y, int width, int charLimit, String initialText) {
-        super(parent, x, y, width, 16, 0, 158, null);
+        super(parent, x, y, width, 16, 0, 172, null);
         this.textBuffer = new StringBuffer(initialText);
         this.fontRenderer = fontRenderer;
         this.cursorPos = textBuffer.length();
@@ -112,15 +112,15 @@ public class TextBox<T extends AbstractContainerMenu> extends InteractiveElement
             RenderHelper.bindTexture(CommonRender.COMMON_RESOURCE_TEXTURE);
 
             // Draw the left side of the text box frame.
-            this.blit(poseStack, this.x, this.y, 0, 158, 3, 16);
+            this.blit(poseStack, this.x, this.y, 0, 172, 3, 16);
 
             // Draw the center part of the text box.
             for (int i = 0; i <= this.width; i += 6) {
-                this.blit(poseStack, (this.x + 3) + i, this.y, 6, 158, 6, 16);
+                this.blit(poseStack, (this.x + 3) + i, this.y, 6, 172, 6, 16);
             }
 
             // Draw the right side of the text box frame.
-            this.blit(poseStack, (this.x + 6) + (6 * this.charLimit), this.y, 3, 158, 3, 16);
+            this.blit(poseStack, (this.x + 6) + (6 * this.charLimit), this.y, 3, 172, 3, 16);
 
             // Draw the text.
             // TODO: Allow for larger text entry by allowing text scrolling.

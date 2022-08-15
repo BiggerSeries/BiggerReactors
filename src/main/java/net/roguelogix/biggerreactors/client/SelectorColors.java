@@ -1,6 +1,7 @@
 package net.roguelogix.biggerreactors.client;
 
 public enum  SelectorColors {
+    DISABLED(84, 106, 84, 118),
     RED(0, 106, 0, 118),
     CYAN(14, 106, 14, 118),
     GREEN(28, 106, 28, 118),
