@@ -68,7 +68,7 @@ public class ReactorRedstonePortScreen extends PhosphophylliteScreen<ReactorReds
         super.init();
 
         // Set title to be drawn in the center.
-        this.titleLabelX = (this.getWidth() / 2) - (this.getFont().width(this.getTitle()) / 2);
+        this.titleLabelX = (this.imageWidth - this.font.width(this.getTitle())) / 2;
 
         // Initialize tooltips:
 
