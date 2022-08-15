@@ -50,15 +50,18 @@ public class CommonButton<T extends AbstractContainerMenu> extends InteractiveEl
             // Check where the mouse is.
             if (this.isMouseOver(mouseX, mouseY)) {
                 // Draw active/hovered button.
-                this.blit(poseStack, this.u, this.v + this.height);
+                if(this.actionEnable) {
+                    this.blit(poseStack, this.u, this.v + this.height);
+                } else {
+                    this.blit(poseStack, this.u, this.v + (this.height * 2));
+                }
             } else {
                 // Draw inactive/non-hovered button.
-                this.blit(poseStack, this.u, this.v);
-            }
-            // Check if the button is enabled.
-            if (!this.actionEnable) {
-                // Draw disabled color overlay.
-                this.blit(poseStack,210, 0);
+                if(this.actionEnable) {
+                    this.blit(poseStack, this.u, this.v);
+                } else {
+                    this.blit(poseStack, this.u, this.v + (this.height * 2));
+                }
             }
             // Reset color and restore the previously bound texture.
             RenderHelper.clearRenderColor();

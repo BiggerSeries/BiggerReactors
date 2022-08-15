@@ -88,15 +88,18 @@ public class Triselector<T extends AbstractContainerMenu> extends InteractiveEle
                 // Check where the mouse is.
                 if (this.isMouseOver(mouseX, mouseY)) {
                     // Draw active/hovered button.
-                    this.blit(poseStack, this.x + 1, this.y + 1, leftColor.uA, leftColor.vA, 14, 12);
+                    if(this.actionEnable) {
+                        this.blit(poseStack, this.x + 1, this.y + 1, leftColor.uA, leftColor.vA, 14, 12);
+                    } else {
+                        this.blit(poseStack, this.x + 1, this.y + 1, SelectorColors.DISABLED.uA, SelectorColors.DISABLED.vA, 14, 12);
+                    }
                 } else {
                     // Draw inactive/non-hovered button.
-                    this.blit(poseStack, this.x + 1, this.y + 1, leftColor.uI, leftColor.vI, 14, 12);
-                }
-                // Check if the selector is enabled.
-                if (!this.actionEnable) {
-                    // Draw disabled color overlay.
-                    this.blit(poseStack, this.x, this.y, 210, 0, 46, 14);
+                    if(this.actionEnable) {
+                        this.blit(poseStack, this.x + 1, this.y + 1, leftColor.uI, leftColor.vI, 14, 12);
+                    } else {
+                        this.blit(poseStack, this.x + 1, this.y + 1, SelectorColors.DISABLED.uI, SelectorColors.DISABLED.vI, 14, 12);
+                    }
                 }
             } else if (this.renderState.getAsInt() == 1) {
                 // Position is 1 (center), draw center frame.
@@ -104,15 +107,18 @@ public class Triselector<T extends AbstractContainerMenu> extends InteractiveEle
                 // Check where the mouse is.
                 if (this.isMouseOver(mouseX, mouseY)) {
                     // Draw active/hovered button.
-                    this.blit(poseStack, this.x + 16, this.y + 1, centerColor.uA, centerColor.vA, 14, 12);
+                    if(this.actionEnable) {
+                        this.blit(poseStack, this.x + 16, this.y + 1, centerColor.uA, centerColor.vA, 14, 12);
+                    } else {
+                        this.blit(poseStack, this.x + 16, this.y + 1, SelectorColors.DISABLED.uA, SelectorColors.DISABLED.vA, 14, 12);
+                    }
                 } else {
                     // Draw inactive/non-hovered button.
-                    this.blit(poseStack, this.x + 16, this.y + 1, centerColor.uI, centerColor.vI, 14, 12);
-                }
-                // Check if the selector is enabled.
-                if (!this.actionEnable) {
-                    // Draw disabled color overlay.
-                    this.blit(poseStack, this.x, this.y, 210, 0, 46, 14);
+                    if(this.actionEnable) {
+                        this.blit(poseStack, this.x + 16, this.y + 1, centerColor.uI, centerColor.vI, 14, 12);
+                    } else {
+                        this.blit(poseStack, this.x + 16, this.y + 1, SelectorColors.DISABLED.uI, SelectorColors.DISABLED.vI, 14, 12);
+                    }
                 }
             } else {
                 // Position is 2 (right), draw right frame.
@@ -121,15 +127,18 @@ public class Triselector<T extends AbstractContainerMenu> extends InteractiveEle
                 // Check where the mouse is.
                 if (this.isMouseOver(mouseX, mouseY)) {
                     // Draw active/hovered button.
-                    this.blit(poseStack, this.x + 31, this.y + 1, rightColor.uA, rightColor.vA, 14, 12);
+                    if(this.actionEnable) {
+                        this.blit(poseStack, this.x + 31, this.y + 1, rightColor.uA, rightColor.vA, 14, 12);
+                    } else {
+                        this.blit(poseStack, this.x + 31, this.y + 1, SelectorColors.DISABLED.uA, SelectorColors.DISABLED.vA, 14, 12);
+                    }
                 } else {
                     // Draw inactive/non-hovered button.
-                    this.blit(poseStack, this.x + 31, this.y + 1, rightColor.uI, rightColor.vI, 14, 12);
-                }
-                // Check if the selector is enabled.
-                if (!this.actionEnable) {
-                    // Draw disabled color overlay.
-                    this.blit(poseStack, this.x, this.y, 210, 0, 46, 14);
+                    if(this.actionEnable) {
+                        this.blit(poseStack, this.x + 31, this.y + 1, rightColor.uI, rightColor.vI, 14, 12);
+                    } else {
+                        this.blit(poseStack, this.x + 31, this.y + 1, SelectorColors.DISABLED.uI, SelectorColors.DISABLED.vI, 14, 12);
+                    }
                 }
             }
             // Reset color and restore the previously bound texture.
