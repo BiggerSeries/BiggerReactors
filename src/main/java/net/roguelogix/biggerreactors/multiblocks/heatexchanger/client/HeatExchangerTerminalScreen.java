@@ -1,4 +1,4 @@
-package net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.screen;
+package net.roguelogix.biggerreactors.multiblocks.heatexchanger.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.Registry;
@@ -14,7 +14,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.client.CommonRender;
-import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.HeatExchangerTerminalContainer;
+import net.roguelogix.biggerreactors.multiblocks.heatexchanger.containers.HeatExchangerTerminalContainer;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.state.HeatExchangerState;
 import net.roguelogix.phosphophyllite.client.gui.screens.PhosphophylliteScreen;
 import net.roguelogix.phosphophyllite.client.gui.RenderHelper;
