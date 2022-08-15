@@ -20,7 +20,7 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.HeatExchangerFluidPortBlock;
-import net.roguelogix.biggerreactors.multiblocks.heatexchanger.gui.container.HeatExchangerFluidPortContainer;
+import net.roguelogix.biggerreactors.multiblocks.heatexchanger.containers.HeatExchangerFluidPortContainer;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.state.HeatExchangerFluidPortState;
 import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.fluids.FluidHandlerWrapper;
@@ -272,11 +272,14 @@ public class HeatExchangerFluidPortTile extends HeatExchangerBaseTile implements
     public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
         return new HeatExchangerFluidPortContainer(windowId, this.worldPosition, player);
     }
-    
+
+    @Override
     public void runRequest(String requestName, Object requestData) {
         if (requestName.equals("setDirection")) {
             int direction = (Integer) requestData;
             setInletOtherOutlet(direction == 0);
         }
+
+        super.runRequest(requestName, requestData);
     }
 }

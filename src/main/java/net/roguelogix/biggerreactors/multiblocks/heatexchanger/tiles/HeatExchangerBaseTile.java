@@ -26,4 +26,10 @@ public class HeatExchangerBaseTile extends PhosphophylliteTile implements IRecta
         }
         return new HeatExchangerMultiblockController(level);
     }
+
+    public void runRequest(String requestName, Object requestData) {
+        if (nullableController() != null) {
+            controller().runRequest(requestName, requestData);
+        }
+    }
 }
