@@ -798,6 +798,14 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             
             // Manually eject waste.
             case "ejectWaste" -> ejectWaste();
+
+            // Manually dump tanks.
+            case "dumpTanks" -> {
+                if (coolantTank != null) {
+                    coolantTank.dumpLiquid();
+                    coolantTank.dumpVapor();
+                }
+            }
         }
     }
     
