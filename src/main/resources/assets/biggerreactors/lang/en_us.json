@@ -92,6 +92,8 @@
   "screen.biggerreactors.reactor_coolant_port.direction_toggle.input": "Direction: §3Input",
   "screen.biggerreactors.reactor_coolant_port.direction_toggle.output": "Direction: §cOutput",
   "screen.biggerreactors.reactor_coolant_port.direction_toggle.tooltip": "Toggle Direction\n§7Change which direction this port flows.",
+  "screen.biggerreactors.reactor_coolant_port.manual_dump": "Manual Tank Dump",
+  "screen.biggerreactors.reactor_coolant_port.manual_dump.tooltip": "Dump Tank Fluids\n§7Manually dump all fluids from the reactor.",
 
   "screen.biggerreactors.reactor_access_port": "Reactor Access Port",
   "screen.biggerreactors.reactor_access_port.direction_toggle.input": "Direction: §6Input",
