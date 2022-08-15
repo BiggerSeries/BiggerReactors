@@ -12,7 +12,7 @@ import net.roguelogix.biggerreactors.multiblocks.reactor2.tiles.ReactorFuelRodTi
 import net.roguelogix.phosphophyllite.Phosphophyllite;
 import net.roguelogix.phosphophyllite.multiblock2.MultiblockController;
 import net.roguelogix.phosphophyllite.multiblock2.ValidationException;
-import net.roguelogix.phosphophyllite.multiblock2.persistent.IPersistentMultiblock;
+import net.roguelogix.phosphophyllite.multiblock2.common.IPersistentMultiblock;
 import net.roguelogix.phosphophyllite.multiblock2.rectangular.IRectangularMultiblock;
 import net.roguelogix.phosphophyllite.multiblock2.touching.ITouchingMultiblock;
 import net.roguelogix.phosphophyllite.repack.org.joml.Vector3i;
@@ -169,5 +169,10 @@ public class ReactorMultiblockController extends MultiblockController<ReactorBas
     @Override
     public String getDebugString() {
         return super.getDebugString() + nbtTestValue + "\n";
+    }
+    
+    @Override
+    protected void tick() {
+        dirty();
     }
 }
