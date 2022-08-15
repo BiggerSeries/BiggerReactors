@@ -3,6 +3,7 @@ package net.roguelogix.biggerreactors.multiblocks.reactor.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -11,6 +12,7 @@ import net.roguelogix.biggerreactors.client.Biselector;
 import net.roguelogix.biggerreactors.client.SelectorColors;
 import net.roguelogix.biggerreactors.multiblocks.reactor.containers.ReactorCoolantPortContainer;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorCoolantPortState;
+import net.roguelogix.phosphophyllite.client.gui.elements.InteractiveElement;
 import net.roguelogix.phosphophyllite.client.gui.screens.PhosphophylliteScreen;
 
 import javax.annotation.Nonnull;
@@ -23,7 +25,7 @@ public class ReactorCoolantPortScreen extends PhosphophylliteScreen<ReactorCoola
     private ReactorCoolantPortState reactorCoolantPortState;
 
     public ReactorCoolantPortScreen(ReactorCoolantPortContainer container, Inventory playerInventory, Component title) {
-        super(container, playerInventory, title, DEFAULT_TEXTURE, 142, 40);
+        super(container, playerInventory, title, DEFAULT_TEXTURE, 142, 56);
 
         // Initialize access port state.
         reactorCoolantPortState = (ReactorCoolantPortState) this.getMenu().getGuiPacket();
@@ -62,6 +64,33 @@ public class ReactorCoolantPortScreen extends PhosphophylliteScreen<ReactorCoola
             return true;
         };
         this.addScreenElement(directionToggle);
+
+        // (Left) Manual eject button:
+        InteractiveElement<ReactorCoolantPortContainer> manualEjectButton = new InteractiveElement<>(this, 8, 34, 15, 15, 226, 0, new TranslatableComponent("screen.biggerreactors.reactor_coolant_port.manual_dump.tooltip"));
+        manualEjectButton.onMouseReleased = (mX, mY, btn) -> {
+            // Click logic. Extra check necessary since this is an "in-class" button.
+            if (manualEjectButton.isMouseOver(mX, mY)) {
+                // Mouse is hovering, do the thing.
+                this.getMenu().executeRequest("dumpTanks", true);
+                // Play the selection sound.
+                manualEjectButton.playSound(SoundEvents.UI_BUTTON_CLICK);
+                return true;
+            } else {
+                // It ain't hovered, don't do the thing.
+                return false;
+            }
+        };
+        manualEjectButton.onRender = ((mS, mX, mY) -> {
+            // Custom rendering.
+            if (manualEjectButton.isMouseOver(mX, mY)) {
+                // Mouse is hovering, highlight it.
+                manualEjectButton.blit(mS, 241, 0);
+            } else {
+                // It ain't hovered, don't highlight.
+                manualEjectButton.blit(mS, 226, 0);
+            }
+        });
+        this.addScreenElement(manualEjectButton);
     }
 
     /**
@@ -85,5 +114,8 @@ public class ReactorCoolantPortScreen extends PhosphophylliteScreen<ReactorCoola
             // Text for an outlet:
             this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_coolant_port.direction_toggle.output").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
         }
+
+        // Render text for manual tank eject:
+        this.getFont().draw(poseStack, new TranslatableComponent("screen.biggerreactors.reactor_coolant_port.manual_dump").getString(), this.getGuiLeft() + 26, this.getGuiTop() + 38, 4210752);
     }
 }
