@@ -129,8 +129,8 @@ public class CommonReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
             if (manualEjectButton.isMouseOver(mX, mY)) {
                 // Mouse is hovering, do the thing.
                 //screen.getContainer().executeRequest("ejectWaste", true);
-                Minecraft.getInstance().player.chat("No effect. This button will be removed in the future.");
-                Minecraft.getInstance().player.chat("Use the access ports to eject waste!");
+                Minecraft.getInstance().player.sendSystemMessage(Component.literal("No effect. This button will be removed in the future."));
+                Minecraft.getInstance().player.sendSystemMessage(Component.literal("Use the access ports to eject waste!"));
                 // Play the selection sound.
                 manualEjectButton.playSound(SoundEvents.UI_BUTTON_CLICK);
                 return true;
