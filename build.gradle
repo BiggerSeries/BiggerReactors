@@ -204,6 +204,22 @@ publish.dependsOn('reobfJar')
 //}
 
 gradle.projectsEvaluated {
+    var phosVersionRange = project.project(":Phosphophyllite").property("compatibility").toString().split(',')
+    var phosMinVersion = phosVersionRange[0].substring(1)
+    var phosMaxVersion = phosVersionRange[1].substring(1, phosVersionRange[1].length() - 1)
+    var phosRequirementString = "Requires [Phosphophyllite](https://www.curseforge.com/minecraft/mc-mods/phosphophyllite) version of at least " + phosMinVersion + " but less than " + phosMaxVersion
+
+    var quartzVersionRange = project.project(":Quartz").property("compatibility").toString().split(',')
+    var quartzMinVersion = quartzVersionRange[0].substring(1)
+    var quartzMaxVersion = quartzVersionRange[1].substring(1, quartzVersionRange[1].length() - 1)
+    var quartzRequirementString = "Requires [Quartz](https://www.curseforge.com/minecraft/mc-mods/quartz) version of at least " + quartzMinVersion + " but less than " + quartzMaxVersion
+
+    println(phosRequirementString)
+    println(quartzRequirementString)
+
+    println("::set-output name=phos_version_range::" + phosRequirementString)
+    println("::set-output name=quartz_version_range::" + quartzRequirementString)
+
 
     def resource_targets = ["META-INF/mods.toml", "pack.mcmeta"]
     def into_targets = ["$rootDir/out/production/resources/", "$rootDir/out/production/${project.name}.main/", "$rootDir/bin/main/"]

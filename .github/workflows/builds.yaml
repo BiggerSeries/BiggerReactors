@@ -1,5 +1,8 @@
 name: builds
-on: [push]
+on:
+  push:
+    tags-ignore:
+      - '*'
 jobs:
   reobfJar:
     runs-on: Felix
