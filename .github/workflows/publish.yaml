@@ -30,7 +30,7 @@ jobs:
       - id: mverinfo
         run: echo "::set-output name=mcver::$(cat gradle.properties | grep mc_version | grep -o '1...' )"
       - id: relinfo
-        run: echo "::set-output name=reltype::$(cat gradle.properties | grep "postfix=" | sed -n -e 's/^.*=//p')"
+        run: echo "::set-output name=reltype::$(cat gradle.properties | grep "postfix=" | sed -n -e 's/^.*=//p' | grep -o '[a-z]*')"
 
   uploadToCurseforge:
     name: "Upload to Curseforge"
@@ -52,10 +52,10 @@ jobs:
           file_path: "jars/biggerreactors-${{ needs.build.outputs.mc_version }}-${{ github.ref_name }}.jar"
           game_versions: "Minecraft ${{ needs.build.outputs.mc_major_version }}:${{ needs.build.outputs.mc_version }},Java 17,Forge"
           release_type: "${{ needs.build.outputs.release_type }}"
-          changelog: "https://github.com/BiggerSeries/BiggerReactors/blob/${{ github.ref_name }}/changelog.md  
-            
+          changelog: "https://github.com/BiggerSeries/BiggerReactors/blob/${{ github.ref_name }}/changelog.md
+          
           ${{ needs.build.outputs.quartz_version_range }}  
-          ${{ needs.build.outputs.quartz_version_range }}"
+          ${{ needs.build.outputs.phos_version_range }}"
 
   addToGithubRelease:
     name: "Upload to Github Release"
