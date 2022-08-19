@@ -27,5 +27,7 @@ Phosphophyllite/run
 workspace/run
 logs
 
+**/benching
+
 # Files from Forge MDK
 forge*changelog.txt
