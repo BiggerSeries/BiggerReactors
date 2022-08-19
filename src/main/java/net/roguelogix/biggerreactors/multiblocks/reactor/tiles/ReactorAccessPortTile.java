@@ -34,6 +34,7 @@ import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorAccessPort
 import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.multiblock.IOnAssemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.IOnDisassemblyTile;
+import net.roguelogix.phosphophyllite.multiblock.MultiblockController;
 import net.roguelogix.phosphophyllite.registry.RegisterTile;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
@@ -99,7 +100,9 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     @Override
     public void onAssembly() {
         assert level != null;
-        level.setBlock(worldPosition, getBlockState().setValue(PORT_DIRECTION_ENUM_PROPERTY, direction), 3);
+        final var newState = getBlockState().setValue(PORT_DIRECTION_ENUM_PROPERTY, direction);
+        MultiblockController.atErrorRequestedBlockState = newState;
+        level.setBlock(worldPosition, newState, 3);
         itemOutputDirection = getBlockState().getValue(BlockStates.FACING);
         neighborChanged();
     }

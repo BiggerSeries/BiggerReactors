@@ -35,6 +35,7 @@ import net.roguelogix.phosphophyllite.fluids.MekanismGasWrappers;
 import net.roguelogix.phosphophyllite.multiblock.IAssemblyAttemptedTile;
 import net.roguelogix.phosphophyllite.multiblock.IOnAssemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.IOnDisassemblyTile;
+import net.roguelogix.phosphophyllite.multiblock.MultiblockController;
 import net.roguelogix.phosphophyllite.registry.RegisterTile;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
@@ -217,7 +218,9 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
     @Override
     public void onAssemblyAttempted() {
         assert level != null;
-        level.setBlock(worldPosition, level.getBlockState(worldPosition).setValue(PORT_DIRECTION_ENUM_PROPERTY, direction), 3);
+        final var newState = level.getBlockState(worldPosition).setValue(PORT_DIRECTION_ENUM_PROPERTY, direction);
+        MultiblockController.atErrorRequestedBlockState = newState;
+        level.setBlock(worldPosition, newState, 3);
     }
     
     @Override

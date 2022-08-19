@@ -34,6 +34,7 @@ import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.fluids.MekanismGasWrappers;
 import net.roguelogix.phosphophyllite.multiblock.IOnAssemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.IOnDisassemblyTile;
+import net.roguelogix.phosphophyllite.multiblock.MultiblockController;
 import net.roguelogix.phosphophyllite.registry.RegisterTile;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
@@ -250,7 +251,9 @@ public class TurbineFluidPortTile extends TurbineBaseTile implements IPhosphophy
     public void onAssembly() {
         this.transitionTank = controller().simulation().fluidTank();
         waterOutputDirection = getBlockState().getValue(BlockStates.FACING);
-        level.setBlockAndUpdate(worldPosition, level.getBlockState(worldPosition).setValue(PORT_DIRECTION_ENUM_PROPERTY, direction));
+        final var newState = level.getBlockState(worldPosition).setValue(PORT_DIRECTION_ENUM_PROPERTY, direction);
+        MultiblockController.atErrorRequestedBlockState = newState;
+        level.setBlockAndUpdate(worldPosition, newState);
         neighborChanged();
     }
     
