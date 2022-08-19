@@ -10,7 +10,7 @@ jobs:
     outputs:
       mc_version: ${{ steps.verinfo.outputs.mcver }}
       mc_major_version: ${{ steps.mverinfo.outputs.mcver }}
-      release_type: ${{ steps.mainbuild.outputs.reltype }}
+      release_type: ${{ steps.relinfo.outputs.reltype }}
       quartz_version_range: ${{ steps.mainbuild.outputs.quartz_version_range }}
       phos_version_range: ${{ steps.mainbuild.outputs.phos_version_range }}
     steps:
@@ -54,7 +54,10 @@ jobs:
           release_type: "${{ needs.build.outputs.release_type }}"
           changelog: "https://github.com/BiggerSeries/BiggerReactors/blob/${{ github.ref_name }}/changelog.md
           
-          ${{ needs.build.outputs.quartz_version_range }}  
+          &nbsp;
+          
+          ${{ needs.build.outputs.quartz_version_range }}
+          
           ${{ needs.build.outputs.phos_version_range }}"
 
   addToGithubRelease:
