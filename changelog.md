@@ -1,3 +1,38 @@
+# 1.18.2-0.6.0-beta.1.3
+
+## Reactor
+ - added GUI button to dump coolant
+ - added CC function to dump coolant
+ - Fix mekanism gas pushing
+
+## Heat Exchanger
+ - added GUI button to dump fluid
+ - added CC function to dump fluid
+ - Fix mekanism gas pushing
+
+## Turbine
+ - increased default flow rate adjustement amounts by factor of 10x
+   - also configurable now
+ - Fix mekanism gas pushing
+
+# 1.18.2-0.6.0-beta.1.2
+ mekanism, its a thing again
+
+## Reactor
+ - new simulation implementation, no mechanic changes
+   - time sliced (default)
+   - full pass
+     - single thread
+       - faster than previous implementation
+     - multi thread
+       - faster than previous implementation
+     - OpenCL Accelerated
+       - requires addition of LWJGL binaries and a compatible OpenCL runtime, tested against and optimized for a Instint MI25 running under ROCm on Ubuntu 20.04
+       - POCL is known incompatible
+
+## Misc
+ - re-enable mekanism gas integration
+
 # 1.18.2-0.6.0-beta.1.1
  hot not-a-fix
 

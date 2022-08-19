@@ -9,6 +9,7 @@ import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.multiblocks.reactor.ReactorMultiblockController;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorSimulation;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorActivity;
+import net.roguelogix.biggerreactors.multiblocks.reactor.util.ReactorTransitionTank;
 import net.roguelogix.phosphophyllite.multiblock.MultiblockController;
 
 import javax.annotation.Nonnull;
@@ -17,32 +18,32 @@ import java.util.ArrayList;
 import java.util.function.Supplier;
 
 public class ReactorPeripheral implements IPeripheral {
-
+    
     public static LazyOptional<ReactorPeripheral> create(@Nonnull Supplier<ReactorMultiblockController> controllerSupplier) {
         return LazyOptional.of(() -> new ReactorPeripheral(controllerSupplier));
     }
-
+    
     @Nonnull
     private final Supplier<ReactorMultiblockController> rawControllerSupplier;
     @Nonnull
     private final LamdbaExceptionUtils.Supplier_WithExceptions<ReactorMultiblockController, LuaException> controllerSupplier;
     @Nonnull
     private final LamdbaExceptionUtils.Supplier_WithExceptions<IReactorSimulation, LuaException> simulationSupplier;
-
+    
     private ReactorPeripheral(@Nonnull Supplier<ReactorMultiblockController> rawControllerSupplier) {
         this.rawControllerSupplier = rawControllerSupplier;
         this.controllerSupplier = this::getController;
         this.simulationSupplier = this::getSimulation;
         battery = new Battery(simulationSupplier);
-        coolantTank = new CoolantTank(simulationSupplier);
+        coolantTank = new CoolantTank(controllerSupplier, simulationSupplier);
         fuelTank = new FuelTank(controllerSupplier, simulationSupplier);
     }
-
+    
     @LuaFunction
     public String apiVersion() {
         return BiggerReactors.modVersion();
     }
-
+    
     @LuaFunction
     public boolean connected() {
         ReactorMultiblockController controller = rawControllerSupplier.get();
@@ -54,7 +55,7 @@ public class ReactorPeripheral implements IPeripheral {
         }
         return controller.assemblyState() == MultiblockController.AssemblyState.ASSEMBLED;
     }
-
+    
     @Nonnull
     private ReactorMultiblockController getController() throws LuaException {
         ReactorMultiblockController controller = rawControllerSupplier.get();
@@ -63,7 +64,7 @@ public class ReactorPeripheral implements IPeripheral {
         }
         return controller;
     }
-
+    
     @Nonnull
     private IReactorSimulation getSimulation() throws LuaException {
         var sim = getController().simulation();
@@ -73,44 +74,51 @@ public class ReactorPeripheral implements IPeripheral {
         }
         return sim;
     }
-
+    
     @LuaFunction
     public boolean active() throws LuaException {
         return controllerSupplier.get().isActive();
     }
-
+    
     @LuaFunction
     public void setActive(boolean active) throws LuaException {
         controllerSupplier.get().setActive(active ? ReactorActivity.ACTIVE : ReactorActivity.INACTIVE);
     }
-
+    
     public static class Battery {
-
+        
         @Nonnull
-        private final LamdbaExceptionUtils.Supplier_WithExceptions<IReactorSimulation, LuaException> simulationSupplier;
-
+        private final LamdbaExceptionUtils.Supplier_WithExceptions<IReactorSimulation.IBattery, LuaException> batterySupplier;
+        
         public Battery(@Nonnull LamdbaExceptionUtils.Supplier_WithExceptions<IReactorSimulation, LuaException> simulationSupplier) {
-            this.simulationSupplier = simulationSupplier;
+            this.batterySupplier = () -> {
+                var sim = simulationSupplier.get();
+                var battery = sim.battery();
+                if (battery == null) {
+                    throw new LuaException("Invalid reactor state");
+                }
+                return battery;
+            };
         }
-
+        
         @LuaFunction
         public long stored() throws LuaException {
-            return simulationSupplier.get().battery().stored();
+            return batterySupplier.get().stored();
         }
-
+        
         @LuaFunction
         public long capacity() throws LuaException {
-            return simulationSupplier.get().battery().capacity();
+            return batterySupplier.get().capacity();
         }
-
+        
         @LuaFunction
         public long producedLastTick() throws LuaException {
-            return simulationSupplier.get().battery().generatedLastTick();
+            return batterySupplier.get().generatedLastTick();
         }
     }
-
+    
     private final Battery battery;
-
+    
     @LuaFunction
     public Battery battery() throws LuaException {
         if (simulationSupplier.get().battery() == null) {
@@ -118,29 +126,46 @@ public class ReactorPeripheral implements IPeripheral {
         }
         return battery;
     }
-
+    
     public static class CoolantTank {
-
+        
         @Nonnull
-        private final LamdbaExceptionUtils.Supplier_WithExceptions<IReactorSimulation, LuaException> simulationSupplier;
-
-        public CoolantTank(@Nonnull LamdbaExceptionUtils.Supplier_WithExceptions<IReactorSimulation, LuaException> simulationSupplier) {
-            this.simulationSupplier = simulationSupplier;
+        private final LamdbaExceptionUtils.Supplier_WithExceptions<IReactorSimulation.ICoolantTank, LuaException> coolantTankSupplier;
+        @Nonnull
+        private final LamdbaExceptionUtils.Supplier_WithExceptions<ReactorTransitionTank, LuaException> transitionTankSupplier;
+        
+        public CoolantTank(@Nonnull LamdbaExceptionUtils.Supplier_WithExceptions<ReactorMultiblockController, LuaException> controllerSupplier, @Nonnull LamdbaExceptionUtils.Supplier_WithExceptions<IReactorSimulation, LuaException> simulationSupplier) {
+            this.coolantTankSupplier = () -> {
+                var sim = simulationSupplier.get();
+                var coolantTank = sim.coolantTank();
+                if (coolantTank == null) {
+                    throw new LuaException("Invalid reactor state");
+                }
+                return coolantTank;
+            };
+            this.transitionTankSupplier = () -> {
+                var controller = controllerSupplier.get();
+                var transitionTank = controller.coolantTank();
+                if (transitionTank == null) {
+                    throw new LuaException("Invalid reactor state");
+                }
+                return transitionTank;
+            };
         }
-
+        
         @LuaFunction
         public long coldFluidAmount() throws LuaException {
-            return simulationSupplier.get().coolantTank().liquidAmount();
+            return coolantTankSupplier.get().liquidAmount();
         }
-
+        
         @LuaFunction
         public long hotFluidAmount() throws LuaException {
-            return simulationSupplier.get().coolantTank().vaporAmount();
+            return coolantTankSupplier.get().vaporAmount();
         }
-
+        
         @LuaFunction
         public long capacity() throws LuaException {
-            return simulationSupplier.get().coolantTank().perSideCapacity();
+            return coolantTankSupplier.get().perSideCapacity();
         }
 
 //        @LuaFunction
@@ -160,20 +185,26 @@ public class ReactorPeripheral implements IPeripheral {
 //            }
 //            return controller.simulation().coolantTank().
 //        }
-
+        
         @LuaFunction
         public long transitionedLastTick() throws LuaException {
-            return simulationSupplier.get().coolantTank().transitionedLastTick();
+            return coolantTankSupplier.get().transitionedLastTick();
         }
-
+        
         @LuaFunction
         public long maxTransitionedLastTick() throws LuaException {
-            return simulationSupplier.get().coolantTank().maxTransitionedLastTick();
+            return coolantTankSupplier.get().maxTransitionedLastTick();
+        }
+        
+        @LuaFunction
+        public void dump() throws LuaException {
+            transitionTankSupplier.get().dumpLiquid();
+            transitionTankSupplier.get().dumpVapor();
         }
     }
-
+    
     private final CoolantTank coolantTank;
-
+    
     @LuaFunction
     public CoolantTank coolantTank() throws LuaException {
         if (simulationSupplier.get().battery() != null) {
@@ -181,34 +212,34 @@ public class ReactorPeripheral implements IPeripheral {
         }
         return coolantTank;
     }
-
+    
     public static class FuelTank {
-
+        
         @Nonnull
         private final LamdbaExceptionUtils.Supplier_WithExceptions<ReactorMultiblockController, LuaException> controllerSupplier;
         @Nonnull
         private final LamdbaExceptionUtils.Supplier_WithExceptions<IReactorSimulation, LuaException> simulationSupplier;
-
+        
         public FuelTank(@Nonnull LamdbaExceptionUtils.Supplier_WithExceptions<ReactorMultiblockController, LuaException> controllerSupplier, @Nonnull LamdbaExceptionUtils.Supplier_WithExceptions<IReactorSimulation, LuaException> simulationSupplier) {
             this.controllerSupplier = controllerSupplier;
             this.simulationSupplier = simulationSupplier;
         }
-
+        
         @LuaFunction
         public long capacity() throws LuaException {
             return simulationSupplier.get().fuelTank().capacity();
         }
-
+        
         @LuaFunction
         public long totalReactant() throws LuaException {
             return simulationSupplier.get().fuelTank().totalStored();
         }
-
+        
         @LuaFunction
         public long fuel() throws LuaException {
             return simulationSupplier.get().fuelTank().fuel();
         }
-
+        
         @LuaFunction
         public long waste() throws LuaException {
             return simulationSupplier.get().fuelTank().waste();
@@ -222,50 +253,50 @@ public class ReactorPeripheral implements IPeripheral {
 //            }
 //            controller.ejectFuel();
 //        }
-
+        
         @LuaFunction
         public void ejectWaste() throws LuaException {
             controllerSupplier.get().ejectWaste();
         }
-
+        
         @LuaFunction
         public double fuelReactivity() throws LuaException {
             return simulationSupplier.get().fertility();
         }
-
+        
         @LuaFunction
         public double burnedLastTick() throws LuaException {
             return simulationSupplier.get().fuelTank().burnedLastTick();
         }
     }
-
+    
     private final FuelTank fuelTank;
-
+    
     @LuaFunction
     public FuelTank fuelTank() throws LuaException {
         return fuelTank;
     }
-
+    
     public static class ControlRod {
         private final LamdbaExceptionUtils.Supplier_WithExceptions<ReactorMultiblockController, LuaException> controllerSupplier;
         private final int index;
         private boolean isValid = true;
-
+        
         public ControlRod(LamdbaExceptionUtils.Supplier_WithExceptions<ReactorMultiblockController, LuaException> controllerSupplier, int index) {
             this.controllerSupplier = controllerSupplier;
             this.index = index;
         }
-
+        
         @LuaFunction
         public boolean valid() {
             return isValid;
         }
-
+        
         @LuaFunction
         public int index() {
             return index;
         }
-
+        
         @LuaFunction
         public double level() throws LuaException {
             if (!isValid) {
@@ -273,7 +304,7 @@ public class ReactorPeripheral implements IPeripheral {
             }
             return controllerSupplier.get().controlRodLevel(index);
         }
-
+        
         @LuaFunction
         public void setLevel(double newLevel) throws LuaException {
             if (!isValid) {
@@ -281,7 +312,7 @@ public class ReactorPeripheral implements IPeripheral {
             }
             controllerSupplier.get().setControlRodLevel(index, newLevel);
         }
-
+        
         @LuaFunction
         public String name() throws LuaException {
             if (!isValid) {
@@ -289,7 +320,7 @@ public class ReactorPeripheral implements IPeripheral {
             }
             return controllerSupplier.get().controlRodName(index);
         }
-
+        
         @LuaFunction
         public void setName(String newName) throws LuaException {
             if (!isValid) {
@@ -297,29 +328,29 @@ public class ReactorPeripheral implements IPeripheral {
             }
             controllerSupplier.get().setControlRodName(index, newName);
         }
-
+        
         void invalidate() {
             isValid = false;
         }
     }
-
+    
     ArrayList<ControlRod> controlRods = new ArrayList<>();
-
+    
     @LuaFunction
     public int controlRodCount() {
         return controlRods.size();
     }
-
+    
     @LuaFunction
     public ControlRod getControlRod(int index) {
         return controlRods.get(index);
     }
-
+    
     @LuaFunction
     public void setAllControlRodLevels(double newLevel) throws LuaException {
         controllerSupplier.get().setAllControlRodLevels(newLevel);
     }
-
+    
     public void rebuildControlRodList() {
         ReactorMultiblockController controller = rawControllerSupplier.get();
         if (controller == null) {
@@ -331,34 +362,34 @@ public class ReactorPeripheral implements IPeripheral {
             controlRods.add(new ControlRod(controllerSupplier, i));
         }
     }
-
+    
     @LuaFunction
     public double fuelTemperature() throws LuaException {
         return simulationSupplier.get().fuelHeat();
     }
-
+    
     @LuaFunction
     @Deprecated(forRemoval = true, since = "0.6.0")
     public double casingTemperature() throws LuaException {
         return stackTemperature();
     }
-
+    
     @LuaFunction
     public double stackTemperature() throws LuaException {
         return simulationSupplier.get().stackHeat();
     }
-
+    
     @LuaFunction
     public double ambientTemperature() throws LuaException {
         return simulationSupplier.get().ambientTemperature();
     }
-
+    
     @Nonnull
     @Override
     public String getType() {
         return "BiggerReactors_Reactor";
     }
-
+    
     @Override
     public boolean equals(@Nullable IPeripheral other) {
         if (other == this) {

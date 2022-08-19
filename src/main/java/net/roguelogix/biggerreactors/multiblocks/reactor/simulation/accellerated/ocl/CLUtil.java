@@ -130,7 +130,7 @@ public class CLUtil {
                 try {
                     LOGGER.info("Checking for LWJGL OpenCL classes");
                     clGetPlatformIDs(null, platformCount);
-                } catch (NoClassDefFoundError e) {
+                } catch (Throwable ignored) { // yes this will catch anything, thats the point
                     LOGGER.info("Failed to load LWJGL OpenCL Classes");
                     break createReturn;
                 }

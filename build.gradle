@@ -156,7 +156,9 @@ dependencies {
     compileOnly fg.deobf("org.squiddev:cc-tweaked-${cc_mc_version}:${cc_version}")
 //    runtimeOnly fg.deobf("org.squiddev:cc-tweaked-${cc_mc_version}:${cc_version}")
 //
-//    compileOnly "mekanism:Mekanism:${mekanism_mc_version}-${mekanism_version}:api"
+    compileOnly "mekanism:Mekanism:1.19.2-10.3.2.469:api"
+    runtimeOnly fg.deobf('curse.maven:MEK-268560:3922056')
+    runtimeOnly fg.deobf('curse.maven:MEKG-268566:3922058')
 
 //    runtimeOnly fg.deobf('curse.maven:JEI-238222:3683240')
 //    runtimeOnly fg.deobf('curse.maven:WorldStripper-250603:3545856')
@@ -202,6 +204,22 @@ publish.dependsOn('reobfJar')
 //}
 
 gradle.projectsEvaluated {
+    var phosVersionRange = project.project(":Phosphophyllite").property("compatibility").toString().split(',')
+    var phosMinVersion = phosVersionRange[0].substring(1)
+    var phosMaxVersion = phosVersionRange[1].substring(1, phosVersionRange[1].length() - 1)
+    var phosRequirementString = "Requires [Phosphophyllite](https://www.curseforge.com/minecraft/mc-mods/phosphophyllite) version of at least " + phosMinVersion + " but less than " + phosMaxVersion
+
+    var quartzVersionRange = project.project(":Quartz").property("compatibility").toString().split(',')
+    var quartzMinVersion = quartzVersionRange[0].substring(1)
+    var quartzMaxVersion = quartzVersionRange[1].substring(1, quartzVersionRange[1].length() - 1)
+    var quartzRequirementString = "Requires [Quartz](https://www.curseforge.com/minecraft/mc-mods/quartz) version of at least " + quartzMinVersion + " but less than " + quartzMaxVersion
+
+    println(phosRequirementString)
+    println(quartzRequirementString)
+
+    println("::set-output name=phos_version_range::" + phosRequirementString)
+    println("::set-output name=quartz_version_range::" + quartzRequirementString)
+
 
     def resource_targets = ["META-INF/mods.toml", "pack.mcmeta"]
     def into_targets = ["$rootDir/out/production/resources/", "$rootDir/out/production/${project.name}.main/", "$rootDir/bin/main/"]
