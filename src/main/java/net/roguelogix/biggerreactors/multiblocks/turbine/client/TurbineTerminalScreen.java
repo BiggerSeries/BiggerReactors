@@ -11,6 +11,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
+import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.client.Biselector;
 import net.roguelogix.biggerreactors.client.CommonRender;
 import net.roguelogix.biggerreactors.client.SelectorColors;
@@ -158,10 +159,10 @@ public class TurbineTerminalScreen extends PhosphophylliteScreen<TurbineTerminal
             if (flowRateIncreaseButton.isMouseOver(mX, mY)) {
                 // Calculate amount of change:
                 long delta;
-                if (Screen.hasShiftDown() && Screen.hasControlDown()) delta = 100L;
-                else if (Screen.hasControlDown()) delta = 50L;
-                else if (Screen.hasShiftDown()) delta = 10L;
-                else delta = 1L;
+                if (Screen.hasShiftDown() && Screen.hasControlDown()) delta = Config.CONFIG.Turbine.GUI.DeltaMBHCtrlShift;
+                else if (Screen.hasControlDown()) delta = Config.CONFIG.Turbine.GUI.DeltaMBCtrl;
+                else if (Screen.hasShiftDown()) delta = Config.CONFIG.Turbine.GUI.DeltaMBShift;
+                else delta = Config.CONFIG.Turbine.GUI.DeltaMB;
                 // Mouse is hovering, do the thing.
                 this.getMenu().executeRequest("changeFlowRate", delta);
                 // Play the selection sound.
@@ -191,10 +192,10 @@ public class TurbineTerminalScreen extends PhosphophylliteScreen<TurbineTerminal
             if (flowRateDecreaseButton.isMouseOver(mX, mY)) {
                 // Calculate amount of change:
                 long delta;
-                if (Screen.hasShiftDown() && Screen.hasControlDown()) delta = -100L;
-                else if (Screen.hasControlDown()) delta = -50L;
-                else if (Screen.hasShiftDown()) delta = -10L;
-                else delta = -1L;
+                if (Screen.hasShiftDown() && Screen.hasControlDown()) delta = -Config.CONFIG.Turbine.GUI.DeltaMBHCtrlShift;
+                else if (Screen.hasControlDown()) delta = -Config.CONFIG.Turbine.GUI.DeltaMBCtrl;
+                else if (Screen.hasShiftDown()) delta = -Config.CONFIG.Turbine.GUI.DeltaMBShift;
+                else delta = -Config.CONFIG.Turbine.GUI.DeltaMB;
                 // Mouse is hovering, do the thing.
                 this.getMenu().executeRequest("changeFlowRate", delta);
                 // Play the selection sound.

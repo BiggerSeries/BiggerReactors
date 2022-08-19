@@ -1,0 +1,79 @@
+name: publish
+on:
+  push:
+    tags:
+      - '*'
+jobs:
+  build:
+    name: "Build for Publish"
+    runs-on: Felix
+    outputs:
+      mc_version: ${{ steps.verinfo.outputs.mcver }}
+      mc_major_version: ${{ steps.mverinfo.outputs.mcver }}
+      release_type: ${{ steps.relinfo.outputs.reltype }}
+      quartz_version_range: ${{ steps.mainbuild.outputs.quartz_version_range }}
+      phos_version_range: ${{ steps.mainbuild.outputs.phos_version_range }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: git submodule update --init --recursive
+      - id: mainbuild
+        run: ./gradlew build
+      - run: ./gradlew publish
+      - run: mkdir jars
+      - run: mv build/libs/biggerreactors-* jars/
+      - uses: actions/upload-artifact@v2
+        with:
+          name: jars
+          path: jars/*
+      - id: verinfo
+        run: echo "::set-output name=mcver::$(cat gradle.properties | grep mc_version | sed -n -e 's/^.*=//p')"
+      - id: mverinfo
+        run: echo "::set-output name=mcver::$(cat gradle.properties | grep mc_version | grep -o '1...' )"
+      - id: relinfo
+        run: echo "::set-output name=reltype::$(cat gradle.properties | grep "postfix=" | sed -n -e 's/^.*=//p' | grep -o '[a-z]*')"
+
+  uploadToCurseforge:
+    name: "Upload to Curseforge"
+    runs-on: Felix
+    needs: [build]
+    outputs:
+      curseforge_file_id: ${{ steps.upload.outputs.id }}
+    steps:
+      - uses: actions/download-artifact@v3.0.0
+        with:
+          name: jars
+          path: jars/*
+      - id: upload
+        uses: itsmeow/curseforge-upload@v3.1.0
+        with:
+          token: "${{ secrets.CF_API_TOKEN }}"
+          project_id: 407780
+          game_endpoint: minecraft
+          file_path: "jars/biggerreactors-${{ needs.build.outputs.mc_version }}-${{ github.ref_name }}.jar"
+          game_versions: "Minecraft ${{ needs.build.outputs.mc_major_version }}:${{ needs.build.outputs.mc_version }},Java 17,Forge"
+          release_type: "${{ needs.build.outputs.release_type }}"
+          changelog: "https://github.com/BiggerSeries/BiggerReactors/blob/${{ github.ref_name }}/changelog.md
+          
+          &nbsp;
+          
+          ${{ needs.build.outputs.quartz_version_range }}
+          
+          ${{ needs.build.outputs.phos_version_range }}"
+
+  addToGithubRelease:
+    name: "Upload to Github Release"
+    runs-on: Felix
+    needs: [build, uploadToCurseforge]
+    steps:
+      - uses: actions/download-artifact@v3.0.0
+        with:
+          name: jars
+          path: jars/*
+      - uses: svenstaro/upload-release-action@2.3.0
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: jars/*
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
+          body: "https://www.curseforge.com/minecraft/mc-mods/biggerreactors/files/${{ needs.uploadToCurseforge.outputs.curseforge_file_id }}"

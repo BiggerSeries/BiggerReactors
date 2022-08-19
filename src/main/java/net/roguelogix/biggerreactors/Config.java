@@ -261,6 +261,27 @@ public class Config {
             CoilDragMultiplier = 10;
             BatterySizePerCoilBlock = 300_000;
         }
+    
+        public static final class GUI {
+            @ConfigValue
+            public final long DeltaMB;
+            @ConfigValue
+            public final long DeltaMBShift;
+            @ConfigValue
+            public final long DeltaMBCtrl;
+            @ConfigValue
+            public final long DeltaMBHCtrlShift;
+        
+            {
+                DeltaMB = 10;
+                DeltaMBShift = 100;
+                DeltaMBCtrl = 500;
+                DeltaMBHCtrlShift = 1000;
+            }
+        }
+    
+        @ConfigValue
+        public final GUI GUI = new GUI();
     }
     
     @ConfigValue
