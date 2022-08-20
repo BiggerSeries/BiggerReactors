@@ -149,6 +149,9 @@ public class Config {
         public final double FuelAbsorptionScalingShiftMultiplier;
         @ConfigValue(range = "(0,)", advanced = true)
         public final double FuelAbsorptionScalingRateExponentMultiplier;
+    
+        @ConfigValue(range = "(,)", advanced = true)
+        public final double fuelRadScalingMultiplier;
         
         {
             PerFuelRodCapacity = 4000;
@@ -180,6 +183,7 @@ public class Config {
             FuelAbsorptionScalingMultiplier = 0.95f;
             FuelAbsorptionScalingShiftMultiplier = 1f;
             FuelAbsorptionScalingRateExponentMultiplier = 2.2f;
+            fuelRadScalingMultiplier = 1.0;
         }
         
         @ConfigValue(range = "[16,)", advanced = true, comment = "Powers of two recommended")

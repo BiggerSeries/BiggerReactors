@@ -203,6 +203,9 @@ public class FullPassReactorSimulation extends BaseReactorSimulation {
         caseRFAdded /= controlRods.length;
         
         if (!Double.isNaN(fuelRadAdded)) {
+            if (Config.CONFIG.Reactor.fuelRadScalingMultiplier != 0) {
+                fuelRadAdded *= Config.CONFIG.Reactor.fuelRadScalingMultiplier * (Config.CONFIG.Reactor.PerFuelRodCapacity / Math.max(1.0, (double) fuelTank().totalStored()));
+            }
             fuelFertility += fuelRadAdded;
         }
         if (!Double.isNaN(fuelRFAdded)) {
