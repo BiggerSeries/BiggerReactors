@@ -94,20 +94,26 @@ public abstract class ReactorBaseBlock extends PhosphophylliteBlock implements I
         public boolean isGoodForFrame() {
             return false;
         }
-    
+        
         @Override
         public boolean propagatesSkylightDown(BlockState p_49928_, BlockGetter p_49929_, BlockPos p_49930_) {
             return true;
         }
-    
+        
         @Override
         public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
             return ReactorFuelRodTile.FUEL_ROD_SUPPLIER.create(pos, state);
         }
     };
     
+    private static abstract class ControlRod extends ReactorBaseBlock implements IAssemblyStateBlock {
+        public ControlRod(Properties properties) {
+            super(properties);
+        }
+    }
+    
     @RegisterBlock(name = "reactor2_control_rod", tileEntityClass = ReactorControlRodTile.class)
-    public static final ReactorBaseBlock CONTROL_ROD = new ReactorBaseBlock(Properties.of(Material.METAL)) {
+    public static final ReactorBaseBlock CONTROL_ROD = new ControlRod(Properties.of(Material.METAL)) {
         @Override
         public boolean isGoodForInterior() {
             return false;
@@ -122,7 +128,7 @@ public abstract class ReactorBaseBlock extends PhosphophylliteBlock implements I
         public boolean isGoodForFrame() {
             return false;
         }
-    
+        
         @Override
         public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
             return ReactorControlRodTile.CONTROL_ROD_SUPPLIER.create(pos, state);
@@ -158,5 +164,4 @@ public abstract class ReactorBaseBlock extends PhosphophylliteBlock implements I
             return ReactorTerminalTile.TERMINAL_SUPPLIER.create(pos, state);
         }
     };
-}
 }
