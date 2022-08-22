@@ -8,5 +8,6 @@
     "east" : "phosphophyllite:block/transparent",
     "west" : "biggerreactors:block/reactor/glass/connected_br",
     "particle": "biggerreactors:block/reactor/glass/connected_none"
-  }
+  },
+  "render_type": "cutout"
 }

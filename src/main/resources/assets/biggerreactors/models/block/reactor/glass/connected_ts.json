@@ -8,5 +8,6 @@
     "east" : "biggerreactors:block/reactor/glass/connected_tl",
     "west" : "biggerreactors:block/reactor/glass/connected_tr",
     "particle": "biggerreactors:block/reactor/glass/connected_none"
-  }
+  },
+  "render_type": "cutout"
 }

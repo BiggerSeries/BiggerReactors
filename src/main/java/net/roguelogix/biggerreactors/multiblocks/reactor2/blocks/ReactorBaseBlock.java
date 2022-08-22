@@ -8,6 +8,7 @@ import net.minecraft.world.level.material.Material;
 import net.roguelogix.biggerreactors.multiblocks.reactor2.tiles.ReactorBaseTile;
 import net.roguelogix.biggerreactors.multiblocks.reactor2.tiles.ReactorControlRodTile;
 import net.roguelogix.biggerreactors.multiblocks.reactor2.tiles.ReactorFuelRodTile;
+import net.roguelogix.phosphophyllite.modular.block.IConnectedTexture;
 import net.roguelogix.phosphophyllite.modular.block.PhosphophylliteBlock;
 import net.roguelogix.phosphophyllite.multiblock2.IAssemblyStateBlock;
 import net.roguelogix.phosphophyllite.multiblock2.rectangular.IAxisPositionBlock;
@@ -48,6 +49,30 @@ public abstract class ReactorBaseBlock extends PhosphophylliteBlock implements I
         @Override
         public boolean isGoodForFrame() {
             return true;
+        }
+    };
+    
+    private static abstract class Glass extends ReactorBaseBlock implements IAssemblyStateBlock, IConnectedTexture {
+        public Glass(Properties properties) {
+            super(properties);
+        }
+    }
+    
+    @RegisterBlock(name = "reactor2_glass", tileEntityClass = ReactorBaseTile.class)
+    public static final ReactorBaseBlock GLASS = new Glass(Properties.of(Material.GLASS).noOcclusion()) {
+        @Override
+        public boolean isGoodForInterior() {
+            return false;
+        }
+        
+        @Override
+        public boolean isGoodForExterior() {
+            return true;
+        }
+        
+        @Override
+        public boolean isGoodForFrame() {
+            return false;
         }
     };
     
