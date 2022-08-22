@@ -8,10 +8,12 @@ import net.minecraft.world.level.material.Material;
 import net.roguelogix.biggerreactors.multiblocks.reactor2.tiles.ReactorBaseTile;
 import net.roguelogix.biggerreactors.multiblocks.reactor2.tiles.ReactorControlRodTile;
 import net.roguelogix.biggerreactors.multiblocks.reactor2.tiles.ReactorFuelRodTile;
+import net.roguelogix.biggerreactors.multiblocks.reactor2.tiles.ReactorTerminalTile;
 import net.roguelogix.phosphophyllite.modular.block.IConnectedTexture;
 import net.roguelogix.phosphophyllite.modular.block.PhosphophylliteBlock;
 import net.roguelogix.phosphophyllite.multiblock2.IAssemblyStateBlock;
 import net.roguelogix.phosphophyllite.multiblock2.rectangular.IAxisPositionBlock;
+import net.roguelogix.phosphophyllite.multiblock2.rectangular.IFaceDirectionBlock;
 import net.roguelogix.phosphophyllite.multiblock2.rectangular.IRectangularMultiblockBlock;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 import net.roguelogix.phosphophyllite.util.NonnullDefault;
@@ -126,4 +128,35 @@ public abstract class ReactorBaseBlock extends PhosphophylliteBlock implements I
             return ReactorControlRodTile.CONTROL_ROD_SUPPLIER.create(pos, state);
         }
     };
+    
+    private static abstract class ReactorPort extends ReactorBaseBlock implements IAssemblyStateBlock, IFaceDirectionBlock {
+        public ReactorPort(Properties properties) {
+            super(properties);
+        }
+    
+        @Override
+        public boolean isGoodForInterior() {
+            return false;
+        }
+    
+        @Override
+        public boolean isGoodForExterior() {
+            return true;
+        }
+    
+        @Override
+        public boolean isGoodForFrame() {
+            return false;
+        }
+    }
+    
+    @RegisterBlock(name = "reactor2_terminal", tileEntityClass = ReactorTerminalTile.class)
+    public static final ReactorBaseBlock TERMINAL = new ReactorPort(Properties.of(Material.METAL)) {
+        
+        @Override
+        public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+            return ReactorTerminalTile.TERMINAL_SUPPLIER.create(pos, state);
+        }
+    };
+}
 }
