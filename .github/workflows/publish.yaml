@@ -52,6 +52,7 @@ jobs:
           file_path: "jars/biggerreactors-${{ needs.build.outputs.mc_version }}-${{ github.ref_name }}.jar"
           game_versions: "Minecraft ${{ needs.build.outputs.mc_major_version }}:${{ needs.build.outputs.mc_version }},Java 17,Forge"
           release_type: "${{ needs.build.outputs.release_type }}"
+          relations: "phosphophyllite:requiredDependency,quartz:requiredDependency"
           changelog: "https://github.com/BiggerSeries/BiggerReactors/blob/${{ github.ref_name }}/changelog.md
           
           &nbsp;
