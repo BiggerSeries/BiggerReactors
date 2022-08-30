@@ -1,6 +1,6 @@
 {
     type: "registry",
-    location: "minecraft:ice",
+    location: "minecraft:lava",
     absorption: 0.33,
     efficiency: 0.33,
     moderation: 1.15,
