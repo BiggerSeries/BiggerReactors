@@ -1,3 +1,9 @@
+# 1.19.2-0.6.0-beta.5.1
+
+## Reactor
+ - scale radiation absorbed with amount of fuel, oversight from 1.5.2 BR, likely needs adjusting
+   - use advanced config option Reactor.fuelRadScalingMultiplier to adjust
+
 # 1.19.2-0.6.0-beta.5
  - 1.19.2
 
