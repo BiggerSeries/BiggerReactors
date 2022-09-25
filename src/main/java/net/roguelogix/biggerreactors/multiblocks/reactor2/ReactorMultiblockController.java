@@ -37,7 +37,7 @@ public class ReactorMultiblockController extends MultiblockController<ReactorBas
     }
     
     @Override
-    protected void preValidate() throws ValidationException {
+    public void validateStage1() throws ValidationException {
         if (blocks.size() < 27) {
             throw new ValidationException("minblocks");
         }
@@ -67,7 +67,7 @@ public class ReactorMultiblockController extends MultiblockController<ReactorBas
     }
     
     @Override
-    protected void validate() throws ValidationException {
+    public void validateStage2() throws ValidationException {
         if (foundRods > fuelRods.size()) {
             // TODO: find the position of it
             throw new ValidationException(Component.translatable("multiblock.error.biggerreactors.dangling_rod"));
@@ -172,7 +172,7 @@ public class ReactorMultiblockController extends MultiblockController<ReactorBas
     }
     
     @Override
-    protected void tick() {
+    public void tick() {
         dirty();
     }
 }
