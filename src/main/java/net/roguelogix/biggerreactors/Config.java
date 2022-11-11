@@ -1,24 +1,22 @@
 package net.roguelogix.biggerreactors;
 
 import net.roguelogix.phosphophyllite.config.ConfigFormat;
+import net.roguelogix.phosphophyllite.config.ConfigType;
 import net.roguelogix.phosphophyllite.config.ConfigValue;
 import net.roguelogix.phosphophyllite.registry.RegisterConfig;
 
 @SuppressWarnings("unused")
 public class Config {
     
-    @RegisterConfig(format = ConfigFormat.TOML)
+    @RegisterConfig(format = ConfigFormat.TOML, type = {ConfigType.CLIENT, ConfigType.SERVER}, rootLevelType = ConfigType.SERVER)
     public static final Config CONFIG = new Config();
-    
-    @ConfigValue(hidden = true, enableAdvanced = true)
-    private final boolean EnableAdvancedConfig = false;
     
     public enum Mode {
         MODERN,
         EXPERIMENTAL,
     }
     
-    @ConfigValue(advanced = true)
+    @ConfigValue(advanced = ConfigValue.BoolOption.True)
     public final Mode mode = Mode.MODERN;
     
     public static final class WorldGen {
@@ -60,11 +58,11 @@ public class Config {
         public final double FuelUsageMultiplier;
         @ConfigValue(range = "(0,)")
         public final double OutputMultiplier;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double PassiveOutputMultiplier;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double ActiveOutputMultiplier;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final long FuelMBPerIngot;
         
         {
@@ -75,82 +73,82 @@ public class Config {
             FuelMBPerIngot = 1000;
         }
         
-        @ConfigValue(advanced = true)
+        @ConfigValue(advanced = ConfigValue.BoolOption.True)
         public final boolean useFullPassSimulation;
-        @ConfigValue(advanced = true)
+        @ConfigValue(advanced = ConfigValue.BoolOption.True)
         public final boolean allowOffThreadSimulation;
-        @ConfigValue(advanced = true)
+        @ConfigValue(advanced = ConfigValue.BoolOption.True)
         public final boolean allowMultiThreadSimulation;
-        @ConfigValue(advanced = true)
+        @ConfigValue(advanced = ConfigValue.BoolOption.True)
         public final boolean allowAcceleratedSimulation;
-    
+        
         {
             useFullPassSimulation = false;
             allowOffThreadSimulation = true;
             allowMultiThreadSimulation = true;
             allowAcceleratedSimulation = true;
         }
-    
-        @ConfigValue(range = "[1,)", advanced = true)
+        
+        @ConfigValue(range = "[1,)", advanced = ConfigValue.BoolOption.True)
         public final long PerFuelRodCapacity;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double FuelFertilityMinimumDecay;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double FuelFertilityDecayDenominator;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double FuelFertilityDecayDenominatorInactiveMultiplier;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double CasingHeatTransferRFMKT;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double FuelToStackRFKTMultiplier;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double StackToCoolantRFMKT;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double StackToAmbientRFMKT;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final long PassiveBatteryPerExternalBlock;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double PassiveCoolingTransferEfficiency;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final long CoolantTankAmountPerFuelRod;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double CaseFEPerUnitVolumeKelvin;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double RodFEPerUnitVolumeKelvin;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double FuelReactivity;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double FissionEventsPerFuelUnit;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double FEPerRadiationUnit;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double FuelPerRadiationUnit;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final long IrradiationDistance;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double FuelHardnessDivisor;
-        @ConfigValue(range = "[0,1]", advanced = true)
+        @ConfigValue(range = "[0,1]", advanced = ConfigValue.BoolOption.True)
         public final double FuelAbsorptionCoefficient;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double FuelModerationFactor;
-        @ConfigValue(range = "(0,1]", advanced = true)
+        @ConfigValue(range = "(0,1]", advanced = ConfigValue.BoolOption.True)
         public final double RadIntensityScalingMultiplier;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double RadIntensityScalingRateExponentMultiplier;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double RadIntensityScalingShiftMultiplier;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double RadPenaltyShiftMultiplier;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double RadPenaltyRateMultiplier;
-        @ConfigValue(range = "(0,1]", advanced = true)
+        @ConfigValue(range = "(0,1]", advanced = ConfigValue.BoolOption.True)
         public final double FuelAbsorptionScalingMultiplier;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double FuelAbsorptionScalingShiftMultiplier;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double FuelAbsorptionScalingRateExponentMultiplier;
     
-        @ConfigValue(range = "(,)", advanced = true)
+        @ConfigValue(range = "(,)", advanced = ConfigValue.BoolOption.True)
         public final double fuelRadScalingMultiplier;
         
         {
@@ -186,7 +184,7 @@ public class Config {
             fuelRadScalingMultiplier = 1.0;
         }
         
-        @ConfigValue(range = "[16,)", advanced = true, comment = "Powers of two recommended")
+        @ConfigValue(range = "[16,)", advanced = ConfigValue.BoolOption.True, comment = "Powers of two recommended")
         public final int SimulationRays;
         
         {
@@ -194,7 +192,7 @@ public class Config {
         }
         
         public static final class ModeSpecific {
-            @ConfigValue(range = "(0,)", advanced = true)
+            @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
             public final int ControlRodBatchSize;
             
             {
@@ -214,7 +212,7 @@ public class Config {
             }
         }
         
-        @ConfigValue
+        @ConfigValue(configType = ConfigType.CLIENT)
         public final GUI GUI = new GUI();
     }
     
@@ -235,23 +233,23 @@ public class Config {
             MaxHeight = 192;
         }
         
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final long FlowRatePerBlock;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final long TankVolumePerBlock;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double FluidPerBladeLinerKilometre;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double RotorAxialMassPerShaft;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double RotorAxialMassPerBlade;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double FrictionDragMultiplier;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double AerodynamicDragMultiplier;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double CoilDragMultiplier;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final long BatterySizePerCoilBlock;
         
         {
@@ -265,7 +263,7 @@ public class Config {
             CoilDragMultiplier = 10;
             BatterySizePerCoilBlock = 300_000;
         }
-    
+        
         public static final class GUI {
             @ConfigValue
             public final long DeltaMB;
@@ -275,7 +273,7 @@ public class Config {
             public final long DeltaMBCtrl;
             @ConfigValue
             public final long DeltaMBHCtrlShift;
-        
+            
             {
                 DeltaMB = 10;
                 DeltaMBShift = 100;
@@ -283,8 +281,8 @@ public class Config {
                 DeltaMBHCtrlShift = 1000;
             }
         }
-    
-        @ConfigValue
+        
+        @ConfigValue(configType = ConfigType.CLIENT)
         public final GUI GUI = new GUI();
     }
     
@@ -305,21 +303,21 @@ public class Config {
             MaxHeight = 96;
         }
         
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final long ChannelTankVolumePerBlock;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double ChannelToChannelHeatConductivityMultiplier;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double ChannelFEPerKelvinUnitVolume;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double ChannelFEPerKelvinMetreSquared;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double ChannelInternalSurfaceArea;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double AirFEPerKelvinUnitVolume;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double AirFEPerKelvinMetreSquared;
-        @ConfigValue(range = "(0,)", advanced = true)
+        @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double AmbientFEPerKelvinMetreSquared;
         
         {
@@ -342,8 +340,8 @@ public class Config {
             }
         }
         
-        @ConfigValue
-        public final Reactor.GUI gui = new Reactor.GUI();
+        @ConfigValue(configType = ConfigType.CLIENT)
+        public final GUI gui = new GUI();
     }
     
     @ConfigValue
