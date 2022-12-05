@@ -99,7 +99,7 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     @Override
     public void onAssemblyAttempted() {
         assert level != null;
-        level.setBlock(worldPosition, getBlockState().setValue(PORT_DIRECTION_ENUM_PROPERTY, direction), 3);
+        level.setBlock(worldPosition, level.getBlockState(worldPosition).setValue(PORT_DIRECTION_ENUM_PROPERTY, direction), 3);
         itemOutputDirection = getBlockState().getValue(BlockStates.FACING);
         neighborChanged();
     }
