@@ -1,3 +1,13 @@
+# 1.19.2-0.6.0-beta.6
+
+## Reactor
+ - add thermal fluids as moderators
+ - fix lava moderator json
+ - work around a weird blockstate issue, actual problem not fixed but it shouldn't crash anymore
+
+## Misc
+ - update Phos, breaking changes
+
 # 1.19.2-0.6.0-beta.5.1
 
 ## Reactor
