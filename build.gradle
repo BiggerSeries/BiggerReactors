@@ -156,9 +156,12 @@ dependencies {
     compileOnly fg.deobf("org.squiddev:cc-tweaked-${cc_mc_version}:${cc_version}")
 //    runtimeOnly fg.deobf("org.squiddev:cc-tweaked-${cc_mc_version}:${cc_version}")
 //
-    compileOnly "mekanism:Mekanism:1.19.2-10.3.2.469:api"
-    runtimeOnly fg.deobf('curse.maven:MEK-268560:3922056')
-    runtimeOnly fg.deobf('curse.maven:MEKG-268566:3922058')
+    compileOnly "mekanism:Mekanism:1.19.2-10.3.5.474:api"
+    runtimeOnly fg.deobf('curse.maven:MEK-268560:4041164')
+    runtimeOnly fg.deobf('curse.maven:MEKG-268566:4041168')
+    runtimeOnly fg.deobf('curse.maven:COFHCore-69162:4112121')
+    runtimeOnly fg.deobf('curse.maven:ThermalFoundation-222880:4112137')
+    runtimeOnly fg.deobf('curse.maven:ThermalExpansion-69163:4112130')
 
 //    runtimeOnly fg.deobf('curse.maven:JEI-238222:3683240')
 //    runtimeOnly fg.deobf('curse.maven:WorldStripper-250603:3545856')
