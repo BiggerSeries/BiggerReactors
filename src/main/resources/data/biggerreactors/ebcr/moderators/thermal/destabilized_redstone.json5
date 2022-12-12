@@ -1,0 +1,8 @@
+{
+    type: "fluidtag",
+    location: "forge:redstone",
+    absorption: 0.75,
+    efficiency: 0.55,
+    moderation: 1.6,
+    conductivity: 2.5,
+}

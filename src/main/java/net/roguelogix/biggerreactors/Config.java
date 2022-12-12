@@ -147,6 +147,9 @@ public class Config {
         public final double FuelAbsorptionScalingShiftMultiplier;
         @ConfigValue(range = "(0,)", advanced = ConfigValue.BoolOption.True)
         public final double FuelAbsorptionScalingRateExponentMultiplier;
+    
+        @ConfigValue(range = "(,)", advanced = ConfigValue.BoolOption.True)
+        public final double fuelRadScalingMultiplier;
         
         {
             PerFuelRodCapacity = 4000;
@@ -178,6 +181,7 @@ public class Config {
             FuelAbsorptionScalingMultiplier = 0.95f;
             FuelAbsorptionScalingShiftMultiplier = 1f;
             FuelAbsorptionScalingRateExponentMultiplier = 2.2f;
+            fuelRadScalingMultiplier = 1.0;
         }
         
         @ConfigValue(range = "[16,)", advanced = ConfigValue.BoolOption.True, comment = "Powers of two recommended")
