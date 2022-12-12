@@ -30,7 +30,7 @@ jobs:
       - id: mverinfo
         run: echo "::set-output name=mcver::$(cat gradle.properties | grep mc_version | grep -o '1...' )"
       - id: relinfo
-        run: echo "::set-output name=reltype::$(cat gradle.properties | grep "postfix=" | sed -n -e 's/^.*=//p' | grep -o '[a-z]*')"
+        run: echo "::set-output name=reltype::$(cat gradle.properties | grep "postfixVersion=" | sed -n -e 's/^.*=//p' | grep -o '[a-z]*')"
 
   uploadToCurseforge:
     name: "Upload to Curseforge"
