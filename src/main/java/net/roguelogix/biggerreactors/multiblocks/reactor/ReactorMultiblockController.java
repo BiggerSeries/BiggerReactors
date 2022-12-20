@@ -25,6 +25,7 @@ import net.roguelogix.biggerreactors.multiblocks.reactor.tiles.*;
 import net.roguelogix.biggerreactors.multiblocks.reactor.util.ReactorTransitionTank;
 import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
 import net.roguelogix.phosphophyllite.Phosphophyllite;
+import net.roguelogix.phosphophyllite.debug.DebugInfo;
 import net.roguelogix.phosphophyllite.multiblock.MultiblockTileModule;
 import net.roguelogix.phosphophyllite.multiblock.ValidationError;
 import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblockController;
@@ -127,8 +128,8 @@ public class ReactorMultiblockController extends RectangularMultiblockController
                 BlockPos pos = manifold.getBlockPos();
                 
                 if (pos.getX() == minx || pos.getX() == maxx ||
-                            pos.getY() == miny || pos.getY() == maxy ||
-                            pos.getZ() == minz || pos.getZ() == maxz) {
+                        pos.getY() == miny || pos.getY() == maxy ||
+                        pos.getZ() == minz || pos.getZ() == maxz) {
                     var manifoldModule = manifold.multiblockModule();
                     for (int i = 0; i < 6; i++) {
                         final var direction = directions[i];
@@ -384,7 +385,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         }
         simulationDescription.setDefaultIModeratorProperties(airProperties);
         // if we already have a simulation, it is the reference
-        if(simulation != null){
+        if (simulation != null) {
             simulationData = simulation.save();
         }
         final var simulationBuilder = new SimulationDescription.Builder(Config.CONFIG.mode == Config.Mode.EXPERIMENTAL, Config.CONFIG.Reactor.useFullPassSimulation, Config.CONFIG.Reactor.allowOffThreadSimulation, Config.CONFIG.Reactor.allowMultiThreadSimulation, Config.CONFIG.Reactor.allowAcceleratedSimulation);
@@ -799,7 +800,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             
             // Manually eject waste.
             case "ejectWaste" -> ejectWaste();
-
+            
             // Manually dump tanks.
             case "dumpTanks" -> {
                 if (coolantTank != null) {
@@ -810,48 +811,46 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         }
     }
     
+    @Nonnull
     @Override
     
-    public String getDebugString() {
+    public DebugInfo getDebugInfo() {
+        final var info = super.getDebugInfo();
+        info.add("State: " + reactorActivity.toString());
+        info.add("AutoEjectWaste: " + autoEjectWaste);
         if (simulation == null) {
-            return super.getDebugString() +
-                           "State: " + reactorActivity.toString() + "\n" +
-                           "AutoEjectWaste: " + autoEjectWaste + "\n" +
-                           "Simulation is null" +
-                           "";
+            info.add("Simulation is null");
+        } else {
+            final var simInfo = new DebugInfo("Simulation");
+            simInfo.add("SimClass: " + simulation.getClass().getSimpleName());
+            simInfo.add("FuelUsage: " + simulation.fuelTank().burnedLastTick());
+            simInfo.add("ReactantCapacity: " + simulation.fuelTank().capacity());
+            simInfo.add("TotalReactant: " + simulation.fuelTank().totalStored());
+            simInfo.add("PercentFull: " + (float) simulation.fuelTank().totalStored() * 100 / simulation.fuelTank().capacity());
+            simInfo.add("Fuel: " + simulation.fuelTank().fuel());
+            simInfo.add("Waste: " + simulation.fuelTank().waste());
+            simInfo.add("Fertility: " + simulation.fertility());
+            simInfo.add("FuelHeat: " + simulation.fuelHeat());
+            simInfo.add("ReactorHeat: " + simulation.stackHeat());
+            final var battery = simulation.battery();
+            if (battery != null) {
+                final var batteryInfo = new DebugInfo("Battery");
+                batteryInfo.add("StoredPower: " + battery.stored());
+                batteryInfo.add("PowerProduction: " + battery.generatedLastTick());
+                info.add(batteryInfo);
+            }
+            if (coolantTank != null) {
+                final var coolantTankInfo = new DebugInfo("CoolantTank");
+                coolantTankInfo.add("MBProduction: " + coolantTank.transitionedLastTick());
+                coolantTankInfo.add("CoolantTankSize: " + coolantTank.perSideCapacity());
+                coolantTankInfo.add("LiquidType: " + coolantTank.liquidType());
+                coolantTankInfo.add("Liquid: " + coolantTank.liquidAmount());
+                coolantTankInfo.add("VaporType: " + coolantTank.vaporType());
+                coolantTankInfo.add("Vapor: " + coolantTank.vaporAmount());
+                info.add(coolantTankInfo);
+            }
         }
-        final var battery = simulation.battery();
-        return super.getDebugString() +
-                       "State: " + reactorActivity.toString() + "\n" +
-                       "AutoEjectWaste: " + autoEjectWaste + "\n" +
-                       "FuelUsage: " + simulation.fuelTank().burnedLastTick() + "\n" +
-                       "ReactantCapacity: " + simulation.fuelTank().capacity() + "\n" +
-                       "TotalReactant: " + simulation.fuelTank().totalStored() + "\n" +
-                       "PercentFull: " + (float) simulation.fuelTank().totalStored() * 100 / simulation.fuelTank().capacity() + "\n" +
-                       "Fuel: " + simulation.fuelTank().fuel() + "\n" +
-                       "Waste: " + simulation.fuelTank().waste() + "\n" +
-                       "Fertility: " + simulation.fertility() + "\n" +
-                       "FuelHeat: " + simulation.fuelHeat() + "\n" +
-                       "ReactorHeat: " + simulation.stackHeat() + "\n" +
-                       (
-                               battery != null ?
-                                       (
-                                               "StoredPower: " + battery.stored() + "\n" +
-                                                       "PowerProduction: " + battery.generatedLastTick() + "\n"
-                                       ) : ""
-                       ) +
-                       (
-                               coolantTank != null ?
-                                       (
-                                               "MBProduction: " + coolantTank.transitionedLastTick() + "\n" +
-                                                       "CoolantTankSize: " + coolantTank.perSideCapacity() + "\n" +
-                                                       "LiquidType: " + coolantTank.liquidType() + "\n" +
-                                                       "Liquid: " + coolantTank.liquidAmount() + "\n" +
-                                                       "VaporType: " + coolantTank.vaporType() + "\n" +
-                                                       "Vapor: " + coolantTank.vaporAmount() + "\n"
-                                       ) : ""
-                       ) +
-                       "";
+        return info;
     }
     
     public synchronized void setAllControlRodLevels(double newLevel) {
