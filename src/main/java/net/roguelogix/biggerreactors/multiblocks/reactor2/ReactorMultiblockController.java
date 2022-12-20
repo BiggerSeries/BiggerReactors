@@ -10,6 +10,7 @@ import net.roguelogix.biggerreactors.multiblocks.reactor2.tiles.ReactorBaseTile;
 import net.roguelogix.biggerreactors.multiblocks.reactor2.tiles.ReactorControlRodTile;
 import net.roguelogix.biggerreactors.multiblocks.reactor2.tiles.ReactorFuelRodTile;
 import net.roguelogix.phosphophyllite.Phosphophyllite;
+import net.roguelogix.phosphophyllite.debug.DebugInfo;
 import net.roguelogix.phosphophyllite.multiblock2.MultiblockController;
 import net.roguelogix.phosphophyllite.multiblock2.ValidationException;
 import net.roguelogix.phosphophyllite.multiblock2.common.IPersistentMultiblock;
@@ -167,8 +168,10 @@ public class ReactorMultiblockController extends MultiblockController<ReactorBas
     
     @Nonnull
     @Override
-    public String getDebugString() {
-        return super.getDebugString() + nbtTestValue + "\n";
+    public DebugInfo getControllerDebugInfo() {
+        final var debugInfo = new DebugInfo(this.getClass().getSimpleName());
+        debugInfo.add("TestValue: " + nbtTestValue);
+        return debugInfo;
     }
     
     @Override
