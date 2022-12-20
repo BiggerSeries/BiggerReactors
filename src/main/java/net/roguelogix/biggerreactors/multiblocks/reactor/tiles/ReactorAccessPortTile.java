@@ -31,6 +31,7 @@ import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorAccessPor
 import net.roguelogix.biggerreactors.multiblocks.reactor.containers.ReactorAccessPortContainer;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorAccessPortState;
 import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
+import net.roguelogix.phosphophyllite.debug.DebugInfo;
 import net.roguelogix.phosphophyllite.multiblock.IAssemblyAttemptedTile;
 import net.roguelogix.phosphophyllite.multiblock.IOnAssemblyTile;
 import net.roguelogix.phosphophyllite.multiblock.IOnDisassemblyTile;
@@ -91,9 +92,10 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
         return NBT;
     }
     
+    @Nonnull
     @Override
-    public String getDebugString() {
-        return direction.toString();
+    public DebugInfo getDebugInfo() {
+        return super.getDebugInfo().add("PortDirection: " + direction);
     }
     
     @Override

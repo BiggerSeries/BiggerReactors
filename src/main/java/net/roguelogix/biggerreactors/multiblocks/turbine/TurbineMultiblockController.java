@@ -22,6 +22,7 @@ import net.roguelogix.biggerreactors.multiblocks.turbine.state.VentState;
 import net.roguelogix.biggerreactors.multiblocks.turbine.tiles.*;
 import net.roguelogix.biggerreactors.registries.TurbineCoilRegistry;
 import net.roguelogix.phosphophyllite.Phosphophyllite;
+import net.roguelogix.phosphophyllite.debug.DebugInfo;
 import net.roguelogix.phosphophyllite.multiblock.ValidationError;
 import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblockController;
 import net.roguelogix.phosphophyllite.repack.org.joml.*;
@@ -603,11 +604,9 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         }
     }
     
+    @Nonnull
     @Override
-    
-    public String getDebugString() {
-        return super.getDebugString() + "\n" +
-                simulation.debugString() +
-                "";
+    public DebugInfo getDebugInfo() {
+        return super.getDebugInfo().add(simulation.debugString());
     }
 }
