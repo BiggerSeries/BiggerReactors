@@ -264,6 +264,11 @@ public class Config {
             BatterySizePerCoilBlock = 300_000;
         }
         
+        @ConfigValue(range = "[1,)", advanced = ConfigValue.BoolOption.True)
+        public final long EffectiveGridFrequency = 30;
+        @ConfigValue(range = "[1,)", advanced = ConfigValue.BoolOption.True)
+        public final long EfficiencyPeaks = 2;
+        
         public static final class GUI {
             @ConfigValue
             public final long DeltaMB;

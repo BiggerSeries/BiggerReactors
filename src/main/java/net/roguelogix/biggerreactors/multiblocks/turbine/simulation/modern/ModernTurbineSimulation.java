@@ -220,24 +220,25 @@ public class ModernTurbineSimulation implements ITurbineSimulation {
         }
         
         if (coilEngaged) {
-            double inductionTorque = rpm * inductorDragCoefficient * coilSize;
+            final double inductionTorque = rpm * inductorDragCoefficient * coilSize;
             double energyToGenerate = Math.pow(inductionTorque, inductionEnergyExponentBonus) * inductionEfficiency;
             
-            // TODO: 8/7/20 make RPM range configurable, its not exactly the easiest thing to do
-            double efficiency = 0.25 * Math.cos(rpm / (45.5 * Math.PI)) + 0.75;
-            // yes this is slightly different, this matches what the equation actually looks like better
-            // go on, graph it
-            if (rpm < 450) {
-                efficiency = Math.min(0.5, efficiency);
-            }
+            final double efficiency;
             
-            // oh noes, there is a cap now, *no over speeding your fucking turbines*
-            if (rpm > 2245) {
-                efficiency = -rpm / 4490;
-                efficiency += 1;
-            }
-            if (efficiency < 0) {
-                efficiency = 0;
+            final double frequency = Config.CONFIG.Turbine.EffectiveGridFrequency;
+            final double peakRPM = frequency * 60;
+            final double minRPM = peakRPM * Math.pow(2, Config.CONFIG.Turbine.EfficiencyPeaks);
+            if (rpm < minRPM) {
+                efficiency = 0.5;
+            } else if (rpm > peakRPM) {
+                final double numerator = rpm - peakRPM;
+                final double denominator = 8 * frequency * peakRPM;
+                final double possibleEfficiency = -(numerator * numerator) / denominator;
+                efficiency = Math.max(0, possibleEfficiency);
+            } else {
+                // no log2 function, so, change of base it is
+                final double logValue = -2 * (Math.log(rpm / peakRPM) / Math.log(2)) + 1;
+                efficiency = -0.25 * Math.cos(logValue * Math.PI) + 0.75;
             }
             
             energyToGenerate *= efficiency;
