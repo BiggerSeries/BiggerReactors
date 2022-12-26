@@ -34,12 +34,6 @@ public class HeatExchangerGlassBlock extends HeatExchangerBaseBlock implements I
         return HeatExchangerGlassTile.SUPPLIER.create(pos, state);
     }
     
-    @OnlyIn(Dist.CLIENT)
-    @RegisterBlock.RenderLayer
-    public RenderType renderLayer() {
-        return RenderType.cutout();
-    }
-    
     @SuppressWarnings("deprecation")
     @Override
     public float getShadeBrightness(BlockState state, BlockGetter worldIn, BlockPos pos) {

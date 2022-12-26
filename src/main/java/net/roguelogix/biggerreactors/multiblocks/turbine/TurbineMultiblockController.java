@@ -25,8 +25,8 @@ import net.roguelogix.phosphophyllite.Phosphophyllite;
 import net.roguelogix.phosphophyllite.debug.DebugInfo;
 import net.roguelogix.phosphophyllite.multiblock.ValidationError;
 import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblockController;
-import net.roguelogix.phosphophyllite.repack.org.joml.*;
 import net.roguelogix.phosphophyllite.util.Util;
+import org.joml.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

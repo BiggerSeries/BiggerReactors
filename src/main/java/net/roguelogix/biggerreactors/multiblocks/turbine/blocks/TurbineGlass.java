@@ -33,12 +33,6 @@ public class TurbineGlass extends TurbineBaseBlock implements IAssemblyStateBloc
         return TurbineGlassTile.SUPPLIER.create(pos, state);
     }
     
-    @OnlyIn(Dist.CLIENT)
-    @RegisterBlock.RenderLayer
-    public RenderType renderLayer() {
-        return RenderType.cutout();
-    }
-    
     @SuppressWarnings("deprecation")
     @Override
     public float getShadeBrightness(BlockState p_60472_, BlockGetter p_60473_, BlockPos p_60474_) {

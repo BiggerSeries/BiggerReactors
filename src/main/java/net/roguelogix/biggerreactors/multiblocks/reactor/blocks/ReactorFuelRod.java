@@ -38,12 +38,6 @@ public class ReactorFuelRod extends ReactorBaseBlock {
         return ReactorFuelRodTile.SUPPLIER.create(pos, state);
     }
     
-    @OnlyIn(Dist.CLIENT)
-    @RegisterBlock.RenderLayer
-    RenderType renderLayer() {
-        return RenderType.cutout();
-    }
-    
     @SuppressWarnings("deprecation")
     @Override
     public float getShadeBrightness(BlockState p_60472_, BlockGetter p_60473_, BlockPos p_60474_) {

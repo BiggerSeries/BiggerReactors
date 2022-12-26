@@ -34,12 +34,6 @@ public class HeatExchangerCondenserChannelBlock extends HeatExchangerBaseBlock i
         return HeatExchangerCondenserChannelTile.SUPPLIER.create(pos, state);
     }
     
-    @OnlyIn(Dist.CLIENT)
-    @RegisterBlock.RenderLayer
-    public RenderType renderLayer() {
-        return RenderType.cutout();
-    }
-    
     @SuppressWarnings("deprecation")
     public float getShadeBrightness(BlockState state, BlockGetter worldIn, BlockPos pos) {
         return 1.0F;

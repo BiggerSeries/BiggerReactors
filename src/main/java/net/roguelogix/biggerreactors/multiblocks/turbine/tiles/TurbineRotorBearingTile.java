@@ -15,12 +15,11 @@ import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorShaf
 import net.roguelogix.phosphophyllite.Phosphophyllite;
 import net.roguelogix.phosphophyllite.multiblock.IAssemblyAttemptedTile;
 import net.roguelogix.phosphophyllite.registry.RegisterTile;
-import net.roguelogix.phosphophyllite.repack.org.joml.AABBi;
-import net.roguelogix.phosphophyllite.repack.org.joml.Matrix4f;
-import net.roguelogix.phosphophyllite.repack.org.joml.Vector3i;
-import net.roguelogix.phosphophyllite.repack.org.joml.Vector4i;
 import net.roguelogix.phosphophyllite.threading.Queues;
 import net.roguelogix.quartz.*;
+import org.joml.Matrix4f;
+import org.joml.Vector3i;
+import org.joml.Vector4i;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -31,8 +30,6 @@ import static net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock.ASSE
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssemblyAttemptedTile {
-    
-    public static boolean USE_QUARTZ = true;
     
     @RegisterTile("turbine_rotor_bearing")
     public static final RegisterTile.Producer<TurbineRotorBearingTile> SUPPLIER = new RegisterTile.Producer<>(TurbineRotorBearingTile::new);
@@ -180,15 +177,12 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
             return;
         }
         teardownQuartzModel();
-        if (!USE_QUARTZ) {
-            return;
-        }
         if (level.getBlockEntity(getBlockPos()) != this) {
             return;
         }
         final Matrix4f jomlMatrix = new Matrix4f();
         final int blade180RotationMultiplier = -rotationAxis.x() | -rotationAxis.y() | rotationAxis.z();
-        final var drawBatch = Quartz.getDrawBatcherForAABB(new AABBi((int) AABB.minX, (int) AABB.minY, (int) AABB.minZ, (int) AABB.maxX, (int) AABB.maxY, (int) AABB.maxZ));
+        final var drawBatch = Quartz.getDrawBatcherForAABB(new net.roguelogix.quartz.AABB((int) AABB.minX, (int) AABB.minY, (int) AABB.minZ, (int) AABB.maxX, (int) AABB.maxY, (int) AABB.maxZ));
         final var dynamicMatrix = drawBatch.createDynamicMatrix((matrix, nanoSinceLastFrame, partialTicks, playerBlock, playerPartialBlock) -> {
             double angle = this.angle;
             

@@ -1,5 +1,6 @@
 {
   "parent": "block/cube",
+  "render_type": "cutout",
   "textures": {
     "up" : "biggerreactors:block/turbine/glass/connected_tbr",
     "down" : "biggerreactors:block/turbine/glass/connected_tbr",

@@ -1,7 +1,7 @@
 package net.roguelogix.biggerreactors.registries;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
@@ -145,7 +145,7 @@ public class FluidTransitionRegistry {
             final List<Fluid> liquids = new ArrayList<>();
             
             if (transitionData.liquidType.equals("tag")) {
-                var fluidTagOptional = Registry.FLUID.getTag(TagKey.create(Registry.FLUID_REGISTRY, transitionData.liquid));
+                var fluidTagOptional = BuiltInRegistries.FLUID.getTag(TagKey.create(BuiltInRegistries.FLUID.key(), transitionData.liquid));
                 fluidTagOptional.ifPresent(holders -> holders.forEach(fluidHolder -> {
                     var fluid = fluidHolder.value();
                     if (fluid.isSource(fluid.defaultFluidState())) {
@@ -167,7 +167,7 @@ public class FluidTransitionRegistry {
             final List<Fluid> gases = new ArrayList<>();
             
             if (transitionData.gasType.equals("tag")) {
-                var fluidTagOptional = Registry.FLUID.getTag(TagKey.create(Registry.FLUID_REGISTRY, transitionData.gas));
+                var fluidTagOptional = BuiltInRegistries.FLUID.getTag(TagKey.create(BuiltInRegistries.FLUID.key(), transitionData.gas));
                 fluidTagOptional.ifPresent(holders -> holders.forEach(fluidHolder -> {
                     var fluid = fluidHolder.value();
                     if (fluid.isSource(fluid.defaultFluidState())) {

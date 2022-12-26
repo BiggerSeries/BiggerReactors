@@ -4,6 +4,7 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -51,8 +52,8 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     @RegisterTile("reactor_access_port")
     public static final BlockEntityType.BlockEntitySupplier<ReactorAccessPortTile> SUPPLIER = new RegisterTile.Producer<>(ReactorAccessPortTile::new);
     
-    private static final TagKey<Item> uraniumIngotTag = TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation("forge:ingots/uranium"));
-    private static final TagKey<Item> uraniumBlockTag = TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation("forge:storage_blocks/uranium"));
+    private static final TagKey<Item> uraniumIngotTag = TagKey.create(BuiltInRegistries.ITEM.key(), new ResourceLocation("forge:ingots/uranium"));
+    private static final TagKey<Item> uraniumBlockTag = TagKey.create(BuiltInRegistries.ITEM.key(), new ResourceLocation("forge:storage_blocks/uranium"));
     
     public static final int FUEL_SLOT = 0;
     public static final int WASTE_SLOT = 1;

@@ -2,12 +2,12 @@ package net.roguelogix.biggerreactors.multiblocks.turbine.simulation.modern;
 
 import net.minecraft.nbt.CompoundTag;
 import net.roguelogix.biggerreactors.Config;
-import net.roguelogix.biggerreactors.registries.TurbineCoilRegistry;
 import net.roguelogix.biggerreactors.multiblocks.turbine.simulation.ITurbineBattery;
 import net.roguelogix.biggerreactors.multiblocks.turbine.simulation.ITurbineFluidTank;
 import net.roguelogix.biggerreactors.multiblocks.turbine.simulation.ITurbineSimulation;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.VentState;
-import net.roguelogix.phosphophyllite.repack.org.joml.Vector4i;
+import net.roguelogix.biggerreactors.registries.TurbineCoilRegistry;
+import org.joml.Vector4i;
 
 import java.util.ArrayList;
 

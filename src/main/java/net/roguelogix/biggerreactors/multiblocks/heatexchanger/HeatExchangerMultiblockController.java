@@ -22,9 +22,9 @@ import net.roguelogix.phosphophyllite.multiblock.MultiblockTileModule;
 import net.roguelogix.phosphophyllite.multiblock.ValidationError;
 import net.roguelogix.phosphophyllite.multiblock.Validator;
 import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblockController;
-import net.roguelogix.phosphophyllite.repack.org.joml.Vector3i;
 import net.roguelogix.phosphophyllite.util.HeatBody;
 import net.roguelogix.phosphophyllite.util.Util;
+import org.joml.Vector3i;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

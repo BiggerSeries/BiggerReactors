@@ -4,10 +4,10 @@ import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorSimulation;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.SimulationDescription;
 import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
-import net.roguelogix.phosphophyllite.repack.org.joml.Vector2ic;
-import net.roguelogix.phosphophyllite.repack.org.joml.Vector3ic;
 import net.roguelogix.phosphophyllite.serialization.PhosphophylliteCompound;
 import net.roguelogix.phosphophyllite.util.HeatBody;
+import org.joml.Vector2ic;
+import org.joml.Vector3ic;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

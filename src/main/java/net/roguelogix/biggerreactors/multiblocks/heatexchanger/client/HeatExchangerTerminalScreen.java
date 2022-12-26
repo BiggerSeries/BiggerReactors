@@ -2,6 +2,7 @@ package net.roguelogix.biggerreactors.multiblocks.heatexchanger.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -40,10 +41,10 @@ public class HeatExchangerTerminalScreen extends PhosphophylliteScreen<HeatExcha
 
         // Initialize heat exchanger state.
         this.heatExchangerState = (HeatExchangerState) this.getMenu().getGuiPacket();
-        this.condenserIntakeFluid = Registry.FLUID.get(new ResourceLocation(this.heatExchangerState.condenserIntakeFluid));
-        this.condenserExhaustFluid = Registry.FLUID.get(new ResourceLocation(this.heatExchangerState.condenserExhaustFluid));
-        this.evaporatorIntakeFluid = Registry.FLUID.get(new ResourceLocation(this.heatExchangerState.evaporatorIntakeFluid));
-        this.evaporatorExhaustFluid = Registry.FLUID.get(new ResourceLocation(this.heatExchangerState.evaporatorExhaustFluid));
+        this.condenserIntakeFluid = BuiltInRegistries.FLUID.get(new ResourceLocation(this.heatExchangerState.condenserIntakeFluid));
+        this.condenserExhaustFluid = BuiltInRegistries.FLUID.get(new ResourceLocation(this.heatExchangerState.condenserExhaustFluid));
+        this.evaporatorIntakeFluid = BuiltInRegistries.FLUID.get(new ResourceLocation(this.heatExchangerState.evaporatorIntakeFluid));
+        this.evaporatorExhaustFluid = BuiltInRegistries.FLUID.get(new ResourceLocation(this.heatExchangerState.evaporatorExhaustFluid));
     }
 
     /**
@@ -144,22 +145,22 @@ public class HeatExchangerTerminalScreen extends PhosphophylliteScreen<HeatExcha
     public void containerTick() {
         // Check if condenser intake fluid changed.
         if (!heatExchangerState.condenserIntakeFluid.equals(Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(condenserIntakeFluid)).toString())) {
-            condenserIntakeFluid = Registry.FLUID.get(new ResourceLocation(heatExchangerState.condenserIntakeFluid));
+            condenserIntakeFluid = BuiltInRegistries.FLUID.get(new ResourceLocation(heatExchangerState.condenserIntakeFluid));
         }
 
         // Check if evaporator intake fluid changed.
         if (!heatExchangerState.evaporatorIntakeFluid.equals(Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(evaporatorIntakeFluid)).toString())) {
-            evaporatorIntakeFluid = Registry.FLUID.get(new ResourceLocation(heatExchangerState.evaporatorIntakeFluid));
+            evaporatorIntakeFluid = BuiltInRegistries.FLUID.get(new ResourceLocation(heatExchangerState.evaporatorIntakeFluid));
         }
 
         // Check if condenser exhaust fluid changed.
         if (!heatExchangerState.condenserExhaustFluid.equals(Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(condenserExhaustFluid)).toString())) {
-            condenserExhaustFluid = Registry.FLUID.get(new ResourceLocation(heatExchangerState.condenserExhaustFluid));
+            condenserExhaustFluid = BuiltInRegistries.FLUID.get(new ResourceLocation(heatExchangerState.condenserExhaustFluid));
         }
 
         // Check if evaporator exhaust fluid changed.
         if (!heatExchangerState.evaporatorExhaustFluid.equals(Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(evaporatorExhaustFluid)).toString())) {
-            evaporatorExhaustFluid = Registry.FLUID.get(new ResourceLocation(heatExchangerState.evaporatorExhaustFluid));
+            evaporatorExhaustFluid = BuiltInRegistries.FLUID.get(new ResourceLocation(heatExchangerState.evaporatorExhaustFluid));
         }
     }
 

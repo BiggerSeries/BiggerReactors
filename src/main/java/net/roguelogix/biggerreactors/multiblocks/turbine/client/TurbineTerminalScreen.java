@@ -3,6 +3,7 @@ package net.roguelogix.biggerreactors.multiblocks.turbine.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -43,8 +44,8 @@ public class TurbineTerminalScreen extends PhosphophylliteScreen<TurbineTerminal
 
         // Initialize turbine state.
         turbineState = (TurbineState) this.getMenu().getGuiPacket();
-        intakeFluid = Registry.FLUID.get(new ResourceLocation(turbineState.intakeResourceLocation));
-        exhaustFluid = Registry.FLUID.get(new ResourceLocation(turbineState.exhaustResourceLocation));
+        intakeFluid = BuiltInRegistries.FLUID.get(new ResourceLocation(turbineState.intakeResourceLocation));
+        exhaustFluid = BuiltInRegistries.FLUID.get(new ResourceLocation(turbineState.exhaustResourceLocation));
     }
 
     /**
@@ -279,11 +280,11 @@ public class TurbineTerminalScreen extends PhosphophylliteScreen<TurbineTerminal
         super.containerTick();
         // Check if intake type changed.
         if (!turbineState.intakeResourceLocation.equals(Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(intakeFluid)).toString())) {
-            intakeFluid = Registry.FLUID.get(new ResourceLocation(turbineState.intakeResourceLocation));
+            intakeFluid = BuiltInRegistries.FLUID.get(new ResourceLocation(turbineState.intakeResourceLocation));
         }
         // Check if exhaust type changed.
         if (!turbineState.exhaustResourceLocation.equals(Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(exhaustFluid)).toString())) {
-            exhaustFluid = Registry.FLUID.get(new ResourceLocation(turbineState.exhaustResourceLocation));
+            exhaustFluid = BuiltInRegistries.FLUID.get(new ResourceLocation(turbineState.exhaustResourceLocation));
         }
     }
 

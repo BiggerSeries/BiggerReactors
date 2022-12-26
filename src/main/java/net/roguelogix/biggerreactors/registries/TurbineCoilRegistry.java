@@ -1,6 +1,7 @@
 package net.roguelogix.biggerreactors.registries;
 
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
@@ -72,7 +73,7 @@ public class TurbineCoilRegistry {
             CoilData properties = new CoilData(coilData.efficiency, coilData.bonus, coilData.extractionRate);
             
             if (coilData.type.equals("tag")) {
-                var blockTagOptional = Registry.BLOCK.getTag(TagKey.create(Registry.BLOCK_REGISTRY, coilData.location));
+                var blockTagOptional = BuiltInRegistries.BLOCK.getTag(TagKey.create(BuiltInRegistries.BLOCK.key(), coilData.location));
                 blockTagOptional.ifPresent(holders -> holders.forEach(blockHolder -> {
                     var element = blockHolder.value();
                     registry.put(element, properties);

@@ -16,10 +16,10 @@ import net.roguelogix.phosphophyllite.multiblock2.ValidationException;
 import net.roguelogix.phosphophyllite.multiblock2.common.IPersistentMultiblock;
 import net.roguelogix.phosphophyllite.multiblock2.rectangular.IRectangularMultiblock;
 import net.roguelogix.phosphophyllite.multiblock2.touching.ITouchingMultiblock;
-import net.roguelogix.phosphophyllite.repack.org.joml.Vector3i;
-import net.roguelogix.phosphophyllite.repack.org.joml.Vector3ic;
 import net.roguelogix.phosphophyllite.util.FastArraySet;
 import net.roguelogix.phosphophyllite.util.NonnullDefault;
+import org.joml.Vector3i;
+import org.joml.Vector3ic;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

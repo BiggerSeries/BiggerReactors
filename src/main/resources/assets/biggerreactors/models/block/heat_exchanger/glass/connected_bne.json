@@ -1,12 +1,13 @@
 {
   "parent": "block/cube",
+  "render_type": "cutout",
   "textures": {
-    "up" : "biggerreactors:block/heat_exchanger/glass/glass_connected_tr",
-    "down" : "phosphophyllite:block/transparent",
-    "north" : "phosphophyllite:block/transparent",
-    "south" : "biggerreactors:block/heat_exchanger/glass/glass_connected_br",
-    "east" : "phosphophyllite:block/transparent",
-    "west" : "biggerreactors:block/heat_exchanger/glass/glass_connected_bl",
+    "up": "biggerreactors:block/heat_exchanger/glass/glass_connected_tr",
+    "down": "phosphophyllite:block/transparent",
+    "north": "phosphophyllite:block/transparent",
+    "south": "biggerreactors:block/heat_exchanger/glass/glass_connected_br",
+    "east": "phosphophyllite:block/transparent",
+    "west": "biggerreactors:block/heat_exchanger/glass/glass_connected_bl",
     "particle": "biggerreactors:block/heat_exchanger/glass/glass_connected_none"
   }
 }

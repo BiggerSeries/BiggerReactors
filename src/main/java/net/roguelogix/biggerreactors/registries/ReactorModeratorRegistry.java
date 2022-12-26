@@ -1,6 +1,7 @@
 package net.roguelogix.biggerreactors.registries;
 
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
@@ -131,7 +132,7 @@ public class ReactorModeratorRegistry {
             
             switch (moderatorData.type) {
                 case "tag": {
-                    var blockTagOptional = Registry.BLOCK.getTag(TagKey.create(Registry.BLOCK_REGISTRY, moderatorData.location));
+                    var blockTagOptional = BuiltInRegistries.BLOCK.getTag(TagKey.create(BuiltInRegistries.BLOCK.key(), moderatorData.location));
                     blockTagOptional.ifPresent(holders -> holders.forEach(blockHolder -> {
                         var element = blockHolder.value();
                         registry.put(element, properties);
@@ -147,7 +148,7 @@ public class ReactorModeratorRegistry {
                     }
                     break;
                 case "fluidtag": {
-                    var fluidTagOptional = Registry.FLUID.getTag(TagKey.create(Registry.FLUID_REGISTRY, moderatorData.location));
+                    var fluidTagOptional = BuiltInRegistries.FLUID.getTag(TagKey.create(BuiltInRegistries.FLUID.key(), moderatorData.location));
                     fluidTagOptional.ifPresent(holders -> holders.forEach(fluidHolder -> {
                         var element = fluidHolder.value();
                         Block elementBlock = element.defaultFluidState().createLegacyBlock().getBlock();

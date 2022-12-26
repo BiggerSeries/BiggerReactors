@@ -2,6 +2,7 @@ package net.roguelogix.biggerreactors.multiblocks.reactor.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -42,8 +43,8 @@ public class ActiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
 
         // Initialize reactor state.
         reactorState = (ReactorState) this.getMenu().getGuiPacket();
-        coolantFluid = Registry.FLUID.get(new ResourceLocation(reactorState.coolantResourceLocation));
-        exhaustFluid = Registry.FLUID.get(new ResourceLocation(reactorState.exhaustResourceLocation));
+        coolantFluid = BuiltInRegistries.FLUID.get(new ResourceLocation(reactorState.coolantResourceLocation));
+        exhaustFluid = BuiltInRegistries.FLUID.get(new ResourceLocation(reactorState.exhaustResourceLocation));
     }
 
     /**
@@ -154,11 +155,11 @@ public class ActiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
         }
         // Check if coolant type changed.
         if (!reactorState.coolantResourceLocation.equals(Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(coolantFluid)).toString())) {
-            coolantFluid = Registry.FLUID.get(new ResourceLocation(reactorState.coolantResourceLocation));
+            coolantFluid = BuiltInRegistries.FLUID.get(new ResourceLocation(reactorState.coolantResourceLocation));
         }
         // Check if exhaust type changed.
         if (!reactorState.exhaustResourceLocation.equals(Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(exhaustFluid)).toString())) {
-            exhaustFluid = Registry.FLUID.get(new ResourceLocation(reactorState.exhaustResourceLocation));
+            exhaustFluid = BuiltInRegistries.FLUID.get(new ResourceLocation(reactorState.exhaustResourceLocation));
         }
     }
 

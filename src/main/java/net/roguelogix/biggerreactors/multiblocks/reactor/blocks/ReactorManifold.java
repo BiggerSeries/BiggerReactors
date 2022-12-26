@@ -34,12 +34,6 @@ public class ReactorManifold extends ReactorBaseBlock implements IConnectedTextu
         return ReactorManifoldTile.SUPPLIER.create(pos, state);
     }
     
-    @OnlyIn(Dist.CLIENT)
-    @RegisterBlock.RenderLayer
-    RenderType renderLayer() {
-        return RenderType.cutout();
-    }
-    
     @Override
     public float getShadeBrightness(BlockState p_60472_, BlockGetter p_60473_, BlockPos p_60474_) {
         return 1.0f;

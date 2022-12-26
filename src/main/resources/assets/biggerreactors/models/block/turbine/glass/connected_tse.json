@@ -1,5 +1,6 @@
 {
   "parent": "block/cube",
+  "render_type": "cutout",
   "textures": {
     "up" : "phosphophyllite:block/transparent",
     "down" : "biggerreactors:block/turbine/glass/connected_tr",

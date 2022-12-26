@@ -3,7 +3,7 @@ package net.roguelogix.biggerreactors.multiblocks.reactor.simulation.base;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorSimulation;
 import net.roguelogix.phosphophyllite.registry.OnModLoad;
-import net.roguelogix.phosphophyllite.repack.org.joml.*;
+import org.joml.*;
 
 import java.lang.Math;
 import java.util.ArrayList;

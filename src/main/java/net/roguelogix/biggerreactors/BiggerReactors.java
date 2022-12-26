@@ -18,7 +18,6 @@ import net.roguelogix.biggerreactors.multiblocks.heatexchanger.client.HeatExchan
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.client.HeatExchangerTerminalScreen;
 import net.roguelogix.biggerreactors.multiblocks.reactor.client.*;
 import net.roguelogix.biggerreactors.multiblocks.reactor.containers.*;
-import net.roguelogix.biggerreactors.multiblocks.turbine.client.BladeRenderer;
 import net.roguelogix.biggerreactors.multiblocks.turbine.client.TurbineFluidPortScreen;
 import net.roguelogix.biggerreactors.multiblocks.turbine.client.TurbineTerminalScreen;
 import net.roguelogix.biggerreactors.multiblocks.turbine.containers.TurbineFluidPortContainer;
@@ -42,7 +41,6 @@ public class BiggerReactors {
     
     public BiggerReactors() {
         new Registry();
-//        SimBench.main(null);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onClientSetup);
         MinecraftForge.EVENT_BUS.addListener(this::onReloadData);
         if (FMLEnvironment.dist == Dist.CLIENT) {
@@ -80,9 +78,6 @@ public class BiggerReactors {
                 HeatExchangerTerminalScreen::new);
         MenuScreens.register(HeatExchangerFluidPortContainer.INSTANCE,
                 HeatExchangerFluidPortScreen::new);
-    
-    
-        BlockEntityRenderers.register(TurbineRotorBearingTile.SUPPLIER.TYPE, BladeRenderer::new);
     }
 
     public static long lastRenderTime = 0;

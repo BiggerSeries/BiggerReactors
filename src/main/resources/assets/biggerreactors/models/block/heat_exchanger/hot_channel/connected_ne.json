@@ -1,5 +1,6 @@
 {
   "credit": "Made with Blockbench",
+  "render_type": "cutout",
   "textures": {
     "1": "biggerreactors:block/heat_exchanger/hot_channel/straight",
     "2": "biggerreactors:block/heat_exchanger/hot_channel/90",
