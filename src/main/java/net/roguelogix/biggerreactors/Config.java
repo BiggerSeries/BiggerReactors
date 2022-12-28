@@ -265,9 +265,14 @@ public class Config {
         }
         
         @ConfigValue(range = "[1,)", advanced = ConfigValue.BoolOption.True)
-        public final long EffectiveGridFrequency = 30;
+        public final long EffectiveGridFrequency;
         @ConfigValue(range = "[1,)", advanced = ConfigValue.BoolOption.True)
-        public final long EfficiencyPeaks = 2;
+        public final long EfficiencyPeaks;
+    
+        {
+            EffectiveGridFrequency = 30;
+            EfficiencyPeaks = 2;
+        }
         
         public static final class GUI {
             @ConfigValue

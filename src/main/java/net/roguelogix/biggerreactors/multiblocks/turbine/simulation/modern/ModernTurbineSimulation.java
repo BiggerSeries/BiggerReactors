@@ -227,14 +227,14 @@ public class ModernTurbineSimulation implements ITurbineSimulation {
             
             final double frequency = Config.CONFIG.Turbine.EffectiveGridFrequency;
             final double peakRPM = frequency * 60;
-            final double minRPM = peakRPM * Math.pow(2, Config.CONFIG.Turbine.EfficiencyPeaks);
+            final double minRPM = peakRPM / Math.pow(2, Config.CONFIG.Turbine.EfficiencyPeaks - 0.5);
             if (rpm < minRPM) {
                 efficiency = 0.5;
             } else if (rpm > peakRPM) {
                 final double numerator = rpm - peakRPM;
                 final double denominator = 8 * frequency * peakRPM;
                 final double possibleEfficiency = -(numerator * numerator) / denominator;
-                efficiency = Math.max(0, possibleEfficiency);
+                efficiency = Math.max(0, possibleEfficiency + 1);
             } else {
                 // no log2 function, so, change of base it is
                 final double logValue = -2 * (Math.log(rpm / peakRPM) / Math.log(2)) + 1;
