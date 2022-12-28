@@ -258,8 +258,8 @@ public class Config {
             FluidPerBladeLinerKilometre = 20;
             RotorAxialMassPerShaft = 100;
             RotorAxialMassPerBlade = 100;
-            FrictionDragMultiplier = 0.0001;
-            AerodynamicDragMultiplier = 0.0001;
+            FrictionDragMultiplier = 0.0005;
+            AerodynamicDragMultiplier = 0.0005;
             CoilDragMultiplier = 10;
             BatterySizePerCoilBlock = 300_000;
         }
