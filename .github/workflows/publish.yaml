@@ -5,7 +5,7 @@ on:
       - '*'
 jobs:
   build:
-    name: "Build for Publish"
+    name: Build for Publish
     runs-on: Felix
     outputs:
       mc_version: ${{ steps.verinfo.outputs.mcver }}
@@ -33,7 +33,7 @@ jobs:
         run: echo "::set-output name=reltype::$(cat gradle.properties | grep "postfixVersion=" | sed -n -e 's/^.*=//p' | grep -o '[a-z]*')"
 
   uploadToCurseforge:
-    name: "Upload to Curseforge"
+    name: Upload to Curseforge
     runs-on: Felix
     needs: [build]
     outputs:
@@ -62,7 +62,7 @@ jobs:
           ${{ needs.build.outputs.phos_version_range }}"
 
   addToGithubRelease:
-    name: "Upload to Github Release"
+    name: Upload to Github Release
     runs-on: Felix
     needs: [build, uploadToCurseforge]
     steps:
