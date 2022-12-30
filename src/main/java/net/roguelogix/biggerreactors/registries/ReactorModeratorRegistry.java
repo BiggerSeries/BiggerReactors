@@ -1,15 +1,27 @@
 package net.roguelogix.biggerreactors.registries;
 
-import net.minecraft.core.Registry;
+import com.mojang.datafixers.util.Either;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.client.event.RenderTooltipEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.OnDatapackSyncEvent;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.phosphophyllite.data.DataLoader;
+import net.roguelogix.phosphophyllite.networking.SimplePhosChannel;
+import net.roguelogix.phosphophyllite.registry.OnModLoad;
 import net.roguelogix.phosphophyllite.robn.ROBNObject;
+import net.roguelogix.phosphophyllite.serialization.PhosphophylliteCompound;
 import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.Collections;
@@ -170,5 +182,83 @@ public class ReactorModeratorRegistry {
             }
         }
         BiggerReactors.LOGGER.info("Loaded " + registry.size() + " moderator entries");
+    }
+    
+    public static class Client {
+        
+        private static final SimplePhosChannel CHANNEL = new SimplePhosChannel(new ResourceLocation(BiggerReactors.modid, "moderator_sync_channel"), "0", Client::readSync);
+        private static final ObjectOpenHashSet<Block> moderatorBlocks = new ObjectOpenHashSet<>();
+        
+        @OnModLoad(required = true)
+        private static void onModLoad() {
+            MinecraftForge.EVENT_BUS.addListener(Client::datapackEvent);
+            if (FMLEnvironment.dist.isClient()) {
+                MinecraftForge.EVENT_BUS.addListener(Client::toolTipEvent);
+            }
+        }
+        
+        public static void datapackEvent(OnDatapackSyncEvent e) {
+            final var player = e.getPlayer();
+            if (player == null) {
+                return;
+            }
+            
+            if (BiggerReactors.LOG_DEBUG) {
+                BiggerReactors.LOGGER.debug("Sending moderator list to player: " + player);
+            }
+            CHANNEL.sendToPlayer(player, writeSync());
+        }
+        
+        private static PhosphophylliteCompound writeSync() {
+            final var list = new ObjectArrayList<String>();
+            for (final var value : registry.keySet()) {
+                final var location = ForgeRegistries.BLOCKS.getKey(value);
+                if (location == null) {
+                    continue;
+                }
+                list.add(location.toString());
+            }
+            final var compound = new PhosphophylliteCompound();
+            compound.put("list", list);
+            return compound;
+        }
+        
+        private static void readSync(PhosphophylliteCompound compound) {
+            moderatorBlocks.clear();
+            //noinspection unchecked
+            final var list = (List<String>) compound.getList("list");
+            if (BiggerReactors.LOG_DEBUG) {
+                BiggerReactors.LOGGER.debug("Received moderator list from server with length of " + list.size());
+            }
+            for (final var value : list) {
+                final var block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(value));
+                if (block == null) {
+                    return;
+                }
+                if (BiggerReactors.LOG_DEBUG) {
+                    BiggerReactors.LOGGER.debug("Block " + value + " added as moderator on client");
+                }
+                moderatorBlocks.add(block);
+            }
+        }
+        
+        public static void toolTipEvent(RenderTooltipEvent.GatherComponents event) {
+            // TODO: sync this, currently reaching across sides
+            //       there is an event for doing that
+            final var item = event.getItemStack().getItem();
+            if (item instanceof BlockItem blockItem) {
+                if (!moderatorBlocks.contains(blockItem.getBlock())) {
+                    return;
+                }
+            } else if (item instanceof BucketItem bucketItem) {
+                final var fluidBlock = bucketItem.getFluid().defaultFluidState().createLegacyBlock().getBlock();
+                if (fluidBlock.defaultBlockState().isAir() || !moderatorBlocks.contains(fluidBlock)) {
+                    return;
+                }
+            } else {
+                return;
+            }
+            event.getTooltipElements().add(Either.left(Component.translatable("tooltip.biggerreactors.is_a_moderator")));
+        }
     }
 }

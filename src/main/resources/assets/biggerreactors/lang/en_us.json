@@ -34,6 +34,9 @@
   "item.biggerreactors.ludicrite_dust": "Ludicrite Dust",
   "item.biggerreactors.ludicrite_ingot": "Ludicrite Ingot",
 
+  "tooltip.biggerreactors.is_a_moderator" : "§eThis can be used as a moderator in a Bigger Reactor",
+  "tooltip.biggerreactors.is_a_coil" : "§eThis block can be used as a coil in a Bigger Turbine",
+
   "multiblock.error.biggerreactors.no_terminal": "Reactors require at least one terminal.",
   "multiblock.error.biggerreactors.no_rods": "Reactors must have at least one fuel element.",
   "multiblock.error.biggerreactors.control_rod_not_on_top": "Control rods can only be placed on the top of the reactor (%d, %d, %d).",

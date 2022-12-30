@@ -38,6 +38,7 @@ public class BiggerReactors {
     public static final String modid = "biggerreactors";
 
     public static final Logger LOGGER = LogManager.getLogger();
+    public static final boolean LOG_DEBUG = LOGGER.isDebugEnabled();
     
     public BiggerReactors() {
         new Registry();
