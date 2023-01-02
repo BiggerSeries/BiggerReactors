@@ -17,7 +17,8 @@ import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
-import net.roguelogix.phosphophyllite.data.DataLoader;
+import net.roguelogix.phosphophyllite.config.ConfigValue;
+import net.roguelogix.phosphophyllite.data.DatapackLoader;
 import net.roguelogix.phosphophyllite.networking.SimplePhosChannel;
 import net.roguelogix.phosphophyllite.registry.OnModLoad;
 import net.roguelogix.phosphophyllite.robn.ROBNObject;
@@ -109,27 +110,36 @@ public class ReactorModeratorRegistry {
         return registry.get(block);
     }
     
+    // TODO: unify these names across all registries
+    private enum RegistryType {
+        tag,
+        registry,
+        fluidtag,
+        fluid
+    }
+    
     private static class ReactorModeratorJsonData {
-        
-        @DataLoader.Values({"tag", "registry", "fluidtag", "fluid"})
-        String type;
-        
-        ResourceLocation location;
-        
-        @DataLoader.Range("[0,1]")
+    
+        @ConfigValue
+        RegistryType type = RegistryType.tag;
+    
+        @ConfigValue
+        ResourceLocation location = new ResourceLocation("dirt");
+    
+        @ConfigValue(range = "[0, 1]")
         double absorption;
-        
-        @DataLoader.Range("[0,1]")
+    
+        @ConfigValue(range = "[0, 1]")
         double efficiency;
-        
-        @DataLoader.Range("[1,)")
+    
+        @ConfigValue(range = "[1,)")
         double moderation;
-        
-        @DataLoader.Range("[0,)")
+    
+        @ConfigValue(range = "[0,)")
         double conductivity;
     }
     
-    private static final DataLoader<ReactorModeratorJsonData> dataLoader = new DataLoader<>(ReactorModeratorJsonData.class);
+    private static final DatapackLoader<ReactorModeratorJsonData> dataLoader = new DatapackLoader<>(ReactorModeratorJsonData::new);
     
     public static void loadRegistry() {
         BiggerReactors.LOGGER.info("Loading reactor moderators");
@@ -141,25 +151,24 @@ public class ReactorModeratorRegistry {
         for (ReactorModeratorJsonData moderatorData : data) {
             
             ModeratorProperties properties = new ModeratorProperties(moderatorData.absorption, moderatorData.efficiency, moderatorData.moderation, moderatorData.conductivity);
-            
+    
             switch (moderatorData.type) {
-                case "tag": {
+                case tag -> {
                     var blockTagOptional = BuiltInRegistries.BLOCK.getTag(TagKey.create(BuiltInRegistries.BLOCK.key(), moderatorData.location));
                     blockTagOptional.ifPresent(holders -> holders.forEach(blockHolder -> {
                         var element = blockHolder.value();
                         registry.put(element, properties);
                         BiggerReactors.LOGGER.debug("Loaded moderator " + ForgeRegistries.BLOCKS.getKey(element));
                     }));
-                    break;
                 }
-                case "registry":
+                case registry -> {
                     // cant check against air, because air is a valid thing to load
                     if (ForgeRegistries.BLOCKS.containsKey(moderatorData.location)) {
                         registry.put(ForgeRegistries.BLOCKS.getValue(moderatorData.location), properties);
                         BiggerReactors.LOGGER.debug("Loaded moderator " + moderatorData.location);
                     }
-                    break;
-                case "fluidtag": {
+                }
+                case fluidtag -> {
                     var fluidTagOptional = BuiltInRegistries.FLUID.getTag(TagKey.create(BuiltInRegistries.FLUID.key(), moderatorData.location));
                     fluidTagOptional.ifPresent(holders -> holders.forEach(fluidHolder -> {
                         var element = fluidHolder.value();
@@ -167,9 +176,8 @@ public class ReactorModeratorRegistry {
                         registry.put(elementBlock, properties);
                         BiggerReactors.LOGGER.debug("Loaded moderator " + ForgeRegistries.FLUIDS.getKey(element));
                     }));
-                    break;
                 }
-                case "fluid":
+                case fluid -> {
                     // cant check against air, because air is a valid thing to load
                     if (ForgeRegistries.FLUIDS.containsKey(moderatorData.location)) {
                         Fluid fluid = ForgeRegistries.FLUIDS.getValue(moderatorData.location);
@@ -178,7 +186,7 @@ public class ReactorModeratorRegistry {
                         registry.put(block, properties);
                         BiggerReactors.LOGGER.debug("Loaded moderator " + moderatorData.location);
                     }
-                    break;
+                }
             }
         }
         BiggerReactors.LOGGER.info("Loaded " + registry.size() + " moderator entries");

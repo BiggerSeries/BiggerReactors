@@ -15,7 +15,8 @@ import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
-import net.roguelogix.phosphophyllite.data.DataLoader;
+import net.roguelogix.phosphophyllite.config.ConfigValue;
+import net.roguelogix.phosphophyllite.data.DatapackLoader;
 import net.roguelogix.phosphophyllite.networking.SimplePhosChannel;
 import net.roguelogix.phosphophyllite.registry.OnModLoad;
 import net.roguelogix.phosphophyllite.serialization.PhosphophylliteCompound;
@@ -53,24 +54,30 @@ public class TurbineCoilRegistry {
     public static synchronized CoilData getCoilData(Block block) {
         return registry.get(block);
     }
+    // TODO: unify these names across all registries
+    private enum RegistryType {
+        tag,
+        registry,
+    }
     
     private static class TurbineCoilJsonData {
-        @DataLoader.Values({"tag", "registry"})
-        String type;
+        @ConfigValue
+        RegistryType type = RegistryType.tag;
         
-        ResourceLocation location;
-        
-        @DataLoader.Range("(0,)")
+        @ConfigValue
+        ResourceLocation location = new ResourceLocation("dirt");
+    
+        @ConfigValue(range = "(0,)")
         double efficiency;
-        
-        @DataLoader.Range("(0,)")
+    
+        @ConfigValue(range = "(0,)")
         double extractionRate;
-        
-        @DataLoader.Range("[1,)")
+    
+        @ConfigValue(range = "(0,2)")
         double bonus;
     }
     
-    private static final DataLoader<TurbineCoilJsonData> dataLoader = new DataLoader<>(TurbineCoilJsonData.class);
+    private static final DatapackLoader<TurbineCoilJsonData> dataLoader = new DatapackLoader<>(TurbineCoilJsonData::new);
     
     public static void loadRegistry() {
         BiggerReactors.LOGGER.info("Loading turbine coils");
@@ -83,7 +90,7 @@ public class TurbineCoilRegistry {
             
             CoilData properties = new CoilData(coilData.efficiency, coilData.bonus, coilData.extractionRate);
             
-            if (coilData.type.equals("tag")) {
+            if (coilData.type == RegistryType.tag) {
                 var blockTagOptional = BuiltInRegistries.BLOCK.getTag(TagKey.create(BuiltInRegistries.BLOCK.key(), coilData.location));
                 blockTagOptional.ifPresent(holders -> holders.forEach(blockHolder -> {
                     var element = blockHolder.value();

@@ -7,7 +7,8 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
-import net.roguelogix.phosphophyllite.data.DataLoader;
+import net.roguelogix.phosphophyllite.config.ConfigValue;
+import net.roguelogix.phosphophyllite.data.DatapackLoader;
 import net.roguelogix.phosphophyllite.robn.ROBNObject;
 import org.apache.commons.lang3.NotImplementedException;
 
@@ -106,32 +107,40 @@ public class FluidTransitionRegistry {
         return gasTransitions.get(gas);
     }
     
+    // TODO: unify these names across all registries
+    private enum RegistryType {
+        tag,
+        registry,
+    }
+    
     private static class FluidTransitionJsonData {
-        @DataLoader.Values({"tag", "registry"})
-        public String liquidType;
-        public ResourceLocation liquid;
+        @ConfigValue
+        public RegistryType liquidType = RegistryType.tag;
+        @ConfigValue
+        public ResourceLocation liquid = new ResourceLocation("dirt");
         
-        @DataLoader.Values({"tag", "registry"})
-        public String gasType;
-        public ResourceLocation gas;
-        
-        @DataLoader.Range("(0,)")
+        @ConfigValue
+        public RegistryType gasType = RegistryType.tag;
+        @ConfigValue
+        public ResourceLocation gas = new ResourceLocation("dirt");
+    
+        @ConfigValue(range = "(0,)")
         public double latentHeat;
-        
-        @DataLoader.Range("(20,)")
+    
+        @ConfigValue(range = "(0,)")
         public double boilingPoint;
-        
-        @DataLoader.Range("(0,)")
+    
+        @ConfigValue(range = "(0,)")
         public double liquidThermalConductivity;
-        
-        @DataLoader.Range("(0,)")
+    
+        @ConfigValue(range = "(0,)")
         public double gasThermalConductivity;
-        
-        @DataLoader.Range("[0,)")
+    
+        @ConfigValue(range = "[0,)")
         public double turbineMultiplier;
     }
     
-    private static final DataLoader<FluidTransitionJsonData> loader = new DataLoader<>(FluidTransitionJsonData.class);
+    private static final DatapackLoader<FluidTransitionJsonData> loader = new DatapackLoader<>(FluidTransitionJsonData::new);
     
     public static void loadRegistry() {
         BiggerReactors.LOGGER.info("Loading fluid transitions");
@@ -144,7 +153,7 @@ public class FluidTransitionRegistry {
         for (FluidTransitionJsonData transitionData : data) {
             final List<Fluid> liquids = new ArrayList<>();
             
-            if (transitionData.liquidType.equals("tag")) {
+            if (transitionData.liquidType == RegistryType.tag) {
                 var fluidTagOptional = BuiltInRegistries.FLUID.getTag(TagKey.create(BuiltInRegistries.FLUID.key(), transitionData.liquid));
                 fluidTagOptional.ifPresent(holders -> holders.forEach(fluidHolder -> {
                     var fluid = fluidHolder.value();
@@ -166,7 +175,7 @@ public class FluidTransitionRegistry {
             
             final List<Fluid> gases = new ArrayList<>();
             
-            if (transitionData.gasType.equals("tag")) {
+            if (transitionData.gasType == RegistryType.tag) {
                 var fluidTagOptional = BuiltInRegistries.FLUID.getTag(TagKey.create(BuiltInRegistries.FLUID.key(), transitionData.gas));
                 fluidTagOptional.ifPresent(holders -> holders.forEach(fluidHolder -> {
                     var fluid = fluidHolder.value();
