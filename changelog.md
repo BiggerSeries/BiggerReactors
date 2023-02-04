@@ -1,3 +1,12 @@
+# 1.18.2-0.6.0-beta.1.4
+
+## Reactor
+ - fix lava moderator json
+ - work around a weird blockstate issue, actual problem not fixed but it shouldn't crash anymore
+
+## Misc
+  - update Phos and Quartz
+
 # 1.18.2-0.6.0-beta.1.3
 
 ## Reactor
