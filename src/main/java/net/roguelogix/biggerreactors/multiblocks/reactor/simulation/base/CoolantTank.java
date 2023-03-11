@@ -69,20 +69,21 @@ public class CoolantTank extends HeatBody implements IReactorSimulation.ICoolant
         }
         
         rf = Math.abs(rf);
-        
-        long toTransition = (long) (rf / transitionProperties.latentHeat());
-        final long maxTransitionable = Math.min(liquidAmount, perSideCapacity - vaporAmount);
     
         final double transitionMultiplier = Config.CONFIG.Reactor.OutputMultiplier * Config.CONFIG.Reactor.ActiveOutputMultiplier;
+        final double effectiveLatentHeat = transitionProperties.latentHeat() * transitionMultiplier;
         
-        maxTransitionedLastTick = (long) (toTransition * transitionMultiplier);
+        long toTransition = (long) (rf / effectiveLatentHeat);
+        final long maxTransitionable = Math.min(liquidAmount, perSideCapacity - vaporAmount);
+        
+        maxTransitionedLastTick = toTransition;
         toTransition = Math.min(maxTransitionable, toTransition);
-        transitionedLastTick = (long) (toTransition * transitionMultiplier);
+        transitionedLastTick = toTransition;
         
         liquidAmount -= transitionedLastTick;
         vaporAmount += transitionedLastTick;
         
-        rf = toTransition * transitionProperties.latentHeat();
+        rf = toTransition * effectiveLatentHeat;
         rfTransferredLastTick = (long) rf;
         rf *= -1;
         
