@@ -199,6 +199,9 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProv
         }
         shouldLight |= shouldBeEmitting;
         if (shouldBeEmitting != isEmitting || wasPowered != isPowered) {
+            if(powerOutputDirection == null) {
+                return;
+            }
             isEmitting = shouldBeEmitting;
             wasPowered = isPowered;
             assert level != null;
