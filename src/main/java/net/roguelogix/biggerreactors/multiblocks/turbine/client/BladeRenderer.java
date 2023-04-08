@@ -93,11 +93,11 @@ public class BladeRenderer implements BlockEntityRenderer<TurbineRotorBearingTil
             
             matrixStackIn.translate(-0.5, -0.5, -0.5);
             
-            int bearingNum = 0;
+            int bearingNum = 1;
             for (Vector4i vector4i : bearing.rotorConfiguration) {
                 matrixStackIn.translate(0, 1, 0);
                 
-                BlockPos shaftPos = bearing.getBlockPos().offset(bearing.rotationAxis.x(), bearing.rotationAxis.y(), bearing.rotationAxis.z());
+                BlockPos shaftPos = bearing.getBlockPos().offset(bearing.rotationAxis.x() * bearingNum, bearing.rotationAxis.y() * bearingNum, bearing.rotationAxis.z() * bearingNum);
                 int skyLight = bearing.getLevel().getBrightness(LightLayer.SKY, shaftPos);
                 int blockLight = bearing.getLevel().getBrightness(LightLayer.BLOCK, shaftPos);
                 int combinedLight = (skyLight << 16) | blockLight;

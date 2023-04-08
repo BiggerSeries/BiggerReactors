@@ -15,15 +15,14 @@ import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorShaf
 import net.roguelogix.phosphophyllite.Phosphophyllite;
 import net.roguelogix.phosphophyllite.multiblock.IAssemblyAttemptedTile;
 import net.roguelogix.phosphophyllite.registry.RegisterTile;
-import net.roguelogix.phosphophyllite.repack.org.joml.AABBi;
-import net.roguelogix.phosphophyllite.repack.org.joml.Matrix4f;
-import net.roguelogix.phosphophyllite.repack.org.joml.Vector3i;
-import net.roguelogix.phosphophyllite.repack.org.joml.Vector4i;
+import net.roguelogix.phosphophyllite.repack.org.joml.*;
 import net.roguelogix.phosphophyllite.threading.Queues;
+import net.roguelogix.phosphophyllite.util.VectorUtil;
 import net.roguelogix.quartz.*;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.lang.Math;
 import java.util.ArrayList;
 
 import static net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock.ASSEMBLED;
@@ -33,6 +32,7 @@ import static net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock.ASSE
 public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssemblyAttemptedTile {
     
     public static boolean USE_QUARTZ = true;
+    public static boolean APRIL_FOOLS_JOKE = false;
     
     @RegisterTile("turbine_rotor_bearing")
     public static final RegisterTile.Producer<TurbineRotorBearingTile> SUPPLIER = new RegisterTile.Producer<>(TurbineRotorBearingTile::new);
@@ -253,13 +253,33 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
                     jomlMatrix.translate(0.5f, 0.5f, 0.5f);
                     jomlMatrix.rotate((float) Math.toRadians(180 * (i & 1)), 0, 1, 0);
                     jomlMatrix.rotate((float) Math.toRadians(blade180RotationMultiplier * 135 * (i & 2)), 0, 1, 0);
-                    jomlMatrix.translate(-0.5f, -0.5f, -0.5f);
-                    jomlMatrix.translate(0, 0, -(j + 1));
-                    jomlMatrix.translate(0.5f, 0.5f, 0.5f);
+                    if (!APRIL_FOOLS_JOKE) {
+                        jomlMatrix.translate(-0.5f, -0.5f, -0.5f);
+                        jomlMatrix.translate(0, 0, -(j + 1));
+                        jomlMatrix.translate(0.5f, 0.5f, 0.5f);
+                    }
                     jomlMatrix.rotate((float) Math.toRadians(180), 0, 0, 1);
                     jomlMatrix.translate(-0.5f, -0.5f, -0.5f);
                     
-                    instances.add(drawBatch.createInstance(worldPos, bladeMesh, dynamicMatrix, jomlMatrix, light, null));
+                    var intPos = new Vector3i();
+                    if (APRIL_FOOLS_JOKE) {
+                        var pos = new Vector4f(0.5f, 0.5f, -(j + 1) + 0.5f, 1).mul(jomlMatrix).sub(0.5f, 0.5f, 0.5f, 0);
+                        intPos.add((int) pos.x, (int) pos.y, (int) pos.z);
+                        if (rotationAxis.x() != 0) {
+                            intPos.x ^= intPos.y;
+                            intPos.y ^= intPos.x;
+                            intPos.x ^= intPos.y;
+                        } else if (rotationAxis.z() != 0) {
+                            intPos.z ^= intPos.y;
+                            intPos.y ^= intPos.z;
+                            intPos.z ^= intPos.y;
+                        } else if (rotationAxis.y() != 1) {
+                            // no change needed
+                        }
+                    }
+                    intPos.add(worldPos);
+                    
+                    instances.add(drawBatch.createInstance(intPos, bladeMesh, dynamicMatrix, jomlMatrix, light, null));
                 }
                 i++;
             }
