@@ -42,6 +42,10 @@ minecraft {
         client {
             workingDirectory project.file('run')
 
+            //This fixes Mixin application problems from other mods because their refMaps are SRG-based, but we're in a MCP env
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             arg "-mixin.config=phosphophyllite.mixins.json"
@@ -65,6 +69,10 @@ minecraft {
 
         server {
             workingDirectory project.file('run')
+
+            //This fixes Mixin application problems from other mods because their refMaps are SRG-based, but we're in a MCP env
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
@@ -127,8 +135,9 @@ repositories {
         url = "https://minecraft.curseforge.com/api/maven/"
     }
     maven {
-        name = "JEI Maven"
-        url = "https://dvs1.progwml6.com/files/maven/"
+        // location of the maven that hosts JEI files since January 2023
+        name = "Jared's maven"
+        url = "https://maven.blamejared.com/"
     }
     maven {
         url = "https://www.cursemaven.com"
@@ -155,15 +164,24 @@ dependencies {
 
     compileOnly fg.deobf("org.squiddev:cc-tweaked-${cc_mc_version}:${cc_version}")
 //    runtimeOnly fg.deobf("org.squiddev:cc-tweaked-${cc_mc_version}:${cc_version}")
-//
+
+    compileOnly(fg.deobf("mezz.jei:jei-${jei_mc_version}-common-api:${jei_version}"))
+    compileOnly(fg.deobf("mezz.jei:jei-${jei_mc_version}-forge-api:${jei_version}"))
+    // at runtime, use the full JEI jar for Forge
+    runtimeOnly(fg.deobf("mezz.jei:jei-${jei_mc_version}-forge:${jei_version}"))
+
     compileOnly "mekanism:Mekanism:1.19.2-10.3.5.474:api"
+
 //    runtimeOnly fg.deobf('curse.maven:MEK-268560:4041164')
 //    runtimeOnly fg.deobf('curse.maven:MEKG-268566:4041168')
-    runtimeOnly fg.deobf('curse.maven:COFHCore-69162:4112121')
-    runtimeOnly fg.deobf('curse.maven:ThermalFoundation-222880:4112137')
-    runtimeOnly fg.deobf('curse.maven:ThermalExpansion-69163:4112130')
+    runtimeOnly fg.deobf('curse.maven:COFHCore-69162:4385216')
+    runtimeOnly fg.deobf('curse.maven:ThermalFoundation-222880:4382373')
+    runtimeOnly fg.deobf('curse.maven:ThermalExpansion-69163:4382371')
+    runtimeOnly fg.deobf('curse.maven:ThermalDynamics-227443:4391160')
 
-//    runtimeOnly fg.deobf('curse.maven:JEI-238222:3683240')
+//    runtimeOnly fg.deobf('curse.maven:Rubidium-574856:4448157')
+//    runtimeOnly fg.deobf('curse.maven:Oculus-581495:4299147')
+
 //    runtimeOnly fg.deobf('curse.maven:WorldStripper-250603:3545856')
 //    runtimeOnly fg.deobf('curse.maven:CW-399558:3562331')
 

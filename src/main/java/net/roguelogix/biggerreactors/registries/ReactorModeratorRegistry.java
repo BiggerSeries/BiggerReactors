@@ -1,6 +1,8 @@
 package net.roguelogix.biggerreactors.registries;
 
 import com.mojang.datafixers.util.Either;
+import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.network.chat.Component;
@@ -28,6 +30,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 public class ReactorModeratorRegistry {
     
@@ -96,10 +99,6 @@ public class ReactorModeratorRegistry {
     }
     
     private final static HashMap<Block, ModeratorProperties> registry = new HashMap<>();
-    
-    public static Map<Block, ModeratorProperties> getImmutableRegistry() {
-        return Collections.unmodifiableMap(registry);
-    }
     
     public static boolean isBlockAllowed(Block block) {
         return registry.containsKey(block);
@@ -188,6 +187,7 @@ public class ReactorModeratorRegistry {
         
         private static final SimplePhosChannel CHANNEL = new SimplePhosChannel(new ResourceLocation(BiggerReactors.modid, "moderator_sync_channel"), "0", Client::readSync);
         private static final ObjectOpenHashSet<Block> moderatorBlocks = new ObjectOpenHashSet<>();
+        private static final Object2ObjectOpenHashMap<Block, ModeratorProperties> moderatorProperties = new Object2ObjectOpenHashMap<>();
         
         @OnModLoad(required = true)
         private static void onModLoad() {
@@ -211,15 +211,24 @@ public class ReactorModeratorRegistry {
         
         private static PhosphophylliteCompound writeSync() {
             final var list = new ObjectArrayList<String>();
-            for (final var value : registry.keySet()) {
-                final var location = ForgeRegistries.BLOCKS.getKey(value);
+            final var propertiesList = new ObjectArrayList<DoubleArrayList>();
+            for (final var value : registry.entrySet()) {
+                final var location = ForgeRegistries.BLOCKS.getKey(value.getKey());
                 if (location == null) {
                     continue;
                 }
                 list.add(location.toString());
+                
+                var properties = new DoubleArrayList();
+                properties.add(value.getValue().absorption);
+                properties.add(value.getValue().heatEfficiency);
+                properties.add(value.getValue().moderation);
+                properties.add(value.getValue().heatConductivity);
+                propertiesList.add(properties);
             }
             final var compound = new PhosphophylliteCompound();
             compound.put("list", list);
+            compound.put("propertiesList", propertiesList);
             return compound;
         }
         
@@ -227,24 +236,27 @@ public class ReactorModeratorRegistry {
             moderatorBlocks.clear();
             //noinspection unchecked
             final var list = (List<String>) compound.getList("list");
+            //noinspection unchecked
+            final var propertiesList = (List<DoubleArrayList>) compound.getList("propertiesList");
             if (BiggerReactors.LOG_DEBUG) {
                 BiggerReactors.LOGGER.debug("Received moderator list from server with length of " + list.size());
             }
-            for (final var value : list) {
-                final var block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(value));
+            for (int i = 0; i < list.size(); i++) {
+                var blockLocation = list.get(i);
+                var properties = propertiesList.get(i);
+                final var block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockLocation));
                 if (block == null) {
                     return;
                 }
                 if (BiggerReactors.LOG_DEBUG) {
-                    BiggerReactors.LOGGER.debug("Block " + value + " added as moderator on client");
+                    BiggerReactors.LOGGER.debug("Block " + block + " added as moderator on client");
                 }
                 moderatorBlocks.add(block);
+                moderatorProperties.put(block, new ModeratorProperties(properties.getDouble(0), properties.getDouble(1), properties.getDouble(2), properties.getDouble(3)));
             }
         }
         
         public static void toolTipEvent(RenderTooltipEvent.GatherComponents event) {
-            // TODO: sync this, currently reaching across sides
-            //       there is an event for doing that
             final var item = event.getItemStack().getItem();
             if (item instanceof BlockItem blockItem) {
                 if (!moderatorBlocks.contains(blockItem.getBlock())) {
@@ -259,6 +271,10 @@ public class ReactorModeratorRegistry {
                 return;
             }
             event.getTooltipElements().add(Either.left(Component.translatable("tooltip.biggerreactors.is_a_moderator")));
+        }
+        
+        public static void forEach(BiConsumer<Block, IModeratorProperties> consumer) {
+            moderatorProperties.forEach(consumer);
         }
     }
 }

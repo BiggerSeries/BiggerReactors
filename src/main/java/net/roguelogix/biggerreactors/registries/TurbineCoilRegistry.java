@@ -1,6 +1,8 @@
 package net.roguelogix.biggerreactors.registries;
 
 import com.mojang.datafixers.util.Either;
+import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.network.chat.Component;
@@ -41,10 +43,6 @@ public class TurbineCoilRegistry {
     }
     
     private static final HashMap<Block, CoilData> registry = new HashMap<>();
-    
-    public static Map<Block, CoilData> getImmutableRegistry() {
-        return Collections.unmodifiableMap(registry);
-    }
     
     public static synchronized boolean isBlockAllowed(Block block) {
         return registry.containsKey(block);
@@ -105,6 +103,7 @@ public class TurbineCoilRegistry {
         
         private static final SimplePhosChannel CHANNEL = new SimplePhosChannel(new ResourceLocation(BiggerReactors.modid, "coil_sync_channel"), "0", Client::readSync);
         private static final ObjectOpenHashSet<Block> coilBlocks = new ObjectOpenHashSet<>();
+        private static final Object2ObjectOpenHashMap<Block, CoilData> coilProperties = new Object2ObjectOpenHashMap<>();
         
         @OnModLoad(required = true)
         private static void onModLoad() {
@@ -128,15 +127,22 @@ public class TurbineCoilRegistry {
         
         private static PhosphophylliteCompound writeSync() {
             final var list = new ObjectArrayList<String>();
-            for (final var value : registry.keySet()) {
-                final var location = ForgeRegistries.BLOCKS.getKey(value);
+            final var propertiesList = new ObjectArrayList<DoubleArrayList>();
+            for (final var value : registry.entrySet()) {
+                final var location = ForgeRegistries.BLOCKS.getKey(value.getKey());
                 if (location == null) {
                     continue;
                 }
                 list.add(location.toString());
+                var properties = new DoubleArrayList();
+                properties.add(value.getValue().efficiency);
+                properties.add(value.getValue().extractionRate);
+                properties.add(value.getValue().bonus);
+                propertiesList.add(properties);
             }
             final var compound = new PhosphophylliteCompound();
             compound.put("list", list);
+            compound.put("propertiesList", propertiesList);
             return compound;
         }
         
@@ -144,10 +150,14 @@ public class TurbineCoilRegistry {
             coilBlocks.clear();
             //noinspection unchecked
             final var list = (List<String>) compound.getList("list");
+            //noinspection unchecked
+            final var propertiesList = (List<DoubleArrayList>) compound.getList("propertiesList");
             if (BiggerReactors.LOG_DEBUG) {
                 BiggerReactors.LOGGER.debug("Received coil list from server with length of " + list.size());
             }
-            for (final var value : list) {
+            for (int i = 0; i < list.size(); i++) {
+                var value = list.get(i);
+                var properties = propertiesList.get(i);
                 final var block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(value));
                 if (block == null) {
                     return;
@@ -156,12 +166,11 @@ public class TurbineCoilRegistry {
                     BiggerReactors.LOGGER.debug("Block " + value + " added as coil on client");
                 }
                 coilBlocks.add(block);
+                coilProperties.put(block, new CoilData(properties.getDouble(0), properties.getDouble(1), properties.getDouble(2)));
             }
         }
         
         public static void toolTipEvent(RenderTooltipEvent.GatherComponents event) {
-            // TODO: sync this, currently reaching across sides
-            //       there is an event for doing that
             final var item = event.getItemStack().getItem();
             if (item instanceof BlockItem blockItem) {
                 if (!coilBlocks.contains(blockItem.getBlock())) {
@@ -171,6 +180,10 @@ public class TurbineCoilRegistry {
                 return;
             }
             event.getTooltipElements().add(Either.left(Component.translatable("tooltip.biggerreactors.is_a_coil")));
+        }
+        
+        public static Map<Block, CoilData> getImmutableRegistry() {
+            return Collections.unmodifiableMap(coilProperties);
         }
     }
 }
