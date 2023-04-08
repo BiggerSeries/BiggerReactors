@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -14,9 +15,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.OnDatapackSyncEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
+import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.phosphophyllite.data.DataLoader;
 import net.roguelogix.phosphophyllite.networking.SimplePhosChannel;
 import net.roguelogix.phosphophyllite.registry.OnModLoad;
@@ -170,7 +173,7 @@ public class TurbineCoilRegistry {
             }
         }
         
-        public static void toolTipEvent(RenderTooltipEvent.GatherComponents event) {
+        public static void toolTipEvent(ItemTooltipEvent event) {
             final var item = event.getItemStack().getItem();
             if (item instanceof BlockItem blockItem) {
                 if (!coilBlocks.contains(blockItem.getBlock())) {
@@ -179,7 +182,9 @@ public class TurbineCoilRegistry {
             } else {
                 return;
             }
-            event.getTooltipElements().add(Either.left(Component.translatable("tooltip.biggerreactors.is_a_coil")));
+            if (Minecraft.getInstance().options.advancedItemTooltips || Config.CONFIG.AlwaysShowTooltips) {
+                event.getToolTip().add(Component.translatable("tooltip.biggerreactors.is_a_coil"));
+            }
         }
         
         public static Map<Block, CoilData> getImmutableRegistry() {

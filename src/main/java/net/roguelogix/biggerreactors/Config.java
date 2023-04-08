@@ -17,7 +17,15 @@ public class Config {
     }
     
     @ConfigValue(advanced = ConfigValue.BoolOption.True)
-    public final Mode mode = Mode.MODERN;
+    public final Mode mode;
+    
+    @ConfigValue(configType = ConfigType.CLIENT, comment = "Always show moderator and coil tooltips regardless of advanced tooltip setting\nCan always be enabled with advanced tooltips", reloadable = ConfigValue.BoolOption.True)
+    public final boolean AlwaysShowTooltips;
+    
+    {
+        mode = Mode.MODERN;
+        AlwaysShowTooltips = true;
+    }
     
     public static final class WorldGen {
         @ConfigValue(range = "[1,)")
