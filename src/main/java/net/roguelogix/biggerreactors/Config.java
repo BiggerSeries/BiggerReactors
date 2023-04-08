@@ -21,10 +21,13 @@ public class Config {
     
     @ConfigValue(configType = ConfigType.CLIENT, comment = "Always show moderator and coil tooltips regardless of advanced tooltip setting\nCan always be enabled with advanced tooltips", reloadable = ConfigValue.BoolOption.True)
     public final boolean AlwaysShowTooltips;
+    @ConfigValue(configType = ConfigType.CLIENT, comment = "Enables integration with JEI, showing all moderator and coil properties")
+    public final boolean EnableJEIIntegration;
     
     {
         mode = Mode.MODERN;
         AlwaysShowTooltips = true;
+        EnableJEIIntegration = true;
     }
     
     public static final class WorldGen {

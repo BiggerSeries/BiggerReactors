@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraftforge.fluids.FluidStack;
 import net.roguelogix.biggerreactors.BiggerReactors;
+import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.client.deps.jei.classic.reactor.BlockModeratorCategory;
 import net.roguelogix.biggerreactors.client.deps.jei.classic.reactor.FluidModeratorCategory;
 import net.roguelogix.biggerreactors.client.deps.jei.classic.turbine.CoilCategory;
@@ -50,13 +51,17 @@ public class BiggerReactorsJEIPlugin implements IModPlugin {
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
+        if (!Config.CONFIG.EnableJEIIntegration) {
+            return;
+        }
+        
         List<CoilCategory.Recipe> recipes = TurbineCoilRegistry.Client.getImmutableRegistry().entrySet().stream()
                 .map(e -> new CoilCategory.Recipe(new ItemStack(e.getKey().asItem()), e.getValue()))
                 .collect(Collectors.toList());
-
+        
         registration.addRecipes(CoilCategory.RECIPE_TYPE, recipes);
-
-
+        
+        
         List<FluidModeratorCategory.Recipe> fluidModeratorRecipes = new ArrayList<>();
         List<BlockModeratorCategory.Recipe> blockModeratorRecipes = new ArrayList<>();
 
