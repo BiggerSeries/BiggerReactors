@@ -96,6 +96,7 @@ public class ReactorTransitionTank extends FluidTransitionTank {
     @Override
     @SuppressWarnings("deprecation")
     public long fill(@Nonnull Fluid fluid, long amount, boolean simulate, @Nullable FluidTransitionRegistry.FluidTransition transition) {
+        pullUpdate();
         long filled = super.fill(fluid, amount, simulate, transition);
         if (!simulate) {
             pushUpdate();

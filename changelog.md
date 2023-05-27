@@ -1,3 +1,13 @@
+# 1.19.2-0.6.0-beta.6.1
+
+## Reactor
+ - fix bug with active reactor output multiplier
+ - fix issue where fluid may not be pushed into reactor properly
+ - fix NPE with restone port
+
+## Misc
+ - Update phos, breaking changes, contains multiblock bug fixes
+
 # 1.19.2-0.6.0-beta.6
 
 ## Reactor

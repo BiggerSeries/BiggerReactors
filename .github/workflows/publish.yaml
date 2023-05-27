@@ -18,7 +18,7 @@ jobs:
       - run: git submodule update --init --recursive
       - id: mainbuild
         run: ./gradlew build
-      - run: ./gradlew publish
+      - run: ./gradlew publishToMavenLocal
       - run: mkdir jars
       - run: mv build/libs/biggerreactors-* jars/
       - uses: actions/upload-artifact@v2

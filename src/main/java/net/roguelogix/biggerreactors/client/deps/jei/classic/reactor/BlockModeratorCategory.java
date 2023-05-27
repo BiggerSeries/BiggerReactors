@@ -1,102 +1,92 @@
-//package net.roguelogix.biggerreactors.client.deps.jei.classic.reactor;
-//
-//import com.mojang.blaze3d.matrix.MatrixStack;
-//import mezz.jei.api.constants.VanillaTypes;
-//import mezz.jei.api.gui.IRecipeLayout;
-//import mezz.jei.api.gui.drawable.IDrawable;
-//import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
-//import mezz.jei.api.helpers.IGuiHelper;
-//import mezz.jei.api.ingredients.IIngredients;
-//import mezz.jei.api.recipe.category.IRecipeCategory;
-//import net.minecraft.client.Minecraft;
-//import net.minecraft.client.resources.I18n;
-//import net.minecraft.item.ItemStack;
-//import net.minecraft.util.ResourceLocation;
-//import net.roguelogix.biggerreactors.BiggerReactors;
-//import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
-//import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorTerminal;
-//
-//import java.awt.*;
-//
-//
-//public class BlockModeratorCategory implements IRecipeCategory<BlockModeratorCategory.Recipe> {
-//    private final IDrawable background;
-//    private final IDrawable icon;
-//    public static final ResourceLocation UID = new ResourceLocation(BiggerReactors.modid, "classic/reactor_moderator_block");
-//
-//    public BlockModeratorCategory(IGuiHelper guiHelper) {
-//        icon = guiHelper.createDrawableIngredient(new ItemStack(ReactorTerminal.INSTANCE));
-//        background = guiHelper.createDrawable(new ResourceLocation(BiggerReactors.modid, "textures/jei/common.png"), 0, 0, 144, 46);
-//    }
-//
-//    @Override
-//    public ResourceLocation getUid() {
-//        return UID;
-//    }
-//
-//    @Override
-//    public Class getRecipeClass() {
-//        return Recipe.class;
-//    }
-//
-//    @Override
-//    public String getTitle() {
-//        return I18n.format("jei.biggerreactors.classic.reactor_moderator_block");
-//    }
-//
-//    @Override
-//    public IDrawable getBackground() {
-//        return background;
-//    }
-//
-//    @Override
-//    public IDrawable getIcon() {
-//        return icon;
-//    }
-//
-//    @Override
-//    public void setIngredients(Recipe recipe, IIngredients iIngredients) {
-//        iIngredients.setInput(VanillaTypes.ITEM, recipe.getInput());
-//    }
-//
-//    @Override
-//    public void setRecipe(IRecipeLayout iRecipeLayout, Recipe recipe, IIngredients iIngredients) {
-//        IGuiItemStackGroup guiItemStacks = iRecipeLayout.getItemStacks();
-//        guiItemStacks.init(0, true, 0, 14);
-//
-//        guiItemStacks.set(iIngredients);
-//    }
-//
-//    @Override
-//    public void draw(Recipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
-//        Minecraft mc = Minecraft.getInstance();
-//        String[] info = {
-//                I18n.format("jei.biggerreactors.classic.reactor_moderator_moderation", recipe.getModeratorProperties().moderation),
-//                I18n.format("jei.biggerreactors.classic.reactor_moderator_absorption", recipe.getModeratorProperties().absorption),
-//                I18n.format("jei.biggerreactors.classic.reactor_moderator_conductivity", recipe.getModeratorProperties().heatConductivity),
-//                I18n.format("jei.biggerreactors.classic.reactor_moderator_efficiency", recipe.getModeratorProperties().heatEfficiency)
-//        };
-//        mc.fontRenderer.drawString(matrixStack,  info[0], 80 - mc.fontRenderer.getStringWidth(info[0]) / 2F, 0, Color.BLACK.getRGB());
-//        mc.fontRenderer.drawString(matrixStack,  info[1], 80 - mc.fontRenderer.getStringWidth(info[1]) / 2F, 12, Color.BLACK.getRGB());
-//        mc.fontRenderer.drawString(matrixStack,  info[2], 80 - mc.fontRenderer.getStringWidth(info[2]) / 2F, 24, Color.BLACK.getRGB());
-//        mc.fontRenderer.drawString(matrixStack,  info[3], 80 - mc.fontRenderer.getStringWidth(info[3]) / 2F, 36, Color.BLACK.getRGB());
-//    }
-//
-//    public static class Recipe {
-//        private final ItemStack input;
-//        private final ReactorModeratorRegistry.ModeratorProperties moderatorProperties;
-//
-//        public Recipe(ItemStack input, ReactorModeratorRegistry.ModeratorProperties moderatorProperties) {
-//            this.input = input;
-//            this.moderatorProperties = moderatorProperties;
-//        }
-//
-//        public ItemStack getInput() {
-//            return input;
-//        }
-//
-//        public ReactorModeratorRegistry.ModeratorProperties getModeratorProperties() {
-//            return moderatorProperties;
-//        }
-//    }
-//}
+package net.roguelogix.biggerreactors.client.deps.jei.classic.reactor;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.category.IRecipeCategory;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.roguelogix.biggerreactors.BiggerReactors;
+import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorTerminal;
+import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
+
+import java.awt.*;
+
+
+public class BlockModeratorCategory implements IRecipeCategory<BlockModeratorCategory.Recipe> {
+    private final IDrawable background;
+    private final IDrawable icon;
+    public static final ResourceLocation UID = new ResourceLocation(BiggerReactors.modid, "classic/reactor_moderator_block");
+    public static final RecipeType<Recipe> RECIPE_TYPE = new RecipeType<>(UID, Recipe.class);
+    
+    public BlockModeratorCategory(IGuiHelper guiHelper) {
+        icon = guiHelper.createDrawableItemStack(new ItemStack(ReactorTerminal.INSTANCE));
+        background = guiHelper.createDrawable(new ResourceLocation(BiggerReactors.modid, "textures/jei/common.png"), 0, 0, 144, 46);
+    }
+    
+    @Override
+    public RecipeType<Recipe> getRecipeType() {
+        return RECIPE_TYPE;
+    }
+    
+    @Override
+    public Component getTitle() {
+        return Component.translatable("jei.biggerreactors.classic.reactor_moderator_block");
+    }
+
+    @Override
+    public IDrawable getBackground() {
+        return background;
+    }
+
+    @Override
+    public IDrawable getIcon() {
+        return icon;
+    }
+    
+    @Override
+    public void setRecipe(IRecipeLayoutBuilder builder, Recipe recipe, IFocusGroup focuses) {
+        var slot = builder.addSlot(RecipeIngredientRole.INPUT, 1, 15);
+        slot.addItemStack(recipe.getInput());
+    }
+    
+    @Override
+    public void draw(Recipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
+        Minecraft mc = Minecraft.getInstance();
+        Component[] info = {
+                Component.translatable("jei.biggerreactors.classic.reactor_moderator_moderation", recipe.getModeratorProperties().moderation()),
+                Component.translatable("jei.biggerreactors.classic.reactor_moderator_absorption", recipe.getModeratorProperties().absorption()),
+                Component.translatable("jei.biggerreactors.classic.reactor_moderator_conductivity", recipe.getModeratorProperties().heatConductivity()),
+                Component.translatable("jei.biggerreactors.classic.reactor_moderator_efficiency", recipe.getModeratorProperties().heatEfficiency())
+        };
+        mc.font.draw(poseStack,  info[0], 80 - mc.font.width(info[0]) / 2F, 0, Color.BLACK.getRGB());
+        mc.font.draw(poseStack,  info[1], 80 - mc.font.width(info[1]) / 2F, 12, Color.BLACK.getRGB());
+        mc.font.draw(poseStack,  info[2], 80 - mc.font.width(info[2]) / 2F, 24, Color.BLACK.getRGB());
+        mc.font.draw(poseStack,  info[3], 80 - mc.font.width(info[3]) / 2F, 36, Color.BLACK.getRGB());
+    }
+
+    public static class Recipe {
+        private final ItemStack input;
+        private final ReactorModeratorRegistry.IModeratorProperties moderatorProperties;
+
+        public Recipe(ItemStack input, ReactorModeratorRegistry.IModeratorProperties moderatorProperties) {
+            this.input = input;
+            this.moderatorProperties = moderatorProperties;
+        }
+
+        public ItemStack getInput() {
+            return input;
+        }
+
+        public ReactorModeratorRegistry.IModeratorProperties getModeratorProperties() {
+            return moderatorProperties;
+        }
+    }
+}

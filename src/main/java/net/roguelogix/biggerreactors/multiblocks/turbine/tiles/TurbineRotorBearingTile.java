@@ -16,9 +16,13 @@ import net.roguelogix.phosphophyllite.Phosphophyllite;
 import net.roguelogix.phosphophyllite.multiblock.IAssemblyAttemptedTile;
 import net.roguelogix.phosphophyllite.registry.RegisterTile;
 import net.roguelogix.phosphophyllite.threading.Queues;
-import net.roguelogix.quartz.*;
+import net.roguelogix.quartz.DrawBatch;
+import net.roguelogix.quartz.Mesh;
+import net.roguelogix.quartz.Quartz;
+import net.roguelogix.quartz.QuartzEvent;
 import org.joml.Matrix4f;
 import org.joml.Vector3i;
+import org.joml.Vector4f;
 import org.joml.Vector4i;
 
 import javax.annotation.Nullable;
@@ -30,6 +34,8 @@ import static net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock.ASSE
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssemblyAttemptedTile {
+    
+    public static boolean APRIL_FOOLS_JOKE = false;
     
     @RegisterTile("turbine_rotor_bearing")
     public static final RegisterTile.Producer<TurbineRotorBearingTile> SUPPLIER = new RegisterTile.Producer<>(TurbineRotorBearingTile::new);
@@ -180,18 +186,19 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
         if (level.getBlockEntity(getBlockPos()) != this) {
             return;
         }
-        final Matrix4f jomlMatrix = new Matrix4f();
+        double[] storedAngle = new double[1];
+        storedAngle[0] = 0;
         final int blade180RotationMultiplier = -rotationAxis.x() | -rotationAxis.y() | rotationAxis.z();
         final var drawBatch = Quartz.getDrawBatcherForAABB(new net.roguelogix.quartz.AABB((int) AABB.minX, (int) AABB.minY, (int) AABB.minZ, (int) AABB.maxX, (int) AABB.maxY, (int) AABB.maxZ));
         final var dynamicMatrix = drawBatch.createDynamicMatrix((matrix, nanoSinceLastFrame, partialTicks, playerBlock, playerPartialBlock) -> {
-            double angle = this.angle;
+            double angle = storedAngle[0];
             
             double speed = this.speed / 10f;
             if (speed > 0.001f) {
                 double elapsedTimeMilis = ((double) nanoSinceLastFrame) / 1_000_000;
                 angle += speed * ((float) elapsedTimeMilis / 60000f) * 360f; // RPM * time in minutes * 360 degrees per rotation
                 angle = angle % 360f;
-                this.angle = angle;
+                storedAngle[0] = angle;
             }
             
             if (blade180RotationMultiplier > 0) {
@@ -201,27 +208,27 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
                 angle += 180;
             }
             
-            jomlMatrix.identity();
-            jomlMatrix.translate(0.5f, 0.5f, 0.5f);
+            matrix.identity();
+            matrix.translate(0.5f, 0.5f, 0.5f);
             if (rotationAxis.x() != 0) {
-                jomlMatrix.rotate((float) Math.toRadians(-90.0f * rotationAxis.x()), 0, 0, 1);
+                matrix.rotate((float) Math.toRadians(-90.0f * rotationAxis.x()), 0, 0, 1);
                 angle -= 90;
             } else if (rotationAxis.z() != 0) {
-                jomlMatrix.rotate((float) Math.toRadians(90.0f * rotationAxis.z()), 1, 0, 0);
+                matrix.rotate((float) Math.toRadians(90.0f * rotationAxis.z()), 1, 0, 0);
             } else if (rotationAxis.y() != 1) {
-                jomlMatrix.rotate((float) Math.toRadians(180), 1, 0, 0);
+                matrix.rotate((float) Math.toRadians(180), 1, 0, 0);
             }
-            jomlMatrix.rotate((float) Math.toRadians(angle), 0, 1, 0);
-            jomlMatrix.translate(-0.5f, -0.5f, -0.5f);
-            matrix.write(jomlMatrix);
+            matrix.rotate((float) Math.toRadians(angle), 0, 1, 0);
+            matrix.translate(-0.5f, -0.5f, -0.5f);
         });
+        final Matrix4f jomlMatrix = new Matrix4f();
+        
         Vector3i worldPos = new Vector3i(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ());
         for (Vector4i vector4i : rotorConfiguration) {
             worldPos.add(rotationAxis);
-            var light = drawBatch.createLight(worldPos, DynamicLight.Type.INTERNAL);
             
             jomlMatrix.identity();
-            instances.add(drawBatch.createInstance(worldPos, shaftMesh, dynamicMatrix, jomlMatrix, light, null));
+            instances.add(drawBatch.createInstance(worldPos, shaftMesh, dynamicMatrix, jomlMatrix, null));
             
             int i = 0;
             for (Direction direction : Direction.values()) {
@@ -253,7 +260,25 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
                     jomlMatrix.rotate((float) Math.toRadians(180), 0, 0, 1);
                     jomlMatrix.translate(-0.5f, -0.5f, -0.5f);
                     
-                    instances.add(drawBatch.createInstance(worldPos, bladeMesh, dynamicMatrix, jomlMatrix, light, null));
+                    var intPos = new Vector3i();
+                    if (APRIL_FOOLS_JOKE) {
+                        var pos = new Vector4f(0.5f, 0.5f, -(j + 1) + 0.5f, 1).mul(jomlMatrix).sub(0.5f, 0.5f, 0.5f, 0);
+                        intPos.add((int) pos.x, (int) pos.y, (int) pos.z);
+                        if (rotationAxis.x() != 0) {
+                            intPos.x ^= intPos.y;
+                            intPos.y ^= intPos.x;
+                            intPos.x ^= intPos.y;
+                        } else if (rotationAxis.z() != 0) {
+                            intPos.z ^= intPos.y;
+                            intPos.y ^= intPos.z;
+                            intPos.z ^= intPos.y;
+                        } else if (rotationAxis.y() != 1) {
+                            // no change needed
+                        }
+                    }
+                    intPos.add(worldPos);
+                    
+                    instances.add(drawBatch.createInstance(intPos, bladeMesh, dynamicMatrix, jomlMatrix, null));
                 }
                 i++;
             }
