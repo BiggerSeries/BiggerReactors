@@ -9,7 +9,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.HeatExchangerMultiblockController;
 import net.roguelogix.biggerreactors.util.FluidTransitionTank;
-import net.roguelogix.phosphophyllite.multiblock.MultiblockController;
+import net.roguelogix.phosphophyllite.multiblock2.validated.IValidatedMultiblock;
 import net.roguelogix.phosphophyllite.util.HeatBody;
 
 import javax.annotation.Nonnull;
@@ -51,13 +51,13 @@ public class HeatExchangerPeripheral implements IPeripheral {
         if (controller == null) {
             return false;
         }
-        return controller.assemblyState() == MultiblockController.AssemblyState.ASSEMBLED;
+        return controller.assemblyState() == IValidatedMultiblock.AssemblyState.ASSEMBLED;
     }
 
     @Nonnull
     private HeatExchangerMultiblockController getController() throws LuaException {
         HeatExchangerMultiblockController controller = rawControllerSupplier.get();
-        if (controller == null || controller.assemblyState() != MultiblockController.AssemblyState.ASSEMBLED) {
+        if (controller == null || controller.assemblyState() != IValidatedMultiblock.AssemblyState.ASSEMBLED) {
             throw new LuaException("Invalid multiblock controller");
         }
         return controller;
