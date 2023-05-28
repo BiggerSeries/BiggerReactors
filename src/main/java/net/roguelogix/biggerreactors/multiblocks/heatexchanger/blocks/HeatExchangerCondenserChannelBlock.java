@@ -2,15 +2,12 @@ package net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks;
 
 
 import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerCondenserChannelTile;
+import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerChannelTile;
 import net.roguelogix.phosphophyllite.modular.block.IConnectedTexture;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
@@ -21,7 +18,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class HeatExchangerCondenserChannelBlock extends HeatExchangerBaseBlock implements IConnectedTexture {
     
-    @RegisterBlock(name = "heat_exchanger_condenser_channel", tileEntityClass = HeatExchangerCondenserChannelTile.class)
+    @RegisterBlock(name = "heat_exchanger_condenser_channel", tileEntityClass = HeatExchangerChannelTile.class)
     public static final HeatExchangerCondenserChannelBlock INSTANCE = new HeatExchangerCondenserChannelBlock();
     
     public HeatExchangerCondenserChannelBlock() {
@@ -31,7 +28,7 @@ public class HeatExchangerCondenserChannelBlock extends HeatExchangerBaseBlock i
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return HeatExchangerCondenserChannelTile.SUPPLIER.create(pos, state);
+        return HeatExchangerChannelTile.SUPPLIER.create(pos, state);
     }
     
     @SuppressWarnings("deprecation")
