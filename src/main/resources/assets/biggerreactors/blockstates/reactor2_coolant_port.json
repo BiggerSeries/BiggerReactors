@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "assembled=false,port_direction=false": {
+      "model": "biggerreactors:block/reactor/coolant_port/inlet"
+    },
+    "assembled=true,facing=up,port_direction=false": {
+      "model": "biggerreactors:block/reactor/coolant_port/inlet_up"
+    },
+    "assembled=true,facing=down,port_direction=false": {
+      "model": "biggerreactors:block/reactor/coolant_port/inlet_down"
+    },
+    "assembled=true,facing=north,port_direction=false": {
+      "model": "biggerreactors:block/reactor/coolant_port/inlet_north"
+    },
+    "assembled=true,facing=south,port_direction=false": {
+      "model": "biggerreactors:block/reactor/coolant_port/inlet_south"
+    },
+    "assembled=true,facing=east,port_direction=false": {
+      "model": "biggerreactors:block/reactor/coolant_port/inlet_east"
+    },
+    "assembled=true,facing=west,port_direction=false": {
+      "model": "biggerreactors:block/reactor/coolant_port/inlet_west"
+    },
+    "portdirection=true": {
+      "model": "biggerreactors:block/reactor/coolant_port/outlet"
+    }
+  }
+}

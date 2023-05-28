@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "up": "biggerreactors:block/reactor/fuel_rod/gold/end",
+    "down": "biggerreactors:block/reactor/fuel_rod/gold/end",
+    "north": "biggerreactors:block/reactor/fuel_rod/gold/side",
+    "south": "biggerreactors:block/reactor/fuel_rod/gold/side",
+    "east": "biggerreactors:block/reactor/fuel_rod/gold/side",
+    "west": "biggerreactors:block/reactor/fuel_rod/gold/side",
+    "particle": "biggerreactors:block/reactor/fuel_rod/gold/end"
+  },
+  "render_type": "cutout"
+}

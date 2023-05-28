@@ -8,10 +8,7 @@ import net.roguelogix.phosphophyllite.registry.RegisterTile;
 import net.roguelogix.phosphophyllite.util.NonnullDefault;
 
 @NonnullDefault
-public class ReactorControlRodTile extends ReactorBaseTile {
-    
-    @RegisterTile("reactor2_control_rod")
-    public static final BlockEntityType.BlockEntitySupplier<ReactorControlRodTile> CONTROL_ROD_SUPPLIER = new RegisterTile.Producer<>(ReactorControlRodTile::new);
+public class ReactorControlRodTile extends ReactorTile {
     
     public ReactorControlRodTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
         super(tileEntityTypeIn, pos, state);

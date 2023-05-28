@@ -183,7 +183,7 @@ dependencies {
 //    runtimeOnly fg.deobf('curse.maven:Oculus-581495:4299147')
 
 //    runtimeOnly fg.deobf('curse.maven:WorldStripper-250603:3545856')
-//    runtimeOnly fg.deobf('curse.maven:CW-399558:3562331')
+//    runtimeOnly fg.deobf('curse.maven:CW-399558:3926815')
 
     compileOnly "org.lwjgl:lwjgl-opencl:3.3.1"
 }

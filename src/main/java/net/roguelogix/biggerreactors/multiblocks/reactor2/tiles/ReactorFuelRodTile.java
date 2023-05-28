@@ -6,9 +6,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.roguelogix.phosphophyllite.registry.RegisterTile;
 
-public class ReactorFuelRodTile extends ReactorBaseTile {
-    @RegisterTile("reactor2_fuel_rod")
-    public static final BlockEntityType.BlockEntitySupplier<ReactorFuelRodTile> FUEL_ROD_SUPPLIER = new RegisterTile.Producer<>(ReactorFuelRodTile::new);
+public class ReactorFuelRodTile extends ReactorTile {
     
     public ReactorFuelRodTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
         super(tileEntityTypeIn, pos, state);
