@@ -1,7 +1,7 @@
 {
     "textures": {
-        "0": "biggerreactors:fluid/fluid_cyanite_flowing",
-        "1": "biggerreactors:fluid/fluid_cyanite_still"
+        "0": "biggerreactors:block/fluid/fluid_cyanite_flowing",
+        "1": "biggerreactors:block/fluid/fluid_cyanite_still"
     },
     "elements": [
         {
