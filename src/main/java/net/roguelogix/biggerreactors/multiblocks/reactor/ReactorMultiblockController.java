@@ -7,6 +7,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,13 +27,20 @@ import net.roguelogix.biggerreactors.multiblocks.reactor.util.ReactorTransitionT
 import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
 import net.roguelogix.phosphophyllite.Phosphophyllite;
 import net.roguelogix.phosphophyllite.debug.DebugInfo;
-import net.roguelogix.phosphophyllite.multiblock.MultiblockTileModule;
-import net.roguelogix.phosphophyllite.multiblock.ValidationError;
-import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblockController;
+import net.roguelogix.phosphophyllite.multiblock2.MultiblockController;
+import net.roguelogix.phosphophyllite.multiblock2.MultiblockTileModule;
+import net.roguelogix.phosphophyllite.multiblock2.ValidationException;
+import net.roguelogix.phosphophyllite.multiblock2.common.IEventMultiblock;
+import net.roguelogix.phosphophyllite.multiblock2.common.IPersistentMultiblock;
+import net.roguelogix.phosphophyllite.multiblock2.common.ITickablePartsMultiblock;
+import net.roguelogix.phosphophyllite.multiblock2.rectangular.IRectangularMultiblock;
+import net.roguelogix.phosphophyllite.multiblock2.touching.ITouchingMultiblock;
+import net.roguelogix.phosphophyllite.multiblock2.validated.IValidatedMultiblock;
 import net.roguelogix.phosphophyllite.serialization.PhosphophylliteCompound;
 import net.roguelogix.phosphophyllite.util.NonnullDefault;
 import net.roguelogix.phosphophyllite.util.Util;
 import org.joml.Vector3i;
+import org.joml.Vector3ic;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -41,65 +49,87 @@ import java.util.*;
 
 @NonnullDefault
 @ParametersAreNonnullByDefault
-public class ReactorMultiblockController extends RectangularMultiblockController<ReactorBaseTile, ReactorMultiblockController> {
+public class ReactorMultiblockController extends MultiblockController<ReactorBaseTile, ReactorBaseBlock, ReactorMultiblockController> implements
+        IRectangularMultiblock<ReactorBaseTile, ReactorBaseBlock, ReactorMultiblockController>,
+        IPersistentMultiblock<ReactorBaseTile, ReactorBaseBlock, ReactorMultiblockController>,
+        ITouchingMultiblock<ReactorBaseTile, ReactorBaseBlock, ReactorMultiblockController>,
+        IEventMultiblock<ReactorBaseTile, ReactorBaseBlock, ReactorMultiblockController>,
+        ITickablePartsMultiblock<ReactorBaseTile, ReactorBaseBlock, ReactorMultiblockController> {
     
-    public ReactorMultiblockController(Level world) {
-        super(world, tile -> tile instanceof ReactorBaseTile, block -> block instanceof ReactorBaseBlock);
-        
-        minSize.set(3);
-        maxSize.set(Config.CONFIG.Reactor.MaxLength, Config.CONFIG.Reactor.MaxHeight, Config.CONFIG.Reactor.MaxWidth);
-        interiorValidator = ReactorModeratorRegistry::isBlockAllowed;
-        validationStartedCallback = () -> {
-            foundRods = 0;
-            foundManifolds = 0;
-        };
-        blockValidatedCallback = (block) -> {
-            if (block == ReactorFuelRod.INSTANCE) {
-                foundRods++;
-            }
-            if (block == ReactorManifold.INSTANCE) {
-                foundManifolds++;
-            }
-        };
-        setAssemblyValidator(ReactorMultiblockController::validate);
+    public ReactorMultiblockController(Level level) {
+        super(level, ReactorBaseTile.class, ReactorBaseBlock.class);
     }
     
-    private boolean validate() {
+    @Nullable
+    @Override
+    public Vector3ic minSize() {
+        return new Vector3i(3);
+    }
+    
+    @Nullable
+    @Override
+    public Vector3ic maxSize() {
+        return new Vector3i(Config.CONFIG.Reactor.MaxLength, Config.CONFIG.Reactor.MaxHeight, Config.CONFIG.Reactor.MaxWidth);
+    }
+    
+    @Override
+    public void rectangularValidationStarted() {
+        foundRods = 0;
+        foundManifolds = 0;
+    }
+    
+    @Override
+    public void rectangularBlockValidated(Block block) {
+        if (block == ReactorFuelRod.INSTANCE) {
+            foundRods++;
+        }
+        if (block == ReactorManifold.INSTANCE) {
+            foundManifolds++;
+        }
+    }
+    
+    @Override
+    public boolean allowedInteriorBlock(Block block) {
+        return ReactorModeratorRegistry.isBlockAllowed(block);
+    }
+    
+    @Override
+    public void validateStage3() throws ValidationException {
         if (foundRods > fuelRods.size()) {
-            throw new ValidationError(Component.translatable("multiblock.error.biggerreactors.dangling_rod"));
+            throw new ValidationException(Component.translatable("multiblock.error.biggerreactors.dangling_rod"));
         }
         if (foundManifolds > manifolds.size()) {
-            throw new ValidationError(Component.translatable("multiblock.error.biggerreactors.dangling_manifold"));
+            throw new ValidationException(Component.translatable("multiblock.error.biggerreactors.dangling_manifold"));
         }
         if (terminals.isEmpty()) {
-            throw new ValidationError("multiblock.error.biggerreactors.no_terminal");
+            throw new ValidationException("multiblock.error.biggerreactors.no_terminal");
         }
         if (controlRods.isEmpty()) {
-            throw new ValidationError("multiblock.error.biggerreactors.no_rods");
+            throw new ValidationException("multiblock.error.biggerreactors.no_rods");
         }
         if (!powerPorts.isEmpty() && !coolantPorts.isEmpty()) {
-            throw new ValidationError("multiblock.error.biggerreactors.coolant_and_power_ports");
+            throw new ValidationException("multiblock.error.biggerreactors.coolant_and_power_ports");
         }
         
         long tick = Phosphophyllite.tickNumber();
         
-        final int maxY = maxCoord().y();
-        final int internalMinY = minCoord().y() + 1;
+        final int maxY = max().y();
+        final int internalMinY = min().y() + 1;
         
         int rodCount = 0;
         
         //noinspection ForLoopReplaceableByForEach
         for (int j = 0; j < controlRods.size(); j++) {
             var controlRodPos = controlRods.get(j).getBlockPos();
-            if (controlRodPos.getY() != maxCoord().y()) {
-                throw new ValidationError(Component.translatable("multiblock.error.biggerreactors.control_rod_not_on_top", controlRodPos.getX(), controlRodPos.getY(), controlRodPos.getZ()));
+            if (controlRodPos.getY() != max().y()) {
+                throw new ValidationException(Component.translatable("multiblock.error.biggerreactors.control_rod_not_on_top", controlRodPos.getX(), controlRodPos.getY(), controlRodPos.getZ()));
             }
             final int x = controlRodPos.getX(), z = controlRodPos.getZ();
             for (int i = internalMinY; i < maxY; i++) {
                 final var tile = blocks.getTile(x, i, z);
                 
                 if (!(tile instanceof ReactorFuelRodTile)) {
-                    throw new ValidationError(Component.translatable("multiblock.error.biggerreactors.fuel_rod_gap", controlRodPos.getX(), controlRodPos.getY() + (-1 - i), controlRodPos.getZ()));
+                    throw new ValidationException(Component.translatable("multiblock.error.biggerreactors.fuel_rod_gap", controlRodPos.getX(), controlRodPos.getY() + (-1 - i), controlRodPos.getZ()));
                 }
                 
                 ((ReactorFuelRodTile) tile).lastCheckedTick = tick;
@@ -112,18 +142,18 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             for (int i = 0; i < fuelRods.size(); i++) {
                 final var fuelRod = fuelRods.get(i);
                 if (fuelRod.lastCheckedTick != tick) {
-                    throw new ValidationError(Component.translatable("multiblock.error.biggerreactors.no_control_rod_for_fuel_rod", fuelRod.getBlockPos().getX(), fuelRod.getBlockPos().getZ()));
+                    throw new ValidationException(Component.translatable("multiblock.error.biggerreactors.no_control_rod_for_fuel_rod", fuelRod.getBlockPos().getX(), fuelRod.getBlockPos().getZ()));
                 }
             }
         }
         
         
         if (!manifolds.isEmpty()) {
-            final var manifoldsToCheck = new ArrayList<MultiblockTileModule<?, ?>>();
+            final var manifoldsToCheck = new ArrayList<MultiblockTileModule<?, ?, ?>>();
             
             final var directions = Direction.values();
-            int minx = minCoord().x() + 1, miny = minCoord().y() + 1, minz = minCoord().z() + 1;
-            int maxx = maxCoord().x() - 1, maxy = maxCoord().y() - 1, maxz = maxCoord().z() - 1;
+            int minx = min().x() + 1, miny = min().y() + 1, minz = min().z() + 1;
+            int maxx = max().x() - 1, maxy = max().y() - 1, maxz = max().z() - 1;
             for (ReactorManifoldTile manifold : manifolds) {
                 BlockPos pos = manifold.getBlockPos();
                 
@@ -133,7 +163,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
                     var manifoldModule = manifold.multiblockModule();
                     for (int i = 0; i < 6; i++) {
                         final var direction = directions[i];
-                        final MultiblockTileModule<?, ?> neighborModule = manifoldModule.getNeighbor(direction);
+                        final MultiblockTileModule<?, ?, ?> neighborModule = manifoldModule.getNeighbor(direction);
                         if (neighborModule == null) {
                             continue;
                         }
@@ -149,10 +179,10 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             
             while (!manifoldsToCheck.isEmpty()) {
                 // done like this to avoid array shuffling
-                MultiblockTileModule<?, ?> manifoldModule = manifoldsToCheck.remove(manifoldsToCheck.size() - 1);
+                MultiblockTileModule<?, ?, ?> manifoldModule = manifoldsToCheck.remove(manifoldsToCheck.size() - 1);
                 for (int i = 0; i < 6; i++) {
                     final var direction = directions[i];
-                    final MultiblockTileModule<?, ?> neighborModule = manifoldModule.getNeighbor(direction);
+                    final MultiblockTileModule<?, ?, ?> neighborModule = manifoldModule.getNeighbor(direction);
                     if (neighborModule == null) {
                         continue;
                     }
@@ -169,12 +199,10 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             for (ReactorManifoldTile manifold : manifolds) {
                 if (manifold.lastCheckedTick != tick) {
                     BlockPos pos = manifold.getBlockPos();
-                    throw new ValidationError(Component.translatable("multiblock.error.biggerreactors.disconnected_manifold", pos.getX(), pos.getY(), pos.getZ()));
+                    throw new ValidationException(Component.translatable("multiblock.error.biggerreactors.disconnected_manifold", pos.getX(), pos.getY(), pos.getZ()));
                 }
             }
         }
-        
-        return true;
     }
     
     private int foundRods = 0;
@@ -197,12 +225,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     private final ObjectArrayList<ReactorManifoldTile> manifolds = new ObjectArrayList<>();
     
     @Override
-    protected void onPartPlaced(ReactorBaseTile placed) {
-        onPartAttached(placed);
-    }
-    
-    @Override
-    protected synchronized void onPartAttached(ReactorBaseTile tile) {
+    protected synchronized void onPartAdded(ReactorBaseTile tile) {
         if (tile instanceof ReactorTerminalTile) {
             tile.index = terminals.size();
             terminals.add((ReactorTerminalTile) tile);
@@ -234,12 +257,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     }
     
     @Override
-    protected void onPartBroken(ReactorBaseTile broken) {
-        onPartDetached(broken);
-    }
-    
-    @Override
-    protected synchronized void onPartDetached(ReactorBaseTile tile) {
+    protected synchronized void onPartRemoved(ReactorBaseTile tile) {
         if (tile instanceof ReactorTerminalTile) {
             terminals.remove(tile);
         }
@@ -282,15 +300,10 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     }
     
     public void updateBlockStates() {
-        try {
-            isUpdatingState = true;
-            terminals.forEach(terminal -> {
-                world.setBlock(terminal.getBlockPos(), terminal.getBlockState().setValue(ReactorActivity.REACTOR_ACTIVITY_ENUM_PROPERTY, reactorActivity), 3);
-                terminal.setChanged();
-            });
-        } finally {
-            isUpdatingState = false;
-        }
+        terminals.forEach(terminal -> {
+            level.setBlock(terminal.getBlockPos(), terminal.getBlockState().setValue(ReactorActivity.REACTOR_ACTIVITY_ENUM_PROPERTY, reactorActivity), 3);
+            terminal.setChanged();
+        });
     }
     
     public synchronized void setActive(ReactorActivity newState) {
@@ -308,7 +321,13 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         return reactorActivity == ReactorActivity.ACTIVE;
     }
     
-    protected void read(CompoundTag compound) {
+    @Override
+    public CompoundTag mergeNBTs(CompoundTag nbtA, CompoundTag nbtB) {
+        return nbtA;
+    }
+    
+    @Override
+    public void read(CompoundTag compound) {
         if (compound.contains("reactorState")) {
             reactorActivity = ReactorActivity.valueOf(compound.getString("reactorState").toUpperCase(Locale.US));
         }
@@ -328,7 +347,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     }
     
     @Nonnull
-    protected CompoundTag write() {
+    public CompoundTag write() {
         CompoundTag compound = new CompoundTag();
         {
             compound.putString("reactorState", reactorActivity.toString());
@@ -346,22 +365,30 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         return compound;
     }
     
+    
     @Override
-    protected void onMerge(ReactorMultiblockController otherController) {
-        if (state != AssemblyState.PAUSED) {
-            setActive(ReactorActivity.INACTIVE);
-        }
+    protected void merge(ReactorMultiblockController other) {
+//        if (state != AssemblyState.PAUSED) {
+//            setActive(ReactorActivity.INACTIVE);
+//        }
         distributeFuel();
-        otherController.distributeFuel();
+        other.distributeFuel();
     }
     
     @Override
+    public void onStateTransition(AssemblyState oldAssemblyState, AssemblyState newAssemblyState) {
+        IRectangularMultiblock.super.onStateTransition(oldAssemblyState, newAssemblyState);
+        if(newAssemblyState == AssemblyState.ASSEMBLED){
+            onValidationPassed();
+        }
+    }
+    
     protected void onValidationPassed() {
         SimulationDescription simulationDescription = new SimulationDescription();
-        simulationDescription.setSize(maxCoord().x() - minCoord().x() - 1, maxCoord().y() - minCoord().y() - 1, maxCoord().z() - minCoord().z() - 1);
-        Vector3i start = new Vector3i(1).add(minCoord());
-        Vector3i end = new Vector3i(-1).add(maxCoord());
-        Util.chunkCachedBlockStateIteration(start, end, world, (state, pos) -> {
+        simulationDescription.setSize(max().x() - min().x() - 1, max().y() - min().y() - 1, max().z() - min().z() - 1);
+        Vector3i start = new Vector3i(1).add(min());
+        Vector3i end = new Vector3i(-1).add(max());
+        Util.chunkCachedBlockStateIteration(start, end, level, (state, pos) -> {
             if (!(state.getBlock() instanceof ReactorBaseBlock)) {
                 pos.sub(start);
                 simulationDescription.setModeratorProperties(pos.x, pos.y, pos.z, ReactorModeratorRegistry.blockModeratorProperties(state.getBlock()));
@@ -404,7 +431,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         updateControlRodLevels();
         collectFuel();
         
-        int levels = this.maxCoord().y() - this.minCoord().y() - 1;
+        int levels = this.max().y() - this.min().y() - 1;
         final int rodsPerLevel = fuelRods.size() / levels;
         fuelRodsByLevel.clear();
         fuelRodsByLevel.ensureCapacity(levels);
@@ -413,7 +440,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             fuelRodsByLevel.add(newList);
         }
         final var levelArrays = fuelRodsByLevel.elements();
-        final int minY = this.minCoord().y() + 1;
+        final int minY = this.min().y() + 1;
         //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < fuelRods.size(); i++) {
             final var rod = fuelRods.get(i);
@@ -426,7 +453,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
     }
     
     @Override
-    protected void onDisassembled() {
+    public void onDisassembled() {
         distributeFuel();
         setActive(ReactorActivity.INACTIVE);
         if (simulation != null) {
@@ -509,7 +536,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         
         if (Phosphophyllite.tickNumber() % 2 == 0 || forceDirty) {
             forceDirty = false;
-            markDirty();
+            dirty();
         }
     }
     
@@ -599,7 +626,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
             }
         }
         
-        Util.setBlockStates(newStates, world);
+        Util.setBlockStates(newStates, level);
         
         currentFuelRenderLevel = fuelPixels;
         currentWasteRenderLevel = wastePixels;
@@ -647,7 +674,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
                     }
                 }
             }
-            markDirty();
+            dirty();
         }
     }
     
@@ -667,7 +694,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         }
         simulation.fuelTank().insertFuel(totalFuel, false);
         simulation.fuelTank().insertWaste(totalWaste, false);
-        markDirty();
+        dirty();
     }
     
     private boolean autoEjectWaste = true;
@@ -811,12 +838,11 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         }
     }
     
-    @Nonnull
+    @Nullable
     @Override
-    
-    public DebugInfo getDebugInfo() {
-        final var info = super.getDebugInfo();
-        info.add("State: " + reactorActivity.toString());
+    public DebugInfo getControllerDebugInfo() {
+        final var info = new DebugInfo("Reactor Controller");
+        info.add("State: " + reactorActivity);
         info.add("AutoEjectWaste: " + autoEjectWaste);
         if (simulation == null) {
             info.add("Simulation is null");
@@ -837,7 +863,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
                 final var batteryInfo = new DebugInfo("Battery");
                 batteryInfo.add("StoredPower: " + battery.stored());
                 batteryInfo.add("PowerProduction: " + battery.generatedLastTick());
-                info.add(batteryInfo);
+                simInfo.add(batteryInfo);
             }
             if (coolantTank != null) {
                 final var coolantTankInfo = new DebugInfo("CoolantTank");
@@ -847,8 +873,9 @@ public class ReactorMultiblockController extends RectangularMultiblockController
                 coolantTankInfo.add("Liquid: " + coolantTank.liquidAmount());
                 coolantTankInfo.add("VaporType: " + coolantTank.vaporType());
                 coolantTankInfo.add("Vapor: " + coolantTank.vaporAmount());
-                info.add(coolantTankInfo);
+                simInfo.add(coolantTankInfo);
             }
+            info.add(simInfo);
         }
         return info;
     }
@@ -873,7 +900,7 @@ public class ReactorMultiblockController extends RectangularMultiblockController
         controlRods.forEach(rod -> {
             BlockPos pos = rod.getBlockPos();
             if (simulation != null) {
-                var simRod = simulation.controlRodAt(pos.getX() - minCoord().x() - 1, pos.getZ() - minCoord().z() - 1);
+                var simRod = simulation.controlRodAt(pos.getX() - min().x() - 1, pos.getZ() - min().z() - 1);
                 if (simRod != null) {
                     simRod.setInsertion(rod.getInsertion());
                 }

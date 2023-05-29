@@ -3,7 +3,6 @@ package net.roguelogix.biggerreactors.multiblocks.reactor.tiles;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -33,9 +32,8 @@ import net.roguelogix.biggerreactors.multiblocks.reactor.containers.ReactorAcces
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorAccessPortState;
 import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.debug.DebugInfo;
-import net.roguelogix.phosphophyllite.multiblock.IAssemblyAttemptedTile;
-import net.roguelogix.phosphophyllite.multiblock.IOnAssemblyTile;
-import net.roguelogix.phosphophyllite.multiblock.IOnDisassemblyTile;
+import net.roguelogix.phosphophyllite.multiblock2.common.IEventMultiblock;
+import net.roguelogix.phosphophyllite.multiblock2.validated.IValidatedMultiblock;
 import net.roguelogix.phosphophyllite.registry.RegisterTile;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
@@ -47,7 +45,7 @@ import static net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorAc
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandler, MenuProvider, IHasUpdatableState<ReactorAccessPortState>, IAssemblyAttemptedTile, IOnDisassemblyTile {
+public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandler, MenuProvider, IHasUpdatableState<ReactorAccessPortState>, IEventMultiblock.AssemblyStateTransition {
     
     @RegisterTile("reactor_access_port")
     public static final BlockEntityType.BlockEntitySupplier<ReactorAccessPortTile> SUPPLIER = new RegisterTile.Producer<>(ReactorAccessPortTile::new);
@@ -100,16 +98,14 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     }
     
     @Override
-    public void onAssemblyAttempted() {
-        assert level != null;
-        level.setBlock(worldPosition, level.getBlockState(worldPosition).setValue(PORT_DIRECTION_ENUM_PROPERTY, direction), 3);
-        itemOutputDirection = getBlockState().getValue(BlockStates.FACING);
-        neighborChanged();
-    }
-    
-    @Override
-    public void onDisassembly() {
-        itemOutputDirection = null;
+    public void onAssemblyStateTransition(IValidatedMultiblock.AssemblyState oldState, IValidatedMultiblock.AssemblyState newState) {
+        if (newState != IValidatedMultiblock.AssemblyState.DISASSEMBLED) {
+            assert level != null;
+            level.setBlock(worldPosition, level.getBlockState(worldPosition).setValue(PORT_DIRECTION_ENUM_PROPERTY, direction), 3);
+            itemOutputDirection = getBlockState().getValue(BlockStates.FACING);
+        } else {
+            itemOutputDirection = null;
+        }
         neighborChanged();
     }
     

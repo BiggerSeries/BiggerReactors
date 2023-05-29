@@ -13,9 +13,8 @@ import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.roguelogix.phosphophyllite.energy.EnergyStorageWrapper;
 import net.roguelogix.phosphophyllite.energy.IPhosphophylliteEnergyStorage;
-import net.roguelogix.phosphophyllite.multiblock.IOnAssemblyTile;
-import net.roguelogix.phosphophyllite.multiblock.IOnDisassemblyTile;
-import net.roguelogix.phosphophyllite.multiblock.MultiblockController;
+import net.roguelogix.phosphophyllite.multiblock2.common.IEventMultiblock;
+import net.roguelogix.phosphophyllite.multiblock2.validated.IValidatedMultiblock;
 import net.roguelogix.phosphophyllite.registry.RegisterTile;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
@@ -26,7 +25,7 @@ import static net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorPo
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophylliteEnergyStorage, IOnAssemblyTile, IOnDisassemblyTile {
+public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophylliteEnergyStorage, IEventMultiblock.AssemblyStateTransition {
     
     @RegisterTile("reactor_power_tap")
     public static final BlockEntityType.BlockEntitySupplier<ReactorPowerTapTile> SUPPLIER = new RegisterTile.Producer<>(ReactorPowerTapTile::new);
@@ -73,7 +72,7 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophyl
     
     @Override
     public long extractEnergy(long maxExtract, boolean simulate) {
-        if (maxExtract <= 0 || nullableController() == null || controller().assemblyState() != MultiblockController.AssemblyState.ASSEMBLED) {
+        if (maxExtract <= 0 || nullableController() == null || controller().assemblyState() != IValidatedMultiblock.AssemblyState.ASSEMBLED) {
             return 0;
         }
         var reactorSim = controller().simulation();
@@ -157,14 +156,12 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophyl
     }
     
     @Override
-    public void onAssembly() {
-        powerOutputDirection = getBlockState().getValue(BlockStates.FACING);
-        neighborChanged();
-    }
-    
-    @Override
-    public void onDisassembly() {
-        powerOutputDirection = null;
+    public void onAssemblyStateTransition(IValidatedMultiblock.AssemblyState oldState, IValidatedMultiblock.AssemblyState newState) {
+        if (newState == IValidatedMultiblock.AssemblyState.ASSEMBLED) {
+            powerOutputDirection = getBlockState().getValue(BlockStates.FACING);
+        } else {
+            powerOutputDirection = null;
+        }
         neighborChanged();
     }
 }

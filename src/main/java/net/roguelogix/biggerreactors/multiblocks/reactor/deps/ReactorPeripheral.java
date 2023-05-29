@@ -10,7 +10,8 @@ import net.roguelogix.biggerreactors.multiblocks.reactor.ReactorMultiblockContro
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorSimulation;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorActivity;
 import net.roguelogix.biggerreactors.multiblocks.reactor.util.ReactorTransitionTank;
-import net.roguelogix.phosphophyllite.multiblock.MultiblockController;
+import net.roguelogix.phosphophyllite.multiblock2.MultiblockController;
+import net.roguelogix.phosphophyllite.multiblock2.validated.IValidatedMultiblock;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -53,13 +54,13 @@ public class ReactorPeripheral implements IPeripheral {
         if (controller.simulation() == null) {
             return false;
         }
-        return controller.assemblyState() == MultiblockController.AssemblyState.ASSEMBLED;
+        return controller.assemblyState() == IValidatedMultiblock.AssemblyState.ASSEMBLED;
     }
     
     @Nonnull
     private ReactorMultiblockController getController() throws LuaException {
         ReactorMultiblockController controller = rawControllerSupplier.get();
-        if (controller == null || controller.assemblyState() != MultiblockController.AssemblyState.ASSEMBLED) {
+        if (controller == null || controller.assemblyState() != IValidatedMultiblock.AssemblyState.ASSEMBLED) {
             throw new LuaException("Invalid multiblock controller");
         }
         return controller;

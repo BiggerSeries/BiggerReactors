@@ -31,9 +31,8 @@ import net.roguelogix.phosphophyllite.fluids.FluidHandlerWrapper;
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
 import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.fluids.MekanismGasWrappers;
-import net.roguelogix.phosphophyllite.multiblock.IAssemblyAttemptedTile;
-import net.roguelogix.phosphophyllite.multiblock.IOnAssemblyTile;
-import net.roguelogix.phosphophyllite.multiblock.IOnDisassemblyTile;
+import net.roguelogix.phosphophyllite.multiblock2.common.IEventMultiblock;
+import net.roguelogix.phosphophyllite.multiblock2.validated.IValidatedMultiblock;
 import net.roguelogix.phosphophyllite.registry.RegisterTile;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
@@ -44,7 +43,7 @@ import static net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorAc
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphophylliteFluidHandler, MenuProvider, IHasUpdatableState<ReactorCoolantPortState>, IAssemblyAttemptedTile, IOnAssemblyTile, IOnDisassemblyTile {
+public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphophylliteFluidHandler, MenuProvider, IHasUpdatableState<ReactorCoolantPortState>, IEventMultiblock.AssemblyStateTransition {
     
     @RegisterTile("reactor_coolant_port")
     public static final BlockEntityType.BlockEntitySupplier<ReactorCoolantPortTile> SUPPLIER = new RegisterTile.Producer<>(ReactorCoolantPortTile::new);
@@ -53,7 +52,8 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
         super(TYPE, pos, state);
     }
     
-    private static final Capability<IGasHandler> GAS_HANDLER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
+    private static final Capability<IGasHandler> GAS_HANDLER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
+    });
     
     @Override
     public <T> LazyOptional<T> capability(Capability<T> cap, @Nullable Direction side) {
@@ -214,12 +214,6 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
     }
     
     @Override
-    public void onAssemblyAttempted() {
-        assert level != null;
-        level.setBlock(worldPosition, level.getBlockState(worldPosition).setValue(PORT_DIRECTION_ENUM_PROPERTY, direction), 3);
-    }
-    
-    @Override
     public void runRequest(String requestName, Object requestData) {
         // Change IO direction.
         if (requestName.equals("setDirection")) {
@@ -255,16 +249,16 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
     }
     
     @Override
-    public void onAssembly() {
-        this.transitionTank = controller().coolantTank();
-        steamOutputDirection = getBlockState().getValue(BlockStates.FACING);
-        neighborChanged();
-    }
-    
-    @Override
-    public void onDisassembly() {
-        steamOutputDirection = null;
-        transitionTank = null;
+    public void onAssemblyStateTransition(IValidatedMultiblock.AssemblyState oldState, IValidatedMultiblock.AssemblyState newState) {
+        assert level != null;
+        if (newState == IValidatedMultiblock.AssemblyState.ASSEMBLED) {
+            level.setBlock(worldPosition, level.getBlockState(worldPosition).setValue(PORT_DIRECTION_ENUM_PROPERTY, direction), 3);
+            steamOutputDirection = getBlockState().getValue(BlockStates.FACING);
+            transitionTank = controller().coolantTank();
+        } else {
+            steamOutputDirection = null;
+            transitionTank = null;
+        }
         neighborChanged();
     }
 }

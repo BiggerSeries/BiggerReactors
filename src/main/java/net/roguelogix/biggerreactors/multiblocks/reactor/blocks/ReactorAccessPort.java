@@ -15,8 +15,8 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.roguelogix.biggerreactors.multiblocks.reactor.tiles.ReactorAccessPortTile;
-import net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock;
-import net.roguelogix.phosphophyllite.multiblock.rectangular.IFaceDirectionBlock;
+import net.roguelogix.phosphophyllite.multiblock2.IAssemblyStateBlock;
+import net.roguelogix.phosphophyllite.multiblock2.rectangular.IFaceDirectionBlock;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 import net.roguelogix.phosphophyllite.util.Util;
 

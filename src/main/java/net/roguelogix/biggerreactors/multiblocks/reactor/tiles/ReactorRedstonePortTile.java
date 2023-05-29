@@ -18,9 +18,9 @@ import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorRedstonePo
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorRedstonePortState;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorRedstonePortTriggers;
 import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
-import net.roguelogix.phosphophyllite.multiblock.IOnAssemblyTile;
-import net.roguelogix.phosphophyllite.multiblock.IOnDisassemblyTile;
-import net.roguelogix.phosphophyllite.multiblock.ITickableMultiblockTile;
+import net.roguelogix.phosphophyllite.multiblock2.common.IEventMultiblock;
+import net.roguelogix.phosphophyllite.multiblock2.common.ITickablePartsMultiblock;
+import net.roguelogix.phosphophyllite.multiblock2.validated.IValidatedMultiblock;
 import net.roguelogix.phosphophyllite.registry.RegisterTile;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
@@ -29,7 +29,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProvider, ITickableMultiblockTile, IHasUpdatableState<ReactorRedstonePortState>, IOnAssemblyTile, IOnDisassemblyTile {
+public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProvider, ITickablePartsMultiblock.Tickable, IHasUpdatableState<ReactorRedstonePortState>, IEventMultiblock.AssemblyStateTransition {
     
     @RegisterTile("reactor_redstone_port")
     public static final BlockEntityType.BlockEntitySupplier<ReactorRedstonePortTile> SUPPLIER = new RegisterTile.Producer<>(ReactorRedstonePortTile::new);
@@ -66,7 +66,7 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProv
     private boolean isLit = false;
     
     @Override
-    public void tick() {
+    public void preTick() {
         boolean shouldBeEmitting = false;
         boolean shouldLight = false;
         switch (reactorRedstonePortState.selectedTab) {
@@ -219,6 +219,11 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProv
     }
     
     @Override
+    public void postTick() {
+    
+    }
+    
+    @Override
     public Component getDisplayName() {
         return Component.translatable(ReactorRedstonePort.INSTANCE.getDescriptionId());
     }
@@ -363,14 +368,12 @@ public class ReactorRedstonePortTile extends ReactorBaseTile implements MenuProv
     }
     
     @Override
-    public void onAssembly() {
-        powerOutputDirection = getBlockState().getValue(BlockStates.FACING);
-        updatePowered();
-    }
-    
-    @Override
-    public void onDisassembly() {
-        powerOutputDirection = null;
+    public void onAssemblyStateTransition(IValidatedMultiblock.AssemblyState oldState, IValidatedMultiblock.AssemblyState newState) {
+        if (newState == IValidatedMultiblock.AssemblyState.ASSEMBLED) {
+            powerOutputDirection = getBlockState().getValue(BlockStates.FACING);
+        } else {
+            powerOutputDirection = null;
+        }
         updatePowered();
     }
 }
