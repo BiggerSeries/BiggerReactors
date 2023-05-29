@@ -257,6 +257,9 @@ public class HeatExchangerMultiblockController extends MultiblockController<Heat
                 evaporatorChannels.remove(channelTile);
             }
         }
+        if (toDetach instanceof HeatExchangerFluidPortTile) {
+            fluidPorts.remove((HeatExchangerFluidPortTile) toDetach);
+        }
     }
 
     public final ReadWriteLock locks = new ReentrantReadWriteLock();
