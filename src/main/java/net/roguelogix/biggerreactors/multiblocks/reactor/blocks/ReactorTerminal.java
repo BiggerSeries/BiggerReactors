@@ -13,11 +13,11 @@ import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-@CreativeTabBlock
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class ReactorTerminal extends ReactorBaseBlock implements IAssemblyStateBlock, IFaceDirectionBlock {
     
+    @CreativeTabBlock
     @RegisterBlock(name = "reactor_terminal", tileEntityClass = ReactorTerminalTile.class)
     public static final ReactorTerminal INSTANCE = new ReactorTerminal();
     
