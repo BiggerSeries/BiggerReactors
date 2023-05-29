@@ -11,7 +11,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles.HeatExchangerGlassTile;
 import net.roguelogix.phosphophyllite.modular.block.IConnectedTexture;
-import net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock;
+import net.roguelogix.phosphophyllite.multiblock2.IAssemblyStateBlock;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
 import javax.annotation.Nullable;
