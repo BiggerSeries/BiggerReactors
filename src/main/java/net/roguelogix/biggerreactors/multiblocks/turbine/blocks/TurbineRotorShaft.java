@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineShaftRotationState;
 import net.roguelogix.biggerreactors.multiblocks.turbine.tiles.TurbineRotorShaftTile;
-import net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock;
+import net.roguelogix.phosphophyllite.multiblock2.IAssemblyStateBlock;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
 import javax.annotation.Nullable;

@@ -13,14 +13,13 @@ import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.roguelogix.phosphophyllite.energy.EnergyStorageWrapper;
 import net.roguelogix.phosphophyllite.energy.IPhosphophylliteEnergyStorage;
+import net.roguelogix.phosphophyllite.multiblock2.validated.IValidatedMultiblock;
 import net.roguelogix.phosphophyllite.registry.RegisterTile;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import static net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbinePowerTap.ConnectionState.*;
-import static net.roguelogix.phosphophyllite.multiblock.MultiblockController.AssemblyState.ASSEMBLED;
-import static net.roguelogix.phosphophyllite.multiblock.MultiblockController.AssemblyState.DISASSEMBLED;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -71,7 +70,7 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IPhosphophyl
     
     @Override
     public long extractEnergy(long maxExtract, boolean simulate) {
-        if (maxExtract <= 0 || nullableController() == null || controller().assemblyState() != ASSEMBLED) {
+        if (maxExtract <= 0 || nullableController() == null || controller().assemblyState() != IValidatedMultiblock.AssemblyState.ASSEMBLED) {
             return 0;
         }
         long toExtract = controller().simulation().battery().stored();
@@ -110,19 +109,19 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IPhosphophyl
     
     @SuppressWarnings("DuplicatedCode")
     public void updateOutputDirection() {
-        if (controller().assemblyState() == DISASSEMBLED) {
+        if (controller().assemblyState() == IValidatedMultiblock.AssemblyState.DISASSEMBLED) {
             powerOutputDirection = null;
-        } else if (worldPosition.getX() == controller().minCoord().x()) {
+        } else if (worldPosition.getX() == controller().min().x()) {
             powerOutputDirection = Direction.WEST;
-        } else if (worldPosition.getX() == controller().maxCoord().x()) {
+        } else if (worldPosition.getX() == controller().max().x()) {
             powerOutputDirection = Direction.EAST;
-        } else if (worldPosition.getY() == controller().minCoord().y()) {
+        } else if (worldPosition.getY() == controller().min().y()) {
             powerOutputDirection = Direction.DOWN;
-        } else if (worldPosition.getY() == controller().maxCoord().y()) {
+        } else if (worldPosition.getY() == controller().max().y()) {
             powerOutputDirection = Direction.UP;
-        } else if (worldPosition.getZ() == controller().minCoord().z()) {
+        } else if (worldPosition.getZ() == controller().min().z()) {
             powerOutputDirection = Direction.NORTH;
-        } else if (worldPosition.getZ() == controller().maxCoord().z()) {
+        } else if (worldPosition.getZ() == controller().max().z()) {
             powerOutputDirection = Direction.SOUTH;
         }
         neighborChanged();

@@ -9,7 +9,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.multiblocks.turbine.TurbineMultiblockController;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.VentState;
-import net.roguelogix.phosphophyllite.multiblock.MultiblockController;
+import net.roguelogix.phosphophyllite.multiblock2.MultiblockController;
+import net.roguelogix.phosphophyllite.multiblock2.validated.IValidatedMultiblock;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -44,13 +45,13 @@ public class TurbinePeripheral implements IPeripheral {
         if (rawControllerSupplier.get() == null) {
             return false;
         }
-        return rawControllerSupplier.get().assemblyState() == MultiblockController.AssemblyState.ASSEMBLED;
+        return rawControllerSupplier.get().assemblyState() == IValidatedMultiblock.AssemblyState.ASSEMBLED;
     }
 
     @Nonnull
     private TurbineMultiblockController getController() throws LuaException {
         TurbineMultiblockController controller = rawControllerSupplier.get();
-        if (controller == null || controller.assemblyState() != MultiblockController.AssemblyState.ASSEMBLED) {
+        if (controller == null || controller.assemblyState() != IValidatedMultiblock.AssemblyState.ASSEMBLED) {
             throw new LuaException("Invalid multiblock controller");
         }
         return controller;

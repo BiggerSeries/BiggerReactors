@@ -23,8 +23,12 @@ import net.roguelogix.biggerreactors.multiblocks.turbine.tiles.*;
 import net.roguelogix.biggerreactors.registries.TurbineCoilRegistry;
 import net.roguelogix.phosphophyllite.Phosphophyllite;
 import net.roguelogix.phosphophyllite.debug.DebugInfo;
-import net.roguelogix.phosphophyllite.multiblock.ValidationError;
-import net.roguelogix.phosphophyllite.multiblock.rectangular.RectangularMultiblockController;
+import net.roguelogix.phosphophyllite.multiblock2.MultiblockController;
+import net.roguelogix.phosphophyllite.multiblock2.ValidationException;
+import net.roguelogix.phosphophyllite.multiblock2.common.IEventMultiblock;
+import net.roguelogix.phosphophyllite.multiblock2.common.IPersistentMultiblock;
+import net.roguelogix.phosphophyllite.multiblock2.rectangular.IRectangularMultiblock;
+import net.roguelogix.phosphophyllite.multiblock2.touching.ITouchingMultiblock;
 import net.roguelogix.phosphophyllite.util.Util;
 import org.joml.*;
 
@@ -39,59 +43,86 @@ import java.util.Set;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class TurbineMultiblockController extends RectangularMultiblockController<TurbineBaseTile, TurbineMultiblockController> {
+public class TurbineMultiblockController extends MultiblockController<TurbineBaseTile, TurbineBaseBlock, TurbineMultiblockController> implements
+        IRectangularMultiblock<TurbineBaseTile, TurbineBaseBlock, TurbineMultiblockController>,
+        IPersistentMultiblock<TurbineBaseTile, TurbineBaseBlock, TurbineMultiblockController>,
+        ITouchingMultiblock<TurbineBaseTile, TurbineBaseBlock, TurbineMultiblockController>,
+        IEventMultiblock<TurbineBaseTile, TurbineBaseBlock, TurbineMultiblockController> {
     public TurbineMultiblockController(Level world) {
-        super(world, tile -> tile instanceof TurbineBaseTile, block -> block instanceof TurbineBaseBlock);
-        minSize.set(5, 4, 5);
-        maxSize.set(Config.CONFIG.Turbine.MaxLength, Config.CONFIG.Turbine.MaxHeight, Config.CONFIG.Turbine.MaxWidth);
-        frameValidator = block -> false;
-        exteriorValidator = frameValidator;
-        interiorValidator = block -> block.defaultBlockState().isAir() || TurbineCoilRegistry.isBlockAllowed(block);
-        validationStartedCallback = () -> {
-            foundShafts = 0;
-            foundBlades = 0;
-        };
-        blockValidatedCallback = block -> {
-            if (block == TurbineRotorShaft.INSTANCE) {
-                foundShafts++;
-            }
-            if (block == TurbineRotorBlade.INSTANCE) {
-                foundBlades++;
-            }
-        };
-        setAssemblyValidator(TurbineMultiblockController::validate);
+        super(world, TurbineBaseTile.class, TurbineBaseBlock.class);
     }
     
-    private boolean validate() {
+    @Nullable
+    @Override
+    public Vector3ic minSize() {
+        return new Vector3i(5, 4, 5);
+    }
+    
+    @Nullable
+    @Override
+    public Vector3ic maxSize() {
+        return new Vector3i(Config.CONFIG.Turbine.MaxLength, Config.CONFIG.Turbine.MaxHeight, Config.CONFIG.Turbine.MaxWidth);
+    }
+    
+    @Override
+    public void validateStage1() throws ValidationException {
+        if (rotorBearings.size() != 2) {
+            throw new ValidationException("multiblock.error.biggerreactors.turbine.rotor_bearing_count");
+        }
+    }
+    
+    @Override
+    public boolean allowedInteriorBlock(Block block) {
+        return block.defaultBlockState().isAir() || TurbineCoilRegistry.isBlockAllowed(block);
+    }
+    
+    @Override
+    public void rectangularValidationStarted() {
+        foundShafts = 0;
+        foundBlades = 0;
+    }
+    
+    @Override
+    public void rectangularBlockValidated(Block block) {
+        if (block == TurbineRotorShaft.INSTANCE) {
+            foundShafts++;
+        }
+        if (block == TurbineRotorBlade.INSTANCE) {
+            foundBlades++;
+        }
+    }
+    
+    @Override
+    public void validateStage2() throws ValidationException {
         if (foundShafts != rotorShafts.size()) {
-            throw new ValidationError("multiblock.error.biggerreactors.dangling_internal_part");
+            throw new ValidationException("multiblock.error.biggerreactors.dangling_internal_part");
         }
         if (foundBlades != attachedBladeCount) {
-            throw new ValidationError("multiblock.error.biggerreactors.dangling_internal_part");
+            throw new ValidationException("multiblock.error.biggerreactors.dangling_internal_part");
         }
-        if (rotorBearings.size() != 2) {
-            throw new ValidationError("multiblock.error.biggerreactors.turbine.rotor_bearing_count");
-        }
-        
+    }
+    
+    @Override
+    public void validateStage3() throws ValidationException {
         Iterator<TurbineRotorBearingTile> iterator = rotorBearings.iterator();
         TurbineRotorBearingTile primaryBearing = iterator.next();
         TurbineRotorBearingTile secondaryBearing = iterator.next();
         BlockPos bearingPosition = primaryBearing.getBlockPos();
         Direction marchDirection;
-        if (bearingPosition.getX() == minCoord().x()) {
+        if (bearingPosition.getX() == min().x()) {
             marchDirection = Direction.EAST;
-        } else if (bearingPosition.getX() == maxCoord().x()) {
+        } else if (bearingPosition.getX() == max().x()) {
             marchDirection = Direction.WEST;
-        } else if (bearingPosition.getY() == minCoord().y()) {
+        } else if (bearingPosition.getY() == min().y()) {
             marchDirection = Direction.UP;
-        } else if (bearingPosition.getY() == maxCoord().y()) {
+        } else if (bearingPosition.getY() == max().y()) {
             marchDirection = Direction.DOWN;
-        } else if (bearingPosition.getZ() == minCoord().z()) {
+        } else if (bearingPosition.getZ() == min().z()) {
             marchDirection = Direction.SOUTH;
-        } else if (bearingPosition.getZ() == maxCoord().z()) {
+        } else if (bearingPosition.getZ() == max().z()) {
             marchDirection = Direction.NORTH;
         } else {
-            throw new ValidationError("multiblock.error.biggerreactors.turbine.rotor_bearing_position_undefined");
+            throw new ValidationException("multiblock.error.biggerreactors.turbine.rotor_bearing_position_undefined");
         }
         int marchedBlocks = 0;
         {
@@ -109,10 +140,10 @@ public class TurbineMultiblockController extends RectangularMultiblockController
                 marchedBlocks++;
             } while (blocks.getTile(x, y, z) instanceof TurbineRotorShaftTile);
             if (rotorShafts.size() != marchedBlocks) {
-                throw new ValidationError("multiblock.error.biggerreactors.turbine.rotor_shaft_off_shaft");
+                throw new ValidationException("multiblock.error.biggerreactors.turbine.rotor_shaft_off_shaft");
             }
             if (!(blocks.getTile(x, y, z) instanceof TurbineRotorBearingTile)) {
-                throw new ValidationError("multiblock.error.biggerreactors.turbine.rotor_shaft_bearing_ends");
+                throw new ValidationException("multiblock.error.biggerreactors.turbine.rotor_shaft_bearing_ends");
             }
         }
         
@@ -151,18 +182,18 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         }
         
         if (marchedBlocks != attachedBladeCount) {
-            throw new ValidationError("multiblock.error.biggerreactors.turbine.rotor_blade_off_blade");
+            throw new ValidationException("multiblock.error.biggerreactors.turbine.rotor_blade_off_blade");
         }
         
-        Vector3i sliceMin = new Vector3i(minCoord()).add(1, 1, 1);
-        Vector3i sliceMax = new Vector3i(maxCoord()).sub(1, 1, 1);
+        Vector3i sliceMin = new Vector3i(min()).add(1, 1, 1);
+        Vector3i sliceMax = new Vector3i(max()).sub(1, 1, 1);
         
         final int layerCount = rotorShafts.size();
         int[] layerFlags = new int[layerCount];
         final int axisComponent = marchDirection.getAxis().choose(0, 1, 2);
         final int axisPosOffset = sliceMin.get(axisComponent);
         
-        Util.chunkCachedBlockStateIteration(sliceMin, sliceMax, world, (state, pos) -> {
+        Util.chunkCachedBlockStateIteration(sliceMin, sliceMax, level, (state, pos) -> {
             if (state.isAir()) {
                 return;
             }
@@ -188,7 +219,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
                 }
                 case 1 -> {
                     if (!inBlades && switches >= 2) {
-                        throw new ValidationError("multiblock.error.biggerreactors.turbine.multiple_groups");
+                        throw new ValidationException("multiblock.error.biggerreactors.turbine.multiple_groups");
                     }
                     if (!inBlades) {
                         switches++;
@@ -198,7 +229,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
                 }
                 case 2 -> {
                     if (inBlades && switches >= 2) {
-                        throw new ValidationError("multiblock.error.biggerreactors.turbine.multiple_groups");
+                        throw new ValidationException("multiblock.error.biggerreactors.turbine.multiple_groups");
                     }
                     if (inBlades) {
                         switches++;
@@ -206,7 +237,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
                     }
                     inBlades = false;
                 }
-                case 3 -> throw new ValidationError("multiblock.error.biggerreactors.turbine.mixed_blades_and_coil");
+                case 3 -> throw new ValidationException("multiblock.error.biggerreactors.turbine.mixed_blades_and_coil");
             }
         }
         
@@ -229,8 +260,6 @@ public class TurbineMultiblockController extends RectangularMultiblockController
                 secondaryBearing.isRenderBearing = true;
             }
         }
-        
-        return true;
     }
     
     private int foundShafts = 0;
@@ -247,12 +276,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     private long glassCount = 0;
     
     @Override
-    protected void onPartPlaced(TurbineBaseTile placed) {
-        onPartAttached(placed);
-    }
-    
-    @Override
-    protected void onPartAttached(TurbineBaseTile tile) {
+    protected void onPartAdded(TurbineBaseTile tile) {
         if (tile instanceof TurbineTerminalTile) {
             terminals.add((TurbineTerminalTile) tile);
         }
@@ -278,12 +302,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     }
     
     @Override
-    protected void onPartBroken(TurbineBaseTile broken) {
-        onPartDetached(broken);
-    }
-    
-    @Override
-    protected void onPartDetached(TurbineBaseTile tile) {
+    protected void onPartRemoved(TurbineBaseTile tile) {
         if (tile instanceof TurbineTerminalTile) {
             terminals.remove(tile);
         }
@@ -314,7 +333,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     
     public void updateBlockStates() {
         terminals.forEach(terminal -> {
-            world.setBlockAndUpdate(terminal.getBlockPos(), terminal.getBlockState().setValue(TurbineActivity.TURBINE_STATE_ENUM_PROPERTY, simulation.active() ? TurbineActivity.ACTIVE : TurbineActivity.INACTIVE));
+            level.setBlockAndUpdate(terminal.getBlockPos(), terminal.getBlockState().setValue(TurbineActivity.TURBINE_STATE_ENUM_PROPERTY, simulation.active() ? TurbineActivity.ACTIVE : TurbineActivity.INACTIVE));
             terminal.setChanged();
         });
     }
@@ -333,26 +352,36 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     }
     
     @Override
-    protected void onAssembled() {
+    public void onDisassembled() {
         simulation.reset();
+        for (TurbineRotorBearingTile rotorBearing : rotorBearings) {
+            level.sendBlockUpdated(rotorBearing.getBlockPos(), rotorBearing.getBlockState(), rotorBearing.getBlockState(), 0);
+        }
     }
     
     @Override
+    public void onStateTransition(AssemblyState oldAssemblyState, AssemblyState newAssemblyState) {
+        IRectangularMultiblock.super.onStateTransition(oldAssemblyState, newAssemblyState);
+        if (newAssemblyState == AssemblyState.ASSEMBLED) {
+            onValidationPassed();
+        }
+    }
+    
     protected void onValidationPassed() {
         for (TurbinePowerTapTile powerPort : powerTaps) {
             powerPort.updateOutputDirection();
         }
         
-        Vector3i internalVolume = new Vector3i().add(maxCoord()).sub(minCoord()).sub(1, 1, 1);
+        Vector3i internalVolume = new Vector3i().add(max()).sub(min()).sub(1, 1, 1);
         
         
         BlockPos bearingPos = rotorBearings.iterator().next().getBlockPos();
-        if (bearingPos.getX() == minCoord().x() || bearingPos.getX() == maxCoord().x()) {
+        if (bearingPos.getX() == min().x() || bearingPos.getX() == max().x()) {
             internalVolume.y ^= internalVolume.x;
             internalVolume.x ^= internalVolume.y;
             internalVolume.y ^= internalVolume.x;
         }
-        if (bearingPos.getZ() == minCoord().z() || bearingPos.getZ() == maxCoord().z()) {
+        if (bearingPos.getZ() == min().z() || bearingPos.getZ() == max().z()) {
             internalVolume.y ^= internalVolume.z;
             internalVolume.z ^= internalVolume.y;
             internalVolume.y ^= internalVolume.z;
@@ -367,7 +396,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
             
             for (Direction value : Direction.values()) {
                 BlockPos possibleRotorPos = rotorBearing.getBlockPos().relative(value);
-                if (world.getBlockState(possibleRotorPos).getBlock() == TurbineRotorShaft.INSTANCE) {
+                if (level.getBlockState(possibleRotorPos).getBlock() == TurbineRotorShaft.INSTANCE) {
                     
                     rotationAxis = value.getNormal();
                     
@@ -376,7 +405,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
                     Direction.Axis shaftAxis = value.getAxis();
                     BlockPos currentRotorPosition = possibleRotorPos;
                     BlockPos currentBladePosition;
-                    while (world.getBlockState(currentRotorPosition).getBlock() == TurbineRotorShaft.INSTANCE) {
+                    while (level.getBlockState(currentRotorPosition).getBlock() == TurbineRotorShaft.INSTANCE) {
                         Vector4i shaftSectionConfiguration = new Vector4i();
                         int i = 0;
                         for (Direction bladeDirection : Direction.values()) {
@@ -388,7 +417,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
                             
                             currentBladePosition = currentRotorPosition;
                             currentBladePosition = currentBladePosition.relative(bladeDirection);
-                            while (world.getBlockState(currentBladePosition).getBlock() == TurbineRotorBlade.INSTANCE) {
+                            while (level.getBlockState(currentBladePosition).getBlock() == TurbineRotorBlade.INSTANCE) {
                                 bladeCount++;
                                 currentBladePosition = currentBladePosition.relative(bladeDirection);
                             }
@@ -429,7 +458,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         blockToRotorRelativePos.translate(-bearingPos.getX(), -bearingPos.getY(), -bearingPos.getZ());
         
         Vector4f translationPos = new Vector4f();
-        Util.chunkCachedBlockStateIteration(new Vector3i(1).add(minCoord()), new Vector3i(-1).add(maxCoord()), world, (blockState, pos) -> {
+        Util.chunkCachedBlockStateIteration(new Vector3i(1).add(min()), new Vector3i(-1).add(max()), level, (blockState, pos) -> {
             Block block = blockState.getBlock();
             if (block instanceof AirBlock) {
                 return;
@@ -442,13 +471,6 @@ public class TurbineMultiblockController extends RectangularMultiblockController
             }
         });
         simulation.updateInternalValues();
-    }
-    
-    @Override
-    protected void onDisassembled() {
-        for (TurbineRotorBearingTile rotorBearing : rotorBearings) {
-            world.sendBlockUpdated(rotorBearing.getBlockPos(), rotorBearing.getBlockState(), rotorBearing.getBlockState(), 0);
-        }
     }
     
     @Override
@@ -494,12 +516,12 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         
         if (Phosphophyllite.tickNumber() % 10 == 0) {
             for (TurbineRotorBearingTile rotorBearing : rotorBearings) {
-                world.sendBlockUpdated(rotorBearing.getBlockPos(), rotorBearing.getBlockState(), rotorBearing.getBlockState(), 0);
+                level.sendBlockUpdated(rotorBearing.getBlockPos(), rotorBearing.getBlockState(), rotorBearing.getBlockState(), 0);
             }
         }
         
         if (Phosphophyllite.tickNumber() % 2 == 0) {
-            markDirty();
+            dirty();
         }
     }
     
@@ -583,12 +605,17 @@ public class TurbineMultiblockController extends RectangularMultiblockController
         simulation.setCoilEngaged(engaged);
     }
     
+    @Override
+    public CompoundTag mergeNBTs(CompoundTag nbtA, CompoundTag nbtB) {
+        return nbtA;
+    }
+    
     @Nonnull
-    protected CompoundTag write() {
+    public CompoundTag write() {
         return simulation().serializeNBT();
     }
     
-    protected void read(CompoundTag compound) {
+    public void read(CompoundTag compound) {
         simulation.deserializeNBT(compound);
         updateBlockStates = true;
     }
@@ -606,7 +633,7 @@ public class TurbineMultiblockController extends RectangularMultiblockController
     
     @Nonnull
     @Override
-    public DebugInfo getDebugInfo() {
-        return super.getDebugInfo().add(simulation.debugString());
+    public DebugInfo getControllerDebugInfo() {
+        return new DebugInfo("Turbine Simulation").add(simulation.debugString());
     }
 }

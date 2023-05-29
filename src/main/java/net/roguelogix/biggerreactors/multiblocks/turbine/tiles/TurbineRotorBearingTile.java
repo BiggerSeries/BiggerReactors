@@ -13,7 +13,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorBlade;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorShaft;
 import net.roguelogix.phosphophyllite.Phosphophyllite;
-import net.roguelogix.phosphophyllite.multiblock.IAssemblyAttemptedTile;
+import net.roguelogix.phosphophyllite.multiblock2.common.IEventMultiblock;
+import net.roguelogix.phosphophyllite.multiblock2.validated.IValidatedMultiblock;
 import net.roguelogix.phosphophyllite.registry.RegisterTile;
 import net.roguelogix.phosphophyllite.threading.Queues;
 import net.roguelogix.quartz.DrawBatch;
@@ -29,11 +30,11 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 
-import static net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock.ASSEMBLED;
+import static net.roguelogix.phosphophyllite.multiblock2.IAssemblyStateBlock.ASSEMBLED;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssemblyAttemptedTile {
+public class TurbineRotorBearingTile extends TurbineBaseTile implements IEventMultiblock.AssemblyStateTransition {
     
     public static boolean APRIL_FOOLS_JOKE = false;
     
@@ -121,12 +122,12 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
             nbt.putInt("rotx", controller().rotationAxis.getX());
             nbt.putInt("roty", controller().rotationAxis.getY());
             nbt.putInt("rotz", controller().rotationAxis.getZ());
-            nbt.putInt("minx", controller().minCoord().x());
-            nbt.putInt("miny", controller().minCoord().y());
-            nbt.putInt("minz", controller().minCoord().z());
-            nbt.putInt("maxx", controller().maxCoord().x());
-            nbt.putInt("maxy", controller().maxCoord().y());
-            nbt.putInt("maxz", controller().maxCoord().z());
+            nbt.putInt("minx", controller().min().x());
+            nbt.putInt("miny", controller().min().y());
+            nbt.putInt("minz", controller().min().z());
+            nbt.putInt("maxx", controller().max().x());
+            nbt.putInt("maxy", controller().max().y());
+            nbt.putInt("maxz", controller().max().z());
             nbt.putInt("shafts", controller().rotorConfiguration.size());
             ArrayList<Vector4i> config = controller().rotorConfiguration;
             for (int i = 0; i < config.size(); i++) {
@@ -148,7 +149,7 @@ public class TurbineRotorBearingTile extends TurbineBaseTile implements IAssembl
     }
     
     @Override
-    public void onAssemblyAttempted() {
+    public void onAssemblyStateTransition(IValidatedMultiblock.AssemblyState oldState, IValidatedMultiblock.AssemblyState newState) {
         sendFullUpdate = Phosphophyllite.tickNumber() + 10;
     }
     

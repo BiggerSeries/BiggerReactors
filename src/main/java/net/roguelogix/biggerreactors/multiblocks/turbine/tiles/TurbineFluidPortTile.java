@@ -31,8 +31,8 @@ import net.roguelogix.phosphophyllite.fluids.FluidHandlerWrapper;
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
 import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.fluids.MekanismGasWrappers;
-import net.roguelogix.phosphophyllite.multiblock.IOnAssemblyTile;
-import net.roguelogix.phosphophyllite.multiblock.IOnDisassemblyTile;
+import net.roguelogix.phosphophyllite.multiblock2.common.IEventMultiblock;
+import net.roguelogix.phosphophyllite.multiblock2.validated.IValidatedMultiblock;
 import net.roguelogix.phosphophyllite.registry.RegisterTile;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
@@ -43,7 +43,7 @@ import static net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineFl
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class TurbineFluidPortTile extends TurbineBaseTile implements IPhosphophylliteFluidHandler, MenuProvider, IHasUpdatableState<TurbineFluidPortState>, IOnAssemblyTile, IOnDisassemblyTile {
+public class TurbineFluidPortTile extends TurbineBaseTile implements IPhosphophylliteFluidHandler, MenuProvider, IHasUpdatableState<TurbineFluidPortState>, IEventMultiblock.AssemblyStateTransition.OnAssembly, IEventMultiblock.AssemblyStateTransition.OnDisassembly {
     
     @RegisterTile("turbine_fluid_port")
     public static final BlockEntityType.BlockEntitySupplier<TurbineFluidPortTile> SUPPLIER = new RegisterTile.Producer<>(TurbineFluidPortTile::new);
@@ -243,6 +243,13 @@ public class TurbineFluidPortTile extends TurbineBaseTile implements IPhosphophy
     @Override
     public void updateState() {
         fluidPortState.direction = (this.direction == INLET);
+    }
+    
+    
+    @Override
+    public void onAssemblyStateTransition(IValidatedMultiblock.AssemblyState oldState, IValidatedMultiblock.AssemblyState newState) {
+        OnAssembly.super.onAssemblyStateTransition(oldState, newState);
+        OnDisassembly.super.onAssemblyStateTransition(oldState, newState);
     }
     
     @Override

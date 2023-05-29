@@ -8,7 +8,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorBlade;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorShaft;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineShaftRotationState;
-import net.roguelogix.phosphophyllite.multiblock.IAssemblyAttemptedTile;
+import net.roguelogix.phosphophyllite.multiblock2.common.IEventMultiblock;
+import net.roguelogix.phosphophyllite.multiblock2.validated.IValidatedMultiblock;
 import net.roguelogix.phosphophyllite.registry.RegisterTile;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -18,7 +19,7 @@ import static net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineSha
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class TurbineRotorShaftTile extends TurbineBaseTile implements IAssemblyAttemptedTile {
+public class TurbineRotorShaftTile extends TurbineBaseTile implements IEventMultiblock.AssemblyStateTransition {
     
     @RegisterTile("turbine_rotor_shaft")
     public static final BlockEntityType.BlockEntitySupplier<TurbineRotorShaftTile> SUPPLIER = new RegisterTile.Producer<>(TurbineRotorShaftTile::new);
@@ -28,7 +29,7 @@ public class TurbineRotorShaftTile extends TurbineBaseTile implements IAssemblyA
     }
     
     @Override
-    public void onAssemblyAttempted() {
+    public void onAssemblyStateTransition(IValidatedMultiblock.AssemblyState oldState, IValidatedMultiblock.AssemblyState newState) {
         TurbineShaftRotationState newRotation = getBlockState().getValue(TurbineShaftRotationState.TURBINE_SHAFT_ROTATION_STATE_ENUM_PROPERTY);
         for (Direction value : Direction.values()) {
             BlockPos neighbor = getBlockPos().relative(value);

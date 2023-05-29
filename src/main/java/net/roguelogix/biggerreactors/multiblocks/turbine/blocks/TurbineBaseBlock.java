@@ -18,15 +18,16 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineActivity;
 import net.roguelogix.phosphophyllite.modular.block.PhosphophylliteBlock;
-import net.roguelogix.phosphophyllite.multiblock.rectangular.IRectangularMultiblockBlock;
+import net.roguelogix.phosphophyllite.multiblock2.IMultiblockBlock;
+import net.roguelogix.phosphophyllite.multiblock2.rectangular.IRectangularMultiblockBlock;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import static net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock.ASSEMBLED;
+import static net.roguelogix.phosphophyllite.multiblock2.IAssemblyStateBlock.ASSEMBLED;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public abstract class TurbineBaseBlock extends PhosphophylliteBlock implements IRectangularMultiblockBlock, EntityBlock {
+public abstract class TurbineBaseBlock extends PhosphophylliteBlock implements IMultiblockBlock, EntityBlock, IRectangularMultiblockBlock {
     public static final Block.Properties PROPERTIES_SOLID = Block.Properties.of(Material.METAL).sound(SoundType.METAL).destroyTime(2).explosionResistance(10).isValidSpawn((a, b, c, d) -> false).requiresCorrectToolForDrops();
     public static final Block.Properties PROPERTIES_GLASS = Block.Properties.of(Material.METAL).sound(SoundType.METAL).noOcclusion().destroyTime(2).explosionResistance(2).isValidSpawn((a, b, c, d) -> false).requiresCorrectToolForDrops();
     
