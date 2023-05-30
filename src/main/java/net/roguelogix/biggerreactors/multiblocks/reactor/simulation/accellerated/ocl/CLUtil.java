@@ -109,7 +109,7 @@ public class CLUtil {
         return devices.getLong(getNextDeviceIndex());
     }
     
-    @OnModLoad
+    @OnModLoad(required = false)
     private static void onModLoad() {
     }
     

@@ -198,7 +198,7 @@ public class ReactorModeratorRegistry {
         private static final ObjectOpenHashSet<Block> moderatorBlocks = new ObjectOpenHashSet<>();
         private static final Object2ObjectOpenHashMap<Block, ModeratorProperties> moderatorProperties = new Object2ObjectOpenHashMap<>();
         
-        @OnModLoad(required = true)
+        @OnModLoad
         private static void onModLoad() {
             MinecraftForge.EVENT_BUS.addListener(Client::datapackEvent);
             if (FMLEnvironment.dist.isClient()) {

@@ -113,7 +113,7 @@ public class TurbineCoilRegistry {
         private static final ObjectOpenHashSet<Block> coilBlocks = new ObjectOpenHashSet<>();
         private static final Object2ObjectOpenHashMap<Block, CoilData> coilProperties = new Object2ObjectOpenHashMap<>();
         
-        @OnModLoad(required = true)
+        @OnModLoad
         private static void onModLoad() {
             MinecraftForge.EVENT_BUS.addListener(Client::datapackEvent);
             if (FMLEnvironment.dist.isClient()) {
