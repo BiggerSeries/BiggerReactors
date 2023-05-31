@@ -211,6 +211,7 @@ public class TurbineMultiblockController extends MultiblockController<TurbineBas
         });
         
         boolean inBlades = false;
+        boolean inCoils = false;
         boolean bladesLower = false;
         int switches = 0;
         for (int i = 0; i < layerCount; i++) {
@@ -218,24 +219,26 @@ public class TurbineMultiblockController extends MultiblockController<TurbineBas
                 case 0 -> {
                 }
                 case 1 -> {
-                    if (!inBlades && switches >= 2) {
-                        throw new ValidationException("multiblock.error.biggerreactors.turbine.multiple_groups");
-                    }
-                    if (!inBlades) {
+                    if (inCoils) {
                         switches++;
                         bladesLower = true;
                     }
-                    inBlades = true;
-                }
-                case 2 -> {
-                    if (inBlades && switches >= 2) {
+                    if (!inBlades && switches >= 2) {
                         throw new ValidationException("multiblock.error.biggerreactors.turbine.multiple_groups");
                     }
+                    inBlades = true;
+                    inCoils = false;
+                }
+                case 2 -> {
                     if (inBlades) {
                         switches++;
                         bladesLower = false;
                     }
+                    if (inBlades && switches >= 2) {
+                        throw new ValidationException("multiblock.error.biggerreactors.turbine.multiple_groups");
+                    }
                     inBlades = false;
+                    inCoils = true;
                 }
                 case 3 -> throw new ValidationException("multiblock.error.biggerreactors.turbine.mixed_blades_and_coil");
             }
