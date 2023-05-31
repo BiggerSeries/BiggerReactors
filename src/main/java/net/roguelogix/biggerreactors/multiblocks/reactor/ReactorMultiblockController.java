@@ -35,7 +35,6 @@ import net.roguelogix.phosphophyllite.multiblock2.common.IPersistentMultiblock;
 import net.roguelogix.phosphophyllite.multiblock2.common.ITickablePartsMultiblock;
 import net.roguelogix.phosphophyllite.multiblock2.rectangular.IRectangularMultiblock;
 import net.roguelogix.phosphophyllite.multiblock2.touching.ITouchingMultiblock;
-import net.roguelogix.phosphophyllite.multiblock2.validated.IValidatedMultiblock;
 import net.roguelogix.phosphophyllite.serialization.PhosphophylliteCompound;
 import net.roguelogix.phosphophyllite.util.NonnullDefault;
 import net.roguelogix.phosphophyllite.util.Util;
@@ -847,35 +846,7 @@ public class ReactorMultiblockController extends MultiblockController<ReactorBas
         if (simulation == null) {
             info.add("Simulation is null");
         } else {
-            final var simInfo = new DebugInfo("Simulation");
-            simInfo.add("SimClass: " + simulation.getClass().getSimpleName());
-            simInfo.add("FuelUsage: " + simulation.fuelTank().burnedLastTick());
-            simInfo.add("ReactantCapacity: " + simulation.fuelTank().capacity());
-            simInfo.add("TotalReactant: " + simulation.fuelTank().totalStored());
-            simInfo.add("PercentFull: " + (float) simulation.fuelTank().totalStored() * 100 / simulation.fuelTank().capacity());
-            simInfo.add("Fuel: " + simulation.fuelTank().fuel());
-            simInfo.add("Waste: " + simulation.fuelTank().waste());
-            simInfo.add("Fertility: " + simulation.fertility());
-            simInfo.add("FuelHeat: " + simulation.fuelHeat());
-            simInfo.add("ReactorHeat: " + simulation.stackHeat());
-            final var battery = simulation.battery();
-            if (battery != null) {
-                final var batteryInfo = new DebugInfo("Battery");
-                batteryInfo.add("StoredPower: " + battery.stored());
-                batteryInfo.add("PowerProduction: " + battery.generatedLastTick());
-                simInfo.add(batteryInfo);
-            }
-            if (coolantTank != null) {
-                final var coolantTankInfo = new DebugInfo("CoolantTank");
-                coolantTankInfo.add("MBProduction: " + coolantTank.transitionedLastTick());
-                coolantTankInfo.add("CoolantTankSize: " + coolantTank.perSideCapacity());
-                coolantTankInfo.add("LiquidType: " + coolantTank.liquidType());
-                coolantTankInfo.add("Liquid: " + coolantTank.liquidAmount());
-                coolantTankInfo.add("VaporType: " + coolantTank.vaporType());
-                coolantTankInfo.add("Vapor: " + coolantTank.vaporAmount());
-                simInfo.add(coolantTankInfo);
-            }
-            info.add(simInfo);
+            info.add(simulation.getDebugInfo());
         }
         return info;
     }

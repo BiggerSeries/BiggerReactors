@@ -2,6 +2,8 @@ package net.roguelogix.biggerreactors.multiblocks.reactor.simulation;
 
 import net.roguelogix.biggerreactors.registries.FluidTransitionRegistry;
 import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
+import net.roguelogix.phosphophyllite.debug.DebugInfo;
+import net.roguelogix.phosphophyllite.debug.IDebuggable;
 import net.roguelogix.phosphophyllite.serialization.IPhosphophylliteSerializable;
 import net.roguelogix.phosphophyllite.util.NonnullDefault;
 
@@ -10,7 +12,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @NonnullDefault
-public interface IReactorSimulation extends IPhosphophylliteSerializable {
+public interface IReactorSimulation extends IPhosphophylliteSerializable, IDebuggable {
     
     /**
      * tick the reactor simulation

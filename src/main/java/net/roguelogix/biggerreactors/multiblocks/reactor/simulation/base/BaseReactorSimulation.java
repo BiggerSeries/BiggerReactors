@@ -287,4 +287,42 @@ public abstract class BaseReactorSimulation implements IReactorSimulation {
         fuelHeat.setTemperature(compound.getDouble("fuelHeat"));
         stackHeat.setTemperature(compound.getDouble("reactorHeat"));
     }
+    
+    @Override
+    public DebugInfo getDebugInfo() {
+        final var simInfo = new DebugInfo("Simulation");
+        simInfo.add("SimClass: " + getClass().getSimpleName());
+        simInfo.add("FuelUsage: " + fuelTank().burnedLastTick());
+        simInfo.add("ReactantCapacity: " + fuelTank().capacity());
+        simInfo.add("TotalReactant: " + fuelTank().totalStored());
+        simInfo.add("PercentFull: " + (float) fuelTank().totalStored() * 100 / fuelTank().capacity());
+        simInfo.add("Fuel: " + fuelTank().fuel());
+        simInfo.add("Waste: " + fuelTank().waste());
+        simInfo.add("Fertility: " + fertility());
+        simInfo.add("FuelHeat: " + fuelHeat());
+        simInfo.add("ReactorHeat: " + stackHeat());
+        if (battery != null) {
+            final var batteryInfo = new DebugInfo("Battery");
+            batteryInfo.add("StoredPower: " + battery.stored());
+            batteryInfo.add("PowerProduction: " + battery.generatedLastTick());
+            simInfo.add(batteryInfo);
+        }
+        if (coolantTank != null) {
+            final var coolantTankInfo = new DebugInfo("CoolantTank");
+            coolantTankInfo.add("MBProduction: " + coolantTank.transitionedLastTick());
+            coolantTankInfo.add("CoolantTankSize: " + coolantTank.perSideCapacity());
+            coolantTankInfo.add("Liquid: " + coolantTank.liquidAmount());
+            coolantTankInfo.add("Vapor: " + coolantTank.vaporAmount());
+            simInfo.add(coolantTankInfo);
+        }
+        final var buildInfo = new DebugInfo("Build info");
+        buildInfo.add("Size: (" + x + ", " + y + ", " + z + ")");
+        buildInfo.add("Control rod count: " + controlRods.length);
+        buildInfo.add("fuelToCasingRFKT: " + fuelToCasingRFKT);
+        buildInfo.add("fuelToManifoldSurfaceArea: " + fuelToManifoldSurfaceArea);
+        buildInfo.add("stackToCoolantSystemRFKT: " + stackToCoolantSystemRFKT);
+        buildInfo.add("casingToAmbientRFKT: " + casingToAmbientRFKT);
+        simInfo.add(buildInfo);
+        return simInfo;
+    }
 }
