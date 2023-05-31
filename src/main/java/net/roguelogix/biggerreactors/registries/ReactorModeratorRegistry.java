@@ -77,6 +77,10 @@ public class ReactorModeratorRegistry {
             this.heatConductivity = heatConductivity;
         }
         
+        public ModeratorProperties(IModeratorProperties properties) {
+            this(properties.absorption(), properties.heatEfficiency(), properties.moderation(), properties.heatConductivity());
+        }
+        
         @Override
         public double absorption() {
             return absorption;

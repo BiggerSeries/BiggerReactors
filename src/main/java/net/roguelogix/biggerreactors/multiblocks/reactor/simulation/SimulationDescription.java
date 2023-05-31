@@ -201,6 +201,7 @@ public class SimulationDescription implements IPhosphophylliteSerializable {
         return manifoldCount;
     }
     
+    @Nullable
     public ReactorModeratorRegistry.IModeratorProperties moderatorPropertiesAt(int x, int y, int z) {
         assert moderatorProperties != null;
         return moderatorProperties[x][y][z];

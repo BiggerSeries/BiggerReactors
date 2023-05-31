@@ -4,6 +4,7 @@ import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorSimulation;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.SimulationDescription;
 import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
+import net.roguelogix.phosphophyllite.debug.DebugInfo;
 import net.roguelogix.phosphophyllite.serialization.PhosphophylliteCompound;
 import net.roguelogix.phosphophyllite.util.HeatBody;
 import org.joml.Vector2ic;
@@ -63,14 +64,17 @@ public abstract class BaseReactorSimulation implements IReactorSimulation {
             }
         }
         
+        final ReactorModeratorRegistry.IModeratorProperties manifoldSignalingProperties;
         if (simulationDescription.passivelyCooled()) {
             output = battery = new Battery((((long) (x + 2) * (y + 2) * (z + 2)) - ((long) x * y * z)) * Config.CONFIG.Reactor.PassiveBatteryPerExternalBlock);
             coolantTank = null;
+            manifoldSignalingProperties = new ReactorModeratorRegistry.ModeratorProperties(defaultModeratorProperties);
         } else {
             long perSideCapacity = controlRods.length * y * Config.CONFIG.Reactor.CoolantTankAmountPerFuelRod;
             perSideCapacity += simulationDescription.manifoldCount() * Config.CONFIG.Reactor.CoolantTankAmountPerFuelRod;
             output = coolantTank = new CoolantTank(perSideCapacity, simulationDescription.defaultModeratorProperties());
             battery = null;
+            manifoldSignalingProperties = coolantTank;
         }
         
         for (int i = 0; i < x; i++) {
@@ -78,7 +82,7 @@ public abstract class BaseReactorSimulation implements IReactorSimulation {
                 for (int k = 0; k < z; k++) {
                     var newProperties = simulationDescription.moderatorPropertiesAt(i, j, k);
                     if (simulationDescription.isManifoldAt(i, j, k)) {
-                        newProperties = coolantTank;
+                        newProperties = manifoldSignalingProperties;
                     }
                     if (newProperties == null) {
                         newProperties = simulationDescription.defaultModeratorProperties();
@@ -104,7 +108,7 @@ public abstract class BaseReactorSimulation implements IReactorSimulation {
                     }
                     ReactorModeratorRegistry.IModeratorProperties properties = moderatorProperties[controlRod.x + direction.x()][i][controlRod.z + direction.y()];
                     if (properties != null) {
-                        if (properties instanceof CoolantTank) {
+                        if (properties == manifoldSignalingProperties) {
                             // manifold, dynamic heat transfer rate
                             fuelToManifoldSurfaceArea++;
                         } else {
@@ -124,22 +128,22 @@ public abstract class BaseReactorSimulation implements IReactorSimulation {
             for (int j = 0; j < y; j++) {
                 for (int k = 0; k < z; k++) {
                     ReactorModeratorRegistry.IModeratorProperties properties = moderatorProperties[i][j][k];
-                    if (properties instanceof CoolantTank) {
+                    if (properties == manifoldSignalingProperties) {
                         // its a manifold here, need to consider its surface area
                         for (Vector3ic axisDirection : SimUtil.axisDirections) {
                             int neighborX = i + axisDirection.x();
                             int neighborY = j + axisDirection.y();
                             int neighborZ = k + axisDirection.z();
                             if (neighborX < 0 || neighborX >= this.x ||
-                                        neighborY < 0 || neighborY >= this.y ||
-                                        neighborZ < 0 || neighborZ >= this.z) {
+                                    neighborY < 0 || neighborY >= this.y ||
+                                    neighborZ < 0 || neighborZ >= this.z) {
                                 // OOB, so its a casing we are against here, this counts against us
                                 stackToCoolantSystemRFKT--;
                                 continue;
                             }
                             ReactorModeratorRegistry.IModeratorProperties neighborProperties = moderatorProperties[neighborX][neighborY][neighborZ];
                             // should a fuel rod add to surface area? it does right now.
-                            if (!(neighborProperties instanceof ICoolantTank)) {
+                            if (neighborProperties != manifoldSignalingProperties) {
                                 stackToCoolantSystemRFKT++;
                             }
                         }
