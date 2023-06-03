@@ -93,13 +93,7 @@ public class ReactorMultiblockController extends MultiblockController<ReactorBas
     }
     
     @Override
-    public void validateStage3() throws ValidationException {
-        if (foundRods > fuelRods.size()) {
-            throw new ValidationException(Component.translatable("multiblock.error.biggerreactors.dangling_rod"));
-        }
-        if (foundManifolds > manifolds.size()) {
-            throw new ValidationException(Component.translatable("multiblock.error.biggerreactors.dangling_manifold"));
-        }
+    public void validateStage1() throws ValidationException {
         if (terminals.isEmpty()) {
             throw new ValidationException("multiblock.error.biggerreactors.no_terminal");
         }
@@ -109,8 +103,36 @@ public class ReactorMultiblockController extends MultiblockController<ReactorBas
         if (!powerPorts.isEmpty() && !coolantPorts.isEmpty()) {
             throw new ValidationException("multiblock.error.biggerreactors.coolant_and_power_ports");
         }
+    }
+    
+    @Override
+    public void validateStage2() throws ValidationException {
+        if (foundRods > fuelRods.size()) {
+            Util.chunkCachedBlockStateIteration(min().add(1, 1, 1, new Vector3i()), max().sub(1, 1, 1, new Vector3i()), level, (state, position) -> {
+                if (!(state.getBlock() instanceof ReactorFuelRod)) {
+                    return;
+                }
+                final var tile = blocks.getTile(position);
+                if (tile == null || (tile instanceof ReactorFuelRodTile fuelRodTile &&fuelRodTile.controller() != this)){
+                    throw new ValidationException(Component.translatable("multiblock.error.biggerreactors.reactor.dangling_rod", position.toString()));
+                }
+            });
+            throw new ValidationException(Component.translatable("multiblock.error.biggerreactors.reactor.dangling_rod_unknown_position"));
+        }
+        if (foundManifolds > manifolds.size()) {
+            Util.chunkCachedBlockStateIteration(min().add(1, 1, 1, new Vector3i()), max().sub(1, 1, 1, new Vector3i()), level, (state, position) -> {
+                if (!(state.getBlock() instanceof ReactorManifold)) {
+                    return;
+                }
+                final var tile = blocks.getTile(position);
+                if (tile == null || (tile instanceof ReactorManifoldTile manifoldTile && manifoldTile.controller() != this)) {
+                    throw new ValidationException(Component.translatable("multiblock.error.biggerreactors.reactor.dangling_manifold", position.toString()));
+                }
+            });
+            throw new ValidationException(Component.translatable("multiblock.error.biggerreactors.reactor.dangling_manifold_unknown_position"));
+        }
         
-        long tick = Phosphophyllite.tickNumber();
+        final long tick = Phosphophyllite.tickNumber();
         
         final int maxY = max().y();
         final int internalMinY = min().y() + 1;
@@ -145,7 +167,6 @@ public class ReactorMultiblockController extends MultiblockController<ReactorBas
                 }
             }
         }
-        
         
         if (!manifolds.isEmpty()) {
             final var manifoldsToCheck = new ArrayList<MultiblockTileModule<?, ?, ?>>();
