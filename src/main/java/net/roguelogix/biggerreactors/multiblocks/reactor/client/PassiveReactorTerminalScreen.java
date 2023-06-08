@@ -1,6 +1,7 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -78,7 +79,7 @@ public class PassiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorT
     private void initGauges() {
         // (Top) Internal battery:
         RenderedElement<ReactorTerminalContainer> internalBattery = new RenderedElement<>(this, 151, 25, 18, 64, 0, 152, Component.empty());
-        internalBattery.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonRender.renderEnergyGauge(mS,
+        internalBattery.onRender = (@Nonnull GuiGraphics graphics, int mX, int mY) -> CommonRender.renderEnergyGauge(graphics,
                 internalBattery, reactorState.energyStored, reactorState.energyCapacity);
         this.addScreenElement(internalBattery);
     }
@@ -106,14 +107,14 @@ public class PassiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorT
      * @param partialTicks Partial ticks.
      */
     @Override
-    public void render(@Nonnull PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-        super.render(poseStack, mouseX, mouseY, partialTicks);
+    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        super.render(graphics, mouseX, mouseY, partialTicks);
 
         // Render the other text:
-        CommonReactorTerminalScreen.renderStatusText(poseStack, this, reactorState.reactorActivity, reactorState.doAutoEject,
+        CommonReactorTerminalScreen.renderStatusText(graphics, this, reactorState.reactorActivity, reactorState.doAutoEject,
                 reactorState.fuelHeatStored, reactorState.fuelUsageRate, reactorState.reactivityRate);
 
         // Render text for output rate:
-        this.getFont().draw(poseStack, RenderHelper.formatValue(reactorState.reactorOutputRate, "RF/t"), this.getGuiLeft() + 27, this.getGuiTop() + 42, 4210752);
+        graphics.drawString(this.getFont(), RenderHelper.formatValue(reactorState.reactorOutputRate, "RF/t"), this.getGuiLeft() + 27, this.getGuiTop() + 42, 4210752);
     }
 }

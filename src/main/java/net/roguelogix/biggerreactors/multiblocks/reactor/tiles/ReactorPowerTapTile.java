@@ -7,8 +7,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.roguelogix.phosphophyllite.energy.EnergyStorageWrapper;
@@ -36,7 +36,7 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophyl
     
     @Override
     public <T> LazyOptional<T> capability(Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityEnergy.ENERGY) {
+        if (cap == ForgeCapabilities.ENERGY) {
             return LazyOptional.of(() -> this).cast();
         }
         return super.capability(cap, side);
@@ -147,7 +147,7 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IPhosphophyl
             setConnected(false);
             return;
         }
-        LazyOptional<IEnergyStorage> energyOptional = te.getCapability(CapabilityEnergy.ENERGY, powerOutputDirection.getOpposite());
+        LazyOptional<IEnergyStorage> energyOptional = te.getCapability(ForgeCapabilities.ENERGY, powerOutputDirection.getOpposite());
         setConnected(energyOptional.isPresent());
         if (connected) {
             outputOptional = energyOptional;

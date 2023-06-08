@@ -1,6 +1,7 @@
 package net.roguelogix.biggerreactors.machine.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -65,20 +66,20 @@ public class CyaniteReprocessorScreen extends PhosphophylliteScreen<CyaniteRepro
     public void initGauges() {
         // (Top) Internal battery:
         RenderedElement<CyaniteReprocessorContainer> internalBattery = new RenderedElement<>(this, 7, 25, 18, 64, 0, 152, Component.empty());
-        internalBattery.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonRender.renderEnergyGauge(mS,
+        internalBattery.onRender = (@Nonnull GuiGraphics graphics, int mX, int mY) -> CommonRender.renderEnergyGauge(graphics,
                 internalBattery, cyaniteReprocessorState.energyStored, cyaniteReprocessorState.energyCapacity);
         this.addScreenElement(internalBattery);
 
         // (Top) Water tank:
         RenderedElement<CyaniteReprocessorContainer> waterTank = new RenderedElement<>(this, 151, 25, 18, 64, 0, 152, Component.empty());
-        waterTank.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonRender.renderFluidGauge(mS,
+        waterTank.onRender = (@Nonnull GuiGraphics graphics, int mX, int mY) -> CommonRender.renderFluidGauge(graphics,
                 waterTank, cyaniteReprocessorState.waterStored, cyaniteReprocessorState.waterCapacity,
                 Fluids.WATER.getSource());
         this.addScreenElement(waterTank);
 
         // (Center) Progress bar:
         RenderedElement<CyaniteReprocessorContainer> progressBar = new RenderedElement<>(this, 75, 40, 24, 18, 0, 175, null);
-        progressBar.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CyaniteReprocessorScreen.renderProgressBar(mS,
+        progressBar.onRender = (@Nonnull GuiGraphics graphics, int mX, int mY) -> CyaniteReprocessorScreen.renderProgressBar(graphics,
                 progressBar, cyaniteReprocessorState.workTime, cyaniteReprocessorState.workTimeTotal);
         this.addScreenElement(progressBar);
     }
@@ -89,8 +90,10 @@ public class CyaniteReprocessorScreen extends PhosphophylliteScreen<CyaniteRepro
     public void initSymbols() {
         // (Right) Water tank symbol:
         RenderedElement<CyaniteReprocessorContainer> waterTankSymbol = new RenderedElement<>(this, 152, 6, 16, 16, 48, 175, Component.translatable("screen.biggerreactors.cyanite_reprocessor.water_tank.tooltip"));
-        waterTankSymbol.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> RenderHelper.drawMaskedFluid(mS,
-                waterTankSymbol.x, waterTankSymbol.y, this.getBlitOffset(),
+        waterTankSymbol.onRender = (@Nonnull GuiGraphics graphics, int mX, int mY) -> RenderHelper.drawMaskedFluid(graphics,
+                // TODO: blit offset again
+//                waterTankSymbol.x, waterTankSymbol.y, this.getBlitOffset(),
+                waterTankSymbol.x, waterTankSymbol.y, 0,
                 waterTankSymbol.width, waterTankSymbol.height,
                 waterTankSymbol.u, waterTankSymbol.v, Fluids.WATER.getSource());
         this.addScreenElement(waterTankSymbol);
@@ -104,13 +107,13 @@ public class CyaniteReprocessorScreen extends PhosphophylliteScreen<CyaniteRepro
      * @param workTime      The time the machine has been working.
      * @param workTimeTotal The total time needed for completion.
      */
-    private static void renderProgressBar(@Nonnull PoseStack poseStack, @Nonnull RenderedElement<CyaniteReprocessorContainer> symbol, int workTime, int workTimeTotal) {
+    private static void renderProgressBar(@Nonnull GuiGraphics graphics, @Nonnull RenderedElement<CyaniteReprocessorContainer> symbol, int workTime, int workTimeTotal) {
         // If there's no progress, there's no need to draw.
         if ((workTime > 0) && (workTimeTotal > 0)) {
             // Calculate how much needs to be rendered.
             int renderSize = (int) ((symbol.width * workTime) / workTimeTotal);
             // Render progress.
-            symbol.blit(poseStack, renderSize, symbol.height, symbol.u + 24, symbol.v);
+            symbol.blit(graphics, renderSize, symbol.height, symbol.u + 24, symbol.v);
         }
     }
 }

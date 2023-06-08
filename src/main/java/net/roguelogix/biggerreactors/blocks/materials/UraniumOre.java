@@ -2,7 +2,6 @@ package net.roguelogix.biggerreactors.blocks.materials;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.material.Material;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.phosphophyllite.registry.IPhosphophylliteOre;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
@@ -17,7 +16,7 @@ public class UraniumOre extends Block implements IPhosphophylliteOre {
     
     public UraniumOre() {
         super(
-                Properties.of(Material.METAL)
+                Properties.of()
                         .sound(SoundType.STONE)
                         .explosionResistance(1.0F)
                         .destroyTime(2.0f)

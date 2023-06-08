@@ -18,8 +18,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.EmptyHandler;
 import net.roguelogix.biggerreactors.Config;
@@ -113,7 +113,7 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     
     @Override
     protected <T> LazyOptional<T> capability(Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+        if (cap == ForgeCapabilities.ITEM_HANDLER) {
             return itemStackHandler.cast();
         }
         return super.capability(cap, side);
@@ -283,7 +283,7 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
             connected = false;
             return;
         }
-        itemOutput = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, itemOutputDirection.getOpposite());
+        itemOutput = te.getCapability(ForgeCapabilities.ITEM_HANDLER, itemOutputDirection.getOpposite());
         connected = itemOutput.isPresent();
     }
     

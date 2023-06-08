@@ -1,6 +1,7 @@
 package net.roguelogix.biggerreactors.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -36,12 +37,12 @@ public class CommonButton<T extends AbstractContainerMenu> extends InteractiveEl
     /**
      * Render element.
      *
-     * @param poseStack The current pose stack.
+     * @param graphics The current pose stack.
      * @param mouseX The x position of the mouse.
      * @param mouseY The y position of the mouse.
      */
     @Override
-    public void render(@Nonnull PoseStack poseStack, int mouseX, int mouseY) {
+    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY) {
         // Check conditions.
         if (this.renderEnable) {
             // Preserve the previously selected texture and bind the common texture.
@@ -51,16 +52,16 @@ public class CommonButton<T extends AbstractContainerMenu> extends InteractiveEl
             if (this.isMouseOver(mouseX, mouseY)) {
                 // Draw active/hovered button.
                 if(this.actionEnable) {
-                    this.blit(poseStack, this.u, this.v + this.height);
+                    this.blit(graphics, this.u, this.v + this.height);
                 } else {
-                    this.blit(poseStack, this.u, this.v + (this.height * 2));
+                    this.blit(graphics, this.u, this.v + (this.height * 2));
                 }
             } else {
                 // Draw inactive/non-hovered button.
                 if(this.actionEnable) {
-                    this.blit(poseStack, this.u, this.v);
+                    this.blit(graphics, this.u, this.v);
                 } else {
-                    this.blit(poseStack, this.u, this.v + (this.height * 2));
+                    this.blit(graphics, this.u, this.v + (this.height * 2));
                 }
             }
             // Reset color and restore the previously bound texture.
@@ -68,7 +69,7 @@ public class CommonButton<T extends AbstractContainerMenu> extends InteractiveEl
             RenderHelper.bindTexture(preservedResource);
             // Trigger user-defined render logic.
             if (this.onRender != null) {
-                this.onRender.trigger(poseStack, mouseX, mouseY);
+                this.onRender.trigger(graphics, mouseX, mouseY);
             }
         }
     }

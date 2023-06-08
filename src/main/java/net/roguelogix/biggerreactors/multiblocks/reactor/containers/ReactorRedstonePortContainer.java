@@ -28,7 +28,7 @@ public class ReactorRedstonePortContainer extends AbstractContainerMenu implemen
     public ReactorRedstonePortContainer(int windowId, BlockPos blockPos, Player player) {
         super(INSTANCE, windowId);
         this.player = player;
-        this.tileEntity = (ReactorRedstonePortTile) player.level.getBlockEntity(blockPos);
+        this.tileEntity = (ReactorRedstonePortTile) player.level().getBlockEntity(blockPos);
         this.getGuiPacket();
     }
 

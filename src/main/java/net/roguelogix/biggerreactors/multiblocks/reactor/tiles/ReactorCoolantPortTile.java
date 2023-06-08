@@ -18,8 +18,8 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.roguelogix.biggerreactors.multiblocks.reactor.util.ReactorTransitionTank;
@@ -57,7 +57,7 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
     
     @Override
     public <T> LazyOptional<T> capability(Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+        if (cap == ForgeCapabilities.FLUID_HANDLER) {
             return LazyOptional.of(() -> this).cast();
         }
         if (cap == GAS_HANDLER_CAPABILITY) {
@@ -177,7 +177,7 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
             return;
         }
         connected = false;
-        LazyOptional<IFluidHandler> fluidOptional = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, steamOutputDirection.getOpposite());
+        LazyOptional<IFluidHandler> fluidOptional = te.getCapability(ForgeCapabilities.FLUID_HANDLER, steamOutputDirection.getOpposite());
         if (fluidOptional.isPresent()) {
             connected = true;
             handlerOptional = fluidOptional;

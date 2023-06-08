@@ -13,7 +13,6 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineActivity;
@@ -28,8 +27,8 @@ import static net.roguelogix.phosphophyllite.multiblock2.IAssemblyStateBlock.ASS
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public abstract class TurbineBaseBlock extends PhosphophylliteBlock implements IMultiblockBlock, EntityBlock, IRectangularMultiblockBlock {
-    public static final Block.Properties PROPERTIES_SOLID = Block.Properties.of(Material.METAL).sound(SoundType.METAL).destroyTime(2).explosionResistance(10).isValidSpawn((a, b, c, d) -> false).requiresCorrectToolForDrops();
-    public static final Block.Properties PROPERTIES_GLASS = Block.Properties.of(Material.METAL).sound(SoundType.METAL).noOcclusion().destroyTime(2).explosionResistance(2).isValidSpawn((a, b, c, d) -> false).requiresCorrectToolForDrops();
+    public static final Block.Properties PROPERTIES_SOLID = Block.Properties.of().sound(SoundType.METAL).destroyTime(2).explosionResistance(10).isValidSpawn((a, b, c, d) -> false).requiresCorrectToolForDrops();
+    public static final Block.Properties PROPERTIES_GLASS = Block.Properties.of().sound(SoundType.METAL).noOcclusion().destroyTime(2).explosionResistance(2).isValidSpawn((a, b, c, d) -> false).requiresCorrectToolForDrops();
     
     public TurbineBaseBlock() {
         this(true);

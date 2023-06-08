@@ -1,6 +1,7 @@
 package net.roguelogix.biggerreactors.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -75,7 +76,7 @@ public class Triselector<T extends AbstractContainerMenu> extends InteractiveEle
      * @param mouseY The y position of the mouse.
      */
     @Override
-    public void render(@Nonnull PoseStack poseStack, int mouseX, int mouseY) {
+    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY) {
         // Check conditions.
         if (this.renderEnable) {
             // Preserve the previously selected texture and bind the common texture.
@@ -84,60 +85,60 @@ public class Triselector<T extends AbstractContainerMenu> extends InteractiveEle
             // Draw the selector frame.
             if (this.renderState.getAsInt() == 0) {
                 // Position is 0 (left), draw left frame.
-                this.blit(poseStack, 31, 64);
+                this.blit(graphics, 31, 64);
                 // Check where the mouse is.
                 if (this.isMouseOver(mouseX, mouseY)) {
                     // Draw active/hovered button.
                     if(this.actionEnable) {
-                        this.blit(poseStack, this.x + 1, this.y + 1, leftColor.uA, leftColor.vA, 14, 12);
+                        this.blit(graphics, this.x + 1, this.y + 1, leftColor.uA, leftColor.vA, 14, 12);
                     } else {
-                        this.blit(poseStack, this.x + 1, this.y + 1, SelectorColors.DISABLED.uA, SelectorColors.DISABLED.vA, 14, 12);
+                        this.blit(graphics, this.x + 1, this.y + 1, SelectorColors.DISABLED.uA, SelectorColors.DISABLED.vA, 14, 12);
                     }
                 } else {
                     // Draw inactive/non-hovered button.
                     if(this.actionEnable) {
-                        this.blit(poseStack, this.x + 1, this.y + 1, leftColor.uI, leftColor.vI, 14, 12);
+                        this.blit(graphics, this.x + 1, this.y + 1, leftColor.uI, leftColor.vI, 14, 12);
                     } else {
-                        this.blit(poseStack, this.x + 1, this.y + 1, SelectorColors.DISABLED.uI, SelectorColors.DISABLED.vI, 14, 12);
+                        this.blit(graphics, this.x + 1, this.y + 1, SelectorColors.DISABLED.uI, SelectorColors.DISABLED.vI, 14, 12);
                     }
                 }
             } else if (this.renderState.getAsInt() == 1) {
                 // Position is 1 (center), draw center frame.
-                this.blit(poseStack, 31, 78);
+                this.blit(graphics, 31, 78);
                 // Check where the mouse is.
                 if (this.isMouseOver(mouseX, mouseY)) {
                     // Draw active/hovered button.
                     if(this.actionEnable) {
-                        this.blit(poseStack, this.x + 16, this.y + 1, centerColor.uA, centerColor.vA, 14, 12);
+                        this.blit(graphics, this.x + 16, this.y + 1, centerColor.uA, centerColor.vA, 14, 12);
                     } else {
-                        this.blit(poseStack, this.x + 16, this.y + 1, SelectorColors.DISABLED.uA, SelectorColors.DISABLED.vA, 14, 12);
+                        this.blit(graphics, this.x + 16, this.y + 1, SelectorColors.DISABLED.uA, SelectorColors.DISABLED.vA, 14, 12);
                     }
                 } else {
                     // Draw inactive/non-hovered button.
                     if(this.actionEnable) {
-                        this.blit(poseStack, this.x + 16, this.y + 1, centerColor.uI, centerColor.vI, 14, 12);
+                        this.blit(graphics, this.x + 16, this.y + 1, centerColor.uI, centerColor.vI, 14, 12);
                     } else {
-                        this.blit(poseStack, this.x + 16, this.y + 1, SelectorColors.DISABLED.uI, SelectorColors.DISABLED.vI, 14, 12);
+                        this.blit(graphics, this.x + 16, this.y + 1, SelectorColors.DISABLED.uI, SelectorColors.DISABLED.vI, 14, 12);
                     }
                 }
             } else {
                 // Position is 2 (right), draw right frame.
-                this.blit(poseStack, 31, 92);
+                this.blit(graphics, 31, 92);
                 // Check if the selector is enabled.
                 // Check where the mouse is.
                 if (this.isMouseOver(mouseX, mouseY)) {
                     // Draw active/hovered button.
                     if(this.actionEnable) {
-                        this.blit(poseStack, this.x + 31, this.y + 1, rightColor.uA, rightColor.vA, 14, 12);
+                        this.blit(graphics, this.x + 31, this.y + 1, rightColor.uA, rightColor.vA, 14, 12);
                     } else {
-                        this.blit(poseStack, this.x + 31, this.y + 1, SelectorColors.DISABLED.uA, SelectorColors.DISABLED.vA, 14, 12);
+                        this.blit(graphics, this.x + 31, this.y + 1, SelectorColors.DISABLED.uA, SelectorColors.DISABLED.vA, 14, 12);
                     }
                 } else {
                     // Draw inactive/non-hovered button.
                     if(this.actionEnable) {
-                        this.blit(poseStack, this.x + 31, this.y + 1, rightColor.uI, rightColor.vI, 14, 12);
+                        this.blit(graphics, this.x + 31, this.y + 1, rightColor.uI, rightColor.vI, 14, 12);
                     } else {
-                        this.blit(poseStack, this.x + 31, this.y + 1, SelectorColors.DISABLED.uI, SelectorColors.DISABLED.vI, 14, 12);
+                        this.blit(graphics, this.x + 31, this.y + 1, SelectorColors.DISABLED.uI, SelectorColors.DISABLED.vI, 14, 12);
                     }
                 }
             }
@@ -146,7 +147,7 @@ public class Triselector<T extends AbstractContainerMenu> extends InteractiveEle
             RenderHelper.bindTexture(preservedResource);
             // Trigger user-defined render logic.
             if (this.onRender != null) {
-                this.onRender.trigger(poseStack, mouseX, mouseY);
+                this.onRender.trigger(graphics, mouseX, mouseY);
             }
         }
     }

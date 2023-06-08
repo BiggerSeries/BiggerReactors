@@ -2,6 +2,7 @@ package net.roguelogix.biggerreactors.multiblocks.reactor.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -174,7 +175,7 @@ public class ReactorControlRodScreen extends PhosphophylliteScreen<ReactorContro
     public void initGauges() {
         // (Center) Control rod insertion gauge:
         RenderedElement<ReactorControlRodContainer> rodInsertionGauge = new RenderedElement<>(this, 36, 50, 18, 64, 0, 126, Component.empty());
-        rodInsertionGauge.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> ReactorControlRodScreen.renderInsertionLevel(mS, rodInsertionGauge, this.reactorControlRodState.insertionLevel);
+        rodInsertionGauge.onRender = (@Nonnull GuiGraphics graphics, int mX, int mY) -> ReactorControlRodScreen.renderInsertionLevel(graphics, rodInsertionGauge, this.reactorControlRodState.insertionLevel);
         this.addScreenElement(rodInsertionGauge);
     }
 
@@ -187,14 +188,14 @@ public class ReactorControlRodScreen extends PhosphophylliteScreen<ReactorContro
      * @param partialTicks Partial ticks.
      */
     @Override
-    public void render(@Nonnull PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-        super.render(poseStack, mouseX, mouseY, partialTicks);
+    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        super.render(graphics, mouseX, mouseY, partialTicks);
 
         // Render text for text box:
-        this.font.draw(poseStack, Component.translatable("screen.biggerreactors.reactor_control_rod.name").getString(), this.getGuiLeft() + 8, this.getGuiTop() + 17, 4210752);
+        graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_control_rod.name").getString(), this.getGuiLeft() + 8, this.getGuiTop() + 17, 4210752);
 
         // Render text for insertion level:
-        this.font.draw(poseStack, String.format("%.1f%%", reactorControlRodState.insertionLevel), this.getGuiLeft() + 76, this.getGuiTop() + 77, 4210752);
+        graphics.drawString(this.getFont(), String.format("%.1f%%", reactorControlRodState.insertionLevel), this.getGuiLeft() + 76, this.getGuiTop() + 77, 4210752);
     }
 
     /**
@@ -204,19 +205,19 @@ public class ReactorControlRodScreen extends PhosphophylliteScreen<ReactorContro
      * @param symbol         The symbol to draw as.
      * @param insertionLevel How far the control rod is inserted. 0 is no insertion, 100 is full insertion.
      */
-    public static void renderInsertionLevel(@Nonnull PoseStack poseStack, @Nonnull RenderedElement<ReactorControlRodContainer> symbol, double insertionLevel) {
+    public static void renderInsertionLevel(@Nonnull GuiGraphics graphics, @Nonnull RenderedElement<ReactorControlRodContainer> symbol, double insertionLevel) {
         // Render fuel background. Offset by 1, otherwise it doesn't align with the frame.
-        RenderHelper.drawFluidGrid(poseStack, symbol.x + 1, symbol.y, symbol.getBlitOffset(), 16, 16, LiquidUranium.INSTANCE.getSource(), 1, 4);
+        RenderHelper.drawFluidGrid(graphics, symbol.x + 1, symbol.y, symbol.getBlitOffset(), 16, 16, LiquidUranium.INSTANCE.getSource(), 1, 4);
 
         // If there's nothing inserted, there's no need to draw.
         if (insertionLevel > 0) {
             // Calculate how much needs to be rendered.
             int renderSize = (int) ((symbol.height * insertionLevel) / 100.0D);
             // Render rod. This is done differently than other bars since this renders top-down, rather than bottom-up.
-            symbol.blit(poseStack, symbol.width, renderSize, symbol.u + 18, symbol.v);
+            symbol.blit(graphics, symbol.width, renderSize, symbol.u + 18, symbol.v);
         }
         // Draw frame.
-        symbol.blit(poseStack);
+        symbol.blit(graphics);
         // Update tooltip.
         symbol.tooltip = Component.literal(String.format("%.1f%%", insertionLevel));
     }

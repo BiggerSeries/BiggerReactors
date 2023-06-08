@@ -1,6 +1,7 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -116,17 +117,17 @@ public class ReactorAccessPortScreen extends PhosphophylliteScreen<ReactorAccess
      * @param partialTicks Partial ticks.
      */
     @Override
-    public void render(@Nonnull PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-        super.render(poseStack, mouseX, mouseY, partialTicks);
+    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        super.render(graphics, mouseX, mouseY, partialTicks);
 
         // Render text for input/output direction:
         if (reactorAccessPortState.direction) {
             // Text for an inlet:
-            this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_access_port.direction_toggle.input").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
+            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_access_port.direction_toggle.input").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
 
         } else {
             // Text for an outlet:
-            this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_access_port.direction_toggle.output").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
+            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_access_port.direction_toggle.output").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
         }
 
         // Check if we render output type:
@@ -134,18 +135,18 @@ public class ReactorAccessPortScreen extends PhosphophylliteScreen<ReactorAccess
             // Render text for fuel/waste mode:
             if (reactorAccessPortState.fuelMode) {
                 // Text for an inlet:
-                this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.fuel").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 38, 4210752);
+                graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.fuel").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 38, 4210752);
 
             } else {
                 // Text for an outlet:
-                this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.waste").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 38, 4210752);
+                graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.waste").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 38, 4210752);
             }
         } else {
             // Text for no output:
-            this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.nope").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 38, 4210752);
+            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.nope").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 38, 4210752);
         }
 
         // Render text for manual waste eject:
-        this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_access_port.manual_eject").getString(), this.getGuiLeft() + 26, this.getGuiTop() + 54, 4210752);
+        graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_access_port.manual_eject").getString(), this.getGuiLeft() + 26, this.getGuiTop() + 54, 4210752);
     }
 }

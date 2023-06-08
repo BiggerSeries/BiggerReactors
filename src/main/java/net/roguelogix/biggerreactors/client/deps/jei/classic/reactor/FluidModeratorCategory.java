@@ -68,10 +68,11 @@ public class FluidModeratorCategory implements IRecipeCategory<FluidModeratorCat
                 Component.translatable("jei.biggerreactors.classic.reactor_moderator_conductivity", recipe.getModeratorProperties().heatConductivity()),
                 Component.translatable("jei.biggerreactors.classic.reactor_moderator_efficiency", recipe.getModeratorProperties().heatEfficiency())
         };
-        mc.font.draw(poseStack,  info[0], 80 - mc.font.width(info[0]) / 2F, 0, Color.BLACK.getRGB());
-        mc.font.draw(poseStack,  info[1], 80 - mc.font.width(info[1]) / 2F, 12, Color.BLACK.getRGB());
-        mc.font.draw(poseStack,  info[2], 80 - mc.font.width(info[2]) / 2F, 24, Color.BLACK.getRGB());
-        mc.font.draw(poseStack,  info[3], 80 - mc.font.width(info[3]) / 2F, 36, Color.BLACK.getRGB());
+        // TODO: updated JEI API should move to GuiGraphics
+//        mc.font.draw(poseStack,  info[0], 80 - mc.font.width(info[0]) / 2F, 0, Color.BLACK.getRGB());
+//        mc.font.draw(poseStack,  info[1], 80 - mc.font.width(info[1]) / 2F, 12, Color.BLACK.getRGB());
+//        mc.font.draw(poseStack,  info[2], 80 - mc.font.width(info[2]) / 2F, 24, Color.BLACK.getRGB());
+//        mc.font.draw(poseStack,  info[3], 80 - mc.font.width(info[3]) / 2F, 36, Color.BLACK.getRGB());
     }
     
     public static class Recipe {

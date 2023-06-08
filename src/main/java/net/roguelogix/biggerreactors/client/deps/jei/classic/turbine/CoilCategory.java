@@ -66,9 +66,10 @@ public class CoilCategory implements IRecipeCategory<CoilCategory.Recipe> {
                 Component.translatable("jei.biggerreactors.classic.turbine_coil_efficiency", recipe.getCoilData().efficiency),
                 Component.translatable("jei.biggerreactors.classic.turbine_coil_extraction", recipe.getCoilData().extractionRate)
         };
-        mc.font.draw(poseStack,  info[0], 80 - mc.font.width(info[0]) / 2F, 0, Color.BLACK.getRGB());
-        mc.font.draw(poseStack,  info[1], 80 - mc.font.width(info[1]) / 2F, 12, Color.BLACK.getRGB());
-        mc.font.draw(poseStack,  info[2], 80 - mc.font.width(info[2]) / 2F, 24, Color.BLACK.getRGB());
+        // TODO: updated JEI API should move to GuiGraphics
+//        mc.font.draw(poseStack,  info[0], 80 - mc.font.width(info[0]) / 2F, 0, Color.BLACK.getRGB());
+//        mc.font.draw(poseStack,  info[1], 80 - mc.font.width(info[1]) / 2F, 12, Color.BLACK.getRGB());
+//        mc.font.draw(poseStack,  info[2], 80 - mc.font.width(info[2]) / 2F, 24, Color.BLACK.getRGB());
     }
     
     public static class Recipe {

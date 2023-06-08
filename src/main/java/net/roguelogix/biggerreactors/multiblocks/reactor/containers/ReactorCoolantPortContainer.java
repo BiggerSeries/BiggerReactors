@@ -28,7 +28,7 @@ public class ReactorCoolantPortContainer extends AbstractContainerMenu implement
     public ReactorCoolantPortContainer(int windowId, BlockPos blockPos, Player player) {
         super(INSTANCE, windowId);
         this.player = player;
-        this.tileEntity = (ReactorCoolantPortTile) player.level.getBlockEntity(blockPos);
+        this.tileEntity = (ReactorCoolantPortTile) player.level().getBlockEntity(blockPos);
         this.getGuiPacket();
     }
 

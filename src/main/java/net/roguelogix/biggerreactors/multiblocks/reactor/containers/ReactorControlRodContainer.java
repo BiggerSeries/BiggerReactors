@@ -28,7 +28,7 @@ public class ReactorControlRodContainer extends AbstractContainerMenu implements
     public ReactorControlRodContainer(int windowId, BlockPos blockPos, Player player) {
         super(INSTANCE, windowId);
         this.player = player;
-        this.tileEntity = (ReactorControlRodTile) player.level.getBlockEntity(blockPos);
+        this.tileEntity = (ReactorControlRodTile) player.level().getBlockEntity(blockPos);
         this.getGuiPacket();
     }
 

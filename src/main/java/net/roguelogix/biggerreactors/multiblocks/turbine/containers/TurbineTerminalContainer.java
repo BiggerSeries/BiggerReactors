@@ -28,7 +28,7 @@ public class TurbineTerminalContainer extends AbstractContainerMenu implements G
     public TurbineTerminalContainer(int windowId, BlockPos blockPos, Player player) {
         super(INSTANCE, windowId);
         this.player = player;
-        this.tileEntity = (TurbineTerminalTile) player.level.getBlockEntity(blockPos);
+        this.tileEntity = (TurbineTerminalTile) player.level().getBlockEntity(blockPos);
         this.getGuiPacket();
     }
     

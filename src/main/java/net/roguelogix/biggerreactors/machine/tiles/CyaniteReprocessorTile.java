@@ -19,17 +19,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.Config;
@@ -113,7 +111,7 @@ public class CyaniteReprocessorTile extends BaseContainerBlockEntity implements 
         }
         
         // Print tile data.
-        if (ItemStack.isSame(player.getMainHandItem(), new ItemStack(DebugTool.INSTANCE))) {
+        if (ItemStack.isSameItem(player.getMainHandItem(), new ItemStack(DebugTool.INSTANCE))) {
             player.sendSystemMessage(Component.literal(String.format("[%s] Progress: %s/%s", BiggerReactors.modid, this.cyaniteReprocessorState.workTime, this.cyaniteReprocessorState.workTimeTotal)));
             player.sendSystemMessage(Component.literal(String.format("[%s] Energy: %s/%s RF", BiggerReactors.modid, this.cyaniteReprocessorState.energyStored, this.cyaniteReprocessorState.energyCapacity)));
             player.sendSystemMessage(Component.literal(String.format("[%s] Fluid Tank: %s/%s mB", BiggerReactors.modid, this.cyaniteReprocessorState.waterStored, this.cyaniteReprocessorState.waterCapacity)));
@@ -121,7 +119,7 @@ public class CyaniteReprocessorTile extends BaseContainerBlockEntity implements 
         }
         
         // Do water bucket check.
-        if (ItemStack.isSame(player.getMainHandItem(), new ItemStack(Items.WATER_BUCKET))) {
+        if (ItemStack.isSameItem(player.getMainHandItem(), new ItemStack(Items.WATER_BUCKET))) {
             if (this.fluidTank.getFluidAmount() <= (Config.CONFIG.CyaniteReprocessor.WaterTankCapacity - 1000)) {
                 this.fluidTank.fill(new FluidStack(Fluids.WATER, 1000), IFluidHandler.FluidAction.EXECUTE);
                 player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.BUCKET));
@@ -266,8 +264,8 @@ public class CyaniteReprocessorTile extends BaseContainerBlockEntity implements 
     @Override
     public void setItem(int index, ItemStack stack) {
         ItemStack oldStack = this.itemHandler.getStackInSlot(index);
-        boolean flag = !stack.isEmpty() && stack.sameItem(oldStack) && ItemStack
-                .isSame(stack, oldStack);
+        boolean flag = !stack.isEmpty() && ItemStack
+                .isSameItem(stack, oldStack);
         this.itemHandler.setStackInSlot(index, stack);
         if (stack.getCount() > this.getMaxStackSize()) {
             stack.setCount(this.getMaxStackSize());
@@ -393,7 +391,7 @@ public class CyaniteReprocessorTile extends BaseContainerBlockEntity implements 
         ItemStack inputStack = this.itemHandler.getStackInSlot(CyaniteReprocessorItemHandler.INPUT_SLOT_INDEX);
         
         // Check to make sure the player doesn't try to pull a fast one.
-        if (!ItemStack.isSame(this.itemPresentLastTick, inputStack)) {
+        if (!ItemStack.isSameItem(this.itemPresentLastTick, inputStack)) {
             this.workHandler.clear();
         }
         this.itemPresentLastTick = inputStack.copy();
@@ -456,17 +454,17 @@ public class CyaniteReprocessorTile extends BaseContainerBlockEntity implements 
         //}
         
         // Check for items.
-        if (capability.equals(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)) {
+        if (capability.equals(ForgeCapabilities.ITEM_HANDLER)) {
             return this.ITEM_HANDLER_CAPABILITY.cast();
         }
         
         // Check for energy.
-        if (capability.equals(CapabilityEnergy.ENERGY)) {
+        if (capability.equals(ForgeCapabilities.ENERGY)) {
             return this.ENERGY_STORAGE_CAPABILITY.cast();
         }
         
         // Check for water.
-        if (capability.equals(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)) {
+        if (capability.equals(ForgeCapabilities.FLUID_HANDLER)) {
             return this.FLUID_TANK_CAPABILITY.cast();
         }
         

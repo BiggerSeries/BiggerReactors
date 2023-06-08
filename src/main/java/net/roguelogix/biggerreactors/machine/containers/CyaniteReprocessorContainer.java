@@ -33,7 +33,7 @@ public class CyaniteReprocessorContainer extends AbstractContainerMenu implement
     public CyaniteReprocessorContainer(int windowId, BlockPos blockPos, Player player) {
         super(CyaniteReprocessorContainer.INSTANCE, windowId);
         this.player = player;
-        this.tileEntity = (CyaniteReprocessorTile) player.level.getBlockEntity(blockPos);
+        this.tileEntity = (CyaniteReprocessorTile) player.level().getBlockEntity(blockPos);
         this.getGuiPacket();
         
         // Populate machine slots.

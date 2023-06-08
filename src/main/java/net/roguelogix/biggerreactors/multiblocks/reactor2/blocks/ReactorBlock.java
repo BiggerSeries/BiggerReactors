@@ -8,7 +8,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.Material;
 import net.roguelogix.biggerreactors.multiblocks.reactor2.tiles.ReactorTile;
 import net.roguelogix.biggerreactors.multiblocks.reactor2.tiles.ReactorControlRodTile;
 import net.roguelogix.biggerreactors.multiblocks.reactor2.tiles.ReactorFuelRodTile;
@@ -73,7 +72,7 @@ public abstract class ReactorBlock extends PhosphophylliteBlock implements IRect
         }
         
         public FuelRod(BlockEntityType.BlockEntitySupplier<? extends ReactorFuelRodTile> tileSupplier) {
-            super(Properties.of(Material.GLASS).noOcclusion(), tileSupplier);
+            super(Properties.of().noOcclusion(), tileSupplier);
         }
         
         @Override
@@ -109,7 +108,7 @@ public abstract class ReactorBlock extends PhosphophylliteBlock implements IRect
         }
         
         public ControlRod(BlockEntityType.BlockEntitySupplier<? extends ReactorControlRodTile> tileSupplier) {
-            super(BlockBehaviour.Properties.of(Material.METAL), tileSupplier);
+            super(BlockBehaviour.Properties.of(), tileSupplier);
         }
     }
     

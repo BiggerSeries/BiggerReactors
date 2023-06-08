@@ -17,7 +17,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.ToolAction;
 import net.roguelogix.biggerreactors.machine.tiles.CyaniteReprocessorTile;
@@ -35,7 +34,7 @@ public class CyaniteReprocessor extends BaseEntityBlock implements EntityBlock{
     public static final CyaniteReprocessor INSTANCE = new CyaniteReprocessor();
     
     public CyaniteReprocessor() {
-        super(Properties.of(Material.METAL)
+        super(Properties.of()
                 .sound(SoundType.STONE)
                 .destroyTime(1.0F)
                 .explosionResistance(1.0F)

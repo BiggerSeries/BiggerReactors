@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -99,12 +100,12 @@ public class TextBox<T extends AbstractContainerMenu> extends InteractiveElement
     /**
      * Render element.
      *
-     * @param poseStack The current pose stack.
+     * @param graphics The current pose stack.
      * @param mouseX The x position of the mouse.
      * @param mouseY The y position of the mouse.
      */
     @Override
-    public void render(@Nonnull PoseStack poseStack, int mouseX, int mouseY) {
+    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY) {
         // Check conditions.
         if (this.renderEnable) {
             // Preserve the previously selected texture and bind the common texture.
@@ -112,19 +113,20 @@ public class TextBox<T extends AbstractContainerMenu> extends InteractiveElement
             RenderHelper.bindTexture(CommonRender.COMMON_RESOURCE_TEXTURE);
 
             // Draw the left side of the text box frame.
-            this.blit(poseStack, this.x, this.y, 0, 172, 3, 16);
+            this.blit(graphics, this.x, this.y, 0, 172, 3, 16);
 
             // Draw the center part of the text box.
             for (int i = 0; i <= this.width; i += 6) {
-                this.blit(poseStack, (this.x + 3) + i, this.y, 6, 172, 6, 16);
+                this.blit(graphics, (this.x + 3) + i, this.y, 6, 172, 6, 16);
             }
 
             // Draw the right side of the text box frame.
-            this.blit(poseStack, (this.x + 6) + (6 * this.charLimit), this.y, 3, 172, 3, 16);
+            this.blit(graphics, (this.x + 6) + (6 * this.charLimit), this.y, 3, 172, 3, 16);
 
             // Draw the text.
             // TODO: Allow for larger text entry by allowing text scrolling.
-            this.fontRenderer.drawShadow(poseStack, this.textBuffer.toString(), (this.x + 3), (this.y + 4), 16777215);
+            // TODO: no direct replacement found immediately
+//            this.fontRenderer.drawShadow(graphics, this.textBuffer.toString(), (this.x + 3), (this.y + 4), 16777215);
 
             // Draw cursor and selection box.
             renderCursor();
@@ -136,7 +138,7 @@ public class TextBox<T extends AbstractContainerMenu> extends InteractiveElement
 
             // Trigger user-defined render logic.
             if (this.onRender != null) {
-                this.onRender.trigger(poseStack, mouseX, mouseY);
+                this.onRender.trigger(graphics, mouseX, mouseY);
             }
         }
     }
@@ -166,7 +168,8 @@ public class TextBox<T extends AbstractContainerMenu> extends InteractiveElement
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder renderBuffer = tessellator.getBuilder();
         RenderHelper.setRenderColor(255.0F, 255.0F, 255.0F, 255.0F);
-        RenderSystem.disableTexture();
+        // TODO: does this need replaced?
+//        RenderSystem.disableTexture();
 
         // Set positions.
         renderBuffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
@@ -177,7 +180,7 @@ public class TextBox<T extends AbstractContainerMenu> extends InteractiveElement
 
         // Draw and reset.
         tessellator.end();
-        RenderSystem.enableTexture();
+//        RenderSystem.enableTexture();
         RenderHelper.clearRenderColor();
     }
 
@@ -211,7 +214,7 @@ public class TextBox<T extends AbstractContainerMenu> extends InteractiveElement
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder renderBuffer = tessellator.getBuilder();
         RenderHelper.setRenderColor(0.0F, 0.0F, 255.0F, 255.0F);
-        RenderSystem.disableTexture();
+//        RenderSystem.disableTexture();
         RenderSystem.enableColorLogicOp();
         RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
 
@@ -225,7 +228,7 @@ public class TextBox<T extends AbstractContainerMenu> extends InteractiveElement
         // Draw and reset.
         tessellator.end();
         RenderSystem.disableColorLogicOp();
-        RenderSystem.enableTexture();
+//        RenderSystem.enableTexture();
         RenderHelper.clearRenderColor();
     }
 

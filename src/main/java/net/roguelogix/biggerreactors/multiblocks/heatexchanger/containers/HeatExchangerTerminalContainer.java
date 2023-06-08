@@ -28,7 +28,7 @@ public class HeatExchangerTerminalContainer extends AbstractContainerMenu implem
     public HeatExchangerTerminalContainer(int windowId, BlockPos blockPos, Player player) {
         super(INSTANCE, windowId);
         this.player = player;
-        this.tileEntity = (HeatExchangerTerminalTile) player.level.getBlockEntity(blockPos);
+        this.tileEntity = (HeatExchangerTerminalTile) player.level().getBlockEntity(blockPos);
         this.getGuiPacket();
     }
 

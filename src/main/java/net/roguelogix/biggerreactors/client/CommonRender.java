@@ -1,6 +1,7 @@
 package net.roguelogix.biggerreactors.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -33,7 +34,7 @@ public class CommonRender {
      * @param energyStored   The amount of energy to draw.
      * @param energyCapacity The max energy capacity that can be displayed.
      */
-    public static <T extends AbstractContainerMenu> void renderEnergyGauge(@Nonnull PoseStack poseStack, @Nonnull RenderedElement<T> symbol, long energyStored, long energyCapacity) {
+    public static <T extends AbstractContainerMenu> void renderEnergyGauge(@Nonnull GuiGraphics graphics, @Nonnull RenderedElement<T> symbol, long energyStored, long energyCapacity) {
         // Preserve the previously selected texture and bind the common texture.
         ResourceLocation preservedResource = RenderHelper.getCurrentResource();
         RenderHelper.bindTexture(COMMON_RESOURCE_TEXTURE);
@@ -42,12 +43,12 @@ public class CommonRender {
             // Calculate how much needs to be rendered.
             int renderSize = (int) ((symbol.height * energyStored) / energyCapacity);
             // Render energy.
-            symbol.blit(poseStack, 54, 0);
+            symbol.blit(graphics, 54, 0);
             // Render backdrop/mask away extra energy.
-            symbol.blit(poseStack, symbol.width, symbol.height - renderSize, 36, 0);
+            symbol.blit(graphics, symbol.width, symbol.height - renderSize, 36, 0);
         }
         // Draw frame.
-        symbol.blit(poseStack, 0, 0);
+        symbol.blit(graphics, 0, 0);
         // Update tooltip.
         symbol.tooltip = Component.literal(String.format("%s/%s",
                 RenderHelper.formatValue(energyStored, "RF"),
@@ -68,7 +69,7 @@ public class CommonRender {
      * @param fluidCapacity The max fluid capacity that can be displayed.
      * @param fluid         The fluid to use.
      */
-    public static <T extends AbstractContainerMenu> void renderFluidGauge(@Nonnull PoseStack poseStack, @Nonnull RenderedElement<T> symbol, long fluidStored, long fluidCapacity, Fluid fluid) {
+    public static <T extends AbstractContainerMenu> void renderFluidGauge(@Nonnull GuiGraphics graphics, @Nonnull RenderedElement<T> symbol, long fluidStored, long fluidCapacity, Fluid fluid) {
         // Preserve the previously selected texture and bind the common texture.
         ResourceLocation preservedResource = RenderHelper.getCurrentResource();
         RenderHelper.bindTexture(COMMON_RESOURCE_TEXTURE);
@@ -77,14 +78,14 @@ public class CommonRender {
             // Calculate how much needs to be rendered.
             int renderSize = (int) ((symbol.height * fluidStored) / fluidCapacity);
             // Render fluid. Offset by 1, otherwise it doesn't align with the frame.
-            RenderHelper.drawFluidGrid(poseStack, symbol.x + 1, symbol.y, symbol.getBlitOffset(), 16, 16, fluid, 1, 4);
+            RenderHelper.drawFluidGrid(graphics, symbol.x + 1, symbol.y, symbol.getBlitOffset(), 16, 16, fluid, 1, 4);
             // Render backdrop/mask away extra fluid.
-            symbol.blit(poseStack, symbol.width, symbol.height - renderSize, 18, 0);
+            symbol.blit(graphics, symbol.width, symbol.height - renderSize, 18, 0);
         }
         // Draw frame.
-        symbol.blit(poseStack, 0, 0);
+        symbol.blit(graphics, 0, 0);
         // Draw level marks.
-        symbol.blit(poseStack, 72, 0);
+        symbol.blit(graphics, 72, 0);
         // Update tooltip.
         symbol.tooltip = Component.literal(String.format("%s/%s of %s",
                 RenderHelper.formatValue((fluidStored / 1000.0), "B", true),

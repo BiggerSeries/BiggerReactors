@@ -2,13 +2,12 @@ package net.roguelogix.biggerreactors.multiblocks.reactor2.blocks;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.Material;
 import net.roguelogix.biggerreactors.multiblocks.reactor2.tiles.*;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
 public class ReactorBlocks {
     @RegisterBlock(name = "reactor2_casing", tileEntityClass = ReactorTile.class)
-    public static final ReactorBlock CASING = new ReactorBlock.Casing(BlockBehaviour.Properties.of(Material.METAL)) {
+    public static final ReactorBlock CASING = new ReactorBlock.Casing(BlockBehaviour.Properties.of()) {
         @Override
         public boolean isGoodForInterior() {
             return false;
@@ -26,7 +25,7 @@ public class ReactorBlocks {
     };
     
     @RegisterBlock(name = "reactor2_glass", tileEntityClass = ReactorTile.class)
-    public static final ReactorBlock GLASS = new ReactorBlock.Glass(BlockBehaviour.Properties.of(Material.GLASS).noOcclusion()) {
+    public static final ReactorBlock GLASS = new ReactorBlock.Glass(BlockBehaviour.Properties.of().noOcclusion()) {
         @Override
         public boolean isGoodForInterior() {
             return false;
@@ -44,7 +43,7 @@ public class ReactorBlocks {
     };
     
     @RegisterBlock(name = "reactor2_manifold", tileEntityClass = ReactorTile.class)
-    public static final ReactorBlock MANIFOLD = new ReactorBlock.Glass(BlockBehaviour.Properties.of(Material.GLASS).noOcclusion()) {
+    public static final ReactorBlock MANIFOLD = new ReactorBlock.Glass(BlockBehaviour.Properties.of().noOcclusion()) {
         @Override
         public boolean isGoodForInterior() {
             return true;
@@ -95,9 +94,9 @@ public class ReactorBlocks {
     };
     
     @RegisterBlock(name = "reactor2_terminal", tileEntityClass = ReactorTerminalTile.class)
-    public static final ReactorBlock TERMINAL = new ReactorBlock.Port(BlockBehaviour.Properties.of(Material.METAL), ReactorTiles.TERMINAL_SUPPLIER);
+    public static final ReactorBlock TERMINAL = new ReactorBlock.Port(BlockBehaviour.Properties.of(), ReactorTiles.TERMINAL_SUPPLIER);
     
     // TODO: this needs its own tile type
     @RegisterBlock(name = "reactor2_coolant_port", tileEntityClass = ReactorTile.class)
-    public static final ReactorBlock COOLANT_PORT = new ReactorBlock.DirectionalPort(BlockBehaviour.Properties.of(Material.METAL));
+    public static final ReactorBlock COOLANT_PORT = new ReactorBlock.DirectionalPort(BlockBehaviour.Properties.of());
 }

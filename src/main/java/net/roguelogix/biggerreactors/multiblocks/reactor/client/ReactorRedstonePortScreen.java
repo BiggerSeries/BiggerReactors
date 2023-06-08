@@ -1,6 +1,7 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -382,27 +383,27 @@ public class ReactorRedstonePortScreen extends PhosphophylliteScreen<ReactorReds
      * @param partialTicks Partial ticks.
      */
     @Override
-    public void render(@Nonnull PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-        super.render(poseStack, mouseX, mouseY, partialTicks);
+    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        super.render(graphics, mouseX, mouseY, partialTicks);
 
         // Render common text.
         if (this.reactorRedstonePortState.isInput()) {
             // Check what type of trigger is used (pulse or signal):
             if (this.reactorRedstonePortState.triggerPS == ReactorRedstonePortTriggers.PULSE_OR_ABOVE) {
                 // Text for on pulse:
-                this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.trigger_type_toggle.ps.on_pulse").getString(), this.getGuiLeft() + 63, this.getGuiTop() + 45, 4210752);
+                graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_redstone_port.trigger_type_toggle.ps.on_pulse").getString(), this.getGuiLeft() + 63, this.getGuiTop() + 45, 4210752);
             } else {
                 // Text for on signal:
-                this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.trigger_type_toggle.ps.on_signal").getString(), this.getGuiLeft() + 63, this.getGuiTop() + 45, 4210752);
+                graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_redstone_port.trigger_type_toggle.ps.on_signal").getString(), this.getGuiLeft() + 63, this.getGuiTop() + 45, 4210752);
             }
         } else {
             // Check what type of trigger is used (above or below):
             if (this.reactorRedstonePortState.triggerAB == ReactorRedstonePortTriggers.PULSE_OR_ABOVE) {
                 // Text for on above:
-                this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.trigger_type_toggle.ab.while_above").getString(), this.getGuiLeft() + 63, this.getGuiTop() + 45, 4210752);
+                graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_redstone_port.trigger_type_toggle.ab.while_above").getString(), this.getGuiLeft() + 63, this.getGuiTop() + 45, 4210752);
             } else {
                 // Text for on below:
-                this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.trigger_type_toggle.ab.while_below").getString(), this.getGuiLeft() + 63, this.getGuiTop() + 45, 4210752);
+                graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_redstone_port.trigger_type_toggle.ab.while_below").getString(), this.getGuiLeft() + 63, this.getGuiTop() + 45, 4210752);
             }
         }
 
@@ -415,40 +416,40 @@ public class ReactorRedstonePortScreen extends PhosphophylliteScreen<ReactorReds
                     // When set to pulse:
                     if (this.reactorRedstonePortState.triggerMode == 0) {
                         // Insert by (mode A/0):
-                        this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.trigger_mode_toggle.mode_a").getString(), this.getGuiLeft() + 80, this.getGuiTop() + 62, 4210752);
-                        this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.text_buffer_a.mode_a").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
+                        graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_redstone_port.trigger_mode_toggle.mode_a").getString(), this.getGuiLeft() + 80, this.getGuiTop() + 62, 4210752);
+                        graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_redstone_port.text_buffer_a.mode_a").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
                     } else if (this.reactorRedstonePortState.triggerMode == 1) {
                         // Retract by (mode B/1):
-                        this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.trigger_mode_toggle.mode_b").getString(), this.getGuiLeft() + 80, this.getGuiTop() + 62, 4210752);
-                        this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.text_buffer_a.mode_b").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
+                        graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_redstone_port.trigger_mode_toggle.mode_b").getString(), this.getGuiLeft() + 80, this.getGuiTop() + 62, 4210752);
+                        graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_redstone_port.text_buffer_a.mode_b").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
                     } else {
                         // Set to (mode C/2):
-                        this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.trigger_mode_toggle.mode_c").getString(), this.getGuiLeft() + 80, this.getGuiTop() + 62, 4210752);
-                        this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.text_buffer_a.mode_c").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
+                        graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_redstone_port.trigger_mode_toggle.mode_c").getString(), this.getGuiLeft() + 80, this.getGuiTop() + 62, 4210752);
+                        graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_redstone_port.text_buffer_a.mode_c").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
                     }
                 } else {
                     // When set to signal:
-                    this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.input_control_rod_insertion.while_on").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
-                    this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.input_control_rod_insertion.while_off").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 113, 4210752);
+                    graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_redstone_port.input_control_rod_insertion.while_on").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
+                    graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_redstone_port.input_control_rod_insertion.while_off").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 113, 4210752);
                 }
                 break;
             }
             case OUTPUT_FUEL_TEMP:
             case OUTPUT_CASING_TEMP: {
-                this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.text_buffer_a.trigger_at").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
-                this.getFont().draw(poseStack, "\u00B0C", this.getGuiLeft() + 155, this.getGuiTop() + 96, 4210752);
+                graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_redstone_port.text_buffer_a.trigger_at").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
+                graphics.drawString(this.getFont(), "\u00B0C", this.getGuiLeft() + 155, this.getGuiTop() + 96, 4210752);
                 break;
             }
             case OUTPUT_FUEL_ENRICHMENT:
             case OUTPUT_ENERGY_AMOUNT: {
-                this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.text_buffer_a.trigger_at").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
-                this.getFont().draw(poseStack, "%", this.getGuiLeft() + 155, this.getGuiTop() + 96, 4210752);
+                graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_redstone_port.text_buffer_a.trigger_at").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
+                graphics.drawString(this.getFont(), "%", this.getGuiLeft() + 155, this.getGuiTop() + 96, 4210752);
                 break;
             }
             case OUTPUT_FUEL_AMOUNT:
             case OUTPUT_WASTE_AMOUNT: {
-                this.getFont().draw(poseStack, Component.translatable("screen.biggerreactors.reactor_redstone_port.text_buffer_a.trigger_at").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
-                this.getFont().draw(poseStack, "mB", this.getGuiLeft() + 155, this.getGuiTop() + 96, 4210752);
+                graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_redstone_port.text_buffer_a.trigger_at").getString(), this.getGuiLeft() + 29, this.getGuiTop() + 82, 4210752);
+                graphics.drawString(this.getFont(), "mB", this.getGuiLeft() + 155, this.getGuiTop() + 96, 4210752);
                 break;
             }
         }

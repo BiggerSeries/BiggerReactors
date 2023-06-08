@@ -1,6 +1,7 @@
 package net.roguelogix.biggerreactors.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -66,7 +67,7 @@ public class Biselector<T extends AbstractContainerMenu> extends InteractiveElem
      * @param mouseY The y position of the mouse.
      */
     @Override
-    public void render(@Nonnull PoseStack poseStack, int mouseX, int mouseY) {
+    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY) {
         // Check conditions.
         if (this.renderEnable) {
             // Preserve the previously selected texture and bind the common texture.
@@ -75,42 +76,42 @@ public class Biselector<T extends AbstractContainerMenu> extends InteractiveElem
             // Draw the selector frame.
             if (this.state.getAsInt() == 0) {
                 // Position is 0 (left), draw left frame.
-                this.blit(poseStack, 0, 64);
+                this.blit(graphics, 0, 64);
                 // Check where the mouse is.
                 if (this.isMouseOver(mouseX, mouseY)) {
                     // Draw active/hovered button.
                     if(this.actionEnable) {
-                        this.blit(poseStack, this.x + 1, this.y + 1, leftColor.uA, leftColor.vA, 14, 12);
+                        this.blit(graphics, this.x + 1, this.y + 1, leftColor.uA, leftColor.vA, 14, 12);
                     } else {
-                        this.blit(poseStack, this.x + 1, this.y + 1, SelectorColors.DISABLED.uA, SelectorColors.DISABLED.vA, 14, 12);
+                        this.blit(graphics, this.x + 1, this.y + 1, SelectorColors.DISABLED.uA, SelectorColors.DISABLED.vA, 14, 12);
                     }
                 } else {
                     // Draw inactive/non-hovered button.
                     if(this.actionEnable) {
-                        this.blit(poseStack, this.x + 1, this.y + 1, leftColor.uI, leftColor.vI, 14, 12);
+                        this.blit(graphics, this.x + 1, this.y + 1, leftColor.uI, leftColor.vI, 14, 12);
                     } else {
-                        this.blit(poseStack, this.x + 1, this.y + 1, SelectorColors.DISABLED.uI, SelectorColors.DISABLED.vI, 14, 12);
+                        this.blit(graphics, this.x + 1, this.y + 1, SelectorColors.DISABLED.uI, SelectorColors.DISABLED.vI, 14, 12);
                     }
                 }
 
             } else {
                 // Position is 1 (right), draw right frame.
-                this.blit(poseStack, 0, 78);
+                this.blit(graphics, 0, 78);
                 // Check if the selector is enabled.
                 // Check where the mouse is.
                 if (this.isMouseOver(mouseX, mouseY)) {
                     // Draw active/hovered button.
                     if(this.actionEnable) {
-                        this.blit(poseStack, this.x + 16, this.y + 1, rightColor.uA, rightColor.vA, 14, 12);
+                        this.blit(graphics, this.x + 16, this.y + 1, rightColor.uA, rightColor.vA, 14, 12);
                     } else {
-                        this.blit(poseStack, this.x + 16, this.y + 1, SelectorColors.DISABLED.uA, rightColor.vA, 14, 12);
+                        this.blit(graphics, this.x + 16, this.y + 1, SelectorColors.DISABLED.uA, rightColor.vA, 14, 12);
                     }
                 } else {
                     // Draw inactive/non-hovered button.
                     if(this.actionEnable) {
-                        this.blit(poseStack, this.x + 16, this.y + 1, rightColor.uI, rightColor.vI, 14, 12);
+                        this.blit(graphics, this.x + 16, this.y + 1, rightColor.uI, rightColor.vI, 14, 12);
                     } else {
-                        this.blit(poseStack, this.x + 16, this.y + 1, SelectorColors.DISABLED.uI, rightColor.vI, 14, 12);
+                        this.blit(graphics, this.x + 16, this.y + 1, SelectorColors.DISABLED.uI, rightColor.vI, 14, 12);
                     }
                 }
             }
@@ -119,7 +120,7 @@ public class Biselector<T extends AbstractContainerMenu> extends InteractiveElem
             RenderHelper.bindTexture(preservedResource);
             // Trigger user-defined render logic.
             if (this.onRender != null) {
-                this.onRender.trigger(poseStack, mouseX, mouseY);
+                this.onRender.trigger(graphics, mouseX, mouseY);
             }
         }
     }

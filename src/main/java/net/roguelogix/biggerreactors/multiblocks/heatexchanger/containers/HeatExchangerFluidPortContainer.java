@@ -28,7 +28,7 @@ public class HeatExchangerFluidPortContainer extends AbstractContainerMenu imple
     public HeatExchangerFluidPortContainer(int windowId, BlockPos blockPos, Player player) {
         super(INSTANCE, windowId);
         this.player = player;
-        this.tileEntity = (HeatExchangerFluidPortTile) player.level.getBlockEntity(blockPos);
+        this.tileEntity = (HeatExchangerFluidPortTile) player.level().getBlockEntity(blockPos);
         this.getGuiPacket();
     }
     

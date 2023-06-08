@@ -29,7 +29,7 @@ public class ReactorTerminalContainer extends AbstractContainerMenu implements G
     public ReactorTerminalContainer(int windowId, BlockPos blockPos, Player player) {
         super(INSTANCE, windowId);
         this.player = player;
-        this.tileEntity = (ReactorTerminalTile) player.level.getBlockEntity(blockPos);
+        this.tileEntity = (ReactorTerminalTile) player.level().getBlockEntity(blockPos);
         this.getGuiPacket();
     }
 

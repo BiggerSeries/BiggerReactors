@@ -1,6 +1,7 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -88,22 +89,22 @@ public class ActiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
     private void initGauges() {
         // (Top) Coolant intake tank:
         RenderedElement<ReactorTerminalContainer> coolantIntakeTank = new RenderedElement<>(this, 151, 25, 18, 64, 0, 152, Component.empty());
-        coolantIntakeTank.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonRender.renderFluidGauge(mS,
+        coolantIntakeTank.onRender = (@Nonnull GuiGraphics graphics, int mX, int mY) -> CommonRender.renderFluidGauge(graphics,
                 coolantIntakeTank, reactorState.coolantStored, reactorState.coolantCapacity, coolantFluid);
         this.addScreenElement(coolantIntakeTank);
 
         // (Top) Hot exhaust tank:
         RenderedElement<ReactorTerminalContainer> hotExhaustTank = new RenderedElement<>(this, 173, 25, 18, 64, 0, 152, Component.empty());
-        hotExhaustTank.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> CommonRender.renderFluidGauge(mS,
+        hotExhaustTank.onRender = (@Nonnull GuiGraphics graphics, int mX, int mY) -> CommonRender.renderFluidGauge(graphics,
                 hotExhaustTank, reactorState.exhaustStored, reactorState.exhaustCapacity, exhaustFluid);
         this.addScreenElement(hotExhaustTank);
 
         // (Bottom) Progress bar:
         RenderedElement<ReactorTerminalContainer> progressBar = new RenderedElement<>(this, 173, 90, 18, 26, 90, 152, null);
-        progressBar.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> {
+        progressBar.onRender = (@Nonnull GuiGraphics graphics, int mX, int mY) -> {
             // Custom rendering.
             if (reactorState.coolantStored > 0) {
-                ActiveReactorTerminalScreen.renderProgressBar(mS, progressBar, reactorState.reactorActivity, screenWorkTime++, screenWorkTimeTotal, coolantFluid);
+                ActiveReactorTerminalScreen.renderProgressBar(graphics, progressBar, reactorState.reactorActivity, screenWorkTime++, screenWorkTimeTotal, coolantFluid);
                 if (screenWorkTime >= screenWorkTimeTotal) {
                     screenWorkTime = 0;
                 }
@@ -118,24 +119,30 @@ public class ActiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
     private void initSymbols() {
         // (Top) Coolant intake tank symbol:
         RenderedElement<ReactorTerminalContainer> coolantIntakeTankSymbol = new RenderedElement<>(this, 152, 6, 16, 16, 174, 152, Component.translatable("screen.biggerreactors.reactor_terminal.coolant_intake_tank.tooltip"));
-        coolantIntakeTankSymbol.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> RenderHelper.drawMaskedFluid(mS,
-                coolantIntakeTankSymbol.x, coolantIntakeTankSymbol.y, this.getBlitOffset(),
+        coolantIntakeTankSymbol.onRender = (@Nonnull GuiGraphics graphics, int mX, int mY) -> RenderHelper.drawMaskedFluid(graphics,
+                // TODO: blit offset again
+//                coolantIntakeTankSymbol.x, coolantIntakeTankSymbol.y, this.getBlitOffset(),
+                coolantIntakeTankSymbol.x, coolantIntakeTankSymbol.y, 0,
                 coolantIntakeTankSymbol.width, coolantIntakeTankSymbol.height,
                 coolantIntakeTankSymbol.u, coolantIntakeTankSymbol.v, coolantFluid);
         this.addScreenElement(coolantIntakeTankSymbol);
 
         // (Top) Hot exhaust tank symbol:
         RenderedElement<ReactorTerminalContainer> hotExhaustTankSymbol = new RenderedElement<>(this, 174, 6, 16, 16, 158, 152, Component.translatable("screen.biggerreactors.reactor_terminal.exhaust_tank.tooltip"));
-        hotExhaustTankSymbol.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> RenderHelper.drawMaskedFluid(mS,
-                hotExhaustTankSymbol.x, hotExhaustTankSymbol.y, this.getBlitOffset(),
+        hotExhaustTankSymbol.onRender = (@Nonnull GuiGraphics graphics, int mX, int mY) -> RenderHelper.drawMaskedFluid(graphics,
+                // TODO: blit offset again
+//                hotExhaustTankSymbol.x, hotExhaustTankSymbol.y, this.getBlitOffset(),
+                hotExhaustTankSymbol.x, hotExhaustTankSymbol.y, 0,
                 hotExhaustTankSymbol.width, hotExhaustTankSymbol.height,
                 hotExhaustTankSymbol.u, hotExhaustTankSymbol.v, exhaustFluid);
         this.addScreenElement(hotExhaustTankSymbol);
 
         // (Left) Exhaust generation rate symbol:
         RenderedElement<ReactorTerminalContainer> exhaustGenerationRateSymbol = new RenderedElement<>(this, 8, 38, 16, 16, 142, 152, Component.translatable("screen.biggerreactors.reactor_terminal.exhaust_generation_rate.tooltip"));
-        exhaustGenerationRateSymbol.onRender = (@Nonnull PoseStack mS, int mX, int mY) -> RenderHelper.drawMaskedFluid(mS,
-                exhaustGenerationRateSymbol.x, exhaustGenerationRateSymbol.y, this.getBlitOffset(),
+        exhaustGenerationRateSymbol.onRender = (@Nonnull GuiGraphics graphics, int mX, int mY) -> RenderHelper.drawMaskedFluid(graphics,
+                // TODO: blit offset again
+//                exhaustGenerationRateSymbol.x, exhaustGenerationRateSymbol.y, this.getBlitOffset(),
+                exhaustGenerationRateSymbol.x, exhaustGenerationRateSymbol.y, 0,
                 exhaustGenerationRateSymbol.width, exhaustGenerationRateSymbol.height,
                 exhaustGenerationRateSymbol.u, exhaustGenerationRateSymbol.v, exhaustFluid);
         this.addScreenElement(exhaustGenerationRateSymbol);
@@ -172,15 +179,15 @@ public class ActiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
      * @param partialTicks Partial ticks.
      */
     @Override
-    public void render(@Nonnull PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-        super.render(poseStack, mouseX, mouseY, partialTicks);
+    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        super.render(graphics, mouseX, mouseY, partialTicks);
 
         // Render the other text:
-        CommonReactorTerminalScreen.renderStatusText(poseStack, this, reactorState.reactorActivity, reactorState.doAutoEject,
+        CommonReactorTerminalScreen.renderStatusText(graphics, this, reactorState.reactorActivity, reactorState.doAutoEject,
                 reactorState.fuelHeatStored, reactorState.fuelUsageRate, reactorState.reactivityRate);
 
         // Render text for output rate:
-        this.getFont().draw(poseStack, RenderHelper.formatValue((reactorState.reactorOutputRate / 1000.0), "B/t"), this.getGuiLeft() + 27, this.getGuiTop() + 42, 4210752);
+        graphics.drawString(this.getFont(), RenderHelper.formatValue((reactorState.reactorOutputRate / 1000.0), "B/t"), this.getGuiLeft() + 27, this.getGuiTop() + 42, 4210752);
     }
 
     /**
@@ -192,7 +199,7 @@ public class ActiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
      * @param workTime        The time the machine has been working.
      * @param workTimeTotal   The total time needed for completion.
      */
-    private static void renderProgressBar(@Nonnull PoseStack poseStack, @Nonnull RenderedElement<ReactorTerminalContainer> symbol, ReactorActivity reactorActivity, int workTime, int workTimeTotal, Fluid coolant) {
+    private static void renderProgressBar(@Nonnull GuiGraphics graphics, @Nonnull RenderedElement<ReactorTerminalContainer> symbol, ReactorActivity reactorActivity, int workTime, int workTimeTotal, Fluid coolant) {
         // Check that the reactor is active. If not, reset work time.
         if (reactorActivity != ReactorActivity.ACTIVE) {
             workTime = 0;
@@ -203,13 +210,13 @@ public class ActiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
             // Calculate how much needs to be rendered.
             int renderSize = (int) ((symbol.height * workTime) / workTimeTotal);
             // Render progress.
-            symbol.blit(poseStack, symbol.u + 18, symbol.v);
+            symbol.blit(graphics, symbol.u + 18, symbol.v);
             // Render backdrop/mask away "not progress."
-            symbol.blit(poseStack, symbol.width, symbol.height - renderSize, symbol.u, symbol.v);
+            symbol.blit(graphics, symbol.width, symbol.height - renderSize, symbol.u, symbol.v);
         }
         // If work time exceeds work time total, then reset to 0.
 
         // Render the fluid "undertank."
-        RenderHelper.drawMaskedFluid(poseStack, symbol.x + 1, symbol.y + 26, 0, 16, 16, symbol.u + 36, symbol.v, coolant);
+        RenderHelper.drawMaskedFluid(graphics, symbol.x + 1, symbol.y + 26, 0, 16, 16, symbol.u + 36, symbol.v, coolant);
     }
 }

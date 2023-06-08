@@ -12,7 +12,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorActivity;
@@ -27,8 +26,8 @@ import static net.roguelogix.phosphophyllite.multiblock2.IAssemblyStateBlock.ASS
 @MethodsReturnNonnullByDefault
 public abstract class ReactorBaseBlock extends PhosphophylliteBlock implements IRectangularMultiblockBlock {
     
-    public static final Properties PROPERTIES_SOLID = Properties.of(Material.METAL).sound(SoundType.METAL).destroyTime(2).explosionResistance(10).isValidSpawn((a, b, c, d) -> false).requiresCorrectToolForDrops();
-    public static final Properties PROPERTIES_GLASS = Properties.of(Material.METAL).sound(SoundType.GLASS).noOcclusion().destroyTime(2).explosionResistance(2).isValidSpawn((a, b, c, d) -> false).requiresCorrectToolForDrops();
+    public static final Properties PROPERTIES_SOLID = Properties.of().sound(SoundType.METAL).destroyTime(2).explosionResistance(10).isValidSpawn((a, b, c, d) -> false).requiresCorrectToolForDrops();
+    public static final Properties PROPERTIES_GLASS = Properties.of().sound(SoundType.GLASS).noOcclusion().destroyTime(2).explosionResistance(2).isValidSpawn((a, b, c, d) -> false).requiresCorrectToolForDrops();
     
     public ReactorBaseBlock() {
         this(true);

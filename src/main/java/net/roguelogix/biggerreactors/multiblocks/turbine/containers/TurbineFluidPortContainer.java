@@ -28,7 +28,7 @@ public class TurbineFluidPortContainer extends AbstractContainerMenu implements 
     public TurbineFluidPortContainer(int windowId, BlockPos blockPos, Player player) {
         super(INSTANCE, windowId);
         this.player = player;
-        this.tileEntity = (TurbineFluidPortTile) player.level.getBlockEntity(blockPos);
+        this.tileEntity = (TurbineFluidPortTile) player.level().getBlockEntity(blockPos);
         this.getGuiPacket();
     }
 

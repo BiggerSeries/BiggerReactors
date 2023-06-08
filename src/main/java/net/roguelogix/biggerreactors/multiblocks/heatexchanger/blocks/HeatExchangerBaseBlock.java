@@ -11,7 +11,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import net.roguelogix.phosphophyllite.modular.block.PhosphophylliteBlock;
@@ -25,8 +24,8 @@ import static net.roguelogix.phosphophyllite.multiblock2.IAssemblyStateBlock.ASS
 @ParametersAreNonnullByDefault
 public abstract class HeatExchangerBaseBlock extends PhosphophylliteBlock implements IRectangularMultiblockBlock, EntityBlock {
     
-    public static final Properties PROPERTIES_SOLID = Properties.of(Material.METAL).sound(SoundType.METAL).destroyTime(2).explosionResistance(10).isValidSpawn((a, b, c, d) -> false);
-    public static final Properties PROPERTIES_GLASS = Properties.of(Material.GLASS).sound(SoundType.GLASS).noOcclusion().destroyTime(2).explosionResistance(2).isValidSpawn((a, b, c, d) -> false);
+    public static final Properties PROPERTIES_SOLID = Properties.of().sound(SoundType.METAL).destroyTime(2).explosionResistance(10).isValidSpawn((a, b, c, d) -> false);
+    public static final Properties PROPERTIES_GLASS = Properties.of().sound(SoundType.GLASS).noOcclusion().destroyTime(2).explosionResistance(2).isValidSpawn((a, b, c, d) -> false);
     
     public HeatExchangerBaseBlock() {
         super(PROPERTIES_SOLID);

@@ -19,8 +19,8 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineFluidPort;
@@ -56,7 +56,7 @@ public class TurbineFluidPortTile extends TurbineBaseTile implements IPhosphophy
     
     @Override
     public <T> LazyOptional<T> capability(Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+        if (cap == ForgeCapabilities.FLUID_HANDLER) {
             return LazyOptional.of(() -> this).cast();
         }
         if (cap == GAS_HANDLER_CAPABILITY) {
@@ -176,7 +176,7 @@ public class TurbineFluidPortTile extends TurbineBaseTile implements IPhosphophy
             return;
         }
         connected = false;
-        LazyOptional<IFluidHandler> waterOutput = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, waterOutputDirection.getOpposite());
+        LazyOptional<IFluidHandler> waterOutput = te.getCapability(ForgeCapabilities.FLUID_HANDLER, waterOutputDirection.getOpposite());
         if (waterOutput.isPresent()) {
             connected = true;
             handlerOptional = waterOutput;
