@@ -109,14 +109,14 @@ public class ReactorCoolantPortScreen extends PhosphophylliteScreen<ReactorCoola
         // Render text for input/output direction:
         if (reactorCoolantPortState.direction) {
             // Text for an inlet:
-            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_coolant_port.direction_toggle.input").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
+            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_coolant_port.direction_toggle.input").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752, false);
 
         } else {
             // Text for an outlet:
-            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_coolant_port.direction_toggle.output").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
+            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_coolant_port.direction_toggle.output").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752, false);
         }
 
         // Render text for manual tank eject:
-        graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_coolant_port.manual_dump").getString(), this.getGuiLeft() + 26, this.getGuiTop() + 38, 4210752);
+        graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_coolant_port.manual_dump").getString(), this.getGuiLeft() + 26, this.getGuiTop() + 38, 4210752, false);
     }
 }

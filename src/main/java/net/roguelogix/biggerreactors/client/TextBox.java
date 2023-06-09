@@ -7,6 +7,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -125,28 +126,27 @@ public class TextBox<T extends AbstractContainerMenu> extends InteractiveElement
 
             // Draw the text.
             // TODO: Allow for larger text entry by allowing text scrolling.
-            // TODO: no direct replacement found immediately
-//            this.fontRenderer.drawShadow(graphics, this.textBuffer.toString(), (this.x + 3), (this.y + 4), 16777215);
-
-            // Draw cursor and selection box.
-            renderCursor();
-            renderSelection();
-
-            // Reset color and restore the previously bound texture.
-            RenderHelper.clearRenderColor();
-            RenderHelper.bindTexture(preservedResource);
+            graphics.drawString(this.fontRenderer, this.textBuffer.toString(), (this.x + 3), (this.y + 4), 16777215, false);
 
             // Trigger user-defined render logic.
             if (this.onRender != null) {
                 this.onRender.trigger(graphics, mouseX, mouseY);
             }
+
+            // Draw cursor and selection box.
+            renderCursor(this.parent.getGuiLeft() + this.x, this.parent.getGuiTop() + this.y);
+            renderSelection(this.parent.getGuiLeft() + this.x, this.parent.getGuiTop() + this.y);
+
+            // Reset color and restore the previously bound texture.
+            RenderHelper.clearRenderColor();
+            RenderHelper.bindTexture(preservedResource);
         }
     }
 
     /**
      * Draw the cursor.
      */
-    private void renderCursor() {
+    private void renderCursor(int x, int y) {
         // Increment animation timer and reset if necessary.
         this.cursorAnimationTime++;
         if (cursorAnimationTime > cursorAnimationTimeTotal) {
@@ -159,9 +159,9 @@ public class TextBox<T extends AbstractContainerMenu> extends InteractiveElement
         }
 
         // Render position for the cursor.
-        int cursorRenderPos = (this.x + 2);
+        int cursorRenderPos = (x + 2);
         if(this.textBuffer.length() >= this.cursorPos) {
-            cursorRenderPos = (this.fontRenderer.width(this.textBuffer.substring(0, this.cursorPos)) + (this.x + 2));
+            cursorRenderPos = (this.fontRenderer.width(this.textBuffer.substring(0, this.cursorPos)) + (x + 2));
         }
 
         // Set up tessellator and buffer.
@@ -173,10 +173,10 @@ public class TextBox<T extends AbstractContainerMenu> extends InteractiveElement
 
         // Set positions.
         renderBuffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
-        renderBuffer.vertex((cursorRenderPos + 1), (this.y + 3), 0.0D).endVertex();
-        renderBuffer.vertex(cursorRenderPos, (this.y + 3), 0.0D).endVertex();
-        renderBuffer.vertex(cursorRenderPos, (this.y + 13), 0.0D).endVertex();
-        renderBuffer.vertex((cursorRenderPos + 1), (this.y + 13), 0.0D).endVertex();
+        renderBuffer.vertex((cursorRenderPos + 1), (y + 3), 0.0D).endVertex();
+        renderBuffer.vertex(cursorRenderPos, (y + 3), 0.0D).endVertex();
+        renderBuffer.vertex(cursorRenderPos, (y + 13), 0.0D).endVertex();
+        renderBuffer.vertex((cursorRenderPos + 1), (y + 13), 0.0D).endVertex();
 
         // Draw and reset.
         tessellator.end();
@@ -187,22 +187,22 @@ public class TextBox<T extends AbstractContainerMenu> extends InteractiveElement
     /**
      * Draw the highlight box on the selected text.
      */
-    private void renderSelection() {
+    private void renderSelection(int x, int y) {
         // Check conditions.
         if (!this.renderEnable || this.cursorPos == this.selectionPos) {
             return;
         }
 
         // Render position for the cursor.
-        int cursorRenderPos = (this.x + 2);
+        int cursorRenderPos = (x + 2);
         if(this.textBuffer.length() >= this.cursorPos) {
-            cursorRenderPos = (this.fontRenderer.width(this.textBuffer.substring(0, this.cursorPos)) + (this.x + 2));
+            cursorRenderPos = (this.fontRenderer.width(this.textBuffer.substring(0, this.cursorPos)) + (x + 2));
         }
 
         // Render position for the selection.
-        int selectionRenderPos = (this.x + 2);
+        int selectionRenderPos = (x + 2);
         if(this.textBuffer.length() >= this.selectionPos) {
-            selectionRenderPos = (this.fontRenderer.width(this.textBuffer.substring(0, this.selectionPos)) + (this.x + 2));
+            selectionRenderPos = (this.fontRenderer.width(this.textBuffer.substring(0, this.selectionPos)) + (x + 2));
         }
 
         // Left edge of the box.
@@ -220,10 +220,10 @@ public class TextBox<T extends AbstractContainerMenu> extends InteractiveElement
 
         // Set positions.
         renderBuffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
-        renderBuffer.vertex(rightRenderPos, (this.y + 2), 0.0D).endVertex();
-        renderBuffer.vertex(leftRenderPos, (this.y + 2), 0.0D).endVertex();
-        renderBuffer.vertex(leftRenderPos, (this.y + 14), 0.0D).endVertex();
-        renderBuffer.vertex(rightRenderPos, (this.y + 14), 0.0D).endVertex();
+        renderBuffer.vertex(rightRenderPos, (y + 2), 0.0D).endVertex();
+        renderBuffer.vertex(leftRenderPos, (y + 2), 0.0D).endVertex();
+        renderBuffer.vertex(leftRenderPos, (y + 14), 0.0D).endVertex();
+        renderBuffer.vertex(rightRenderPos, (y + 14), 0.0D).endVertex();
 
         // Draw and reset.
         tessellator.end();

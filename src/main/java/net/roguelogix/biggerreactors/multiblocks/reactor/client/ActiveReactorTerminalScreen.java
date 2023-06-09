@@ -120,8 +120,6 @@ public class ActiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
         // (Top) Coolant intake tank symbol:
         RenderedElement<ReactorTerminalContainer> coolantIntakeTankSymbol = new RenderedElement<>(this, 152, 6, 16, 16, 174, 152, Component.translatable("screen.biggerreactors.reactor_terminal.coolant_intake_tank.tooltip"));
         coolantIntakeTankSymbol.onRender = (@Nonnull GuiGraphics graphics, int mX, int mY) -> RenderHelper.drawMaskedFluid(graphics,
-                // TODO: blit offset again
-//                coolantIntakeTankSymbol.x, coolantIntakeTankSymbol.y, this.getBlitOffset(),
                 coolantIntakeTankSymbol.x, coolantIntakeTankSymbol.y, 0,
                 coolantIntakeTankSymbol.width, coolantIntakeTankSymbol.height,
                 coolantIntakeTankSymbol.u, coolantIntakeTankSymbol.v, coolantFluid);
@@ -130,8 +128,6 @@ public class ActiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
         // (Top) Hot exhaust tank symbol:
         RenderedElement<ReactorTerminalContainer> hotExhaustTankSymbol = new RenderedElement<>(this, 174, 6, 16, 16, 158, 152, Component.translatable("screen.biggerreactors.reactor_terminal.exhaust_tank.tooltip"));
         hotExhaustTankSymbol.onRender = (@Nonnull GuiGraphics graphics, int mX, int mY) -> RenderHelper.drawMaskedFluid(graphics,
-                // TODO: blit offset again
-//                hotExhaustTankSymbol.x, hotExhaustTankSymbol.y, this.getBlitOffset(),
                 hotExhaustTankSymbol.x, hotExhaustTankSymbol.y, 0,
                 hotExhaustTankSymbol.width, hotExhaustTankSymbol.height,
                 hotExhaustTankSymbol.u, hotExhaustTankSymbol.v, exhaustFluid);
@@ -140,8 +136,6 @@ public class ActiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
         // (Left) Exhaust generation rate symbol:
         RenderedElement<ReactorTerminalContainer> exhaustGenerationRateSymbol = new RenderedElement<>(this, 8, 38, 16, 16, 142, 152, Component.translatable("screen.biggerreactors.reactor_terminal.exhaust_generation_rate.tooltip"));
         exhaustGenerationRateSymbol.onRender = (@Nonnull GuiGraphics graphics, int mX, int mY) -> RenderHelper.drawMaskedFluid(graphics,
-                // TODO: blit offset again
-//                exhaustGenerationRateSymbol.x, exhaustGenerationRateSymbol.y, this.getBlitOffset(),
                 exhaustGenerationRateSymbol.x, exhaustGenerationRateSymbol.y, 0,
                 exhaustGenerationRateSymbol.width, exhaustGenerationRateSymbol.height,
                 exhaustGenerationRateSymbol.u, exhaustGenerationRateSymbol.v, exhaustFluid);
@@ -187,7 +181,7 @@ public class ActiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
                 reactorState.fuelHeatStored, reactorState.fuelUsageRate, reactorState.reactivityRate);
 
         // Render text for output rate:
-        graphics.drawString(this.getFont(), RenderHelper.formatValue((reactorState.reactorOutputRate / 1000.0), "B/t"), this.getGuiLeft() + 27, this.getGuiTop() + 42, 4210752);
+        graphics.drawString(this.getFont(), RenderHelper.formatValue((reactorState.reactorOutputRate / 1000.0), "B/t"), this.getGuiLeft() + 27, this.getGuiTop() + 42, 4210752, false);
     }
 
     /**

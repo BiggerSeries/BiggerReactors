@@ -80,11 +80,11 @@ public class TurbineFluidPortScreen extends PhosphophylliteScreen<TurbineFluidPo
         // Render text for input/output direction:
         if (turbineFluidPortState.direction) {
             // Text for an inlet:
-            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.turbine_fluid_port.direction_toggle.input").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
+            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.turbine_fluid_port.direction_toggle.input").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752, false);
 
         } else {
             // Text for an outlet:
-            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.turbine_fluid_port.direction_toggle.output").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
+            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.turbine_fluid_port.direction_toggle.output").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752, false);
         }
     }
 }

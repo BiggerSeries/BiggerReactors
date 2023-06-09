@@ -115,6 +115,6 @@ public class PassiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorT
                 reactorState.fuelHeatStored, reactorState.fuelUsageRate, reactorState.reactivityRate);
 
         // Render text for output rate:
-        graphics.drawString(this.getFont(), RenderHelper.formatValue(reactorState.reactorOutputRate, "RF/t"), this.getGuiLeft() + 27, this.getGuiTop() + 42, 4210752);
+        graphics.drawString(this.getFont(), RenderHelper.formatValue(reactorState.reactorOutputRate, "RF/t"), this.getGuiLeft() + 27, this.getGuiTop() + 42, 4210752, false);
     }
 }

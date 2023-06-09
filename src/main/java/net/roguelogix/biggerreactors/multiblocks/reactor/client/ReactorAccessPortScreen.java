@@ -123,11 +123,11 @@ public class ReactorAccessPortScreen extends PhosphophylliteScreen<ReactorAccess
         // Render text for input/output direction:
         if (reactorAccessPortState.direction) {
             // Text for an inlet:
-            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_access_port.direction_toggle.input").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
+            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_access_port.direction_toggle.input").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752, false);
 
         } else {
             // Text for an outlet:
-            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_access_port.direction_toggle.output").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752);
+            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_access_port.direction_toggle.output").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 22, 4210752, false);
         }
 
         // Check if we render output type:
@@ -135,18 +135,18 @@ public class ReactorAccessPortScreen extends PhosphophylliteScreen<ReactorAccess
             // Render text for fuel/waste mode:
             if (reactorAccessPortState.fuelMode) {
                 // Text for an inlet:
-                graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.fuel").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 38, 4210752);
+                graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.fuel").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 38, 4210752, false);
 
             } else {
                 // Text for an outlet:
-                graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.waste").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 38, 4210752);
+                graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.waste").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 38, 4210752, false);
             }
         } else {
             // Text for no output:
-            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.nope").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 38, 4210752);
+            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_access_port.fuel_mode_toggle.nope").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 38, 4210752, false);
         }
 
         // Render text for manual waste eject:
-        graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_access_port.manual_eject").getString(), this.getGuiLeft() + 26, this.getGuiTop() + 54, 4210752);
+        graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_access_port.manual_eject").getString(), this.getGuiLeft() + 26, this.getGuiTop() + 54, 4210752, false);
     }
 }

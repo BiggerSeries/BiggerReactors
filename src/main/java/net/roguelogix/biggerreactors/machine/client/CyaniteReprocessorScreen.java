@@ -91,8 +91,6 @@ public class CyaniteReprocessorScreen extends PhosphophylliteScreen<CyaniteRepro
         // (Right) Water tank symbol:
         RenderedElement<CyaniteReprocessorContainer> waterTankSymbol = new RenderedElement<>(this, 152, 6, 16, 16, 48, 175, Component.translatable("screen.biggerreactors.cyanite_reprocessor.water_tank.tooltip"));
         waterTankSymbol.onRender = (@Nonnull GuiGraphics graphics, int mX, int mY) -> RenderHelper.drawMaskedFluid(graphics,
-                // TODO: blit offset again
-//                waterTankSymbol.x, waterTankSymbol.y, this.getBlitOffset(),
                 waterTankSymbol.x, waterTankSymbol.y, 0,
                 waterTankSymbol.width, waterTankSymbol.height,
                 waterTankSymbol.u, waterTankSymbol.v, Fluids.WATER.getSource());

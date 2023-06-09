@@ -202,15 +202,15 @@ public class HeatExchangerTerminalScreen extends PhosphophylliteScreen<HeatExcha
         super.render(graphics, mouseX, mouseY, partialTicks);
 
         // Render text for condenser channel temperature:
-        graphics.drawString(this.getFont(), String.format("%.0f K", this.heatExchangerState.condenserChannelTemperature), this.getGuiLeft() + 27, this.getGuiTop() + 107, 4210752);
+        graphics.drawString(this.getFont(), String.format("%.0f K", this.heatExchangerState.condenserChannelTemperature), this.getGuiLeft() + 27, this.getGuiTop() + 107, 4210752, false);
 
         // Render text for evaporator channel temperature:
-        graphics.drawString(this.getFont(), String.format("%.0f K", this.heatExchangerState.evaporatorChannelTemperature), this.getGuiLeft() + 27, this.getGuiTop() + 127, 4210752);
+        graphics.drawString(this.getFont(), String.format("%.0f K", this.heatExchangerState.evaporatorChannelTemperature), this.getGuiLeft() + 27, this.getGuiTop() + 127, 4210752, false);
 
         // Render text for condenser channel flow rate:
-        graphics.drawString(this.getFont(), RenderHelper.formatValue((this.heatExchangerState.condenserChannelFlowRate / 1000.0), 1, "B/t", true), this.getGuiLeft() + 93, this.getGuiTop() + 107, 4210752);
+        graphics.drawString(this.getFont(), RenderHelper.formatValue((this.heatExchangerState.condenserChannelFlowRate / 1000.0), 1, "B/t", true), this.getGuiLeft() + 93, this.getGuiTop() + 107, 4210752, false);
 
         // Render text for evaporator channel flow rate:
-        graphics.drawString(this.getFont(), RenderHelper.formatValue((this.heatExchangerState.evaporatorChannelFlowRate / 1000.0), 1, "B/t", true), this.getGuiLeft() + 93, this.getGuiTop() + 127, 4210752);
+        graphics.drawString(this.getFont(), RenderHelper.formatValue((this.heatExchangerState.evaporatorChannelFlowRate / 1000.0), 1, "B/t", true), this.getGuiLeft() + 93, this.getGuiTop() + 127, 4210752, false);
     }
 }

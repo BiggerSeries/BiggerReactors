@@ -78,7 +78,7 @@ public class CommonRender {
             // Calculate how much needs to be rendered.
             int renderSize = (int) ((symbol.height * fluidStored) / fluidCapacity);
             // Render fluid. Offset by 1, otherwise it doesn't align with the frame.
-            RenderHelper.drawFluidGrid(graphics, symbol.x + 1, symbol.y, symbol.getBlitOffset(), 16, 16, fluid, 1, 4);
+            RenderHelper.drawFluidGrid(graphics, symbol.x + 1, symbol.y, 0, 16, 16, fluid, 1, 4);
             // Render backdrop/mask away extra fluid.
             symbol.blit(graphics, symbol.width, symbol.height - renderSize, 18, 0);
         }

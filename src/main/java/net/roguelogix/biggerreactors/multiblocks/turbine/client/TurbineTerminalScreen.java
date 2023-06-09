@@ -256,8 +256,6 @@ public class TurbineTerminalScreen extends PhosphophylliteScreen<TurbineTerminal
         // (Top) Intake tank symbol:
         RenderedElement<TurbineTerminalContainer> intakeTankSymbol = new RenderedElement<>(this, 108, 6, 16, 16, 54, 152, Component.translatable("screen.biggerreactors.turbine_terminal.intake_tank.tooltip"));
         intakeTankSymbol.onRender = (@Nonnull GuiGraphics graphics, int mX, int mY) -> RenderHelper.drawMaskedFluid(graphics,
-                // TODO: blit offset again
-//                intakeTankSymbol.x, intakeTankSymbol.y, this.getBlitOffset(),
                 intakeTankSymbol.x, intakeTankSymbol.y, 0,
                 intakeTankSymbol.width, intakeTankSymbol.height,
                 intakeTankSymbol.u, intakeTankSymbol.v, intakeFluid);
@@ -266,8 +264,6 @@ public class TurbineTerminalScreen extends PhosphophylliteScreen<TurbineTerminal
         // (Top) Exhaust tank symbol:
         RenderedElement<TurbineTerminalContainer> exhaustTankSymbol = new RenderedElement<>(this, 130, 6, 16, 16, 70, 152, Component.translatable("screen.biggerreactors.turbine_terminal.exhaust_tank.tooltip"));
         exhaustTankSymbol.onRender = (@Nonnull GuiGraphics graphics, int mX, int mY) -> RenderHelper.drawMaskedFluid(graphics,
-                // TODO: blit offset again
-//                exhaustTankSymbol.x, exhaustTankSymbol.y, this.getBlitOffset(),
                 exhaustTankSymbol.x, exhaustTankSymbol.y, 0,
                 exhaustTankSymbol.width, exhaustTankSymbol.height,
                 exhaustTankSymbol.u, exhaustTankSymbol.v, exhaustFluid);
@@ -330,46 +326,46 @@ public class TurbineTerminalScreen extends PhosphophylliteScreen<TurbineTerminal
         super.render(graphics, mouseX, mouseY, partialTicks);
 
         // Render text for turbine tachometer:
-        graphics.drawString(this.getFont(), RenderHelper.formatValue((this.turbineState.currentRPM), 1, "RPM", false), this.getGuiLeft() + 27, this.getGuiTop() + 23, 4210752);
+        graphics.drawString(this.getFont(), RenderHelper.formatValue((this.turbineState.currentRPM), 1, "RPM", false), this.getGuiLeft() + 27, this.getGuiTop() + 23, 4210752, false);
 
         // Render text for output rate:
-        graphics.drawString(this.getFont(), RenderHelper.formatValue(this.turbineState.turbineOutputRate, "RF/t"), this.getGuiLeft() + 27, this.getGuiTop() + 42, 4210752);
+        graphics.drawString(this.getFont(), RenderHelper.formatValue(this.turbineState.turbineOutputRate, "RF/t"), this.getGuiLeft() + 27, this.getGuiTop() + 42, 4210752, false);
 
         // Render text for flow rate:
-        graphics.drawString(this.getFont(), RenderHelper.formatValue((this.turbineState.flowRate / 1000.0), 1, "B/t", true), this.getGuiLeft() + 27, this.getGuiTop() + 61, 4210752);
+        graphics.drawString(this.getFont(), RenderHelper.formatValue((this.turbineState.flowRate / 1000.0), 1, "B/t", true), this.getGuiLeft() + 27, this.getGuiTop() + 61, 4210752, false);
 
         // Render text for reactivity rate (no fancy suffix for percentages):
-        graphics.drawString(this.getFont(), String.format("%.1f%%", (this.turbineState.efficiencyRate * 100.0)), this.getGuiLeft() + 27, this.getGuiTop() + 80, 4210752);
+        graphics.drawString(this.getFont(), String.format("%.1f%%", (this.turbineState.efficiencyRate * 100.0)), this.getGuiLeft() + 27, this.getGuiTop() + 80, 4210752, false);
 
         // Render text for online/offline status:
         if (this.turbineState.turbineActivity == TurbineActivity.ACTIVE) {
             // Text for an online turbine:
-            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.turbine_terminal.activity_toggle.online").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 102, 4210752);
+            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.turbine_terminal.activity_toggle.online").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 102, 4210752, false);
 
         } else {
             // Text for an offline turbine:
-            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.turbine_terminal.activity_toggle.offline").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 102, 4210752);
+            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.turbine_terminal.activity_toggle.offline").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 102, 4210752, false);
         }
 
         // Render text for coil engage status:
         if (this.turbineState.coilStatus) {
             // Text for engaged coils:
-            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.turbine_terminal.coil_engage_toggle.engaged").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 118, 4210752);
+            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.turbine_terminal.coil_engage_toggle.engaged").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 118, 4210752, false);
         } else {
             // Text for disengaged coils:
-            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.turbine_terminal.coil_engage_toggle.disengaged").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 118, 4210752);
+            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.turbine_terminal.coil_engage_toggle.disengaged").getString(), this.getGuiLeft() + 42, this.getGuiTop() + 118, 4210752, false);
         }
 
         // Render text for vent state:
         if (this.turbineState.ventState == VentState.OVERFLOW) {
             // Text for venting overflow exhaust:
-            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.turbine_terminal.vent_state_toggle.overflow").getString(), this.getGuiLeft() + 58, this.getGuiTop() + 134, 4210752);
+            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.turbine_terminal.vent_state_toggle.overflow").getString(), this.getGuiLeft() + 58, this.getGuiTop() + 134, 4210752, false);
         } else if (this.turbineState.ventState == VentState.ALL) {
             // Text for venting all exhaust:
-            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.turbine_terminal.vent_state_toggle.all").getString(), this.getGuiLeft() + 58, this.getGuiTop() + 134, 4210752);
+            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.turbine_terminal.vent_state_toggle.all").getString(), this.getGuiLeft() + 58, this.getGuiTop() + 134, 4210752, false);
         } else {
             // Text for venting no exhaust:
-            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.turbine_terminal.vent_state_toggle.closed").getString(), this.getGuiLeft() + 58, this.getGuiTop() + 134, 4210752);
+            graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.turbine_terminal.vent_state_toggle.closed").getString(), this.getGuiLeft() + 58, this.getGuiTop() + 134, 4210752, false);
         }
     }
 }

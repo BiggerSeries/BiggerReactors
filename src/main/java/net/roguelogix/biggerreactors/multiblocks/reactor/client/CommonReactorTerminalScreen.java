@@ -256,31 +256,31 @@ public class CommonReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
      */
     public static void renderStatusText(@Nonnull GuiGraphics graphics, @Nonnull PhosphophylliteScreen<ReactorTerminalContainer> screen, ReactorActivity reactorActivity, boolean doAutoEject, double heatStored, double fuelUsageRate, double reactivityRate) {
         // Render text for reactor temperature (no fancy suffix for Celsius):
-        graphics.drawString(screen.getFont(), String.format("%.0f K", heatStored), screen.getGuiLeft() + 27, screen.getGuiTop() + 23, 4210752);
+        graphics.drawString(screen.getFont(), String.format("%.0f K", heatStored), screen.getGuiLeft() + 27, screen.getGuiTop() + 23, 4210752, false);
 
         // Render text for fuel consumption rate:
-        graphics.drawString(screen.getFont(), RenderHelper.formatValue((fuelUsageRate / 1000.0), 3, "B/t", true), screen.getGuiLeft() + 27, screen.getGuiTop() + 61, 4210752);
+        graphics.drawString(screen.getFont(), RenderHelper.formatValue((fuelUsageRate / 1000.0), 3, "B/t", true), screen.getGuiLeft() + 27, screen.getGuiTop() + 61, 4210752, false);
 
         // Render text for reactivity rate (no fancy suffix for percentages):
-        graphics.drawString(screen.getFont(), String.format("%.1f%%", (reactivityRate * 100.0)), screen.getGuiLeft() + 27, screen.getGuiTop() + 80, 4210752);
+        graphics.drawString(screen.getFont(), String.format("%.1f%%", (reactivityRate * 100.0)), screen.getGuiLeft() + 27, screen.getGuiTop() + 80, 4210752, false);
 
         // Render text for online/offline status:
         if (reactorActivity == ReactorActivity.ACTIVE) {
             // Text for an online reactor:
-            graphics.drawString(screen.getFont(), Component.translatable("screen.biggerreactors.reactor_terminal.activity_toggle.online").getString(), screen.getGuiLeft() + 42, screen.getGuiTop() + 102, 4210752);
+            graphics.drawString(screen.getFont(), Component.translatable("screen.biggerreactors.reactor_terminal.activity_toggle.online").getString(), screen.getGuiLeft() + 42, screen.getGuiTop() + 102, 4210752, false);
 
         } else {
             // Text for an offline reactor:
-            graphics.drawString(screen.getFont(), Component.translatable("screen.biggerreactors.reactor_terminal.activity_toggle.offline").getString(), screen.getGuiLeft() + 42, screen.getGuiTop() + 102, 4210752);
+            graphics.drawString(screen.getFont(), Component.translatable("screen.biggerreactors.reactor_terminal.activity_toggle.offline").getString(), screen.getGuiLeft() + 42, screen.getGuiTop() + 102, 4210752, false);
         }
 
         // Render text for auto-eject status:
         if (doAutoEject) {
             // Text for enabled auto-ejection:
-            graphics.drawString(screen.getFont(), Component.translatable("screen.biggerreactors.reactor_terminal.auto_eject_toggle.enabled").getString(), screen.getGuiLeft() + 42, screen.getGuiTop() + 118, 4210752);
+            graphics.drawString(screen.getFont(), Component.translatable("screen.biggerreactors.reactor_terminal.auto_eject_toggle.enabled").getString(), screen.getGuiLeft() + 42, screen.getGuiTop() + 118, 4210752, false);
         } else {
             // Text for disabled auto-ejection:
-            graphics.drawString(screen.getFont(), Component.translatable("screen.biggerreactors.reactor_terminal.auto_eject_toggle.disabled").getString(), screen.getGuiLeft() + 42, screen.getGuiTop() + 118, 4210752);
+            graphics.drawString(screen.getFont(), Component.translatable("screen.biggerreactors.reactor_terminal.auto_eject_toggle.disabled").getString(), screen.getGuiLeft() + 42, screen.getGuiTop() + 118, 4210752, false);
         }
 
         // Render text for manual eject button:

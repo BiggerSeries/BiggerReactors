@@ -192,10 +192,10 @@ public class ReactorControlRodScreen extends PhosphophylliteScreen<ReactorContro
         super.render(graphics, mouseX, mouseY, partialTicks);
 
         // Render text for text box:
-        graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_control_rod.name").getString(), this.getGuiLeft() + 8, this.getGuiTop() + 17, 4210752);
+        graphics.drawString(this.getFont(), Component.translatable("screen.biggerreactors.reactor_control_rod.name").getString(), this.getGuiLeft() + 8, this.getGuiTop() + 17, 4210752, false);
 
         // Render text for insertion level:
-        graphics.drawString(this.getFont(), String.format("%.1f%%", reactorControlRodState.insertionLevel), this.getGuiLeft() + 76, this.getGuiTop() + 77, 4210752);
+        graphics.drawString(this.getFont(), String.format("%.1f%%", reactorControlRodState.insertionLevel), this.getGuiLeft() + 76, this.getGuiTop() + 77, 4210752, false);
     }
 
     /**
@@ -207,7 +207,7 @@ public class ReactorControlRodScreen extends PhosphophylliteScreen<ReactorContro
      */
     public static void renderInsertionLevel(@Nonnull GuiGraphics graphics, @Nonnull RenderedElement<ReactorControlRodContainer> symbol, double insertionLevel) {
         // Render fuel background. Offset by 1, otherwise it doesn't align with the frame.
-        RenderHelper.drawFluidGrid(graphics, symbol.x + 1, symbol.y, symbol.getBlitOffset(), 16, 16, LiquidUranium.INSTANCE.getSource(), 1, 4);
+        RenderHelper.drawFluidGrid(graphics, symbol.x + 1, symbol.y, 0, 16, 16, LiquidUranium.INSTANCE.getSource(), 1, 4);
 
         // If there's nothing inserted, there's no need to draw.
         if (insertionLevel > 0) {
