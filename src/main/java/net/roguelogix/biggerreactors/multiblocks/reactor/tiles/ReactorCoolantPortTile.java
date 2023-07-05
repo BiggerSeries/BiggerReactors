@@ -31,8 +31,8 @@ import net.roguelogix.phosphophyllite.fluids.FluidHandlerWrapper;
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
 import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.fluids.MekanismGasWrappers;
-import net.roguelogix.phosphophyllite.multiblock2.common.IEventMultiblock;
-import net.roguelogix.phosphophyllite.multiblock2.validated.IValidatedMultiblock;
+import net.roguelogix.phosphophyllite.multiblock.common.IEventMultiblock;
+import net.roguelogix.phosphophyllite.multiblock.validated.IValidatedMultiblock;
 import net.roguelogix.phosphophyllite.registry.RegisterTile;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 

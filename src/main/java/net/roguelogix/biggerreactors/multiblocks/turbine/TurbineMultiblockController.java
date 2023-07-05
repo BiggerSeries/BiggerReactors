@@ -23,12 +23,12 @@ import net.roguelogix.biggerreactors.multiblocks.turbine.tiles.*;
 import net.roguelogix.biggerreactors.registries.TurbineCoilRegistry;
 import net.roguelogix.phosphophyllite.Phosphophyllite;
 import net.roguelogix.phosphophyllite.debug.DebugInfo;
-import net.roguelogix.phosphophyllite.multiblock2.MultiblockController;
-import net.roguelogix.phosphophyllite.multiblock2.ValidationException;
-import net.roguelogix.phosphophyllite.multiblock2.common.IEventMultiblock;
-import net.roguelogix.phosphophyllite.multiblock2.common.IPersistentMultiblock;
-import net.roguelogix.phosphophyllite.multiblock2.rectangular.IRectangularMultiblock;
-import net.roguelogix.phosphophyllite.multiblock2.touching.ITouchingMultiblock;
+import net.roguelogix.phosphophyllite.multiblock.MultiblockController;
+import net.roguelogix.phosphophyllite.multiblock.ValidationException;
+import net.roguelogix.phosphophyllite.multiblock.common.IEventMultiblock;
+import net.roguelogix.phosphophyllite.multiblock.common.IPersistentMultiblock;
+import net.roguelogix.phosphophyllite.multiblock.rectangular.IRectangularMultiblock;
+import net.roguelogix.phosphophyllite.multiblock.touching.ITouchingMultiblock;
 import net.roguelogix.phosphophyllite.util.Util;
 import org.joml.*;
 

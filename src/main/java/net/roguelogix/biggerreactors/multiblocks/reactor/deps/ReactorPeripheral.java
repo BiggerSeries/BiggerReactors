@@ -10,8 +10,7 @@ import net.roguelogix.biggerreactors.multiblocks.reactor.ReactorMultiblockContro
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorSimulation;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorActivity;
 import net.roguelogix.biggerreactors.multiblocks.reactor.util.ReactorTransitionTank;
-import net.roguelogix.phosphophyllite.multiblock2.MultiblockController;
-import net.roguelogix.phosphophyllite.multiblock2.validated.IValidatedMultiblock;
+import net.roguelogix.phosphophyllite.multiblock.validated.IValidatedMultiblock;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

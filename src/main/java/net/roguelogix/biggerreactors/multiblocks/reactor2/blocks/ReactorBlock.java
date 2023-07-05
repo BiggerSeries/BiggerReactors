@@ -14,10 +14,10 @@ import net.roguelogix.biggerreactors.multiblocks.reactor2.tiles.ReactorFuelRodTi
 import net.roguelogix.biggerreactors.multiblocks.reactor2.tiles.ReactorTiles;
 import net.roguelogix.phosphophyllite.modular.block.IConnectedTexture;
 import net.roguelogix.phosphophyllite.modular.block.PhosphophylliteBlock;
-import net.roguelogix.phosphophyllite.multiblock2.IAssemblyStateBlock;
-import net.roguelogix.phosphophyllite.multiblock2.rectangular.IAxisPositionBlock;
-import net.roguelogix.phosphophyllite.multiblock2.rectangular.IFaceDirectionBlock;
-import net.roguelogix.phosphophyllite.multiblock2.rectangular.IRectangularMultiblockBlock;
+import net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock;
+import net.roguelogix.phosphophyllite.multiblock.rectangular.IAxisPositionBlock;
+import net.roguelogix.phosphophyllite.multiblock.rectangular.IFaceDirectionBlock;
+import net.roguelogix.phosphophyllite.multiblock.rectangular.IRectangularMultiblockBlock;
 import net.roguelogix.phosphophyllite.util.NonnullDefault;
 
 import static net.roguelogix.phosphophyllite.util.BlockStates.PORT_DIRECTION;

@@ -11,7 +11,7 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.util.LazyOptional;
 import net.roguelogix.biggerreactors.multiblocks.reactor.deps.ReactorPeripheral;
-import net.roguelogix.phosphophyllite.multiblock2.common.IEventMultiblock;
+import net.roguelogix.phosphophyllite.multiblock.common.IEventMultiblock;
 import net.roguelogix.phosphophyllite.registry.RegisterTile;
 
 import javax.annotation.Nullable;

@@ -2,7 +2,6 @@ package net.roguelogix.biggerreactors.multiblocks.reactor.blocks;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -13,14 +12,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import net.roguelogix.biggerreactors.multiblocks.reactor.tiles.ReactorCoolantPortTile;
-import net.roguelogix.phosphophyllite.multiblock2.IAssemblyStateBlock;
-import net.roguelogix.phosphophyllite.multiblock2.rectangular.IFaceDirectionBlock;
+import net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock;
+import net.roguelogix.phosphophyllite.multiblock.rectangular.IFaceDirectionBlock;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 import net.roguelogix.phosphophyllite.util.Util;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Set;
 
 import static net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorAccessPort.PortDirection.*;
 

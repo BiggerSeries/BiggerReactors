@@ -8,8 +8,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorBlade;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorShaft;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineShaftRotationState;
-import net.roguelogix.phosphophyllite.multiblock2.common.IEventMultiblock;
-import net.roguelogix.phosphophyllite.multiblock2.validated.IValidatedMultiblock;
+import net.roguelogix.phosphophyllite.multiblock.common.IEventMultiblock;
+import net.roguelogix.phosphophyllite.multiblock.validated.IValidatedMultiblock;
 import net.roguelogix.phosphophyllite.registry.RegisterTile;
 
 import javax.annotation.ParametersAreNonnullByDefault;

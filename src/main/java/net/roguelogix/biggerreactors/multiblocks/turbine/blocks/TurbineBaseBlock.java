@@ -17,12 +17,12 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.TurbineActivity;
 import net.roguelogix.phosphophyllite.modular.block.PhosphophylliteBlock;
-import net.roguelogix.phosphophyllite.multiblock2.IMultiblockBlock;
-import net.roguelogix.phosphophyllite.multiblock2.rectangular.IRectangularMultiblockBlock;
+import net.roguelogix.phosphophyllite.multiblock.IMultiblockBlock;
+import net.roguelogix.phosphophyllite.multiblock.rectangular.IRectangularMultiblockBlock;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import static net.roguelogix.phosphophyllite.multiblock2.IAssemblyStateBlock.ASSEMBLED;
+import static net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock.ASSEMBLED;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault

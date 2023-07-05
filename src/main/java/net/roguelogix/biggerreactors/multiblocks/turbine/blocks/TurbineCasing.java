@@ -5,8 +5,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.roguelogix.biggerreactors.multiblocks.turbine.tiles.TurbineCasingTile;
-import net.roguelogix.phosphophyllite.multiblock2.IAssemblyStateBlock;
-import net.roguelogix.phosphophyllite.multiblock2.rectangular.IAxisPositionBlock;
+import net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock;
+import net.roguelogix.phosphophyllite.multiblock.rectangular.IAxisPositionBlock;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
 import javax.annotation.Nullable;

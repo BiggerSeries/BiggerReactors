@@ -9,8 +9,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.multiblocks.turbine.TurbineMultiblockController;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.VentState;
-import net.roguelogix.phosphophyllite.multiblock2.MultiblockController;
-import net.roguelogix.phosphophyllite.multiblock2.validated.IValidatedMultiblock;
+import net.roguelogix.phosphophyllite.multiblock.validated.IValidatedMultiblock;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

@@ -9,7 +9,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.HeatExchangerMultiblockController;
 import net.roguelogix.biggerreactors.util.FluidTransitionTank;
-import net.roguelogix.phosphophyllite.multiblock2.validated.IValidatedMultiblock;
+import net.roguelogix.phosphophyllite.multiblock.validated.IValidatedMultiblock;
 import net.roguelogix.phosphophyllite.util.HeatBody;
 
 import javax.annotation.Nonnull;

@@ -13,8 +13,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorBlade;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorShaft;
 import net.roguelogix.phosphophyllite.Phosphophyllite;
-import net.roguelogix.phosphophyllite.multiblock2.common.IEventMultiblock;
-import net.roguelogix.phosphophyllite.multiblock2.validated.IValidatedMultiblock;
+import net.roguelogix.phosphophyllite.multiblock.common.IEventMultiblock;
+import net.roguelogix.phosphophyllite.multiblock.validated.IValidatedMultiblock;
 import net.roguelogix.phosphophyllite.registry.RegisterTile;
 import net.roguelogix.phosphophyllite.threading.Queues;
 import net.roguelogix.quartz.DrawBatch;
@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 
-import static net.roguelogix.phosphophyllite.multiblock2.IAssemblyStateBlock.ASSEMBLED;
+import static net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock.ASSEMBLED;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault

@@ -11,8 +11,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.roguelogix.biggerreactors.multiblocks.reactor.tiles.ReactorRedstonePortTile;
-import net.roguelogix.phosphophyllite.multiblock2.IAssemblyStateBlock;
-import net.roguelogix.phosphophyllite.multiblock2.rectangular.IFaceDirectionBlock;
+import net.roguelogix.phosphophyllite.multiblock.IAssemblyStateBlock;
+import net.roguelogix.phosphophyllite.multiblock.rectangular.IFaceDirectionBlock;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
 import javax.annotation.Nullable;
