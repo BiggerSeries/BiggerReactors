@@ -180,7 +180,7 @@ dependencies {
 //    runtimeOnly fg.deobf('curse.maven:ThermalDynamics-227443:4391160')
 
 //    runtimeOnly fg.deobf('curse.maven:Rubidium-574856:4448157')
-//    runtimeOnly fg.deobf('curse.maven:Oculus-581495:4299147')
+    runtimeOnly fg.deobf('curse.maven:Oculus-581495:4578741')
 
 //    runtimeOnly fg.deobf('curse.maven:WorldStripper-250603:3545856')
 //    runtimeOnly fg.deobf('curse.maven:CW-399558:3926815')
