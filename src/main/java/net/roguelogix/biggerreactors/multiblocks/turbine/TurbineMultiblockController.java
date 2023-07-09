@@ -371,10 +371,6 @@ public class TurbineMultiblockController extends MultiblockController<TurbineBas
     }
     
     protected void onValidationPassed() {
-        for (TurbinePowerTapTile powerPort : powerTaps) {
-            powerPort.updateOutputDirection();
-        }
-        
         Vector3i internalVolume = new Vector3i().add(max()).sub(min()).sub(1, 1, 1);
         
         

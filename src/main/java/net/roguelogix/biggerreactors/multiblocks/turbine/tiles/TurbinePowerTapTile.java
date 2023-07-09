@@ -3,18 +3,17 @@ package net.roguelogix.biggerreactors.multiblocks.turbine.tiles;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.roguelogix.phosphophyllite.energy.EnergyStorageWrapper;
-import net.roguelogix.phosphophyllite.energy.IPhosphophylliteEnergyStorage;
+import net.roguelogix.phosphophyllite.energy.IEnergyTile;
+import net.roguelogix.phosphophyllite.energy.IPhosphophylliteEnergyHandler;
+import net.roguelogix.phosphophyllite.multiblock.common.IEventMultiblock;
 import net.roguelogix.phosphophyllite.multiblock.validated.IValidatedMultiblock;
 import net.roguelogix.phosphophyllite.registry.RegisterTile;
+import net.roguelogix.phosphophyllite.util.BlockStates;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -23,7 +22,7 @@ import static net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbinePo
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class TurbinePowerTapTile extends TurbineBaseTile implements IPhosphophylliteEnergyStorage {
+public class TurbinePowerTapTile extends TurbineBaseTile implements IEnergyTile, IPhosphophylliteEnergyHandler, IEventMultiblock.AssemblyStateTransition {
     
     @RegisterTile("turbine_power_tap")
     public static final BlockEntityType.BlockEntitySupplier<TurbinePowerTapTile> SUPPLIER = new RegisterTile.Producer<>(TurbinePowerTapTile::new);
@@ -43,7 +42,13 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IPhosphophyl
     private boolean connected = false;
     Direction powerOutputDirection = null;
     
-    private static final EnergyStorage ENERGY_ZERO = new EnergyStorage(0);
+    LazyOptional<IPhosphophylliteEnergyHandler> thisCap = LazyOptional.of(() -> this);
+    
+    @Override
+    public LazyOptional<IPhosphophylliteEnergyHandler> energyHandler() {
+        return thisCap;
+    }
+    
     
     private void setConnected(boolean newState) {
         if (newState != connected) {
@@ -53,8 +58,8 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IPhosphophyl
         }
     }
     
-    LazyOptional<?> outputOptional = LazyOptional.empty();
-    IPhosphophylliteEnergyStorage output;
+    LazyOptional<IPhosphophylliteEnergyHandler> outputOptional = LazyOptional.empty();
+    IPhosphophylliteEnergyHandler output;
     
     public long distributePower(long toDistribute, boolean simulate) {
         if (outputOptional.isPresent()) {
@@ -97,35 +102,6 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IPhosphophyl
         return 0;
     }
     
-    @Override
-    public boolean canInsert() {
-        return false;
-    }
-    
-    @Override
-    public boolean canExtract() {
-        return true;
-    }
-    
-    @SuppressWarnings("DuplicatedCode")
-    public void updateOutputDirection() {
-        if (controller().assemblyState() == IValidatedMultiblock.AssemblyState.DISASSEMBLED) {
-            powerOutputDirection = null;
-        } else if (worldPosition.getX() == controller().min().x()) {
-            powerOutputDirection = Direction.WEST;
-        } else if (worldPosition.getX() == controller().max().x()) {
-            powerOutputDirection = Direction.EAST;
-        } else if (worldPosition.getY() == controller().min().y()) {
-            powerOutputDirection = Direction.DOWN;
-        } else if (worldPosition.getY() == controller().max().y()) {
-            powerOutputDirection = Direction.UP;
-        } else if (worldPosition.getZ() == controller().min().z()) {
-            powerOutputDirection = Direction.NORTH;
-        } else if (worldPosition.getZ() == controller().max().z()) {
-            powerOutputDirection = Direction.SOUTH;
-        }
-        neighborChanged();
-    }
     
     @SuppressWarnings("DuplicatedCode")
     public void neighborChanged() {
@@ -135,18 +111,23 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IPhosphophyl
             setConnected(false);
             return;
         }
-        assert level != null;
-        BlockEntity te = level.getBlockEntity(worldPosition.relative(powerOutputDirection));
-        if (te == null) {
-            setConnected(false);
-            return;
-        }
-        LazyOptional<IEnergyStorage> energyOptional = te.getCapability(ForgeCapabilities.ENERGY, powerOutputDirection.getOpposite());
-        setConnected(energyOptional.isPresent());
+        
+        final var outputCap = this.findEnergyCapability(powerOutputDirection);
+        setConnected(outputCap.isPresent());
         if (connected) {
-            outputOptional = energyOptional;
-            output = EnergyStorageWrapper.wrap(energyOptional.orElse(ENERGY_ZERO));
+            outputOptional = outputCap;
+            //noinspection DataFlowIssue
+            output = outputOptional.orElse(null);
         }
     }
     
+    @Override
+    public void onAssemblyStateTransition(IValidatedMultiblock.AssemblyState oldState, IValidatedMultiblock.AssemblyState newState) {
+        if (newState == IValidatedMultiblock.AssemblyState.ASSEMBLED) {
+            powerOutputDirection = getBlockState().getValue(BlockStates.FACING);
+        } else {
+            powerOutputDirection = null;
+        }
+        neighborChanged();
+    }
 }
