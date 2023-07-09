@@ -1,6 +1,5 @@
 package net.roguelogix.biggerreactors.client.deps.jei.classic.reactor;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -10,6 +9,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -58,7 +58,7 @@ public class BlockModeratorCategory implements IRecipeCategory<BlockModeratorCat
     }
     
     @Override
-    public void draw(Recipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
+    public void draw(Recipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
         Minecraft mc = Minecraft.getInstance();
         Component[] info = {
                 Component.translatable("jei.biggerreactors.classic.reactor_moderator_moderation", recipe.getModeratorProperties().moderation()),
@@ -66,11 +66,10 @@ public class BlockModeratorCategory implements IRecipeCategory<BlockModeratorCat
                 Component.translatable("jei.biggerreactors.classic.reactor_moderator_conductivity", recipe.getModeratorProperties().heatConductivity()),
                 Component.translatable("jei.biggerreactors.classic.reactor_moderator_efficiency", recipe.getModeratorProperties().heatEfficiency())
         };
-        // TODO: updated JEI API should move to GuiGraphics
-//        mc.font.draw(poseStack,  info[0], 80 - mc.font.width(info[0]) / 2F, 0, Color.BLACK.getRGB());
-//        mc.font.draw(poseStack,  info[1], 80 - mc.font.width(info[1]) / 2F, 12, Color.BLACK.getRGB());
-//        mc.font.draw(poseStack,  info[2], 80 - mc.font.width(info[2]) / 2F, 24, Color.BLACK.getRGB());
-//        mc.font.draw(poseStack,  info[3], 80 - mc.font.width(info[3]) / 2F, 36, Color.BLACK.getRGB());
+        guiGraphics.drawString(mc.font,  info[0], 80 - mc.font.width(info[0]) / 2, 0, Color.BLACK.getRGB(), false);
+        guiGraphics.drawString(mc.font,  info[1], 80 - mc.font.width(info[1]) / 2, 12, Color.BLACK.getRGB(), false);
+        guiGraphics.drawString(mc.font,  info[2], 80 - mc.font.width(info[2]) / 2, 24, Color.BLACK.getRGB(), false);
+        guiGraphics.drawString(mc.font,  info[3], 80 - mc.font.width(info[3]) / 2, 36, Color.BLACK.getRGB(), false);
     }
 
     public static class Recipe {
