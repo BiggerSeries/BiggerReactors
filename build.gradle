@@ -150,6 +150,10 @@ repositories {
     }
     maven {
         url 'https://squiddev.cc/maven/'
+        content {
+            includeGroup("cc.tweaked")
+            includeModule("org.squiddev", "Cobalt")
+        }
     }
 }
 
@@ -162,8 +166,9 @@ dependencies {
     compileOnly project(':Phosphophyllite')
     compileOnly project(':Quartz')
 
-    compileOnly fg.deobf("org.squiddev:cc-tweaked-${cc_mc_version}:${cc_version}")
-//    runtimeOnly fg.deobf("org.squiddev:cc-tweaked-${cc_mc_version}:${cc_version}")
+    compileOnly("cc.tweaked:cc-tweaked-${cc_mc_version}-core-api:${cc_version}")
+    compileOnly(fg.deobf("cc.tweaked:cc-tweaked-${cc_mc_version}-forge-api:${cc_version}"))
+    runtimeOnly(fg.deobf("cc.tweaked:cc-tweaked-${cc_mc_version}-forge:${cc_version}"))
 
     compileOnly(fg.deobf("mezz.jei:jei-${jei_mc_version}-common-api:${jei_version}"))
     compileOnly(fg.deobf("mezz.jei:jei-${jei_mc_version}-forge-api:${jei_version}"))
