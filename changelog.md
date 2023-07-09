@@ -1,3 +1,22 @@
+# 1.20.1-0.6.0-beta.10
+
+## Reactor
+ - ported to new multiblock system
+ - power tap energy handling updated
+ - fix manifolds being ignored in a passive reactor
+
+## Turbine
+ - ported to new multiblock system
+ - power tap energy handling updated
+ - fix coil/blade validation bug
+
+## Heat Exchanger
+ - ported to new multiblock system
+ - channels rendered with quartz, reduces hitches when placing/removing blocks in renderchunks containing lots of them
+
+## Misc
+ - JEI integration is back, and works in multiplayer too 
+
 # 1.19.2-0.6.0-beta.6.1
 
 ## Reactor
