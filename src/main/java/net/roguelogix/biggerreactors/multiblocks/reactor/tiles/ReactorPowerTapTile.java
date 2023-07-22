@@ -31,14 +31,6 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IEnergyTile,
         super(TYPE, pos, state);
     }
     
-    @Override
-    public <T> LazyOptional<T> capability(Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY) {
-            return LazyOptional.of(() -> this).cast();
-        }
-        return super.capability(cap, side);
-    }
-    
     private boolean connected = false;
     Direction powerOutputDirection = null;
     
@@ -56,7 +48,6 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IEnergyTile,
             level.setBlock(worldPosition, getBlockState().setValue(CONNECTION_STATE_ENUM_PROPERTY, connected ? CONNECTED : DISCONNECTED), 3);
         }
     }
-    
     
     LazyOptional<IPhosphophylliteEnergyHandler> outputOptional = LazyOptional.empty();
     IPhosphophylliteEnergyHandler output;

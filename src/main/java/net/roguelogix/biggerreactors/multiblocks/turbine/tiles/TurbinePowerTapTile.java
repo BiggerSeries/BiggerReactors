@@ -31,14 +31,6 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IEnergyTile,
         super(TYPE, pos, state);
     }
     
-    @Override
-    public <T> LazyOptional<T> capability(Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY) {
-            return LazyOptional.of(() -> this).cast();
-        }
-        return super.capability(cap, side);
-    }
-    
     private boolean connected = false;
     Direction powerOutputDirection = null;
     
@@ -48,7 +40,6 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IEnergyTile,
     public LazyOptional<IPhosphophylliteEnergyHandler> energyHandler() {
         return thisCap;
     }
-    
     
     private void setConnected(boolean newState) {
         if (newState != connected) {
