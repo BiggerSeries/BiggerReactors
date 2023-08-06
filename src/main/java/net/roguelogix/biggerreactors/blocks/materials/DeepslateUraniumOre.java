@@ -2,6 +2,7 @@ package net.roguelogix.biggerreactors.blocks.materials;
 
 import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
 
@@ -12,7 +13,7 @@ public class DeepslateUraniumOre extends DropExperienceBlock {
 
     public DeepslateUraniumOre() {
         super(
-                Properties.of()
+                Properties.of(Material.METAL)
                         .sound(SoundType.DEEPSLATE)
                         .explosionResistance(3.0F)
                         .destroyTime(4.5f)

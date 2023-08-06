@@ -2,6 +2,7 @@ package net.roguelogix.biggerreactors.blocks.materials;
 
 import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
 public class UraniumOre extends DropExperienceBlock {
