@@ -1,0 +1,8 @@
+{
+  "type": "forge:add_features",
+  "biomes": "#is_overworld",
+  "step": "underground_ores",
+  "features": [
+    "biggerreactors:uranium_ore"
+  ]
+}

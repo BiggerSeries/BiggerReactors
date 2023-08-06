@@ -15,11 +15,13 @@ public class MaterialBlock extends Block {
     public static final MaterialBlock LUDICRITE = new MaterialBlock();
     @RegisterBlock(name = "uranium_block")
     public static final MaterialBlock URANIUM = new MaterialBlock();
+    @RegisterBlock(name = "raw_uranium_block")
+    public static final MaterialBlock RAW_URANIUM = new MaterialBlock();
     
     public MaterialBlock() {
         super(Properties.of()
                 .sound(SoundType.STONE)
-                .explosionResistance(1.0F)
+                .explosionResistance(3.0F)
                 .destroyTime(2.0f)
                 .requiresCorrectToolForDrops());
     }

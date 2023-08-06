@@ -7,7 +7,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "biggerreactors:uranium_ore",
+          "name": "biggerreactors:deepslate_uranium_ore",
           "conditions": [
             {
               "condition": "minecraft:match_tool",

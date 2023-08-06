@@ -4,17 +4,18 @@ import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
 
-public class UraniumOre extends DropExperienceBlock {
 
-    @RegisterBlock(name = "uranium_ore")
-    public static final UraniumOre INSTANCE = new UraniumOre();
+public class DeepslateUraniumOre extends DropExperienceBlock {
 
-    public UraniumOre() {
+    @RegisterBlock(name = "deepslate_uranium_ore")
+    public static final DeepslateUraniumOre INSTANCE = new DeepslateUraniumOre();
+
+    public DeepslateUraniumOre() {
         super(
                 Properties.of()
-                        .sound(SoundType.STONE)
+                        .sound(SoundType.DEEPSLATE)
                         .explosionResistance(3.0F)
-                        .destroyTime(3.0f)
+                        .destroyTime(4.5f)
                         .requiresCorrectToolForDrops()
         );
     }
