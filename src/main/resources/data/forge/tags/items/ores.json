@@ -1,6 +1,7 @@
 {
     "replace": false,
     "values": [
-        "biggerreactors:uranium_ore"
+        "biggerreactors:uranium_ore",
+        "biggerreactors:deepslate_uranium_ore"
     ]
 }

@@ -1,0 +1,11 @@
+{
+    "type": "minecraft:smelting",
+    "ingredient": [
+        {
+            "item": "biggerreactors:deepslate_uranium_ore"
+        }
+    ],
+    "result": "biggerreactors:uranium_ingot",
+    "experience": 0.35,
+    "cookingtime": 200
+}
