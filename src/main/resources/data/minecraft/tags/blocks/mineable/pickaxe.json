@@ -30,9 +30,11 @@
 		"biggerreactors:heat_exchanger_casing",
 		"biggerreactors:cyanite_reprocessor",
 		"biggerreactors:uranium_block",
+		"biggerreactors:raw_uranium_block",
 		"biggerreactors:ludicrite_block",
 		"biggerreactors:blutonium_block",
 		"biggerreactors:uranium_ore",
+		"biggerreactors:deepslate_uranium_ore",
 		"biggerreactors:cyanite_block",
 		"biggerreactors:graphite_block"
 	]
