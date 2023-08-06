@@ -30,27 +30,6 @@ public class Config {
         EnableJEIIntegration = true;
     }
     
-    public static final class WorldGen {
-        @ConfigValue(range = "[1,)")
-        public final int UraniumOreMaxClustersPerChunk;
-        @ConfigValue(range = "[1,)")
-        public final int UraniumMaxOrePerCluster;
-        @ConfigValue(range = "[5,)")
-        public final int UraniumOreMaxSpawnY;
-        @ConfigValue
-        public final boolean EnableUraniumGeneration;
-        
-        {
-            UraniumOreMaxClustersPerChunk = 5;
-            UraniumMaxOrePerCluster = 6;
-            UraniumOreMaxSpawnY = 50;
-            EnableUraniumGeneration = true;
-        }
-    }
-    
-    @ConfigValue
-    public final WorldGen WorldGen = new WorldGen();
-    
     public static final class Reactor {
         @ConfigValue(range = "[3,)")
         public final int MaxLength;
