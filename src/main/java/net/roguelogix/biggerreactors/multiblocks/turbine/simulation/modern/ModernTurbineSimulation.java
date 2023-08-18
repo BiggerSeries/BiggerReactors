@@ -12,41 +12,41 @@ import net.roguelogix.phosphophyllite.repack.org.joml.Vector4i;
 import java.util.ArrayList;
 
 public class ModernTurbineSimulation implements ITurbineSimulation {
-    
+
     private int x, y, z;
-    
+
     private boolean active = false;
-    
+
     private long coilSize;
     private double inductionEfficiency;
     private double inductorDragCoefficient;
     private double inductionEnergyExponentBonus;
-    
+
     private double rotorCapacityPerRPM;
-    
+
     private long maxFlowRate = -1;
     private long maxMaxFlowRate = 0;
-    
+
     private int rotorShafts;
     private double rotorAxialMass;
     private double rotorMass;
     private double linearBladeMetersPerRevolution = 0;
-    
+
     private VentState ventState = VentState.OVERFLOW;
     private boolean coilEngaged = true;
-    
+
     private double rotorEnergy = 0;
     private final FluidTank fluidTank = new FluidTank();
     private final Battery battery = new Battery();
-    
+
     private double energyGeneratedLastTick;
     private double rotorEfficiencyLastTick;
-    
+
     @Override
     public void reset() {
         rotorEnergy = 0;
     }
-    
+
     @Override
     public void resize(int x, int y, int z) {
         this.x = x;
@@ -58,7 +58,7 @@ public class ModernTurbineSimulation implements ITurbineSimulation {
         inductionEnergyExponentBonus = 0;
         maxMaxFlowRate = (((long) x * z) - 1 /* bearing*/) * Config.CONFIG.Turbine.FlowRatePerBlock;
     }
-    
+
     @Override
     public void setRotorConfiguration(ArrayList<Vector4i> rotorConfiguration) {
         rotorMass = 0;
@@ -70,54 +70,54 @@ public class ModernTurbineSimulation implements ITurbineSimulation {
             linearBladeMetersPerRevolution += rangeFromZeroSum(vector4i.w);
             rotorMass += vector4i.x + vector4i.y + vector4i.z + vector4i.w;
         }
-        
+
         rotorCapacityPerRPM = linearBladeMetersPerRevolution * Config.CONFIG.Turbine.FluidPerBladeLinerKilometre;
         rotorCapacityPerRPM /= 1000; // metre / kilometre
-        
+
         rotorShafts = rotorConfiguration.size();
-        
+
         rotorAxialMass = rotorShafts * Config.CONFIG.Turbine.RotorAxialMassPerShaft;
         rotorAxialMass += linearBladeMetersPerRevolution * Config.CONFIG.Turbine.RotorAxialMassPerBlade;
-        
+
         rotorCapacityPerRPM *= 2 * Math.PI;
-        
+
         rotorMass *= Config.CONFIG.Turbine.RotorAxialMassPerBlade;
         rotorMass += (double) rotorShafts * Config.CONFIG.Turbine.RotorAxialMassPerShaft;
-        
+
         if (maxFlowRate == -1) {
             setNominalFlowRate((long) (rotorCapacityPerRPM * 1800));
         }
     }
-    
+
     private long rangeFromZeroSum(long upper) {
         return ((1 + upper) * upper) / 2;
     }
-    
+
     @Override
     public void setCoilData(int x, int y, TurbineCoilRegistry.CoilData coilData) {
         inductionEfficiency += coilData.efficiency;
         inductionEnergyExponentBonus += coilData.bonus;
-        
+
         double distance = Math.max(Math.abs(x), Math.abs(y));
-        
+
         inductorDragCoefficient += coilData.extractionRate * layerMultiplier(distance);
-        
+
         coilSize++;
     }
-    
+
     private double layerMultiplier(double distance) {
         if (distance < 1) {
             return 1;
         }
         return 2 / (distance + 1);
     }
-    
+
     @Override
     public void updateInternalValues() {
         inductorDragCoefficient *= Config.CONFIG.Turbine.CoilDragMultiplier;
-        
+
         battery.setCapacity((coilSize + 1) * Config.CONFIG.Turbine.BatterySizePerCoilBlock);
-        
+
         if (coilSize <= 0) {
             inductionEfficiency = 0;
             inductorDragCoefficient = 0;
@@ -128,101 +128,103 @@ public class ModernTurbineSimulation implements ITurbineSimulation {
             inductionEnergyExponentBonus = Math.max(1f, (inductionEnergyExponentBonus / coilSize));
             inductorDragCoefficient = (inductorDragCoefficient / coilSize);
         }
-        
+
         fluidTank.perSideCapacity = (((long) x * y * z) - ((long) rotorShafts + coilSize)) * Config.CONFIG.Turbine.TankVolumePerBlock;
     }
-    
+
     @Override
     public void setVentState(VentState state) {
         ventState = state;
     }
-    
+
     @Override
     public VentState ventState() {
         return ventState;
     }
-    
+
     @Override
     public double RPM() {
         return rotorEnergy / rotorAxialMass;
     }
-    
+
     @Override
     public double bladeEfficiencyLastTick() {
         return rotorEfficiencyLastTick;
     }
-    
+
     @Override
     public long flowLastTick() {
         return fluidTank.transitionedLastTick();
     }
-    
+
     @Override
     public long nominalFlowRate() {
         return maxFlowRate;
     }
-    
+
     @Override
     public void setNominalFlowRate(long flowRate) {
         maxFlowRate = flowRate;
         maxFlowRate = Math.min(maxMaxFlowRate, Math.max(0, flowRate));
     }
-    
+
     @Override
     public long flowRateLimit() {
         return maxMaxFlowRate;
     }
-    
+
     @Override
     public ITurbineBattery battery() {
         return battery;
     }
-    
+
     @Override
     public ITurbineFluidTank fluidTank() {
         return fluidTank;
     }
-    
+
     @Override
     public void tick() {
         double rpm = RPM();
-        
+        double turbineEnergyMultiplier = 1;
+
         if (active) {
             double flowRate = fluidTank.flow(maxFlowRate, ventState != VentState.CLOSED);
             double effectiveFlowRate = flowRate;
-            
+
             // need something to get it started, also, divide by zero errors
             double rotorCapacity = rotorCapacityPerRPM * Math.max(100, rpm);
-            
+
             if (flowRate > rotorCapacity) {
                 double excessFLow = flowRate - rotorCapacity;
                 double excessEfficiency = rotorCapacity / flowRate;
                 effectiveFlowRate = rotorCapacity + excessFLow * excessEfficiency;
             }
-            
+
             if (flowRate != 0) {
                 rotorEfficiencyLastTick = effectiveFlowRate / flowRate;
             } else {
                 rotorEfficiencyLastTick = 0;
             }
-            
+
             if (effectiveFlowRate > 0) {
+                turbineEnergyMultiplier = fluidTank.activeTransition().turbineEnergyMultiplier;
                 rotorEnergy += fluidTank.activeTransition().latentHeat * effectiveFlowRate * fluidTank.activeTransition().turbineMultiplier;
             }
-            
+
         } else {
             fluidTank.flow(0, ventState != VentState.CLOSED);
             rotorEfficiencyLastTick = 0;
         }
-        
+
         if (ventState == VentState.ALL) {
             fluidTank.dumpLiquid();
         }
-        
+
         if (coilEngaged) {
             double inductionTorque = rpm * inductorDragCoefficient * coilSize;
             double energyToGenerate = Math.pow(inductionTorque, inductionEnergyExponentBonus) * inductionEfficiency;
-            
+
             // TODO: 8/7/20 make RPM range configurable, its not exactly the easiest thing to do
             double efficiency = 0.25 * Math.cos(rpm / (45.5 * Math.PI)) + 0.75;
             // yes this is slightly different, this matches what the equation actually looks like better
@@ -230,7 +232,7 @@ public class ModernTurbineSimulation implements ITurbineSimulation {
             if (rpm < 450) {
                 efficiency = Math.min(0.5, efficiency);
             }
-            
+
             // oh noes, there is a cap now, *no over speeding your fucking turbines*
             if (rpm > 2245) {
                 efficiency = -rpm / 4490;
@@ -239,68 +241,69 @@ public class ModernTurbineSimulation implements ITurbineSimulation {
             if (efficiency < 0) {
                 efficiency = 0;
             }
-            
+
             energyToGenerate *= efficiency;
-            
+            energyToGenerate *= turbineEnergyMultiplier;
+
             energyGeneratedLastTick = energyToGenerate;
-            
+
             if (energyToGenerate > 1) {
                 battery.generate((long) energyToGenerate);
             }
-            
+
             rotorEnergy -= inductionTorque;
         } else {
             energyGeneratedLastTick = 0;
         }
-        
+
         rotorEnergy -= rotorMass * Math.pow(rpm * Config.CONFIG.Turbine.FrictionDragMultiplier, 2); // yes, rpm squared, thats how drag works, bitch ain't it?
         rotorEnergy -= linearBladeMetersPerRevolution * Math.pow(rpm * Config.CONFIG.Turbine.AerodynamicDragMultiplier, 2);
         if (rotorEnergy < 0) {
             rotorEnergy = 0;
         }
-        
+
     }
-    
+
     @Override
     public void setActive(boolean active) {
         this.active = active;
     }
-    
+
     @Override
     public boolean active() {
         return active;
     }
-    
+
     @Override
     public void setCoilEngaged(boolean engaged) {
         coilEngaged = engaged;
     }
-    
+
     @Override
     public boolean coilEngaged() {
         return coilEngaged;
     }
-    
+
     @Override
     public long FEGeneratedLastTick() {
         return (long) energyGeneratedLastTick;
     }
-    
+
     @Override
     public long bladeSurfaceArea() {
         return 0;
     }
-    
+
     @Override
     public double rotorMass() {
         return rotorAxialMass;
     }
-    
+
     @Override
     public String debugString() {
         return "";
     }
-    
+
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
@@ -313,7 +316,7 @@ public class ModernTurbineSimulation implements ITurbineSimulation {
         nbt.putBoolean("active", active);
         return nbt;
     }
-    
+
     @Override
     public void deserializeNBT(CompoundTag nbt) {
         fluidTank.deserializeNBT(nbt.getCompound("fluidTank"));

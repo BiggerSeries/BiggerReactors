@@ -17,4 +17,6 @@
     boilingPoint: 3523.15,
     // effect multiplier in a turbine, 0 to disable for a turbine
     turbineMultiplier: 0,
+    // energy generation multiplier by turbine
+    turbineEnergyMultiplier: 1
 }
