@@ -1,3 +1,16 @@
+# 1.20.1-0.6.0-beta.10.1
+
+## Reactor
+ - fix power tap capability crash bug (#84)
+
+## Turbine
+ - fix power tap capability crash bug (#84)
+
+## Misc
+ - fix uranium ore generation (#86)
+ - add new material blocks
+ - update material and ore block textures
+
 # 1.20.1-0.6.0-beta.10
 
 ## Reactor
