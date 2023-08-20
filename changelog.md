@@ -1,3 +1,10 @@
+# 1.19.2-0.6.0-beta.6.2
+
+## Misc
+ - fix uranium ore generation (#86)
+ - add new material blocks
+ - update material and ore block textures
+
 # 1.19.2-0.6.0-beta.6.1
 
 ## Reactor
