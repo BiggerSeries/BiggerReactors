@@ -1,3 +1,8 @@
+# 1.19.2-0.6.0-beta.6.3
+
+## Misc
+ - fix version requirement info
+
 # 1.19.2-0.6.0-beta.6.2
 
 ## Misc
