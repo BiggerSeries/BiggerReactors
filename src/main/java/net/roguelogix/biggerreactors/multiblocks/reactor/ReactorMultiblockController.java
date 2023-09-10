@@ -401,6 +401,9 @@ public class ReactorMultiblockController extends MultiblockController<ReactorBas
         if(newAssemblyState == AssemblyState.ASSEMBLED){
             onValidationPassed();
         }
+        for (ReactorCoolantPortTile coolantPort : coolantPorts) {
+            coolantPort.onAssemblyStateTransition(oldAssemblyState, newAssemblyState);
+        }
     }
     
     protected void onValidationPassed() {
