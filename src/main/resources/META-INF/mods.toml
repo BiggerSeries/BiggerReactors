@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[${fmlVersion},)"
+loaderVersion="[${loader_version},)"
 license="LGPL v2.1"
 issueTrackerURL="https://github.com/BiggerSeries/BiggerReactors/issues/"
 
@@ -22,25 +22,25 @@ Official continuation of Big Reactors
 [[dependencies.biggerreactors]] 
     modId="forge" 
     mandatory=true 
-    versionRange="[${forgeVersion},)" 
+    versionRange="[${neo_version},)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.biggerreactors]]
     modId="minecraft"
     mandatory=true
-    versionRange="[${mcVersion}]"
+    versionRange="[${minecraft_version}]"
     ordering="NONE"
     side="BOTH"
 [[dependencies.biggerreactors]]
     modId="phosphophyllite"
     mandatory=true
-    versionRange="${phosVersionRange}"
+    versionRange="${phos_version_range}"
     ordering="NONE"
     side="BOTH"
 [[dependencies.biggerreactors]]
     modId="quartz"
     mandatory=true
-    versionRange="${quartzVersionRange}"
+    versionRange="${quartz_version_range}"
     ordering="NONE"
     side="BOTH"
 

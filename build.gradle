@@ -1,24 +1,11 @@
-buildscript {
-    repositories {
-        // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
-        maven { url = 'https://maven.minecraftforge.net' }
-        maven { url = 'https://maven.parchmentmc.org' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-        classpath 'org.parchmentmc:librarian:1.+'
-    }
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.neoforged.gradle' version '[6.0.18,6.2)'
+    id 'org.spongepowered.mixin' version '0.7.+'
+    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'org.parchmentmc.librarian.forgegradle'
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-
-println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
 evaluationDependsOnChildren()
 
@@ -27,35 +14,30 @@ if (!"${postfixVersion}".isEmpty()) {
     version += "-${postfixVersion}"
 }
 
-group = 'net.roguelogix.biggerreactors'
-archivesBaseName = "biggerreactors-${mc_version}"
+group = "net.roguelogix.${mod_id}"
+base {
+    archivesName = "${mod_id}-${mc_version}"
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 
 minecraft {
-    mappings channel: "${mapping_channel}", version: "${mapping_version}"
-    // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
+    mappings channel: mapping_channel, version: mapping_version
 
+    copyIdeResources = true
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
-    // Default run configurations.
-    // These can be tweaked, removed, or duplicated as needed.
     runs {
-        client {
-            workingDirectory project.file('run')
+        // applies to all the run configs below
+        configureEach {
+            workingDirectory project.file("run/${it.name}")
 
-            //This fixes Mixin application problems from other mods because their refMaps are SRG-based, but we're in a MCP env
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            arg "-mixin.config=phosphophyllite.mixins.json"
-            arg "-mixin.config=quartz.mixins.json"
-
-            // Recommended logging level for the console
+            property 'forge.logging.markers', 'SCAN,REGISTRIES'
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                BiggerReactors {
+                "${mod_id}" {
                     source sourceSets.main
                 }
                 Quartz {
@@ -65,74 +47,39 @@ minecraft {
                     source project(':Phosphophyllite').sourceSets.main
                 }
             }
+        }
+
+        client {
+            // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
+            property 'forge.enabledGameTestNamespaces', mod_id
         }
 
         server {
-            workingDirectory project.file('run')
+            property 'forge.enabledGameTestNamespaces', mod_id
+            args '--nogui'
+        }
 
-            //This fixes Mixin application problems from other mods because their refMaps are SRG-based, but we're in a MCP env
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                BiggerReactors {
-                    source sourceSets.main
-                }
-                Quartz {
-                    source project(':Quartz').sourceSets.main
-                }
-                Phosphophyllite {
-                    source project(':Phosphophyllite').sourceSets.main
-                }
-            }
+        gameTestServer {
+            property 'forge.enabledGameTestNamespaces', mod_id
         }
 
         data {
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
-
-//            args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/')
-
-            mods {
-                BiggerReactors {
-                    source sourceSets.main
-                }
-                Quartz {
-                    source project(':Quartz').sourceSets.main
-                }
-                Phosphophyllite {
-                    source project(':Phosphophyllite').sourceSets.main
-                }
-            }
+            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
         }
     }
 }
 
-configurations {
-    library
-    implementation.extendsFrom library
-}
-minecraft.runs.all {
-    lazyToken('minecraft_classpath') {
-        configurations.library.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
-    }
+// Include resources generated by data generators.
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+mixin {
+    config 'quartz.mixins.json'
+    config 'phosphophyllite.mixins.json'
 }
 
 repositories {
     maven {
-        name = "CurseForge"
-        url = "https://minecraft.curseforge.com/api/maven/"
+        url = "https://www.cursemaven.com"
     }
     maven {
         // location of the maven that hosts JEI files since January 2023
@@ -140,15 +87,11 @@ repositories {
         url = "https://maven.blamejared.com/"
     }
     maven {
-        url = "https://www.cursemaven.com"
-    }
-    maven {
-        url 'https://modmaven.k-4u.nl/'
-    }
-    maven {
+        // mekanism
         url 'https://modmaven.dev/'
     }
     maven {
+        // computer craft
         url 'https://squiddev.cc/maven/'
         content {
             includeGroup("cc.tweaked")
@@ -158,10 +101,7 @@ repositories {
 }
 
 dependencies {
-    // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
-    // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
-    // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+    minecraft "net.neoforged:forge:${mc_version}-${neo_version}"
 
     compileOnly project(':Phosphophyllite')
     compileOnly project(':Quartz')
@@ -190,44 +130,10 @@ dependencies {
 //    runtimeOnly fg.deobf('curse.maven:WorldStripper-250603:3545856')
 //    runtimeOnly fg.deobf('curse.maven:CW-399558:3926815')
 
-    compileOnly "org.lwjgl:lwjgl-opencl:3.3.1"
-}
-
-jar {
-    manifest {
-        attributes([
-                "Specification-Title"     : "BiggerReactors",
-                "Specification-Version"   : "1",
-                "Implementation-Title"    : project.name,
-                "Implementation-Version"  : "${version}",
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
+    minecraftLibrary("org.lwjgl:lwjgl-opencl:3.3.1") {
+        transitive(false)
     }
 }
-
-publish.dependsOn('reobfJar')
-
-//task generateModeratorCsv(type: net.roguelogix.Json5ToCsvTask) {
-//    records = ["type", "location", "absorption", "efficiency", "moderation", "conductivity"]
-//    jsonInputs = fileTree(dir: "src/main/resources/data/biggerreactors/ebcr/moderators/", include: "**/*.json*")
-//    csvOutput = file("$buildDir/data/moderators.csv")
-//}
-//
-//task generateCoilCsv(type: net.roguelogix.Json5ToCsvTask) {
-//    records = ["type", "location", "efficiency", "extractionRate", "bonus"]
-//    jsonInputs = fileTree(dir: "src/main/resources/data/biggerreactors/ebest/coils/", include: "**/*.json*")
-//    csvOutput = file("$buildDir/data/coils.csv")
-//}
-//
-//task generateModeratorWikimedia(type: net.roguelogix.CsvToWikimediaTask, dependsOn: generateModeratorCsv) {
-//    csvInput = generateModeratorCsv.outputs.files[0]
-//    txtOutput = file("$buildDir/data/moderators.txt")
-//}
-//
-//task generateCoilWikimedia(type: net.roguelogix.CsvToWikimediaTask, dependsOn: generateCoilCsv) {
-//    csvInput = generateCoilCsv.outputs.files[0]
-//    txtOutput = file("$buildDir/data/coils.txt")
-//}
 
 gradle.projectsEvaluated {
     var phosVersionRange = project.project(":Phosphophyllite").property("compatibility").toString().split(',')
@@ -246,60 +152,87 @@ gradle.projectsEvaluated {
     println("::set-output name=phos_version_range::" + phosRequirementString)
     println("::set-output name=quartz_version_range::" + quartzRequirementString)
 
+    tasks.withType(ProcessResources).configureEach {
+        var replaceProperties = [
+                minecraft_version   : mc_version,
+                neo_version         : neo_version,
+                loader_version      : neo_version.substring(0, neo_version.indexOf('.')),
+                version             : version,
+                phos_version_range  : project.project(":Phosphophyllite").property("compatibility").toString(),
+                quartz_version_range: project.project(":Quartz").property("compatibility").toString(),
+        ]
+        inputs.properties replaceProperties
 
-    def resource_targets = ["META-INF/mods.toml", "pack.mcmeta"]
-    def into_targets = ["$rootDir/out/production/resources/", "$rootDir/out/production/${project.name}.main/", "$rootDir/bin/main/"]
-    def properties = [
-            version         : version,
-            fmlVersion      : forge_version.substring(0, forge_version.indexOf('.')),
-            forgeVersion    : forge_version,
-            mcVersion       : mc_version,
-            phosVersionRange: project.project(":Phosphophyllite").property("compatibility").toString(),
-            quartzVersionRange: project.project(":Quartz").property("compatibility").toString()
-    ]
-    processResources {
-        duplicatesStrategy = 'INCLUDE'
-        inputs.properties properties
-
-        def spec = copySpec {
-            from(sourceSets.main.resources) {
-                include resource_targets
-                expand properties
-            }
-        }
-
-        with spec
-        into_targets.each {
-            def file = file(it)
-            if (file.exists()) {
-                copy {
-                    with spec
-                    into file
-                }
-            }
-        }
-
-        from(sourceSets.main.resources) {
-            exclude resource_targets
+        filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+            expand replaceProperties + [project: project]
         }
     }
 }
 
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
+tasks.named('jar', Jar).configure {
+    manifest {
+        attributes([
+                'Specification-Title'     : mod_id,
+                'Specification-Vendor'    : "BiggerSeries",
+                'Specification-Version'   : '1', // We are version 1 of ourselves
+                'Implementation-Title'    : project.name,
+                'Implementation-Version'  : project.jar.archiveVersion,
+                'Implementation-Vendor'   : "BiggerSeries",
+                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
+
+tasks.named('publish').configure {
+    dependsOn 'reobfJar'
+    mustRunAfter 'reobfJar'
+}
+
+tasks.register('sourcesJar', Jar) {
+    archiveClassifier = 'sources'
     from sourceSets.main.allSource
 }
-def reobfFile = file("$buildDir/reobfJar/output.jar")
-def reobfArtifact = artifacts.add('default', reobfFile) {
-    type 'jar'
-    builtBy 'reobfJar'
+
+artifacts {
+    archives jar
+    archives sourcesJar
 }
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
-            artifact reobfArtifact
+        register('mavenJava', MavenPublication) {
+            artifact jar
             artifact sourcesJar
         }
     }
+    repositories {
+        maven {
+            url "file://${project.projectDir}/publishlocal"
+        }
+    }
+}
+
+// NeoGradle is dumb, and generates the run configs incorrectly, this fixes them
+tasks.register('zzz_copyRunConfigsToTmpDir', Copy) {
+    from '.idea/runConfigurations'
+    into '.idea/runConfigurations1'
+}
+
+tasks.register('zzz_depeteTmpDir', Delete) {
+    delete '.idea/runConfigurations1'
+}
+
+tasks.register('_createIntellijRunsThatWork', Copy) {
+    dependsOn 'genIntellijRuns'
+    mustRunAfter 'genIntellijRuns'
+    dependsOn 'zzz_copyRunConfigsToTmpDir'
+    mustRunAfter 'zzz_copyRunConfigsToTmpDir'
+
+    from '.idea/runConfigurations1'
+    into '.idea/runConfigurations'
+    filter { String line -> line.replace("out/production/classes", "build/classes/java/main") }
+    filter { String line -> line.replace("out/production/resources", "build/resources/main") }
+    filter { String line -> line.replace("copyIntellijResources", "prepareRunClientCompile") }
+
+    finalizedBy 'zzz_depeteTmpDir'
 }
