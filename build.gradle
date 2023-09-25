@@ -133,6 +133,9 @@ dependencies {
     minecraftLibrary("org.lwjgl:lwjgl-opencl:3.3.1") {
         transitive(false)
     }
+    minecraftLibrary ("org.lwjgl:lwjgl-vulkan:3.3.1"){
+        transitive(false)
+    }
 }
 
 gradle.projectsEvaluated {
