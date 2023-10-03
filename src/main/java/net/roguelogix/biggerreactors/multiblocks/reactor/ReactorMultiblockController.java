@@ -18,6 +18,7 @@ import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorBaseBlock
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorFuelRod;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorManifold;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorSimulation;
+import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.SimulationConfiguration;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.SimulationDescription;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorActivity;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorState;
@@ -428,7 +429,6 @@ public class ReactorMultiblockController extends MultiblockController<ReactorBas
             simulationDescription.setControlRod(rodPos.getX() - start.x, rodPos.getZ() - start.z, true);
         }
         simulationDescription.setPassivelyCooled(coolantPorts.isEmpty());
-        simulationDescription.setAmbientTemperature(293.15);
         var airProperties = ReactorModeratorRegistry.blockModeratorProperties(Blocks.AIR);
         if (airProperties == null) {
             airProperties = ReactorModeratorRegistry.ModeratorProperties.EMPTY_MODERATOR;
@@ -439,7 +439,8 @@ public class ReactorMultiblockController extends MultiblockController<ReactorBas
             simulationData = simulation.save();
         }
         final var simulationBuilder = new SimulationDescription.Builder(Config.CONFIG.mode == Config.Mode.EXPERIMENTAL, Config.CONFIG.Reactor.useFullPassSimulation, Config.CONFIG.Reactor.allowOffThreadSimulation, Config.CONFIG.Reactor.allowMultiThreadSimulation, Config.CONFIG.Reactor.allowAcceleratedSimulation);
-        simulation = simulationBuilder.build(simulationDescription);
+        final var simulationConfiguration = new SimulationConfiguration(Config.CONFIG.Reactor, 293.15);
+        simulation = simulationBuilder.build(simulationDescription, simulationConfiguration);
         if (simulationData != null) {
             simulation.load(simulationData);
         }

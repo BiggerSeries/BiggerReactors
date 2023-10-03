@@ -1,6 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.simulation.cpu;
 
-import net.roguelogix.biggerreactors.Config;
+import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.SimulationConfiguration;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.base.BaseReactorSimulation;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.base.SimUtil;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.SimulationDescription;
@@ -16,8 +16,8 @@ public class TimeSlicedReactorSimulation extends BaseReactorSimulation {
     private int currentRod = 0;
     private int rodOffset = 0;
     
-    public TimeSlicedReactorSimulation(SimulationDescription simulationDescription) {
-        super(simulationDescription);
+    public TimeSlicedReactorSimulation(SimulationDescription simulationDescription, SimulationConfiguration configuration) {
+        super(simulationDescription, configuration);
         Collections.shuffle(Arrays.asList(controlRods), new Random());
     }
     
@@ -38,26 +38,26 @@ public class TimeSlicedReactorSimulation extends BaseReactorSimulation {
         currentRod %= controlRods.length;
         
         // Base value for radiation production penalties. 0-1, caps at about 3000C;
-        final double radiationPenaltyBase = Math.exp(-Config.CONFIG.Reactor.RadPenaltyShiftMultiplier * Math.exp(-0.001 * Config.CONFIG.Reactor.RadPenaltyRateMultiplier * (fuelHeat.temperature() - 273.15)));
+        final double radiationPenaltyBase = Math.exp(-configuration.radPenaltyShiftMultiplier() * Math.exp(-0.001 * configuration.radPenaltyRateMultiplier() * (fuelHeat.temperature() - 273.15)));
         
         // Raw amount - what's actually in the tanks
         // Effective amount - how
         final long baseFuelAmount = fuelTank.fuel() + (fuelTank.waste() / 100);
         
         // Intensity = how strong the radiation is, hardness = how energetic the radiation is (penetration)
-        final double rawRadIntensity = (double) baseFuelAmount * Config.CONFIG.Reactor.FissionEventsPerFuelUnit;
+        final double rawRadIntensity = (double) baseFuelAmount * configuration.fissionEventsPerFuelUnit();
         
         // Scale up the "effective" intensity of radiation, to provide an incentive for bigger reactors in general.
         // Scale up a second time based on scaled amount in each fuel rod. Provides an incentive for making reactors that aren't just pancakes.
-        final double scaledRadIntensity = Math.pow((Math.pow((rawRadIntensity), Config.CONFIG.Reactor.FuelReactivity) / controlRods.length), Config.CONFIG.Reactor.FuelReactivity) * controlRods.length;
+        final double scaledRadIntensity = Math.pow((Math.pow((rawRadIntensity), configuration.fuelReactivity()) / controlRods.length), configuration.fuelReactivity()) * controlRods.length;
         
         // Radiation hardness starts at 20% and asymptotically approaches 100% as heat rises.
         // This will make radiation harder and harder to capture.
         final double initialHardness = Math.min(1.0, 0.2f + (0.8 * radiationPenaltyBase));
         
-        final double rawIntensity = (1f + (-Config.CONFIG.Reactor.RadIntensityScalingMultiplier * Math.exp(-10f * Config.CONFIG.Reactor.RadIntensityScalingShiftMultiplier * Math.exp(-0.001f * Config.CONFIG.Reactor.RadIntensityScalingRateExponentMultiplier * (fuelHeat.temperature() - 273.15)))));
-        final double fuelAbsorptionTemperatureCoefficient = (1.0 - (Config.CONFIG.Reactor.FuelAbsorptionScalingMultiplier * Math.exp(-10 * Config.CONFIG.Reactor.FuelAbsorptionScalingShiftMultiplier * Math.exp(-0.001 * Config.CONFIG.Reactor.FuelAbsorptionScalingRateExponentMultiplier * (fuelHeat.temperature() - 273.15)))));
-        final double fuelHardnessMultiplier = 1 / Config.CONFIG.Reactor.FuelHardnessDivisor;
+        final double rawIntensity = (1f + (-configuration.radIntensityScalingMultiplier() * Math.exp(-10f * configuration.radIntensityScalingShiftMultiplier() * Math.exp(-0.001f * configuration.radIntensityScalingRateExponentMultiplier() * (fuelHeat.temperature() - 273.15)))));
+        final double fuelAbsorptionTemperatureCoefficient = (1.0 - (configuration.fuelAbsorptionScalingMultiplier() * Math.exp(-10 * configuration.fuelAbsorptionScalingShiftMultiplier() * Math.exp(-0.001 * configuration.fuelAbsorptionScalingRateExponentMultiplier() * (fuelHeat.temperature() - 273.15)))));
+        final double fuelHardnessMultiplier = 1 / configuration.fuelHardnessDivisor();
         
         double rawFuelUsage = 0;
         
@@ -65,11 +65,11 @@ public class TimeSlicedReactorSimulation extends BaseReactorSimulation {
         double fuelRadAdded = 0;
         double caseRFAdded = 0;
         
-        final var FuelPerRadiationUnit = Config.CONFIG.Reactor.FuelPerRadiationUnit;
-        final var FEPerRadiationUnit = Config.CONFIG.Reactor.FEPerRadiationUnit;
-        final var FuelUsageMultiplier = Config.CONFIG.Reactor.FuelUsageMultiplier;
-        final var FuelAbsorptionCoefficient = Config.CONFIG.Reactor.FuelAbsorptionCoefficient;
-        final var FuelModerationFactor = Config.CONFIG.Reactor.FuelModerationFactor;
+        final var FuelPerRadiationUnit = configuration.fuelPerRadiationUnit();
+        final var FEPerRadiationUnit = configuration.RFPerRadiationUnit();
+        final var FuelUsageMultiplier = configuration.fuelUsageMultiplier();
+        final var FuelAbsorptionCoefficient = configuration.fuelAbsorptionCoefficient();
+        final var FuelModerationFactor = configuration.fuelModerationFactor();
         
         SimUtil.ControlRod rod = controlRods[currentRod];
         
@@ -144,8 +144,8 @@ public class TimeSlicedReactorSimulation extends BaseReactorSimulation {
         }
         
         if (!Double.isNaN(fuelRadAdded)) {
-            if (Config.CONFIG.Reactor.fuelRadScalingMultiplier != 0) {
-                fuelRadAdded *= Config.CONFIG.Reactor.fuelRadScalingMultiplier * (Config.CONFIG.Reactor.PerFuelRodCapacity / Math.max(1.0, (double) fuelTank().totalStored()));
+            if (configuration.fuelRadScalingMultiplier() != 0) {
+                fuelRadAdded *= configuration.fuelRadScalingMultiplier() * (configuration.fuelRodFuelCapacity() / Math.max(1.0, (double) fuelTank().totalStored()));
             }
             fuelFertility += fuelRadAdded;
         }

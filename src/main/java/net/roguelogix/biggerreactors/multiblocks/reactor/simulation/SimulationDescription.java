@@ -41,8 +41,6 @@ public class SimulationDescription implements IPhosphophylliteSerializable {
     boolean[][] controlRodLocations = null;
     int controlRodCount = 0;
     boolean passivelyCooled = false;
-    double ambientTemperature = 273.15;
-    
     public void setSize(int x, int y, int z) {
         if (x <= 0 || y <= 0 || z <= 0) {
             throw new IllegalArgumentException("all sizes must be greater than zero");
@@ -123,36 +121,32 @@ public class SimulationDescription implements IPhosphophylliteSerializable {
         this.passivelyCooled = passivelyCooled;
     }
     
-    public void setAmbientTemperature(double ambientTemperature) {
-        this.ambientTemperature = ambientTemperature;
-    }
-    
     public record Builder(boolean experimental, boolean fullPass, boolean allowOffThread, boolean allowMultiThread, boolean allowAccelerated) {
         
-        public IReactorSimulation build(SimulationDescription description) {
+        public IReactorSimulation build(SimulationDescription description, SimulationConfiguration configuration) {
             description.ensureValid();
     
             if (experimental) {
-                return new SingleQueueOpenCL12Simulation(description);
+                return new SingleQueueOpenCL12Simulation(description, configuration);
             }
             if (!fullPass) {
-                return new TimeSlicedReactorSimulation(description);
+                return new TimeSlicedReactorSimulation(description, configuration);
             }
             
             var rodMultiple = description.controlRodCount / Config.CONFIG.Reactor.ModeSpecific.ControlRodBatchSize;
             
             if (allowAccelerated && rodMultiple >= 16) {
                 if (CLUtil.available) {
-                    return new SingleQueueOpenCL12Simulation(description);
+                    return new SingleQueueOpenCL12Simulation(description, configuration);
                 }
             }
             if (allowMultiThread && rodMultiple >= 2) {
-                return new FullPassReactorSimulation.MultiThreaded(description, false);
+                return new FullPassReactorSimulation.MultiThreaded(description, configuration, false);
             }
             if (allowOffThread) {
-                return new FullPassReactorSimulation.MultiThreaded(description, true);
+                return new FullPassReactorSimulation.MultiThreaded(description, configuration,true);
             }
-            return new FullPassReactorSimulation(description);
+            return new FullPassReactorSimulation(description, configuration);
         }
     }
     
@@ -212,10 +206,6 @@ public class SimulationDescription implements IPhosphophylliteSerializable {
         return manifoldLocations[x][y][z];
     }
     
-    public double ambientTemperature(){
-        return ambientTemperature;
-    }
-    
     @Override
     @Nullable
     public PhosphophylliteCompound save() {
@@ -269,7 +259,6 @@ public class SimulationDescription implements IPhosphophylliteSerializable {
         compound.put("controlRodLocations", controlRodLocations);
         compound.put("defaultModeratorProperties", defaultModeratorProperties.toROBNMap());
         compound.put("passivelyCooled", passivelyCooled);
-        compound.put("ambientTemperature", ambientTemperature);
         
         return compound;
     }
@@ -376,6 +365,5 @@ public class SimulationDescription implements IPhosphophylliteSerializable {
             setDefaultIModeratorProperties(new ReactorModeratorRegistry.ModeratorProperties(absorption, heatEfficiency, moderation, heatConductivity));
         }
         setPassivelyCooled(compound.getBoolean("passivelyCooled"));
-        setAmbientTemperature(compound.getDouble("ambientTemperature"));
     }
 }

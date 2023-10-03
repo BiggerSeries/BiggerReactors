@@ -1,8 +1,7 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.simulation.accellerated.ocl;
 
-import net.roguelogix.biggerreactors.Config;
+import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.SimulationConfiguration;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.SimulationDescription;
-import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.base.ModeratorCache;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.base.SimUtil;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.cpu.FullPassReactorSimulation;
 import org.lwjgl.PointerBuffer;
@@ -52,8 +51,8 @@ public class SingleQueueOpenCL12Simulation extends FullPassReactorSimulation {
     
     private final PointerBuffer rayReductionGlobalWorkSize = clUtil.allocPointer(3);
     
-    public SingleQueueOpenCL12Simulation(SimulationDescription simulationDescription) {
-        super(simulationDescription);
+    public SingleQueueOpenCL12Simulation(SimulationDescription simulationDescription, SimulationConfiguration configuration) {
+        super(simulationDescription, configuration);
     
         try (var stack = MemoryStack.stackPush()) {
             final var returnCode = stack.mallocInt(1);
@@ -197,7 +196,7 @@ public class SingleQueueOpenCL12Simulation extends FullPassReactorSimulation {
                 argLongBuffer.put(0, controlRodInsertionsBuffer);
                 clSetKernelArg(simKernel, 7, argLongBuffer);
                 // localInsertions
-                clSetKernelArg(simKernel, 8, (long) (Math.pow(Config.CONFIG.Reactor.IrradiationDistance * 2 + 1, 2) * 4));
+                clSetKernelArg(simKernel, 8, (long) (Math.pow(net.roguelogix.biggerreactors.Config.CONFIG.Reactor.IrradiationDistance * 2 + 1, 2) * 4));
                 
                 // rodRayInfosGlobal
                 argLongBuffer.put(0, rodRayInfoBuffer);
@@ -271,7 +270,7 @@ public class SingleQueueOpenCL12Simulation extends FullPassReactorSimulation {
         reactorInfoIB.put(2, z);
         reactorInfoFB.put(3, (float) fuelAbsorptionTemperatureCoefficient);
         reactorInfoFB.put(4, (float) initialHardness);
-        reactorInfoFB.put(5, (float) Config.CONFIG.Reactor.FEPerRadiationUnit);
+        reactorInfoFB.put(5, (float) configuration.RFPerRadiationUnit());
         reactorInfoFB.put(6, (float) FuelAbsorptionCoefficient);
         reactorInfoFB.put(7, (float) FuelModerationFactor);
         reactorInfoFB.put(8, (float) fuelHardnessMultiplier);
@@ -290,7 +289,7 @@ public class SingleQueueOpenCL12Simulation extends FullPassReactorSimulation {
     
             checkReturnCode(clEnqueueReadBuffer(queue, rayResultsBuffer, true, 0, rayResultsFB, null, null));
     
-            fuelRFAdded *= Config.CONFIG.Reactor.FEPerRadiationUnit;
+            fuelRFAdded *= configuration.RFPerRadiationUnit();
     
             collectResults();
             
@@ -299,8 +298,8 @@ public class SingleQueueOpenCL12Simulation extends FullPassReactorSimulation {
             caseRFAdded /= controlRods.length;
             
             if (!Double.isNaN(fuelRadAdded)) {
-                if (Config.CONFIG.Reactor.fuelRadScalingMultiplier != 0) {
-                    fuelRadAdded *= Config.CONFIG.Reactor.fuelRadScalingMultiplier * (Config.CONFIG.Reactor.PerFuelRodCapacity / Math.max(1.0, (double) fuelTank().totalStored()));
+                if (configuration.fuelRadScalingMultiplier() != 0) {
+                    fuelRadAdded *= configuration.fuelRadScalingMultiplier() * (configuration.fuelRodFuelCapacity() / Math.max(1.0, (double) fuelTank().totalStored()));
                 }
                 fuelFertility += fuelRadAdded;
             }

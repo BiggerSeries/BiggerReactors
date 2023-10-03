@@ -1,6 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.simulation.base;
 
-import net.roguelogix.biggerreactors.Config;
+import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.SimulationConfiguration;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorSimulation;
 import net.roguelogix.biggerreactors.registries.FluidTransitionRegistry;
 import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
@@ -12,6 +12,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class CoolantTank extends HeatBody implements IReactorSimulation.ICoolantTank, ReactorModeratorRegistry.IModeratorProperties, IPhosphophylliteSerializable {
+    private final SimulationConfiguration configuration;
     
     private final long perSideCapacity;
     private long liquidAmount = 0;
@@ -26,7 +27,8 @@ public class CoolantTank extends HeatBody implements IReactorSimulation.ICoolant
     private long transitionedLastTick;
     private long rfTransferredLastTick;
     
-    CoolantTank(long perSideCapacity, ReactorModeratorRegistry.IModeratorProperties defaultModeratorProperties) {
+    CoolantTank(long perSideCapacity, ReactorModeratorRegistry.IModeratorProperties defaultModeratorProperties, SimulationConfiguration configuration) {
+        this.configuration = configuration;
         this.perSideCapacity = perSideCapacity;
         this.defaultModeratorProperties = defaultModeratorProperties;
         this.setInfinite(true);
@@ -70,7 +72,7 @@ public class CoolantTank extends HeatBody implements IReactorSimulation.ICoolant
         
         rf = Math.abs(rf);
     
-        final double transitionMultiplier = Config.CONFIG.Reactor.OutputMultiplier * Config.CONFIG.Reactor.ActiveOutputMultiplier;
+        final double transitionMultiplier = configuration.outputMultiplier() * configuration.activeOutputMultiplier();
         final double effectiveLatentHeat = transitionProperties.latentHeat() * transitionMultiplier;
         
         long toTransition = (long) (rf / effectiveLatentHeat);

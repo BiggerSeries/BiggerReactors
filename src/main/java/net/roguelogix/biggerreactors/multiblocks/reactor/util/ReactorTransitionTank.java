@@ -9,7 +9,6 @@ import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
 import net.roguelogix.biggerreactors.util.FluidTransitionTank;
 import net.roguelogix.phosphophyllite.util.HeatBody;
 import net.roguelogix.phosphophyllite.util.NonnullDefault;
-import org.apache.commons.lang3.NotImplementedException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,12 +32,12 @@ public class ReactorTransitionTank extends FluidTransitionTank {
     
     @Override
     public double transferWith(HeatBody body, double rfkt) {
-        throw new NotImplementedException("");
+        throw new IllegalArgumentException("");
     }
     
     @Override
     public double absorbRF(double rf) {
-        throw new NotImplementedException("");
+        throw new IllegalArgumentException("");
     }
     
     public ReactorTransitionTank(IReactorSimulation.ICoolantTank internalTank) {

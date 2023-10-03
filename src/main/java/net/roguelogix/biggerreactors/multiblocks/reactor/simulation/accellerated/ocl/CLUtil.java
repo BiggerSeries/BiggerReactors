@@ -1,5 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.simulation.accellerated.ocl;
 
+import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.phosphophyllite.registry.OnModLoad;
@@ -211,6 +212,7 @@ public class CLUtil {
                 var devicesLB = devicesBB.asLongBuffer();
                 var intBuffer = stack.mallocInt(1);
                 var longBuffer = stack.mallocLong(1);
+                var pointerBuffer = stack.mallocPointer(1);
                 LOGGER.info("Getting devices");
                 for (int i = 0; i < deviceCount.get(0); i++) {
                     long device = devicesLB.get(i);
@@ -222,6 +224,11 @@ public class CLUtil {
                         largestSizeMultiple1 = sizeMultiple;
                     }
                     clGetDeviceInfo(device, CL_DEVICE_MAX_WORK_GROUP_SIZE, longBuffer, null);
+                    clGetDeviceInfo(device, CL_DEVICE_NAME, (ByteBuffer) null, pointerBuffer);
+                    var stringBuffer = stack.malloc((int) pointerBuffer.get(0));
+                    clGetDeviceInfo(device, CL_DEVICE_NAME, stringBuffer, pointerBuffer);
+                    var GPUname = MemoryUtil.memUTF8(stringBuffer);
+                    LOGGER.info("GPU Name: " + GPUname);
                     maxWorkGroupSizes.add(longBuffer.get(0));
                 }
                 LOGGER.info("Creating program");

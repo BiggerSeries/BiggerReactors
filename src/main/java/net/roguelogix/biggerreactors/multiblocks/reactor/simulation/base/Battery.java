@@ -1,6 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.simulation.base;
 
-import net.roguelogix.biggerreactors.Config;
+import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.SimulationConfiguration;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorSimulation;
 import net.roguelogix.phosphophyllite.serialization.IPhosphophylliteSerializable;
 import net.roguelogix.phosphophyllite.serialization.PhosphophylliteCompound;
@@ -10,6 +10,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class Battery extends HeatBody implements IReactorSimulation.IBattery, IPhosphophylliteSerializable {
+    
+    private final SimulationConfiguration configuration;
     private final long capacity;
     private long stored;
     private long generatedLastTick;
@@ -18,7 +20,8 @@ public class Battery extends HeatBody implements IReactorSimulation.IBattery, IP
         setInfinite(true);
     }
     
-    public Battery(long capacity) {
+    public Battery(long capacity, SimulationConfiguration configuration) {
+        this.configuration = configuration;
         this.capacity = capacity;
     }
     
@@ -30,7 +33,7 @@ public class Battery extends HeatBody implements IReactorSimulation.IBattery, IP
         
         double rfTransferred = (newTemp - other.temperature()) * other.rfPerKelvin();
         
-        generatedLastTick = (long) (-rfTransferred * Config.CONFIG.Reactor.OutputMultiplier * Config.CONFIG.Reactor.PassiveOutputMultiplier);
+        generatedLastTick = (long) (-rfTransferred * configuration.outputMultiplier() * configuration.passiveOutputMultiplier());
         stored += generatedLastTick;
         if (stored > capacity) {
             stored = capacity;

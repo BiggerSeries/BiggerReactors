@@ -1,6 +1,6 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.simulation.base;
 
-import net.roguelogix.biggerreactors.Config;
+import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.SimulationConfiguration;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.IReactorSimulation;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.SimulationDescription;
 import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
@@ -40,7 +40,10 @@ public abstract class BaseReactorSimulation implements IReactorSimulation {
     
     protected double fuelFertility = 1;
     
-    protected BaseReactorSimulation(SimulationDescription simulationDescription) {
+    protected final SimulationConfiguration configuration;
+    
+    protected BaseReactorSimulation(SimulationDescription simulationDescription, SimulationConfiguration configuration) {
+        this.configuration = configuration;
         x = simulationDescription.x();
         y = simulationDescription.y();
         z = simulationDescription.z();
@@ -66,13 +69,13 @@ public abstract class BaseReactorSimulation implements IReactorSimulation {
         
         final ReactorModeratorRegistry.IModeratorProperties manifoldSignalingProperties;
         if (simulationDescription.passivelyCooled()) {
-            output = battery = new Battery((((long) (x + 2) * (y + 2) * (z + 2)) - ((long) x * y * z)) * Config.CONFIG.Reactor.PassiveBatteryPerExternalBlock);
+            output = battery = new Battery((((long) (x + 2) * (y + 2) * (z + 2)) - ((long) x * y * z)) * configuration.passiveBatteryPerExternalBlock(), configuration);
             coolantTank = null;
             manifoldSignalingProperties = new ReactorModeratorRegistry.ModeratorProperties(defaultModeratorProperties);
         } else {
-            long perSideCapacity = controlRods.length * y * Config.CONFIG.Reactor.CoolantTankAmountPerFuelRod;
-            perSideCapacity += simulationDescription.manifoldCount() * Config.CONFIG.Reactor.CoolantTankAmountPerFuelRod;
-            output = coolantTank = new CoolantTank(perSideCapacity, simulationDescription.defaultModeratorProperties());
+            long perSideCapacity = controlRods.length * y * configuration.coolantTankCapacityPerFuelRod();
+            perSideCapacity += simulationDescription.manifoldCount() * configuration.coolantTankCapacityPerFuelRod();
+            output = coolantTank = new CoolantTank(perSideCapacity, simulationDescription.defaultModeratorProperties(), configuration);
             battery = null;
             manifoldSignalingProperties = coolantTank;
         }
@@ -95,7 +98,7 @@ public abstract class BaseReactorSimulation implements IReactorSimulation {
             }
         }
     
-        fuelTank = new FuelTank(Config.CONFIG.Reactor.PerFuelRodCapacity * controlRods.length * y);
+        fuelTank = new FuelTank(configuration.fuelRodFuelCapacity() * controlRods.length * y);
         
         double fuelToCasingRFKT = 0;
         int fuelToManifoldSurfaceArea = 0;
@@ -103,7 +106,7 @@ public abstract class BaseReactorSimulation implements IReactorSimulation {
             for (int i = 0; i < y; i++) {
                 for (Vector2ic direction : SimUtil.cardinalDirections) {
                     if (controlRod.x + direction.x() < 0 || controlRod.x + direction.x() >= x || controlRod.z + direction.y() < 0 || controlRod.z + direction.y() >= z) {
-                        fuelToCasingRFKT += Config.CONFIG.Reactor.CasingHeatTransferRFMKT;
+                        fuelToCasingRFKT += configuration.casingHeatTransferRFMKT();
                         continue;
                     }
                     ReactorModeratorRegistry.IModeratorProperties properties = moderatorProperties[controlRod.x + direction.x()][i][controlRod.z + direction.y()];
@@ -119,7 +122,7 @@ public abstract class BaseReactorSimulation implements IReactorSimulation {
                 }
             }
         }
-        fuelToCasingRFKT *= Config.CONFIG.Reactor.FuelToStackRFKTMultiplier;
+        fuelToCasingRFKT *= configuration.fuelToStackRFKTMultiplier();
         
         double stackToCoolantSystemRFKT = 2 * (x * y + x * z + z * y);
         
@@ -151,26 +154,26 @@ public abstract class BaseReactorSimulation implements IReactorSimulation {
                 }
             }
         }
-        stackToCoolantSystemRFKT *= Config.CONFIG.Reactor.StackToCoolantRFMKT;
+        stackToCoolantSystemRFKT *= configuration.stackToCoolantRFMKT();
         
         if (simulationDescription.passivelyCooled()) {
-            stackToCoolantSystemRFKT *= Config.CONFIG.Reactor.PassiveCoolingTransferEfficiency;
+            stackToCoolantSystemRFKT *= configuration.passiveCoolingTransferEfficiency();
         }
         
-        this.casingToAmbientRFKT = 2 * ((x + 2) * (y + 2) + (x + 2) * (z + 2) + (z + 2) * (y + 2)) * Config.CONFIG.Reactor.StackToAmbientRFMKT;
+        this.casingToAmbientRFKT = 2 * ((x + 2) * (y + 2) + (x + 2) * (z + 2) + (z + 2) * (y + 2)) * configuration.stackToAmbientRFMKT();
         this.fuelToCasingRFKT = fuelToCasingRFKT;
         this.fuelToManifoldSurfaceArea = fuelToManifoldSurfaceArea;
         this.stackToCoolantSystemRFKT = stackToCoolantSystemRFKT;
         
-        fuelHeat.setRfPerKelvin(controlRods.length * y * Config.CONFIG.Reactor.RodFEPerUnitVolumeKelvin);
-        stackHeat.setRfPerKelvin(x * y * z * Config.CONFIG.Reactor.RodFEPerUnitVolumeKelvin);
+        fuelHeat.setRfPerKelvin(controlRods.length * y * configuration.rodRFM3K());
+        stackHeat.setRfPerKelvin(x * y * z * configuration.stackRFM3K());
         
         ambientHeat.setInfinite(true);
-        ambientHeat.setTemperature(simulationDescription.ambientTemperature());
-        stackHeat.setTemperature(simulationDescription.ambientTemperature());
-        fuelHeat.setTemperature(simulationDescription.ambientTemperature());
+        ambientHeat.setTemperature(configuration.ambientTemperature());
+        stackHeat.setTemperature(configuration.ambientTemperature());
+        fuelHeat.setTemperature(configuration.ambientTemperature());
         if (battery != null) {
-            battery.setTemperature(simulationDescription.ambientTemperature());
+            battery.setTemperature(configuration.ambientTemperature());
         }
     }
     
@@ -185,14 +188,14 @@ public abstract class BaseReactorSimulation implements IReactorSimulation {
         
         {
             // decay fertility, RadiationHelper.tick in old BR, this is copied, mostly
-            double denominator = Config.CONFIG.Reactor.FuelFertilityDecayDenominator;
+            double denominator = configuration.fuelFertilityDecayDenominator();
             if (!active) {
                 // Much slower decay when off
-                denominator *= Config.CONFIG.Reactor.FuelFertilityDecayDenominatorInactiveMultiplier;
+                denominator *= configuration.fuelFertilityDecayDenominatorInactiveMultiplier();
             }
             
             // Fertility decay, at least 0.1 rad/t, otherwise halve it every 10 ticks
-            fuelFertility = Math.max(0f, fuelFertility - Math.max(Config.CONFIG.Reactor.FuelFertilityMinimumDecay, fuelFertility / denominator));
+            fuelFertility = Math.max(0f, fuelFertility - Math.max(configuration.fuelFertilityMinimumDecay(), fuelFertility / denominator));
         }
         
         fuelHeat.transferWith(stackHeat, fuelToCasingRFKT + fuelToManifoldSurfaceArea * (coolantTank == null ? defaultModeratorProperties : coolantTank).heatConductivity());
