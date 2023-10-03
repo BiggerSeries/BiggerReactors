@@ -6,6 +6,7 @@ import java.util.Map;
 
 public record SimulationConfiguration(
         double ambientTemperature,
+        boolean passivelyCooled,
         double fuelUsageMultiplier,
         double outputMultiplier,
         double passiveOutputMultiplier,
@@ -46,12 +47,12 @@ public record SimulationConfiguration(
 //        double simulationRays
 ) {
     
-    public SimulationConfiguration(double ambientTemperature) {
-        this(Config.CONFIG.Reactor, ambientTemperature);
+    public SimulationConfiguration(double ambientTemperature, boolean passivelyCooled) {
+        this(Config.CONFIG.Reactor, ambientTemperature, passivelyCooled);
     }
     
-    public SimulationConfiguration(Config.Reactor reactorConfig, double ambientTemperature) {
-        this(ambientTemperature,
+    public SimulationConfiguration(Config.Reactor reactorConfig, double ambientTemperature, boolean passivelyCooled) {
+        this(ambientTemperature, passivelyCooled,
                 reactorConfig.FuelUsageMultiplier,
                 reactorConfig.OutputMultiplier,
                 reactorConfig.PassiveOutputMultiplier,
@@ -91,6 +92,7 @@ public record SimulationConfiguration(
     public SimulationConfiguration(Map<String, Object> jsonMap) {
         this(
                 (double) jsonMap.get("ambientTemperature"),
+                (boolean) jsonMap.get("passivelyCooled"),
                 (double) jsonMap.get("fuelUsageMultiplier"),
                 (double) jsonMap.get("outputMultiplier"),
                 (double) jsonMap.get("passiveOutputMultiplier"),

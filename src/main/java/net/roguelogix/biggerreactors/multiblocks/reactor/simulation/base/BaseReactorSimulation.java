@@ -68,7 +68,7 @@ public abstract class BaseReactorSimulation implements IReactorSimulation {
         }
         
         final ReactorModeratorRegistry.IModeratorProperties manifoldSignalingProperties;
-        if (simulationDescription.passivelyCooled()) {
+        if (configuration.passivelyCooled()) {
             output = battery = new Battery((((long) (x + 2) * (y + 2) * (z + 2)) - ((long) x * y * z)) * configuration.passiveBatteryPerExternalBlock(), configuration);
             coolantTank = null;
             manifoldSignalingProperties = new ReactorModeratorRegistry.ModeratorProperties(defaultModeratorProperties);
@@ -156,7 +156,7 @@ public abstract class BaseReactorSimulation implements IReactorSimulation {
         }
         stackToCoolantSystemRFKT *= configuration.stackToCoolantRFMKT();
         
-        if (simulationDescription.passivelyCooled()) {
+        if (configuration.passivelyCooled()) {
             stackToCoolantSystemRFKT *= configuration.passiveCoolingTransferEfficiency();
         }
         

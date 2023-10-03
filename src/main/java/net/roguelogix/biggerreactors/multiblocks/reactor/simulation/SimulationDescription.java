@@ -40,7 +40,6 @@ public class SimulationDescription implements IPhosphophylliteSerializable {
     @Nullable
     boolean[][] controlRodLocations = null;
     int controlRodCount = 0;
-    boolean passivelyCooled = false;
     public void setSize(int x, int y, int z) {
         if (x <= 0 || y <= 0 || z <= 0) {
             throw new IllegalArgumentException("all sizes must be greater than zero");
@@ -117,10 +116,6 @@ public class SimulationDescription implements IPhosphophylliteSerializable {
         manifoldLocations[x][y][z] = manifold;
     }
     
-    public void setPassivelyCooled(boolean passivelyCooled) {
-        this.passivelyCooled = passivelyCooled;
-    }
-    
     public record Builder(boolean experimental, boolean fullPass, boolean allowOffThread, boolean allowMultiThread, boolean allowAccelerated) {
         
         public IReactorSimulation build(SimulationDescription description, SimulationConfiguration configuration) {
@@ -185,10 +180,6 @@ public class SimulationDescription implements IPhosphophylliteSerializable {
     public boolean isControlRodAt(int x, int z) {
         assert controlRodLocations != null;
         return controlRodLocations[x][z];
-    }
-    
-    public boolean passivelyCooled() {
-        return passivelyCooled;
     }
     
     public int manifoldCount() {
@@ -258,7 +249,6 @@ public class SimulationDescription implements IPhosphophylliteSerializable {
         compound.put("manifoldLocations", manifoldLocations);
         compound.put("controlRodLocations", controlRodLocations);
         compound.put("defaultModeratorProperties", defaultModeratorProperties.toROBNMap());
-        compound.put("passivelyCooled", passivelyCooled);
         
         return compound;
     }
@@ -364,6 +354,5 @@ public class SimulationDescription implements IPhosphophylliteSerializable {
             }
             setDefaultIModeratorProperties(new ReactorModeratorRegistry.ModeratorProperties(absorption, heatEfficiency, moderation, heatConductivity));
         }
-        setPassivelyCooled(compound.getBoolean("passivelyCooled"));
     }
 }
