@@ -7,6 +7,7 @@ import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
 import net.roguelogix.phosphophyllite.debug.DebugInfo;
 import net.roguelogix.phosphophyllite.serialization.PhosphophylliteCompound;
 import net.roguelogix.phosphophyllite.util.HeatBody;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2ic;
 import org.joml.Vector3ic;
 
@@ -264,7 +265,7 @@ public abstract class BaseReactorSimulation implements IReactorSimulation {
         return ambientHeat.temperature();
     }
     
-    @Nullable
+    @NotNull
     @Override
     public PhosphophylliteCompound save() {
         var compound = new PhosphophylliteCompound();
