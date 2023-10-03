@@ -2,6 +2,8 @@ package net.roguelogix.biggerreactors.multiblocks.reactor.simulation;
 
 import net.roguelogix.biggerreactors.Config;
 
+import java.util.Map;
+
 public record SimulationConfiguration(
         double ambientTemperature,
         double fuelUsageMultiplier,
@@ -44,6 +46,10 @@ public record SimulationConfiguration(
 //        double simulationRays
 ) {
     
+    public SimulationConfiguration(double ambientTemperature) {
+        this(Config.CONFIG.Reactor, ambientTemperature);
+    }
+    
     public SimulationConfiguration(Config.Reactor reactorConfig, double ambientTemperature) {
         this(ambientTemperature,
                 reactorConfig.FuelUsageMultiplier,
@@ -79,6 +85,45 @@ public record SimulationConfiguration(
                 reactorConfig.FuelAbsorptionScalingShiftMultiplier,
                 reactorConfig.FuelAbsorptionScalingRateExponentMultiplier,
                 reactorConfig.fuelRadScalingMultiplier
+        );
+    }
+    
+    public SimulationConfiguration(Map<String, Object> jsonMap) {
+        this(
+                (double) jsonMap.get("ambientTemperature"),
+                (double) jsonMap.get("fuelUsageMultiplier"),
+                (double) jsonMap.get("outputMultiplier"),
+                (double) jsonMap.get("passiveOutputMultiplier"),
+                (double) jsonMap.get("activeOutputMultiplier"),
+                (long) jsonMap.get("fuelRodFuelCapacity"),
+                (double) jsonMap.get("fuelFertilityMinimumDecay"),
+                (double) jsonMap.get("fuelFertilityDecayDenominator"),
+                (double) jsonMap.get("fuelFertilityDecayDenominatorInactiveMultiplier"),
+                (double) jsonMap.get("casingHeatTransferRFMKT"),
+                (double) jsonMap.get("fuelToStackRFKTMultiplier"),
+                (double) jsonMap.get("stackToCoolantRFMKT"),
+                (double) jsonMap.get("stackToAmbientRFMKT"),
+                (long) jsonMap.get("passiveBatteryPerExternalBlock"),
+                (double) jsonMap.get("passiveCoolingTransferEfficiency"),
+                (long) jsonMap.get("coolantTankCapacityPerFuelRod"),
+                (double) jsonMap.get("stackRFM3K"),
+                (double) jsonMap.get("rodRFM3K"),
+                (double) jsonMap.get("fuelReactivity"),
+                (double) jsonMap.get("fissionEventsPerFuelUnit"),
+                (double) jsonMap.get("RFPerRadiationUnit"),
+                (double) jsonMap.get("fuelPerRadiationUnit"),
+                (double) jsonMap.get("fuelHardnessDivisor"),
+                (double) jsonMap.get("fuelAbsorptionCoefficient"),
+                (double) jsonMap.get("fuelModerationFactor"),
+                (double) jsonMap.get("radIntensityScalingMultiplier"),
+                (double) jsonMap.get("radIntensityScalingRateExponentMultiplier"),
+                (double) jsonMap.get("radIntensityScalingShiftMultiplier"),
+                (double) jsonMap.get("radPenaltyShiftMultiplier"),
+                (double) jsonMap.get("radPenaltyRateMultiplier"),
+                (double) jsonMap.get("fuelAbsorptionScalingMultiplier"),
+                (double) jsonMap.get("fuelAbsorptionScalingShiftMultiplier"),
+                (double) jsonMap.get("fuelAbsorptionScalingRateExponentMultiplier"),
+                (double) jsonMap.get("fuelRadScalingMultiplier")
         );
     }
 }
