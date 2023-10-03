@@ -26,7 +26,6 @@ import net.roguelogix.phosphophyllite.networking.SimplePhosChannel;
 import net.roguelogix.phosphophyllite.registry.OnModLoad;
 import net.roguelogix.phosphophyllite.robn.ROBNObject;
 import net.roguelogix.phosphophyllite.serialization.PhosphophylliteCompound;
-import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -57,7 +56,7 @@ public class ReactorModeratorRegistry {
         
         @Override
         default void fromROBNMap(Map<String, Object> map) {
-            throw new NotImplementedException("");
+            throw new IllegalArgumentException("");
         }
     }
     

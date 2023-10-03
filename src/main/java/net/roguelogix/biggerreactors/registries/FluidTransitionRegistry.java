@@ -10,7 +10,6 @@ import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.phosphophyllite.config.ConfigValue;
 import net.roguelogix.phosphophyllite.data.DatapackLoader;
 import net.roguelogix.phosphophyllite.robn.ROBNObject;
-import org.apache.commons.lang3.NotImplementedException;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -44,7 +43,7 @@ public class FluidTransitionRegistry {
     
         @Override
         default void fromROBNMap(Map<String, Object> map) {
-            throw new NotImplementedException("");
+            throw new IllegalArgumentException("");
         }
     }
     
