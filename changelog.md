@@ -1,3 +1,13 @@
+# 1.20.1-0.6.0-beta.10.2
+
+## Reactor
+ - fix coolant port not accepting coolant
+ - add Vulkan backed experimental simulation
+ - simulation fully able to be loaded without Neo, backing web accessible simulator
+
+# Misc
+ - migrate to Neo
+
 # 1.20.1-0.6.0-beta.10.1
 
 ## Reactor
