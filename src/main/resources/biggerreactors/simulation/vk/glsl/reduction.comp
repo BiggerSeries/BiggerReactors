@@ -1,0 +1,40 @@
+#version 460 core
+
+layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+
+struct RayBurnInfo {
+    float fuelRFAdded;
+    float fuelRadAdded;
+    float caseRFAdded;
+    float padding;
+};
+
+layout(push_constant, std430) uniform PushConstants {
+    int reductionCount;
+};
+
+layout(binding = 5, std430) readonly buffer InSSBO {
+    RayBurnInfo inputs[];
+};
+
+layout(binding = 6, std430) writeonly buffer OutSSBO {
+    RayBurnInfo outputs[];
+};
+
+void main() {
+    const uint globalID = gl_GlobalInvocationID.x;
+    const uint globalSize = gl_NumWorkGroups.x;
+
+    RayBurnInfo outputInfo;
+    outputInfo.caseRFAdded = 0;
+    outputInfo.fuelRFAdded = 0;
+    outputInfo.fuelRadAdded = 0;
+    uint currentIndex = globalID;
+    for (uint i = 0; i < reductionCount; i++, currentIndex += globalSize) {
+        const RayBurnInfo inputInfo = inputs[currentIndex];
+        outputInfo.caseRFAdded += inputInfo.caseRFAdded;
+        outputInfo.fuelRFAdded += inputInfo.fuelRFAdded;
+        outputInfo.fuelRadAdded += inputInfo.fuelRadAdded;
+    }
+    outputs[globalID] = outputInfo;
+}

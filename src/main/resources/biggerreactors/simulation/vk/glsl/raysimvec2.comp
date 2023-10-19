@@ -1,0 +1,234 @@
+#version 460 core
+#extension GL_EXT_shader_8bit_storage : require
+#extension GL_EXT_shader_16bit_storage : require
+#extension GL_EXT_shader_explicit_arithmetic_types : require
+//#extension GL_EXT_shader_explicit_arithmetic_types_float16 : require
+
+#define MAXIMUM_MODERATOR_COUNT 256// 8 bit uint
+#define MAXIMUM_RAY_STEPS 8
+#define BARRIER     memoryBarrierShared(); barrier()
+
+layout(local_size_x = 1, local_size_y_id = 0, local_size_z_id = 1) in;
+
+layout(constant_id = 2) const uint RayTTL = 4;
+layout(constant_id = 3) const uint RodAreaSize = 9;
+layout(constant_id = 4) const uint RaysPerBatch = 64;
+// specialization doesnt work for this, at least, the validation layers seem to think it doesnt, so, thats nice
+
+struct Moderator {
+    float absorption;
+    float heatEfficiency;
+    float moderation;
+    float padding;
+};
+
+struct RayStep {
+    float stepLength;
+    int x, y, z;
+};
+
+struct Ray {
+    RayStep steps[MAXIMUM_RAY_STEPS];
+};
+
+struct RayBurnInfo {
+    float fuelRFAdded;
+    float fuelRadAdded;
+    float caseRFAdded;
+    float padding;
+};
+
+#if __LINE__ > 0
+#define MERGE_(a, b)  a##b
+#define LABEL_(a) MERGE_(unique_name_, a)
+#define UNIQUE_NAME LABEL_(__LINE__)
+#else
+#define UNIQUE_NAME NAME
+#endif
+
+layout(push_constant, std430) uniform UNIQUE_NAME {
+    int xSize, zSize;
+
+    float RFPerRadiationUnit;
+    float FuelAbsorptionCoefficient;
+    float FuelModerationFactor;
+    float FuelHardnessMultiplier;
+} ReactorConstantInfo;
+
+layout(binding = 0, std140) uniform UNIQUE_NAME {
+    float FuelAbsorptionTemperatureCoefficient;
+    float InitialHardness;
+    float padding;
+    float padding1;
+
+    Moderator moderators[MAXIMUM_MODERATOR_COUNT];
+} ReactorInfo;
+
+layout(binding = 1, std430) readonly buffer UNIQUE_NAME {
+    vec2 controlRodInfo[];
+};
+
+layout(binding = 2, std430) readonly buffer UNIQUE_NAME {
+    u16vec2 controlRodPositions[];
+};
+
+layout(binding = 3, std430) readonly buffer UNIQUE_NAME {
+    uint8_t moderatorIndices[];
+};
+
+layout(binding = 4, std430) readonly buffer UNIQUE_NAME {
+    Ray rays[];
+};
+
+layout(binding = 5, std430) writeonly buffer UNIQUE_NAME {
+    RayBurnInfo results[];
+};
+
+shared float localInsertions[9][9];
+shared Moderator moderators[MAXIMUM_MODERATOR_COUNT];
+shared Ray currentRay;
+shared RayStep currentRayStep;
+
+bool isProvokingInvokation = false;
+
+void copyLocalResources(const u16vec2 controlRodPos);
+RayBurnInfo raySim(const ivec3 reactorPos, const u16vec2 controlRodPosition, const float initialIntensity);
+
+void main() {
+    // same index across the workgroup
+    const u16vec2 controlRodPos = controlRodPositions[gl_GlobalInvocationID.x];
+    isProvokingInvokation = gl_LocalInvocationID.x == 0 && gl_LocalInvocationID.y == 0 && gl_LocalInvocationID.z == 0;
+    if (isProvokingInvokation) {
+        copyLocalResources(controlRodPos);
+    }
+        BARRIER;
+
+    RayBurnInfo accumBurnInfo;
+    accumBurnInfo.fuelRFAdded = 0;
+    accumBurnInfo.fuelRadAdded = 0;
+    accumBurnInfo.caseRFAdded = 0;
+
+    const uint batchBaseRay = RaysPerBatch * gl_GlobalInvocationID.z;
+    const uint rodLinearIndex = controlRodPos.x * ReactorConstantInfo.xSize + controlRodPos.y;
+    const float initialIntensity = controlRodInfo[rodLinearIndex].y;
+    const ivec3 reactorPos = ivec3(controlRodPos.x, gl_GlobalInvocationID.y * 2, controlRodPos.y);
+
+    for (uint i = 0; i < RaysPerBatch; i++) {
+        const uint currentRayIndex = batchBaseRay + i;
+        if (isProvokingInvokation) {
+            currentRay = rays[currentRayIndex];
+        }
+            BARRIER;
+
+        RayBurnInfo rayBurnInfo = raySim(reactorPos, controlRodPos, initialIntensity);
+
+        accumBurnInfo.fuelRFAdded += rayBurnInfo.fuelRFAdded;
+        accumBurnInfo.fuelRadAdded += rayBurnInfo.fuelRadAdded;
+        accumBurnInfo.caseRFAdded += rayBurnInfo.caseRFAdded;
+    }
+
+    const uvec3 globalPos = gl_GlobalInvocationID;
+    const uvec3 globalSize = gl_WorkGroupSize * gl_NumWorkGroups;
+    const uint fuelRodLinearIndex = ((globalPos.x) * globalSize.z + globalPos.z) * globalSize.y + globalPos.y;
+    //    results[fuelRodLinearIndex] = accumBurnInfo;
+    results[fuelRodLinearIndex].fuelRFAdded = accumBurnInfo.fuelRFAdded;
+    results[fuelRodLinearIndex].fuelRadAdded = accumBurnInfo.fuelRadAdded;
+    results[fuelRodLinearIndex].caseRFAdded = accumBurnInfo.caseRFAdded;
+}
+
+void copyLocalResources(const u16vec2 controlRodPos){
+    for (uint i = 0; i < MAXIMUM_MODERATOR_COUNT; i++){
+        moderators[i].absorption = ReactorInfo.moderators[i].absorption;
+        moderators[i].heatEfficiency = ReactorInfo.moderators[i].heatEfficiency;
+        moderators[i].moderation = ReactorInfo.moderators[i].moderation;
+    }
+    for (uint i = 0; i < RodAreaSize; i++) {
+        const uint readX = (controlRodPos.x - RayTTL) + i;
+        const uint xReadOffset = readX * ReactorConstantInfo.xSize;
+        for (uint j = 0; j < RodAreaSize; j++) {
+            const uint readZ = (controlRodPos.y - RayTTL) + j;
+            if (readX > ReactorConstantInfo.xSize || readZ > ReactorConstantInfo.zSize) {
+                localInsertions[i][j] = 0;
+                continue;
+            }
+            const uint xzReadOffset = xReadOffset + readZ;
+            localInsertions[i][j] = controlRodInfo[xzReadOffset].x;
+        }
+    }
+}
+
+RayBurnInfo raySim(const ivec3 reactorPos, const u16vec2 controlRodPosition, const float initialIntensity) {
+    vec2 caseRFAdded = vec2(0);
+    vec2 fuelRFAdded = vec2(0);
+    vec2 fuelRadAdded = vec2(0);
+    vec2 hardness = vec2(ReactorInfo.InitialHardness);
+    vec2 intensity = vec2(initialIntensity);
+
+    for (int i = 0; i < MAXIMUM_RAY_STEPS; i++) {
+        if (isProvokingInvokation){
+            currentRayStep = currentRay.steps[i];
+        }
+            BARRIER;
+        if (currentRayStep.stepLength == 0.0) {
+            break;
+        }
+        const int currentX = reactorPos.x + currentRayStep.x;
+        const int currentZ = reactorPos.z + currentRayStep.z;
+        if (currentX < 0 || currentX >= ReactorConstantInfo.xSize || currentZ < 0 || currentZ >= ReactorConstantInfo.zSize) {
+            // all work items in this workgroup will hit this at the same time
+            break;
+        }
+        const float stepLength = currentRayStep.stepLength;
+        const int currentYScalar = reactorPos.y + currentRayStep.y;
+        const ivec2 currentY = ivec2(currentYScalar, currentYScalar + 1);
+        const ivec2 inRangeY = ivec2(greaterThanEqual(currentY, ivec2(0))) & ivec2(lessThan(currentY,  ivec2((gl_WorkGroupSize.y * 2) * gl_NumWorkGroups.y)));
+        const vec2 NoOpMultiplier = vec2(inRangeY);
+        const int baseModeratorIndexIndex = ((((currentX * ReactorConstantInfo.zSize) + currentZ)) * int((gl_WorkGroupSize.y * 2) * gl_NumWorkGroups.y));
+        const ivec2 moderatorIndexIndicies = ivec2(baseModeratorIndexIndex) + (currentY * inRangeY);
+        const uvec2 moderatorIndices = uvec2(moderatorIndices[moderatorIndexIndicies.x], moderatorIndices[moderatorIndexIndicies.y]);
+        if(moderatorIndices.x != 0) {
+            // not a fuel rod
+            const Moderator moderator0 = moderators[moderatorIndices.x];
+            const Moderator moderator1 = moderators[moderatorIndices.y];
+            const vec2 absorption = vec2(moderator0.absorption, moderator1.absorption);
+            const vec2 heatEfficiency = vec2(moderator0.heatEfficiency, moderator1.heatEfficiency);
+            const vec2 moderation = vec2(moderator0.moderation, moderator1.moderation);
+
+            const vec2 radAbsorbed = (intensity * absorption * (1.0f - hardness) * stepLength);
+            intensity = max(vec2(0.0f), intensity - radAbsorbed);
+            // if i could get rid of this div, that would be great
+            hardness /= (((moderation) * stepLength) + 1.0f);
+            caseRFAdded = fma(heatEfficiency * radAbsorbed, NoOpMultiplier, caseRFAdded);
+        } else {
+            // not not fuel rod
+
+            const uint rodX = currentRayStep.x + RayTTL;
+            const uint rodZ = currentRayStep.z + RayTTL;
+            const float controlRodInsertion = localInsertions[rodX][rodZ];
+
+            const vec2 baseAbsorption = ReactorInfo.FuelAbsorptionTemperatureCoefficient * (1.0f - (hardness * ReactorConstantInfo.FuelHardnessMultiplier));
+
+            const vec2 scaledAbsorption = baseAbsorption * ReactorConstantInfo.FuelAbsorptionCoefficient * stepLength;
+
+            const float halfRodInsertion = controlRodInsertion * 0.5f;
+            const vec2 controlRodBonus = (1.0f - scaledAbsorption) * halfRodInsertion;
+            const vec2 controlRodPenalty = scaledAbsorption * halfRodInsertion;
+
+            const vec2 radiationAbsorbed = (scaledAbsorption + controlRodBonus) * intensity;
+            const vec2 fertilityAbsorbed = (scaledAbsorption - controlRodPenalty) * intensity;
+
+            const float fuelModerationFactor = ReactorConstantInfo.FuelModerationFactor + fma(ReactorConstantInfo.FuelModerationFactor, controlRodInsertion, controlRodInsertion);
+
+            intensity = max(vec2(0.0f), intensity - (radiationAbsorbed));
+            hardness /= vec2(((fuelModerationFactor - 1.0f) * stepLength) + 1.0f);
+
+            fuelRFAdded = fma(radiationAbsorbed, NoOpMultiplier, fuelRFAdded);
+            fuelRadAdded = fma(fertilityAbsorbed, NoOpMultiplier, fuelRadAdded);
+        }
+    }
+    RayBurnInfo burnInfo;
+    burnInfo.fuelRFAdded = fuelRFAdded.x + fuelRFAdded.y;
+    burnInfo.fuelRadAdded = fuelRadAdded.x + fuelRadAdded.y;
+    burnInfo.caseRFAdded = caseRFAdded.x + caseRFAdded.y;
+    return burnInfo;
+}

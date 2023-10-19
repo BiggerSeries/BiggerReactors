@@ -43,6 +43,8 @@ public abstract class BaseReactorSimulation implements IReactorSimulation {
     
     protected final SimulationConfiguration configuration;
     
+    private boolean wasActiveLastTick = false;
+    
     protected BaseReactorSimulation(SimulationDescription simulationDescription, SimulationConfiguration configuration) {
         this.configuration = configuration;
         x = simulationDescription.x();
@@ -179,9 +181,9 @@ public abstract class BaseReactorSimulation implements IReactorSimulation {
     }
     
     @Override
-    public void tick(boolean active) {
+    public final void tick(boolean active) {
         double toBurn = 0;
-        if (active) {
+        if (wasActiveLastTick || (!isAsync() && active)) {
             toBurn = radiate();
         } else {
             fuelTank.burn(0);
@@ -203,10 +205,11 @@ public abstract class BaseReactorSimulation implements IReactorSimulation {
         output.transferWith(stackHeat, stackToCoolantSystemRFKT);
         stackHeat.transferWith(ambientHeat, casingToAmbientRFKT);
         
-        if(active){
+        if(active && isAsync()){
             startNextRadiate();
-            fuelTank.burn(toBurn);
+            wasActiveLastTick = true;
         }
+        fuelTank.burn(toBurn);
     }
     
     protected abstract double radiate();

@@ -2,14 +2,12 @@ package net.roguelogix.biggerreactors.multiblocks.reactor.simulation;
 
 import net.roguelogix.biggerreactors.registries.FluidTransitionRegistry;
 import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
-import net.roguelogix.phosphophyllite.debug.DebugInfo;
 import net.roguelogix.phosphophyllite.debug.IDebuggable;
 import net.roguelogix.phosphophyllite.serialization.IPhosphophylliteSerializable;
 import net.roguelogix.phosphophyllite.serialization.PhosphophylliteCompound;
 import net.roguelogix.phosphophyllite.util.NonnullDefault;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -44,6 +42,10 @@ public interface IReactorSimulation extends IPhosphophylliteSerializable, IDebug
     
     default boolean isAsync() {
         return false;
+    }
+    
+    default boolean readyToTick() {
+        return true;
     }
     
     @NotNull

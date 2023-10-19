@@ -3,6 +3,8 @@ package net.roguelogix.biggerreactors.multiblocks.reactor.simulation;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.accellerated.ocl.SingleQueueOpenCL12Simulation;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.accellerated.ocl.CLUtil;
+import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.accellerated.vk.Vk13Simulation;
+import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.accellerated.vk.VkUtil;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.cpu.FullPassReactorSimulation;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.cpu.TimeSlicedReactorSimulation;
 import net.roguelogix.biggerreactors.registries.ReactorModeratorRegistry;
@@ -121,21 +123,22 @@ public class SimulationDescription implements IPhosphophylliteSerializable {
         public IReactorSimulation build(SimulationDescription description, SimulationConfiguration configuration) {
             description.ensureValid();
     
-            if (experimental) {
-                return new SingleQueueOpenCL12Simulation(description, configuration);
+            if (experimental && VkUtil.available) {
+                return new Vk13Simulation(description, configuration);
             }
             if (!fullPass) {
                 return new TimeSlicedReactorSimulation(description, configuration);
             }
             
-            var rodMultiple = description.controlRodCount / Config.CONFIG.Reactor.ModeSpecific.ControlRodBatchSize;
-            
-            if (allowAccelerated && rodMultiple >= 16) {
+            var fuelRods = description.controlRodCount * description.y;
+            if (allowAccelerated && fuelRods >= 8182) {
                 if (CLUtil.available) {
                     return new SingleQueueOpenCL12Simulation(description, configuration);
                 }
             }
-            if (allowMultiThread && rodMultiple >= 2) {
+            
+            var controlRodBatches = description.controlRodCount / Config.CONFIG.Reactor.ModeSpecific.ControlRodBatchSize;
+            if (allowMultiThread && controlRodBatches >= 2) {
                 return new FullPassReactorSimulation.MultiThreaded(description, configuration, false);
             }
             if (allowOffThread) {

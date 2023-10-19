@@ -61,6 +61,12 @@ public class FullPassReactorSimulation extends BaseReactorSimulation {
         initialIntensties = new double[controlRods.length];
         
         fullPassIrradiationRequest = new IrradiationRequest(0, controlRods.length, this.moderatorCaches.toArray(new ModeratorCache[0]), y);
+        
+        FuelAbsorptionCoefficient = configuration.fuelAbsorptionCoefficient();
+        FuelModerationFactor = configuration.fuelModerationFactor();
+        fuelHardnessMultiplier = 1 / configuration.fuelHardnessDivisor();
+        rayMultiplier = 1.0 / (double) (SimUtil.rays.size() * y);
+        
     }
     
     protected static class IrradiationRequest {
@@ -97,10 +103,10 @@ public class FullPassReactorSimulation extends BaseReactorSimulation {
     }
     
     protected double fuelAbsorptionTemperatureCoefficient;
-    protected double FuelAbsorptionCoefficient;
-    protected double FuelModerationFactor;
-    protected double fuelHardnessMultiplier;
-    protected double rayMultiplier;
+    protected final double FuelAbsorptionCoefficient;
+    protected final double FuelModerationFactor;
+    protected final double fuelHardnessMultiplier;
+    protected final double rayMultiplier;
     protected double initialHardness;
     
     protected IrradiationRequest fullPassIrradiationRequest;
@@ -151,11 +157,7 @@ public class FullPassReactorSimulation extends BaseReactorSimulation {
         
         final double FuelUsageMultiplier = configuration.fuelUsageMultiplier();
         final double FuelPerRadiationUnit = configuration.fuelPerRadiationUnit();
-        FuelAbsorptionCoefficient = configuration.fuelAbsorptionCoefficient();
-        FuelModerationFactor = configuration.fuelModerationFactor();
-        fuelHardnessMultiplier = 1 / configuration.fuelHardnessDivisor();
-        rayMultiplier = 1.0 / (double) (SimUtil.rays.size() * y);
-        
+
         double rawFuelUsage = 0;
         double fuelRFAdded = 0;
         
@@ -347,6 +349,10 @@ public class FullPassReactorSimulation extends BaseReactorSimulation {
         @Nullable
         private Event doneEvent;
         private final Runnable mainRunnable = () -> runIrradiationRequest(fullPassIrradiationRequest);
+        
+        public MultiThreaded(SimulationDescription simulationDescription, SimulationConfiguration configuration) {
+            this(simulationDescription, configuration, false);
+        }
         
         public MultiThreaded(SimulationDescription simulationDescription, SimulationConfiguration configuration, boolean singleThread) {
             super(simulationDescription, configuration);

@@ -141,18 +141,13 @@ kernel void raySim(
     local short2 controlRodPos;
 
     {
-        event_t rodPosCopy = async_work_group_copy(&controlRodPos, controlRodPositions + globalPos.x, 1, 0);
-        event_t reactorInfoCopy = async_work_group_copy((local char*) &reactorInfo, (global char*) (reactorInfoGlobal), sizeof(ReactorInfo), 0);
+        event_t firstCopy = async_work_group_copy(&controlRodPos, controlRodPositions + globalPos.x, 1, 0);
+        async_work_group_copy((local char*) &reactorInfo, (global char*) (reactorInfoGlobal), sizeof(ReactorInfo), firstCopy);
 
-        event_t events[ROD_AREA_WIDTH + 2];
-        events[0] = async_work_group_copy((local char*) moderatorsLocal, (global char*) (moderatorsGlobal), sizeof(Moderator) * moderatorCount, 0);
-        events[1] = async_work_group_copy((local char*) &rodRayInfo, (global char*) (rodRayInfosGlobal + globalPos.x), sizeof(RodRayInfo), 0);
+        event_t secondCopy = async_work_group_copy((local char*) moderatorsLocal, (global char*) (moderatorsGlobal), sizeof(Moderator) * moderatorCount, 0);
+        async_work_group_copy((local char*) &rodRayInfo, (global char*) (rodRayInfosGlobal + globalPos.x), sizeof(RodRayInfo), secondCopy);
 
-        wait_group_events(1, &rodPosCopy);
-        wait_group_events(1, &reactorInfoCopy);
-
-//        wait_group_events(1, &events[0]);
-//        wait_group_events(1, &events[1]);
+        wait_group_events(1, &firstCopy);
 
         int usedEvents = 2;
         for (int i = 0; i < ROD_AREA_WIDTH; ++i) {
@@ -171,13 +166,11 @@ kernel void raySim(
             writeOffset += i * ROD_AREA_WIDTH;
 
             if (size != 0) {
-                events[usedEvents++] = async_work_group_copy(localInsertions + writeOffset, controlRodInsertions + readOffset, size, 0);
-//                wait_group_events(1, &events[usedEvents - 1]);
+               async_work_group_copy(localInsertions + writeOffset, controlRodInsertions + readOffset, size, secondCopy);
             }
         }
 
-
-        wait_group_events(usedEvents, events);
+        wait_group_events(1, &secondCopy);
     }
 
     const int3 reactorPos = (int3)(controlRodPos.x, globalPos.y, controlRodPos.y);
