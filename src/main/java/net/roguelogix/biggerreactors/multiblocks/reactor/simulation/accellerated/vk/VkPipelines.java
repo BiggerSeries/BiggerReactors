@@ -28,6 +28,7 @@ public class VkPipelines {
     
     // best sizes benchmarked on a 5800u iGPU
     private static final int[] zSizes = new int[]{
+            0, // height 0 is invalid
             16, 16, 16, 16,
             16,  8,  8, 16,
             16,  8,  8,  8,
