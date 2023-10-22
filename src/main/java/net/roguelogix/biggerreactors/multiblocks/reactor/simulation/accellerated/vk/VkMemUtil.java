@@ -1,9 +1,9 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.simulation.accellerated.vk;
 
-import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.roguelogix.phosphophyllite.util.NonnullDefault;
+import net.roguelogix.phosphophyllite.util.Pair;
 import net.roguelogix.quartz.internal.util.PointerWrapper;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.system.MemoryStack;
@@ -134,19 +134,19 @@ public class VkMemUtil {
             if (alignmentWaste > 0) {
                 final var newAllocs = freeAlloc.split(alignmentWaste);
                 // not concurrent modification because this will always return
-                freeAllocations.add(newAllocs.getFirst());
-                freeAlloc = newAllocs.getSecond();
+                freeAllocations.add(newAllocs.first);
+                freeAlloc = newAllocs.second;
                 
-                int index = freeAllocations.indexOf(newAllocs.getFirst());
+                int index = freeAllocations.indexOf(newAllocs.first);
                 collapseFreeAllocationWithNext(index - 1);
                 collapseFreeAllocationWithNext(index);
             }
             if (freeAlloc.size > size) {
                 final var newAllocs = freeAlloc.split(size);
                 // not concurrent modification because this will always return
-                freeAlloc = newAllocs.getFirst();
-                freeAllocations.add(newAllocs.getSecond());
-                int index = freeAllocations.indexOf(newAllocs.getSecond());
+                freeAlloc = newAllocs.first;
+                freeAllocations.add(newAllocs.second);
+                int index = freeAllocations.indexOf(newAllocs.second);
                 collapseFreeAllocationWithNext(index - 1);
                 collapseFreeAllocationWithNext(index);
             }

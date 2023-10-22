@@ -13,13 +13,11 @@ import org.lwjgl.vulkan.*;
 
 import java.nio.LongBuffer;
 
-import static com.sun.jna.Native.LONG_SIZE;
-import static com.sun.jna.Native.POINTER_SIZE;
 import static net.roguelogix.biggerreactors.multiblocks.reactor.simulation.accellerated.vk.VkPools.allocCommandBuffer;
 import static net.roguelogix.biggerreactors.multiblocks.reactor.simulation.accellerated.vk.VkPools.freeCommandBufferNow;
 import static net.roguelogix.biggerreactors.multiblocks.reactor.simulation.accellerated.vk.VkUtil.*;
 import static org.lwjgl.system.MemoryUtil.memGetAddress;
-import static org.lwjgl.system.MemoryUtil.memPutAddress;
+import static org.lwjgl.system.MemoryUtil.memPutLong;
 import static org.lwjgl.vulkan.VK13.*;
 
 @NonnullDefault
@@ -505,7 +503,7 @@ public class Vk13Simulation extends FullPassReactorSimulation {
     }
     
     @Override
-    protected void finalize() throws Throwable {
+    protected void finalize() {
         waitSemaphore();
     }
     
@@ -513,8 +511,8 @@ public class Vk13Simulation extends FullPassReactorSimulation {
         var structAddress = waitInfo.address();
         var semaphoresPointer = memGetAddress(structAddress + VkSemaphoreWaitInfo.PSEMAPHORES);
         var valuesPointer = memGetAddress(structAddress + VkSemaphoreWaitInfo.PVALUES);
-        memPutAddress(semaphoresPointer + ((long) index * POINTER_SIZE), semaphorePointer.get(0));
-        memPutAddress(valuesPointer + ((long) index * LONG_SIZE), semaphoreWaitValuePointer.get(0));
+        memPutLong(semaphoresPointer + ((long) index * 8), semaphorePointer.get(0));
+        memPutLong(valuesPointer + ((long) index * 8), semaphoreWaitValuePointer.get(0));
     }
     
     @Override

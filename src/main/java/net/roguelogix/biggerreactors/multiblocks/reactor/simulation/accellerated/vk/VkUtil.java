@@ -446,6 +446,10 @@ public class VkUtil {
         return returnCode;
     }
     
+    public static boolean canThreadSubmit(){
+        return roundRobinQueues || threadQueueIndex.get() != -1;
+    }
+    
     public static void queueSubmit(VkSubmitInfo2.Buffer submitInfos) {
         final int queueIndex;
         if (roundRobinQueues) {
@@ -454,7 +458,7 @@ public class VkUtil {
         } else {
             queueIndex = threadQueueIndex.get();
             if (queueIndex == -1) {
-                throw new VulkanException("No queue aquired for thread");
+                throw new VulkanException("No queue acquired for thread");
             }
         }
         vkQueueSubmit2(queues.get(queueIndex), submitInfos, VK_NULL_HANDLE);
