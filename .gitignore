@@ -33,3 +33,5 @@ logs
 forge*changelog.txt
 
 publishlocal
+
+glslc
