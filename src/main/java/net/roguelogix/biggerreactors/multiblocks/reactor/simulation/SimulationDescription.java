@@ -1,8 +1,8 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.simulation;
 
 import net.roguelogix.biggerreactors.Config;
-import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.accellerated.ocl.SingleQueueOpenCL12Simulation;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.accellerated.ocl.CLUtil;
+import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.accellerated.ocl.SingleQueueOpenCL12Simulation;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.accellerated.vk.Vk13Simulation;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.accellerated.vk.VkUtil;
 import net.roguelogix.biggerreactors.multiblocks.reactor.simulation.cpu.FullPassReactorSimulation;
@@ -209,38 +209,36 @@ public class SimulationDescription implements IPhosphophylliteSerializable {
         }
         ArrayList<ReactorModeratorRegistry.IModeratorProperties> moderatorProperties = new ArrayList<>();
         ArrayList<ArrayList<ArrayList<Integer>>> moderatorIndexes = new ArrayList<>();
-        ArrayList<ArrayList<ArrayList<Boolean>>> manifoldLocations = new ArrayList<>();
-        ArrayList<ArrayList<Boolean>> controlRodLocations = new ArrayList<>();
         for (int i = 0; i < x; i++) {
             ArrayList<ArrayList<Integer>> moderatorIndexesX = new ArrayList<>();
-            ArrayList<ArrayList<Boolean>> manifoldLocationsX = new ArrayList<>();
-            ArrayList<Boolean> controlRodLocationsX = new ArrayList<>();
             for (int j = 0; j < y; j++) {
                 ArrayList<Integer> moderatorIndexesXY = new ArrayList<>();
-                ArrayList<Boolean> manifoldLocationsXY = new ArrayList<>();
                 for (int k = 0; k < z; k++) {
+                    moderatorIndexesXY.add(-1);
+                
                     ReactorModeratorRegistry.IModeratorProperties properties = this.moderatorProperties[i][j][k];
-                    if (properties == null) {
-                        moderatorIndexesXY.add(-1);
-                    } else {
+                    if (properties != null) {
                         int index = moderatorProperties.indexOf(properties);
                         if (index == -1) {
                             index = moderatorProperties.size();
                             moderatorProperties.add(properties);
                         }
-                        moderatorIndexesXY.add(index);
+                        moderatorIndexesXY.set(moderatorIndexesXY.size() - 1, index);
                     }
-                    manifoldLocationsXY.add(this.manifoldLocations[i][j][k]);
+                    if (this.manifoldLocations[i][j][k]) {
+                        moderatorIndexesXY.set(moderatorIndexesXY.size() - 1, -2);
+                    }
                 }
                 moderatorIndexesX.add(moderatorIndexesXY);
-                manifoldLocationsX.add(manifoldLocationsXY);
             }
             for (int j = 0; j < z; j++) {
-                controlRodLocationsX.add(this.controlRodLocations[i][j]);
+                if(this.controlRodLocations[i][j]){
+                    for (int k = 0; k < y; k++) {
+                        moderatorIndexesX.get(k).set(j, -3);
+                    }
+                }
             }
             moderatorIndexes.add(moderatorIndexesX);
-            manifoldLocations.add(manifoldLocationsX);
-            controlRodLocations.add(controlRodLocationsX);
         }
         
         
@@ -249,8 +247,6 @@ public class SimulationDescription implements IPhosphophylliteSerializable {
         compound.put("z", z);
         compound.put("moderatorProperties", moderatorProperties);
         compound.put("moderatorIndices", moderatorIndexes);
-        compound.put("manifoldLocations", manifoldLocations);
-        compound.put("controlRodLocations", controlRodLocations);
         compound.put("defaultModeratorProperties", defaultModeratorProperties.toROBNMap());
         
         return compound;
@@ -286,51 +282,32 @@ public class SimulationDescription implements IPhosphophylliteSerializable {
             }
         }
         List<?> moderatorIndices = compound.getList("moderatorIndices");
-        List<?> manifoldLocations = compound.getList("manifoldLocations");
-        List<?> controlRodLocations = compound.getList("controlRodLocations");
-        if (moderatorIndices.size() != x || manifoldLocations.size() != x || controlRodLocations.size() != x) {
+        if (moderatorIndices.size() != x) {
             throw new IllegalArgumentException("Malformed Binary");
         }
         for (int i = 0; i < x; i++) {
             if (!(moderatorIndices.get(i) instanceof List<?> moderatorIndicesX)) {
                 throw new IllegalArgumentException("Malformed Binary");
             }
-            if (!(manifoldLocations.get(i) instanceof List<?> manifoldLocationsX)) {
-                throw new IllegalArgumentException("Malformed Binary");
-            }
-            if (!(controlRodLocations.get(i) instanceof List<?> controlRodLocationsX)) {
-                throw new IllegalArgumentException("Malformed Binary");
-            }
-            if (moderatorIndicesX.size() != y || manifoldLocationsX.size() != y || controlRodLocations.size() != z) {
+            if (moderatorIndicesX.size() != y) {
                 throw new IllegalArgumentException("Malformed Binary");
             }
             for (int j = 0; j < y; j++) {
                 if (!(moderatorIndicesX.get(j) instanceof List<?> moderatorIndicesXY)) {
                     throw new IllegalArgumentException("Malformed Binary");
                 }
-                if (!(manifoldLocationsX.get(j) instanceof List<?> manifoldLocationsXY)) {
-                    throw new IllegalArgumentException("Malformed Binary");
-                }
-                if (moderatorIndicesXY.size() != z || manifoldLocationsXY.size() != z) {
+                if (moderatorIndicesXY.size() != z) {
                     throw new IllegalArgumentException("Malformed Binary");
                 }
                 for (int k = 0; k < z; k++) {
                     if (!(moderatorIndicesXY.get(k) instanceof Number moderatorIndex)) {
                         throw new IllegalArgumentException("Malformed Binary");
                     }
-                    if (!(manifoldLocationsXY.get(k) instanceof Boolean isManifold)) {
-                        throw new IllegalArgumentException("Malformed Binary");
-                    }
                     int index = moderatorIndex.intValue();
-                    setModeratorProperties(i, j, k, index != -1 ? moderatorProperties.get(index) : null);
-                    setManifold(i, j, k, isManifold);
+                    setModeratorProperties(i, j, k, index >= 0 ? moderatorProperties.get(index) : null);
+                    setManifold(i, j, k, index == -2);
+                    setControlRod(i, k, index == -3);
                 }
-            }
-            for (int j = 0; j < z; j++) {
-                if (!(controlRodLocationsX.get(j) instanceof Boolean isControlRod)) {
-                    throw new IllegalArgumentException("Malformed Binary");
-                }
-                setControlRod(i, j, isControlRod);
             }
         }
         
