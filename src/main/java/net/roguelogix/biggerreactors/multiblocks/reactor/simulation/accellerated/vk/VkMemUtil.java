@@ -239,7 +239,7 @@ public class VkMemUtil {
     
     }
     
-    public static VkAllocation allocHost(VkMemoryRequirements memoryRequirements) {
+    public static synchronized VkAllocation allocHost(VkMemoryRequirements memoryRequirements) {
         if ((memoryRequirements.memoryTypeBits() & (1 << hostMemoryType)) == 0) {
             throw new IllegalStateException("Cannot allocate on host");
         }
@@ -251,7 +251,7 @@ public class VkMemUtil {
         return block.alloc(size, alignment);
     }
     
-    public static void freeHost(@Nullable VkAllocation allocation) {
+    public static synchronized void freeHost(@Nullable VkAllocation allocation) {
         if (allocation == null) {
             return;
         }
@@ -263,7 +263,7 @@ public class VkMemUtil {
         }
     }
     
-    public static VkAllocation allocGPU(VkMemoryRequirements memoryRequirements) {
+    public static synchronized VkAllocation allocGPU(VkMemoryRequirements memoryRequirements) {
         if ((memoryRequirements.memoryTypeBits() & (1 << gpuMemoryType)) == 0) {
             throw new IllegalStateException("Cannot allocate on gpu");
         }
@@ -275,7 +275,7 @@ public class VkMemUtil {
         return block.alloc(size, alignment);
     }
     
-    public static void freeGPU(@Nullable VkAllocation allocation) {
+    public static synchronized void freeGPU(@Nullable VkAllocation allocation) {
         if (allocation == null) {
             return;
         }
