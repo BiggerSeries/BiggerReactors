@@ -32,6 +32,8 @@ public interface IReactorSimulation extends IPhosphophylliteSerializable, IDebug
     @Nullable
     ControlRod controlRodAt(int x, int z);
     
+    void setAllControlRodInsertions(double insertion);
+    
     double fertility();
     
     double fuelHeat();

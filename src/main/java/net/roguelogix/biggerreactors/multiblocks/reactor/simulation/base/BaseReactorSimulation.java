@@ -245,6 +245,13 @@ public abstract class BaseReactorSimulation implements IReactorSimulation {
     }
     
     @Override
+    public void setAllControlRodInsertions(double insertion) {
+        for (int i = 0; i < controlRods.length; i++) {
+            controlRods[i].setInsertion(insertion);
+        }
+    }
+    
+    @Override
     public double fertility() {
         if (fuelFertility <= 1f) {
             return 1f;
