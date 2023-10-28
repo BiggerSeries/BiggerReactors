@@ -48,6 +48,19 @@ public class FluidTransitionRegistry {
     }
     
     
+    public record TransitionProperties(double latentHeat, double boilingPoint, double liquidRFMKT, double gasRFMKT, double turbineMultiplier) implements ITransitionProperties {
+        
+        public TransitionProperties(Map<String, Object> map) {
+            this(
+                    ((Number) map.get("latentHeat")).doubleValue(),
+                    ((Number) map.get("boilingPoint")).doubleValue(),
+                    ((Number) map.get("liquidRFMKT")).doubleValue(),
+                    ((Number) map.get("gasRFMKT")).doubleValue(),
+                    ((Number) map.get("turbineMultiplier")).doubleValue()
+            );
+        }
+    }
+    
     public static class FluidTransition implements ITransitionProperties {
         public final List<Fluid> liquids;
         public final List<Fluid> gases;
