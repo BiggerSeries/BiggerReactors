@@ -1,0 +1,23 @@
+{
+    "type": "thermal:pulverizer",
+    "conditions": [
+        {
+            "modid": "thermal_expansion",
+            "type": "forge:mod_loaded"
+        }
+    ],
+    "ingredient": {
+        "item": "biggerreactors:deepslate_uranium_ore"
+    },
+    "result": [
+        {
+            "item": "biggerreactors:uranium_dust",
+            "chance": 2.0
+        },
+        {
+            "item": "minecraft:gravel",
+            "chance": 0.2
+        }
+    ],
+    "experience": 0.35
+}
