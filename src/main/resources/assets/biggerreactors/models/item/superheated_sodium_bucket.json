@@ -1,6 +1,0 @@
-{
-  "parent": "item/handheld",
-  "textures": {
-    "layer0": "biggerreactors:item/superheated_sodium_bucket"
-  }
-}
