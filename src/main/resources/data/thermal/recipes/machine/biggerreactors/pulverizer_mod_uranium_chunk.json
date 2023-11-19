@@ -1,0 +1,19 @@
+{
+  "type": "thermal:pulverizer",
+  "conditions": [
+    {
+      "modid": "thermal_expansion",
+      "type": "forge:mod_loaded"
+    }
+  ],
+  "ingredient": {
+    "item": "biggerreactors:uranium_chunk"
+  },
+  "result": [
+    {
+      "item": "biggerreactors:uranium_dust",
+      "chance": 1.25
+    }
+  ],
+  "experience": 0.35
+}
