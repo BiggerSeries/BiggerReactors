@@ -1,3 +1,9 @@
+# 1.20.1-0.6.0-beta.10.4
+
+## Misc
+ - fix various recipes for uranium involving mekanism and thermal expansion
+ - remove now-defunct superheated sodium fluid (use mekanism if you need it)
+
 # 1.20.1-0.6.0-beta.10.3
 
 ## Reactor
