@@ -5,6 +5,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.phosphophyllite.data.DataLoader;
@@ -13,6 +14,7 @@ import org.apache.commons.lang3.NotImplementedException;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.io.File;
 import java.util.*;
 
 @MethodsReturnNonnullByDefault
@@ -56,8 +58,9 @@ public class FluidTransitionRegistry {
         public final double liquidRFMKT;
         public final double gasRFMKT;
         public final double turbineMultiplier;
+        public final double turbineEnergyMultiplier;
         
-        public FluidTransition(List<Fluid> liquids, List<Fluid> gases, double latentHeat, double boilingPoint, double liquidRFMKT, double gasRFMKT, double turbineMultiplier) {
+        public FluidTransition(List<Fluid> liquids, List<Fluid> gases, double latentHeat, double boilingPoint, double liquidRFMKT, double gasRFMKT, double turbineMultiplier, double turbineEnergyMultiplier) {
             this.liquids = Collections.unmodifiableList(liquids);
             this.gases = Collections.unmodifiableList(gases);
             this.latentHeat = latentHeat;
@@ -65,6 +68,7 @@ public class FluidTransitionRegistry {
             this.liquidRFMKT = liquidRFMKT;
             this.gasRFMKT = gasRFMKT;
             this.turbineMultiplier = turbineMultiplier;
+            this.turbineEnergyMultiplier = (turbineEnergyMultiplier > 0) ? turbineEnergyMultiplier : 1;
         }
     
         @Override
@@ -129,6 +133,9 @@ public class FluidTransitionRegistry {
         
         @DataLoader.Range("[0,)")
         public double turbineMultiplier;
+
+        @DataLoader.Range("(0,)")
+        public double turbineEnergyMultiplier;
     }
     
     private static final DataLoader<FluidTransitionJsonData> loader = new DataLoader<>(FluidTransitionJsonData.class);
@@ -137,9 +144,20 @@ public class FluidTransitionRegistry {
         BiggerReactors.LOGGER.info("Loading fluid transitions");
         liquidTransitions.clear();
         gasTransitions.clear();
+
+        File configDir = new File(FMLPaths.GAMEDIR.get() + "/config/biggerreactors/transitions");
+        if (!configDir.exists()){
+            configDir.mkdirs();
+        }
         
         final List<FluidTransitionJsonData> data = loader.loadAll(new ResourceLocation("biggerreactors:transitions"));
-        BiggerReactors.LOGGER.info("Loaded " + data.size() + " transitions data entries");
+        BiggerReactors.LOGGER.info("Loaded " + data.size() + " transitions data entries from resources");
+
+        final List<FluidTransitionJsonData> dataFromConfigs = loader.loadAll(configDir);
+        BiggerReactors.LOGGER.info("Loaded " + dataFromConfigs.size() + " transitions data entries from config");
+
+        data.addAll(dataFromConfigs);
+        BiggerReactors.LOGGER.info("Transitions data entries count: " + data.size());
         
         for (FluidTransitionJsonData transitionData : data) {
             final List<Fluid> liquids = new ArrayList<>();
@@ -186,7 +204,7 @@ public class FluidTransitionRegistry {
                 continue;
             }
             
-            FluidTransition transition = new FluidTransition(liquids, gases, transitionData.latentHeat, transitionData.boilingPoint, transitionData.liquidThermalConductivity, transitionData.gasThermalConductivity, transitionData.turbineMultiplier);
+            FluidTransition transition = new FluidTransition(liquids, gases, transitionData.latentHeat, transitionData.boilingPoint, transitionData.liquidThermalConductivity, transitionData.gasThermalConductivity, transitionData.turbineMultiplier, transitionData.turbineEnergyMultiplier);
             
             for (Fluid liquid : transition.liquids) {
                 if (liquidTransitions.put(liquid, transition) != null) {
