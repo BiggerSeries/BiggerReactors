@@ -110,6 +110,7 @@ public class FullPassReactorSimulation extends BaseReactorSimulation {
     protected double initialHardness;
     
     protected IrradiationRequest fullPassIrradiationRequest;
+    protected final ReactorStateData reactorStateData = new ReactorStateData();
     
     protected double rawFuelUsage = 0;
     protected double fuelRFAdded = 0;
@@ -124,7 +125,7 @@ public class FullPassReactorSimulation extends BaseReactorSimulation {
         
         setupIrradiationTick();
         fullPassIrradiationRequest.updateCache();
-        runIrradiationRequest(fullPassIrradiationRequest);
+        runIrradiationRequest(fullPassIrradiationRequest, reactorStateData);
         collectIrradiationResult(fullPassIrradiationRequest.result);
         return realizeIrradiationTick();
     }
@@ -182,6 +183,8 @@ public class FullPassReactorSimulation extends BaseReactorSimulation {
         
         this.rawFuelUsage = rawFuelUsage / controlRods.length;
         this.fuelRFAdded = fuelRFAdded;
+        
+        reactorStateData.update(this);
     }
     
     protected void collectIrradiationResult(IrradiationResult result) {
@@ -222,7 +225,40 @@ public class FullPassReactorSimulation extends BaseReactorSimulation {
         return rawFuelUsage;
     }
     
-    protected void runIrradiationRequest(IrradiationRequest request) {
+    protected static class ReactorStateData {
+        
+        int x, z;
+        SimUtil.ControlRod[][] controlRodsXZ;
+        SimUtil.ControlRod[] controlRods;
+        double[] initialIntensities;
+        double initialHardness;
+        double fuelAbsorptionTemperatureCoefficient;
+        
+        public void update(FullPassReactorSimulation reactor) {
+            if(x != reactor.x || z != reactor.z || controlRods.length != reactor.controlRods.length){
+                x = reactor.x;
+                z = reactor.z;
+                controlRodsXZ = new SimUtil.ControlRod[x][z];
+                controlRods = new SimUtil.ControlRod[reactor.controlRods.length];
+                for (int i = 0; i < controlRods.length; i++) {
+                    var reactorRod = reactor.controlRods[i];
+                    var copyRod = new SimUtil.ControlRod(reactorRod.x, reactorRod.z);
+                    controlRods[i] = copyRod;
+                    controlRodsXZ[copyRod.x][copyRod.z] = copyRod;
+                }
+                initialIntensities = new double[reactor.initialIntensties.length];
+            }
+            
+            for (int i = 0; i < initialIntensities.length; i++) {
+                controlRods[i].insertion = reactor.controlRods[i].insertion;
+                initialIntensities[i] = reactor.initialIntensties[i];
+            }
+            initialHardness = reactor.initialHardness;
+            fuelAbsorptionTemperatureCoefficient = reactor.fuelAbsorptionTemperatureCoefficient;
+        }
+    }
+    
+    protected void runIrradiationRequest(IrradiationRequest request, ReactorStateData reactorState) {
         final double FuelAbsorptionCoefficient = this.FuelAbsorptionCoefficient;
         final double FuelModerationFactor = this.FuelModerationFactor;
         final double fuelHardnessMultiplier = this.fuelHardnessMultiplier;
@@ -236,12 +272,12 @@ public class FullPassReactorSimulation extends BaseReactorSimulation {
         int rods = 0;
         for (int cro = 0; cro < request.controlRodCount; cro++) {
             final int cri = cro + request.baseControlRod;
-            final var controlRod = controlRods[cri];
-            final var initialIntensity = initialIntensties[cri] * rayMultiplier;
+            final var controlRod = reactorState.controlRods[cri];
+            final var initialIntensity = reactorState.initialIntensities[cri] * rayMultiplier;
             for (int i = 0; i < SimUtil.rays.size(); i++) {
                 for (int j = 0; j < intensities.length; j++) {
                     intensities[j] = initialIntensity;
-                    hardnesses[j] = initialHardness;
+                    hardnesses[j] = reactorState.initialHardness;
                 }
                 final var raySteps = SimUtil.rays.get(i);
                 //noinspection ForLoopReplaceableByForEach
@@ -281,7 +317,7 @@ public class FullPassReactorSimulation extends BaseReactorSimulation {
                     } else {
                         // Scale control rod insertion 0..1
                         // TODO: race condition with computer craft is possible here
-                        final double controlRodInsertion = controlRodsXZ[currentX][currentZ].insertion * .001;
+                        final double controlRodInsertion = reactorState.controlRodsXZ[currentX][currentZ].insertion * .001;
                         final double halfRodInsertion = controlRodInsertion * 0.5;
                         // Full insertion doubles the moderation factor of the fuel as well as adding its own level
                         final double fuelModerationFactor = FuelModerationFactor + (FuelModerationFactor * controlRodInsertion + controlRodInsertion);
@@ -306,7 +342,7 @@ public class FullPassReactorSimulation extends BaseReactorSimulation {
                             // Fuel absorptiveness is determined by control rod + a heat modifier.
                             // Starts at 1 and decays towards 0.05, reaching 0.6 at 1000 and just under 0.2 at 2000. Inflection point at about 500-600.
                             // Harder radiation makes absorption more difficult.
-                            final double baseAbsorption = fuelAbsorptionTemperatureCoefficient * (1.0 - (neutronHardness * fuelHardnessMultiplier));
+                            final double baseAbsorption = reactorState.fuelAbsorptionTemperatureCoefficient * (1.0 - (neutronHardness * fuelHardnessMultiplier));
                             
                             // Some fuels are better at absorbing radiation than others
                             final double scaledAbsorption = baseAbsorption * stepFuelAbsorptionCoefficient;
@@ -348,7 +384,7 @@ public class FullPassReactorSimulation extends BaseReactorSimulation {
         protected final Event[] irradiationRequestEvents;
         @Nullable
         private Event doneEvent;
-        private final Runnable mainRunnable = () -> runIrradiationRequest(fullPassIrradiationRequest);
+        private final Runnable mainRunnable = () -> runIrradiationRequest(fullPassIrradiationRequest, reactorStateData);
         
         public MultiThreaded(SimulationDescription simulationDescription, SimulationConfiguration configuration) {
             this(simulationDescription, configuration, false);
@@ -368,7 +404,7 @@ public class FullPassReactorSimulation extends BaseReactorSimulation {
                     int baseRod = i * batchSize;
                     int rodCount = Math.min(batchSize, controlRods.length - baseRod);
                     final var request = new IrradiationRequest(baseRod, rodCount, cacheArray, y);
-                    irradiationRequestRunnables[i] = () -> runIrradiationRequest(request);
+                    irradiationRequestRunnables[i] = () -> runIrradiationRequest(request, reactorStateData);
                     irradiationRequests[i] = request;
                 }
             } else {
