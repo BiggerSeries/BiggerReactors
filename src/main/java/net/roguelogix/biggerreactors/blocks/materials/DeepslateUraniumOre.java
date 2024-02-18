@@ -1,5 +1,6 @@
 package net.roguelogix.biggerreactors.blocks.materials;
 
+import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.roguelogix.phosphophyllite.registry.RegisterBlock;
@@ -11,7 +12,7 @@ public class DeepslateUraniumOre extends DropExperienceBlock {
     public static final DeepslateUraniumOre INSTANCE = new DeepslateUraniumOre();
 
     public DeepslateUraniumOre() {
-        super(
+        super(ConstantInt.of(0),
                 Properties.of()
                         .sound(SoundType.DEEPSLATE)
                         .explosionResistance(3.0F)

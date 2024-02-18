@@ -3,13 +3,11 @@ package net.roguelogix.biggerreactors;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLLoader;
-import net.roguelogix.biggerreactors.machine.client.CyaniteReprocessorScreen;
-import net.roguelogix.biggerreactors.machine.containers.CyaniteReprocessorContainer;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.common.NeoForge;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.client.HeatExchangerFluidPortScreen;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.client.HeatExchangerTerminalScreen;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.containers.HeatExchangerFluidPortContainer;
@@ -41,8 +39,8 @@ public class BiggerReactors {
     
     public BiggerReactors() {
         new Registry(new ReferenceArrayList<>(), ReferenceArrayList.of(new ResourceLocation(Phosphophyllite.modid, "creative_tab"), new ResourceLocation(Quartz.modid, "creative_tab")));
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onClientSetup);
-        MinecraftForge.EVENT_BUS.addListener(this::onReloadData);
+        ModLoadingContext.get().getActiveContainer().getEventBus().addListener(this::onClientSetup);
+        NeoForge.EVENT_BUS.addListener(this::onReloadData);
         version = FMLLoader.getLoadingModList().getModFileById(modid).versionString();
     }
     
@@ -55,8 +53,8 @@ public class BiggerReactors {
     public void onClientSetup(final FMLClientSetupEvent e) {
         // TODO: 6/28/20 Registry.
         //  Since I already have the comment here, also need to do a capability registry. I have a somewhat dumb capability to register.
-        MenuScreens.register(CyaniteReprocessorContainer.INSTANCE,
-                CyaniteReprocessorScreen::new);
+//        MenuScreens.register(CyaniteReprocessorContainer.INSTANCE,
+//                CyaniteReprocessorScreen::new);
         MenuScreens.register(ReactorTerminalContainer.INSTANCE,
                 CommonReactorTerminalScreen::new);
         MenuScreens.register(ReactorCoolantPortContainer.INSTANCE,

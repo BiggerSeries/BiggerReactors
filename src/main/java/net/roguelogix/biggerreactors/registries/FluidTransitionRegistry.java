@@ -5,7 +5,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.phosphophyllite.config.ConfigValue;
 import net.roguelogix.phosphophyllite.data.DatapackLoader;
@@ -174,8 +173,8 @@ public class FluidTransitionRegistry {
                     }
                 }));
             } else {
-                if (ForgeRegistries.FLUIDS.containsKey(transitionData.liquid)) {
-                    Fluid fluid = ForgeRegistries.FLUIDS.getValue(transitionData.liquid);
+                if (BuiltInRegistries.FLUID.containsKey(transitionData.liquid)) {
+                    Fluid fluid = BuiltInRegistries.FLUID.get(transitionData.liquid);
                     liquids.add(fluid);
                 }
                 
@@ -196,8 +195,8 @@ public class FluidTransitionRegistry {
                     }
                 }));
             } else {
-                if (ForgeRegistries.FLUIDS.containsKey(transitionData.gas)) {
-                    Fluid fluid = ForgeRegistries.FLUIDS.getValue(transitionData.gas);
+                if (BuiltInRegistries.FLUID.containsKey(transitionData.gas)) {
+                    Fluid fluid = BuiltInRegistries.FLUID.get(transitionData.gas);
                     gases.add(fluid);
                 }
                 
@@ -212,13 +211,13 @@ public class FluidTransitionRegistry {
             for (Fluid liquid : transition.liquids) {
                 if (liquidTransitions.put(liquid, transition) != null) {
                     
-                    BiggerReactors.LOGGER.error("Duplicate transitions given for liquid fluid " + ForgeRegistries.FLUIDS.getKey(liquid).toString());
+                    BiggerReactors.LOGGER.error("Duplicate transitions given for liquid fluid " + BuiltInRegistries.FLUID.getKey(liquid).toString());
                 }
             }
             
             for (Fluid gas : transition.gases) {
                 if (gasTransitions.put(gas, transition) != null) {
-                    BiggerReactors.LOGGER.error("Duplicate transitions given for gas fluid " + ForgeRegistries.FLUIDS.getKey(gas).toString());
+                    BiggerReactors.LOGGER.error("Duplicate transitions given for gas fluid " + BuiltInRegistries.FLUID.getKey(gas).toString());
                 }
             }
             

@@ -1,12 +1,12 @@
 package net.roguelogix.biggerreactors.util;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.roguelogix.biggerreactors.registries.FluidTransitionRegistry;
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
 import net.roguelogix.phosphophyllite.util.HeatBody;
@@ -231,9 +231,9 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
         if (inFluid != null) {
-            nbt.putString("inFluid", ForgeRegistries.FLUIDS.getKey(inFluid).toString());
+            nbt.putString("inFluid", BuiltInRegistries.FLUID.getKey(inFluid).toString());
             nbt.putLong("inAmount", inAmount);
-            nbt.putString("outFluid", ForgeRegistries.FLUIDS.getKey(outFluid).toString());
+            nbt.putString("outFluid", BuiltInRegistries.FLUID.getKey(outFluid).toString());
             nbt.putLong("outAmount", outAmount);
         }
         return nbt;
@@ -245,8 +245,8 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
             return;
         }
         ResourceLocation inFluidLocation = new ResourceLocation(nbt.getString("inFluid"));
-        if (ForgeRegistries.FLUIDS.containsKey(inFluidLocation)) {
-            Fluid newInFluid = ForgeRegistries.FLUIDS.getValue(inFluidLocation);
+        if (BuiltInRegistries.FLUID.containsKey(inFluidLocation)) {
+            Fluid newInFluid = BuiltInRegistries.FLUID.get(inFluidLocation);
             if (newInFluid == null) {
                 return;
             }
@@ -262,8 +262,8 @@ public class FluidTransitionTank extends HeatBody implements IPhosphophylliteFlu
             List<Fluid> outFluidList = (condenser ? newTransition.liquids : newTransition.gases);
             Fluid newOutFluid = null;
             ResourceLocation outFluidLocation = new ResourceLocation(nbt.getString("outFluid"));
-            if (ForgeRegistries.FLUIDS.containsKey(outFluidLocation)) {
-                Fluid oldOutFluid = ForgeRegistries.FLUIDS.getValue(outFluidLocation);
+            if (BuiltInRegistries.FLUID.containsKey(outFluidLocation)) {
+                Fluid oldOutFluid = BuiltInRegistries.FLUID.get(outFluidLocation);
                 if (outFluidList.contains(oldOutFluid)) {
                     newOutFluid = oldOutFluid;
                 }

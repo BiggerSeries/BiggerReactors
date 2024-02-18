@@ -2,6 +2,7 @@ package net.roguelogix.biggerreactors.multiblocks.heatexchanger.tiles;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -9,7 +10,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.blocks.HeatExchangerTerminalBlock;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.containers.HeatExchangerTerminalContainer;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.state.HeatExchangerState;
@@ -48,19 +48,19 @@ public class HeatExchangerTerminalTile extends HeatExchangerBaseTile implements 
         
         state.condenserTankSize = controller().condenserTank.perSideCapacity;
         
-        state.condenserIntakeFluid = ForgeRegistries.FLUIDS.getKey(controller().condenserTank.fluidTypeInTank(0)).toString();
+        state.condenserIntakeFluid = BuiltInRegistries.FLUID.getKey(controller().condenserTank.fluidTypeInTank(0)).toString();
         state.condenserIntakeFluidAmount = controller().condenserTank.fluidAmountInTank(0);
         
-        state.condenserExhaustFluid = ForgeRegistries.FLUIDS.getKey(controller().condenserTank.fluidTypeInTank(1)).toString();
+        state.condenserExhaustFluid = BuiltInRegistries.FLUID.getKey(controller().condenserTank.fluidTypeInTank(1)).toString();
         state.condenserExhaustFluidAmount = controller().condenserTank.fluidAmountInTank(1);
         
         
         state.evaporatorTankSize = controller().evaporatorTank.perSideCapacity;
         
-        state.evaporatorIntakeFluid = ForgeRegistries.FLUIDS.getKey(controller().evaporatorTank.fluidTypeInTank(0)).toString();
+        state.evaporatorIntakeFluid = BuiltInRegistries.FLUID.getKey(controller().evaporatorTank.fluidTypeInTank(0)).toString();
         state.evaporatorIntakeFluidAmount = controller().evaporatorTank.fluidAmountInTank(0);
         
-        state.evaporatorExhaustFluid = ForgeRegistries.FLUIDS.getKey(controller().evaporatorTank.fluidTypeInTank(1)).toString();
+        state.evaporatorExhaustFluid = BuiltInRegistries.FLUID.getKey(controller().evaporatorTank.fluidTypeInTank(1)).toString();
         state.evaporatorExhaustFluidAmount = controller().evaporatorTank.fluidAmountInTank(1);
         
         

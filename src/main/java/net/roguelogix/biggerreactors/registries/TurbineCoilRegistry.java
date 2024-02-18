@@ -11,11 +11,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.OnDatapackSyncEvent;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.phosphophyllite.config.ConfigValue;
@@ -94,12 +94,12 @@ public class TurbineCoilRegistry {
                 blockTagOptional.ifPresent(holders -> holders.forEach(blockHolder -> {
                     var element = blockHolder.value();
                     registry.put(element, properties);
-                    BiggerReactors.LOGGER.debug("Loaded coil " + ForgeRegistries.BLOCKS.getKey(element));
+                    BiggerReactors.LOGGER.debug("Loaded coil " + BuiltInRegistries.BLOCK.getKey(element));
                 }));
             } else {
                 // cant check against air, because air is a valid thing to load
-                if (ForgeRegistries.BLOCKS.containsKey(coilData.location)) {
-                    registry.put(ForgeRegistries.BLOCKS.getValue(coilData.location), properties);
+                if (BuiltInRegistries.BLOCK.containsKey(coilData.location)) {
+                    registry.put(BuiltInRegistries.BLOCK.get(coilData.location), properties);
                     BiggerReactors.LOGGER.debug("Loaded coil " + coilData.location);
                 }
             }
@@ -109,15 +109,15 @@ public class TurbineCoilRegistry {
     
     public static class Client {
         
-        private static final SimplePhosChannel CHANNEL = new SimplePhosChannel(new ResourceLocation(BiggerReactors.modid, "coil_sync_channel"), "0", Client::readSync);
+        private static final SimplePhosChannel CHANNEL = new SimplePhosChannel(new ResourceLocation(BiggerReactors.modid, "coil_sync_channel"), Client::readSync, null);
         private static final ObjectOpenHashSet<Block> coilBlocks = new ObjectOpenHashSet<>();
         private static final Object2ObjectOpenHashMap<Block, CoilData> coilProperties = new Object2ObjectOpenHashMap<>();
         
         @OnModLoad
         private static void onModLoad() {
-            MinecraftForge.EVENT_BUS.addListener(Client::datapackEvent);
+            NeoForge.EVENT_BUS.addListener(Client::datapackEvent);
             if (FMLEnvironment.dist.isClient()) {
-                MinecraftForge.EVENT_BUS.addListener(Client::toolTipEvent);
+                NeoForge.EVENT_BUS.addListener(Client::toolTipEvent);
             }
         }
         
@@ -137,7 +137,7 @@ public class TurbineCoilRegistry {
             final var list = new ObjectArrayList<String>();
             final var propertiesList = new ObjectArrayList<DoubleArrayList>();
             for (final var value : registry.entrySet()) {
-                final var location = ForgeRegistries.BLOCKS.getKey(value.getKey());
+                final var location = BuiltInRegistries.BLOCK.getKey(value.getKey());
                 if (location == null) {
                     continue;
                 }
@@ -154,7 +154,7 @@ public class TurbineCoilRegistry {
             return compound;
         }
         
-        private static void readSync(PhosphophylliteCompound compound) {
+        private static void readSync(PhosphophylliteCompound compound, IPayloadContext context) {
             coilBlocks.clear();
             //noinspection unchecked
             final var list = (List<String>) compound.getList("list");
@@ -166,7 +166,7 @@ public class TurbineCoilRegistry {
             for (int i = 0; i < list.size(); i++) {
                 var value = list.get(i);
                 var properties = propertiesList.get(i);
-                final var block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(value));
+                final var block = BuiltInRegistries.BLOCK.get(new ResourceLocation(value));
                 if (block == null) {
                     return;
                 }

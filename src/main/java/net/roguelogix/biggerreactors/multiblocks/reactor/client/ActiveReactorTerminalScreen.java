@@ -9,9 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.client.CommonRender;
 import net.roguelogix.biggerreactors.multiblocks.reactor.containers.ReactorTerminalContainer;
@@ -155,11 +154,11 @@ public class ActiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
             this.getMinecraft().setScreen(new PassiveReactorTerminalScreen(this.menu, this.inventory, this.title));
         }
         // Check if coolant type changed.
-        if (!reactorState.coolantResourceLocation.equals(Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(coolantFluid)).toString())) {
+        if (!reactorState.coolantResourceLocation.equals(Objects.requireNonNull(BuiltInRegistries.FLUID.getKey(coolantFluid)).toString())) {
             coolantFluid = BuiltInRegistries.FLUID.get(new ResourceLocation(reactorState.coolantResourceLocation));
         }
         // Check if exhaust type changed.
-        if (!reactorState.exhaustResourceLocation.equals(Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(exhaustFluid)).toString())) {
+        if (!reactorState.exhaustResourceLocation.equals(Objects.requireNonNull(BuiltInRegistries.FLUID.getKey(exhaustFluid)).toString())) {
             exhaustFluid = BuiltInRegistries.FLUID.get(new ResourceLocation(reactorState.exhaustResourceLocation));
         }
     }
@@ -167,7 +166,7 @@ public class ActiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
     /**
      * Draw the status text for this screen.
      *
-     * @param poseStack    The current pose stack.
+//     * @param poseStack    The current pose stack.
      * @param mouseX       The x position of the mouse.
      * @param mouseY       The y position of the mouse.
      * @param partialTicks Partial ticks.
@@ -187,7 +186,7 @@ public class ActiveReactorTerminalScreen extends PhosphophylliteScreen<ReactorTe
     /**
      * Render the progress bar.
      *
-     * @param poseStack       The current pose stack.
+//     * @param poseStack       The current pose stack.
      * @param symbol          The symbol to draw as.
      * @param reactorActivity Current status of the reactor.
      * @param workTime        The time the machine has been working.

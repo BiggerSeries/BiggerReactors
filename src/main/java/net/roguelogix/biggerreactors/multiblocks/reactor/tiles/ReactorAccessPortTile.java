@@ -1,6 +1,5 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.tiles;
 
-import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -17,11 +16,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.wrapper.EmptyHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.blocks.materials.MaterialBlock;
 import net.roguelogix.biggerreactors.items.ingots.BlutoniumIngot;
@@ -34,21 +30,25 @@ import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.debug.DebugInfo;
 import net.roguelogix.phosphophyllite.multiblock.common.IEventMultiblock;
 import net.roguelogix.phosphophyllite.multiblock.validated.IValidatedMultiblock;
+import net.roguelogix.phosphophyllite.registry.CapabilityRegistration;
+import net.roguelogix.phosphophyllite.registry.RegisterCapability;
 import net.roguelogix.phosphophyllite.registry.RegisterTile;
 import net.roguelogix.phosphophyllite.util.BlockStates;
+import net.roguelogix.phosphophyllite.util.NonnullDefault;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 import static net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorAccessPort.PortDirection.*;
 
-@MethodsReturnNonnullByDefault
-@ParametersAreNonnullByDefault
+@NonnullDefault
 public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandler, MenuProvider, IHasUpdatableState<ReactorAccessPortState>, IEventMultiblock.AssemblyStateTransition {
     
     @RegisterTile("reactor_access_port")
     public static final BlockEntityType.BlockEntitySupplier<ReactorAccessPortTile> SUPPLIER = new RegisterTile.Producer<>(ReactorAccessPortTile::new);
+    
+    @RegisterCapability
+    private static final CapabilityRegistration ITEM_HANDLER_CAP_REGISTRATION = CapabilityRegistration.tileCap(Capabilities.ItemHandler.BLOCK, ReactorAccessPortTile.class);
     
     private static final TagKey<Item> uraniumIngotTag = TagKey.create(BuiltInRegistries.ITEM.key(), new ResourceLocation("forge:ingots/uranium"));
     private static final TagKey<Item> uraniumBlockTag = TagKey.create(BuiltInRegistries.ITEM.key(), new ResourceLocation("forge:storage_blocks/uranium"));
@@ -109,16 +109,6 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
         neighborChanged();
     }
     
-    LazyOptional<IItemHandler> itemStackHandler = LazyOptional.of(() -> this);
-    
-    @Override
-    protected <T> LazyOptional<T> capability(Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) {
-            return itemStackHandler.cast();
-        }
-        return super.capability(cap, side);
-    }
-    
     @Override
     public int getSlots() {
         return 3;
@@ -130,7 +120,7 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
         if (nullableController() == null) {
             return ItemStack.EMPTY;
         }
-        var reactorSim = controller().simulation();
+        @Nullable var reactorSim = controller().simulation();
         if(reactorSim == null){
             return ItemStack.EMPTY;
         }
@@ -220,16 +210,15 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     }
     
     public int pushWaste(int waste, boolean simulated) {
-        if (itemOutput.isPresent()) {
-            IItemHandler output = itemOutput.orElse(EmptyHandler.INSTANCE);
+        if (itemOutput != null) {
             waste /= Config.CONFIG.Reactor.FuelMBPerIngot;
             int wasteHandled = 0;
-            for (int i = 0; i < output.getSlots(); i++) {
+            for (int i = 0; i < itemOutput.getSlots(); i++) {
                 if (waste == 0) {
                     break;
                 }
                 ItemStack toInsertStack = new ItemStack(CyaniteIngot.INSTANCE, waste);
-                ItemStack remainingStack = output.insertItem(i, toInsertStack, simulated);
+                ItemStack remainingStack = itemOutput.insertItem(i, toInsertStack, simulated);
                 wasteHandled += toInsertStack.getCount() - remainingStack.getCount();
                 waste -= toInsertStack.getCount() - remainingStack.getCount();
             }
@@ -243,16 +232,15 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
     }
     
     public int pushFuel(int fuel, boolean simulated) {
-        if (itemOutput.isPresent()) {
-            IItemHandler output = itemOutput.orElse(EmptyHandler.INSTANCE);
+        if (itemOutput != null) {
             fuel /= Config.CONFIG.Reactor.FuelMBPerIngot;
             int fuelHandled = 0;
-            for (int i = 0; i < output.getSlots(); i++) {
+            for (int i = 0; i < itemOutput.getSlots(); i++) {
                 if (fuel == 0) {
                     break;
                 }
                 ItemStack toInsertStack = new ItemStack(UraniumIngot.INSTANCE, fuel);
-                ItemStack remainingStack = output.insertItem(i, toInsertStack, simulated);
+                ItemStack remainingStack = itemOutput.insertItem(i, toInsertStack, simulated);
                 fuelHandled += toInsertStack.getCount() - remainingStack.getCount();
                 fuel -= toInsertStack.getCount() - remainingStack.getCount();
             }
@@ -265,26 +253,22 @@ public class ReactorAccessPortTile extends ReactorBaseTile implements IItemHandl
         controller().extractFuel(pushFuel((int) controller().extractFuel(Integer.MAX_VALUE, true), false), false);
     }
     
+    @Nullable
     Direction itemOutputDirection;
     boolean connected;
-    LazyOptional<IItemHandler> itemOutput = LazyOptional.empty();
+    @Nullable
+    IItemHandler itemOutput = null;
     public final ReactorAccessPortState reactorAccessPortState = new ReactorAccessPortState(this);
     
     @SuppressWarnings("DuplicatedCode")
     public void neighborChanged() {
-        itemOutput = LazyOptional.empty();
         if (itemOutputDirection == null) {
             connected = false;
             return;
         }
         assert level != null;
-        BlockEntity te = level.getBlockEntity(worldPosition.relative(itemOutputDirection));
-        if (te == null) {
-            connected = false;
-            return;
-        }
-        itemOutput = te.getCapability(ForgeCapabilities.ITEM_HANDLER, itemOutputDirection.getOpposite());
-        connected = itemOutput.isPresent();
+        itemOutput = level.getCapability(Capabilities.ItemHandler.BLOCK, worldPosition.relative(itemOutputDirection), itemOutputDirection.getOpposite());
+        connected = itemOutput != null;
     }
     
     @Override

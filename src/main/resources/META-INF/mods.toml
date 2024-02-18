@@ -8,7 +8,7 @@ modId="biggerreactors"
 version="${version}" 
 displayName="Bigger Reactors" 
 displayURL="https://biggerseries.net/" 
-logoFile="BiggerReactors.png" 
+logoFile="biggerreactors.png"
 credits="ErogeneousBeef for the original Big Reactors mod, that this is spiritually (and semi-literally) derived from"
 authors="RogueLogix, gizmocodes, Ridanisaurus" 
 description='''
@@ -20,26 +20,26 @@ Official continuation of Big Reactors
 '''
 
 [[dependencies.biggerreactors]] 
-    modId="forge" 
-    mandatory=true 
+    modId="neoforge"
+    required=true
     versionRange="[${neo_version},)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.biggerreactors]]
     modId="minecraft"
-    mandatory=true
+    required=true
     versionRange="[${minecraft_version}]"
     ordering="NONE"
     side="BOTH"
 [[dependencies.biggerreactors]]
     modId="phosphophyllite"
-    mandatory=true
+    required=true
     versionRange="${phos_version_range}"
     ordering="NONE"
     side="BOTH"
 [[dependencies.biggerreactors]]
     modId="quartz"
-    mandatory=true
+    required=true
     versionRange="${quartz_version_range}"
     ordering="NONE"
     side="BOTH"

@@ -13,11 +13,11 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.OnDatapackSyncEvent;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.phosphophyllite.config.ConfigValue;
@@ -161,13 +161,13 @@ public class ReactorModeratorRegistry {
                     blockTagOptional.ifPresent(holders -> holders.forEach(blockHolder -> {
                         var element = blockHolder.value();
                         registry.put(element, properties);
-                        BiggerReactors.LOGGER.debug("Loaded moderator " + ForgeRegistries.BLOCKS.getKey(element));
+                        BiggerReactors.LOGGER.debug("Loaded moderator " + BuiltInRegistries.BLOCK.getKey(element));
                     }));
                 }
                 case registry -> {
                     // cant check against air, because air is a valid thing to load
-                    if (ForgeRegistries.BLOCKS.containsKey(moderatorData.location)) {
-                        registry.put(ForgeRegistries.BLOCKS.getValue(moderatorData.location), properties);
+                    if (BuiltInRegistries.BLOCK.containsKey(moderatorData.location)) {
+                        registry.put(BuiltInRegistries.BLOCK.get(moderatorData.location), properties);
                         BiggerReactors.LOGGER.debug("Loaded moderator " + moderatorData.location);
                     }
                 }
@@ -177,13 +177,13 @@ public class ReactorModeratorRegistry {
                         var element = fluidHolder.value();
                         Block elementBlock = element.defaultFluidState().createLegacyBlock().getBlock();
                         registry.put(elementBlock, properties);
-                        BiggerReactors.LOGGER.debug("Loaded moderator " + ForgeRegistries.FLUIDS.getKey(element));
+                        BiggerReactors.LOGGER.debug("Loaded moderator " + BuiltInRegistries.FLUID.getKey(element));
                     }));
                 }
                 case fluid -> {
                     // cant check against air, because air is a valid thing to load
-                    if (ForgeRegistries.FLUIDS.containsKey(moderatorData.location)) {
-                        Fluid fluid = ForgeRegistries.FLUIDS.getValue(moderatorData.location);
+                    if (BuiltInRegistries.FLUID.containsKey(moderatorData.location)) {
+                        Fluid fluid = BuiltInRegistries.FLUID.get(moderatorData.location);
                         assert fluid != null;
                         Block block = fluid.defaultFluidState().createLegacyBlock().getBlock();
                         registry.put(block, properties);
@@ -197,15 +197,15 @@ public class ReactorModeratorRegistry {
     
     public static class Client {
         
-        private static final SimplePhosChannel CHANNEL = new SimplePhosChannel(new ResourceLocation(BiggerReactors.modid, "moderator_sync_channel"), "0", Client::readSync);
+        private static final SimplePhosChannel CHANNEL = new SimplePhosChannel(new ResourceLocation(BiggerReactors.modid, "moderator_sync_channel"), Client::readSync, null);
         private static final ObjectOpenHashSet<Block> moderatorBlocks = new ObjectOpenHashSet<>();
         private static final Object2ObjectOpenHashMap<Block, ModeratorProperties> moderatorProperties = new Object2ObjectOpenHashMap<>();
         
         @OnModLoad
         private static void onModLoad() {
-            MinecraftForge.EVENT_BUS.addListener(Client::datapackEvent);
+            NeoForge.EVENT_BUS.addListener(Client::datapackEvent);
             if (FMLEnvironment.dist.isClient()) {
-                MinecraftForge.EVENT_BUS.addListener(Client::toolTipEvent);
+                NeoForge.EVENT_BUS.addListener(Client::toolTipEvent);
             }
         }
         
@@ -225,7 +225,7 @@ public class ReactorModeratorRegistry {
             final var list = new ObjectArrayList<String>();
             final var propertiesList = new ObjectArrayList<DoubleArrayList>();
             for (final var value : registry.entrySet()) {
-                final var location = ForgeRegistries.BLOCKS.getKey(value.getKey());
+                final var location = BuiltInRegistries.BLOCK.getKey(value.getKey());
                 if (location == null) {
                     continue;
                 }
@@ -244,7 +244,7 @@ public class ReactorModeratorRegistry {
             return compound;
         }
         
-        private static void readSync(PhosphophylliteCompound compound) {
+        private static void readSync(PhosphophylliteCompound compound, IPayloadContext context) {
             moderatorBlocks.clear();
             //noinspection unchecked
             final var list = (List<String>) compound.getList("list");
@@ -256,7 +256,7 @@ public class ReactorModeratorRegistry {
             for (int i = 0; i < list.size(); i++) {
                 var blockLocation = list.get(i);
                 var properties = propertiesList.get(i);
-                final var block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockLocation));
+                final var block = BuiltInRegistries.BLOCK.get(new ResourceLocation(blockLocation));
                 if (block == null) {
                     return;
                 }

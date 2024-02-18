@@ -5,9 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
+import net.roguelogix.phosphophyllite.capability.CachedWrappedBlockCapability;
 import net.roguelogix.phosphophyllite.energy.IEnergyTile;
 import net.roguelogix.phosphophyllite.energy.IPhosphophylliteEnergyHandler;
 import net.roguelogix.phosphophyllite.multiblock.common.IEventMultiblock;
@@ -34,11 +32,9 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IEnergyTile,
     private boolean connected = false;
     Direction powerOutputDirection = null;
     
-    LazyOptional<IPhosphophylliteEnergyHandler> thisCap = LazyOptional.of(() -> this);
-    
     @Override
-    public LazyOptional<IPhosphophylliteEnergyHandler> energyHandler() {
-        return thisCap;
+    public IPhosphophylliteEnergyHandler energyHandler(Direction direction) {
+        return this;
     }
     
     private void setConnected(boolean newState) {
@@ -49,14 +45,19 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IEnergyTile,
         }
     }
     
-    LazyOptional<IPhosphophylliteEnergyHandler> outputOptional = LazyOptional.empty();
-    IPhosphophylliteEnergyHandler output;
+    @Nullable
+    CachedWrappedBlockCapability<IPhosphophylliteEnergyHandler, Direction> output = null;;
     
     public long distributePower(long toDistribute, boolean simulate) {
-        if (outputOptional.isPresent()) {
-            return Math.max(0, output.insertEnergy(toDistribute, simulate));
+        if(output == null) {
+            return 0;
         }
-        return 0;
+        @Nullable
+        final var outputCap = output.getCapability();
+        if (outputCap == null) {
+            return 0;
+        }
+        return Math.max(0, outputCap.insertEnergy(toDistribute, simulate));
     }
     
     @Override
@@ -96,20 +97,14 @@ public class TurbinePowerTapTile extends TurbineBaseTile implements IEnergyTile,
     
     @SuppressWarnings("DuplicatedCode")
     public void neighborChanged() {
-        outputOptional = LazyOptional.empty();
         output = null;
         if (powerOutputDirection == null) {
             setConnected(false);
             return;
         }
         
-        final var outputCap = this.findEnergyCapability(powerOutputDirection);
-        setConnected(outputCap.isPresent());
-        if (connected) {
-            outputOptional = outputCap;
-            //noinspection DataFlowIssue
-            output = outputOptional.orElse(null);
-        }
+        output = findEnergyCapability(powerOutputDirection);
+        setConnected(output.getCapability() != null);
     }
     
     @Override

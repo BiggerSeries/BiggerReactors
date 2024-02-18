@@ -11,7 +11,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.client.Biselector;
@@ -280,11 +279,11 @@ public class TurbineTerminalScreen extends PhosphophylliteScreen<TurbineTerminal
         turbineState = (TurbineState) this.getMenu().getGuiPacket();
         super.containerTick();
         // Check if intake type changed.
-        if (!turbineState.intakeResourceLocation.equals(Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(intakeFluid)).toString())) {
+        if (!turbineState.intakeResourceLocation.equals(Objects.requireNonNull(BuiltInRegistries.FLUID.getKey(intakeFluid)).toString())) {
             intakeFluid = BuiltInRegistries.FLUID.get(new ResourceLocation(turbineState.intakeResourceLocation));
         }
         // Check if exhaust type changed.
-        if (!turbineState.exhaustResourceLocation.equals(Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(exhaustFluid)).toString())) {
+        if (!turbineState.exhaustResourceLocation.equals(Objects.requireNonNull(BuiltInRegistries.FLUID.getKey(exhaustFluid)).toString())) {
             exhaustFluid = BuiltInRegistries.FLUID.get(new ResourceLocation(turbineState.exhaustResourceLocation));
         }
     }

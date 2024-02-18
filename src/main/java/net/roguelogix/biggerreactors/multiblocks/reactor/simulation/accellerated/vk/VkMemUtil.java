@@ -134,19 +134,19 @@ public class VkMemUtil {
             if (alignmentWaste > 0) {
                 final var newAllocs = freeAlloc.split(alignmentWaste);
                 // not concurrent modification because this will always return
-                freeAllocations.add(newAllocs.first);
-                freeAlloc = newAllocs.second;
+                freeAllocations.add(newAllocs.first());
+                freeAlloc = newAllocs.second();
                 
-                int index = freeAllocations.indexOf(newAllocs.first);
+                int index = freeAllocations.indexOf(newAllocs.first());
                 collapseFreeAllocationWithNext(index - 1);
                 collapseFreeAllocationWithNext(index);
             }
             if (freeAlloc.size > size) {
                 final var newAllocs = freeAlloc.split(size);
                 // not concurrent modification because this will always return
-                freeAlloc = newAllocs.first;
-                freeAllocations.add(newAllocs.second);
-                int index = freeAllocations.indexOf(newAllocs.second);
+                freeAlloc = newAllocs.first();
+                freeAllocations.add(newAllocs.second());
+                int index = freeAllocations.indexOf(newAllocs.second());
                 collapseFreeAllocationWithNext(index - 1);
                 collapseFreeAllocationWithNext(index);
             }

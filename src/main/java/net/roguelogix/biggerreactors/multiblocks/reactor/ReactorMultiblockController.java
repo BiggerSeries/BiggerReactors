@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
@@ -12,7 +13,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorBaseBlock;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorFuelRod;
@@ -807,20 +807,20 @@ public class ReactorMultiblockController extends MultiblockController<ReactorBas
             reactorState.coolantStored = coolantTank.liquidAmount();
             reactorState.coolantCapacity = coolantTank.perSideCapacity();
             coolantTankWrapper.liquidType();
-            reactorState.coolantResourceLocation = Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(coolantTankWrapper.liquidType())).toString();
+            reactorState.coolantResourceLocation = Objects.requireNonNull(BuiltInRegistries.FLUID.getKey(coolantTankWrapper.liquidType())).toString();
             
             reactorState.exhaustStored = coolantTank.vaporAmount();
             reactorState.exhaustCapacity = coolantTank.perSideCapacity();
             coolantTankWrapper.vaporType();
-            reactorState.exhaustResourceLocation = Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(coolantTankWrapper.vaporType())).toString();
+            reactorState.exhaustResourceLocation = Objects.requireNonNull(BuiltInRegistries.FLUID.getKey(coolantTankWrapper.vaporType())).toString();
         } else {
             reactorState.coolantStored = 0;
             reactorState.coolantCapacity = 0;
-            reactorState.coolantResourceLocation = Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(Fluids.EMPTY)).toString();
+            reactorState.coolantResourceLocation = Objects.requireNonNull(BuiltInRegistries.FLUID.getKey(Fluids.EMPTY)).toString();
             
             reactorState.exhaustStored = 0;
             reactorState.exhaustCapacity = 0;
-            reactorState.exhaustResourceLocation = Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(Fluids.EMPTY)).toString();
+            reactorState.exhaustResourceLocation = Objects.requireNonNull(BuiltInRegistries.FLUID.getKey(Fluids.EMPTY)).toString();
         }
         reactorState.caseHeatStored = simulation.stackHeat();
         reactorState.fuelHeatStored = simulation.fuelHeat();

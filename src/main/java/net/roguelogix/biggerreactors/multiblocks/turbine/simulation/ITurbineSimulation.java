@@ -1,7 +1,7 @@
 package net.roguelogix.biggerreactors.multiblocks.turbine.simulation;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.VentState;
 import net.roguelogix.biggerreactors.registries.TurbineCoilRegistry;
 import org.joml.Vector4i;

@@ -4,8 +4,7 @@ import cpw.mods.modlauncher.api.LamdbaExceptionUtils;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.lua.LuaFunction;
 import dan200.computercraft.api.peripheral.IPeripheral;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.multiblocks.heatexchanger.HeatExchangerMultiblockController;
 import net.roguelogix.biggerreactors.util.FluidTransitionTank;
@@ -27,8 +26,8 @@ public class HeatExchangerPeripheral implements IPeripheral {
     final Channel evaporator;
     final InternalEnvironment internalEnvironment;
 
-    public static LazyOptional<Object> create(@Nonnull Supplier<HeatExchangerMultiblockController> controllerSupplier) {
-        return LazyOptional.of(() -> new HeatExchangerPeripheral(controllerSupplier));
+    public static HeatExchangerPeripheral create(@Nonnull Supplier<HeatExchangerMultiblockController> controllerSupplier) {
+        return new HeatExchangerPeripheral(controllerSupplier);
     }
 
     public HeatExchangerPeripheral(Supplier<HeatExchangerMultiblockController> rawControllerSupplier) {
@@ -94,7 +93,7 @@ public class HeatExchangerPeripheral implements IPeripheral {
 
             @LuaFunction
             public String name() throws LuaException {
-                return ForgeRegistries.FLUIDS.getKey(transitionTankSupplier.get().fluidTypeInTank(tankNum)).toString();
+                return BuiltInRegistries.FLUID.getKey(transitionTankSupplier.get().fluidTypeInTank(tankNum)).toString();
             }
 
             @LuaFunction

@@ -13,7 +13,6 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorActivity;
 import net.roguelogix.phosphophyllite.modular.block.PhosphophylliteBlock;
 import net.roguelogix.phosphophyllite.multiblock.rectangular.IRectangularMultiblockBlock;
@@ -71,7 +70,7 @@ public abstract class ReactorBaseBlock extends PhosphophylliteBlock implements I
         if (hand == InteractionHand.MAIN_HAND && state.hasProperty(ASSEMBLED) && state.getValue(ASSEMBLED)) {
             if (level.getBlockEntity(pos) instanceof MenuProvider menuProvider) {
                 if (!level.isClientSide) {
-                    NetworkHooks.openScreen((ServerPlayer) player, menuProvider, pos);
+                    player.openMenu(menuProvider, pos);
                 }
                 return InteractionResult.SUCCESS;
             }

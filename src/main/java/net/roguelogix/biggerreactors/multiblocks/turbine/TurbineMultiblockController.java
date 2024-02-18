@@ -5,11 +5,11 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.roguelogix.biggerreactors.Config;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineBaseBlock;
 import net.roguelogix.biggerreactors.multiblocks.turbine.blocks.TurbineRotorBlade;
@@ -538,11 +538,11 @@ public class TurbineMultiblockController extends MultiblockController<TurbineBas
         
         turbineState.intakeStored = simulation.fluidTank().vaporAmount();
         turbineState.intakeCapacity = simulation.fluidTank().perSideCapacity();
-        turbineState.intakeResourceLocation = ForgeRegistries.FLUIDS.getKey(simulation().fluidTank().vaporType()).toString();
+        turbineState.intakeResourceLocation = BuiltInRegistries.FLUID.getKey(simulation().fluidTank().vaporType()).toString();
         
         turbineState.exhaustStored = simulation.fluidTank().liquidAmount();
         turbineState.exhaustCapacity = simulation.fluidTank().perSideCapacity();
-        turbineState.exhaustResourceLocation = ForgeRegistries.FLUIDS.getKey(simulation().fluidTank().liquidType()).toString();
+        turbineState.exhaustResourceLocation = BuiltInRegistries.FLUID.getKey(simulation().fluidTank().liquidType()).toString();
         
         turbineState.energyStored = simulation.battery().stored();
         turbineState.energyCapacity = simulation.battery().capacity();

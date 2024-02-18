@@ -2,7 +2,7 @@ package net.roguelogix.biggerreactors.multiblocks.turbine.simulation;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
 
 public interface ITurbineFluidTank extends INBTSerializable<CompoundTag>, IPhosphophylliteFluidHandler {

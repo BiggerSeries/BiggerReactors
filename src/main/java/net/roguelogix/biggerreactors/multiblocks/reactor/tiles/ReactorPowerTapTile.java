@@ -5,23 +5,21 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
+import net.roguelogix.phosphophyllite.capability.CachedWrappedBlockCapability;
 import net.roguelogix.phosphophyllite.energy.IEnergyTile;
 import net.roguelogix.phosphophyllite.energy.IPhosphophylliteEnergyHandler;
 import net.roguelogix.phosphophyllite.multiblock.common.IEventMultiblock;
 import net.roguelogix.phosphophyllite.multiblock.validated.IValidatedMultiblock;
 import net.roguelogix.phosphophyllite.registry.RegisterTile;
 import net.roguelogix.phosphophyllite.util.BlockStates;
+import net.roguelogix.phosphophyllite.util.NonnullDefault;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import static net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorPowerTap.ConnectionState.*;
 
-@MethodsReturnNonnullByDefault
-@ParametersAreNonnullByDefault
+@NonnullDefault
 public class ReactorPowerTapTile extends ReactorBaseTile implements IEnergyTile, IPhosphophylliteEnergyHandler, IEventMultiblock.AssemblyStateTransition {
     
     @RegisterTile("reactor_power_tap")
@@ -32,13 +30,13 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IEnergyTile,
     }
     
     private boolean connected = false;
+    @Nullable
     Direction powerOutputDirection = null;
     
-    LazyOptional<IPhosphophylliteEnergyHandler> thisCap = LazyOptional.of(() -> this);
     
     @Override
-    public LazyOptional<IPhosphophylliteEnergyHandler> energyHandler() {
-        return thisCap;
+    public IPhosphophylliteEnergyHandler energyHandler(Direction direction) {
+        return this;
     }
     
     private void setConnected(boolean newState) {
@@ -49,14 +47,19 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IEnergyTile,
         }
     }
     
-    LazyOptional<IPhosphophylliteEnergyHandler> outputOptional = LazyOptional.empty();
-    IPhosphophylliteEnergyHandler output;
+    @Nullable
+    CachedWrappedBlockCapability<IPhosphophylliteEnergyHandler, Direction> output = null;
     
     public long distributePower(long toDistribute, boolean simulate) {
-        if (outputOptional.isPresent()) {
-            return Math.max(0, output.insertEnergy(toDistribute, simulate));
+        if(output == null) {
+            return 0;
         }
-        return 0;
+        @Nullable
+        final var outputCap = output.getCapability();
+        if (outputCap == null) {
+            return 0;
+        }
+        return Math.max(0, outputCap.insertEnergy(toDistribute, simulate));
     }
     
     @Override
@@ -69,11 +72,11 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IEnergyTile,
         if (maxExtract <= 0 || nullableController() == null || controller().assemblyState() != IValidatedMultiblock.AssemblyState.ASSEMBLED) {
             return 0;
         }
-        var reactorSim = controller().simulation();
+        @Nullable var reactorSim = controller().simulation();
         if (reactorSim == null) {
             return 0;
         }
-        var battery = reactorSim.battery();
+        @Nullable var battery = reactorSim.battery();
         if (battery == null) {
             return 0;
         }
@@ -88,11 +91,11 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IEnergyTile,
     @Override
     public long energyStored() {
         if (nullableController() != null) {
-            var reactorSim = controller().simulation();
+            @Nullable var reactorSim = controller().simulation();
             if (reactorSim == null) {
                 return 0;
             }
-            var battery = reactorSim.battery();
+            @Nullable var battery = reactorSim.battery();
             if (battery == null) {
                 return 0;
             }
@@ -104,11 +107,11 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IEnergyTile,
     @Override
     public long maxEnergyStored() {
         if (nullableController() != null) {
-            var reactorSim = controller().simulation();
+            @Nullable var reactorSim = controller().simulation();
             if (reactorSim == null) {
                 return 0;
             }
-            var battery = reactorSim.battery();
+            @Nullable var battery = reactorSim.battery();
             if (battery == null) {
                 return 0;
             }
@@ -119,20 +122,13 @@ public class ReactorPowerTapTile extends ReactorBaseTile implements IEnergyTile,
     
     @SuppressWarnings("DuplicatedCode")
     public void neighborChanged() {
-        outputOptional = LazyOptional.empty();
         output = null;
         if (powerOutputDirection == null) {
             setConnected(false);
             return;
         }
-        
-        final var outputCap = this.findEnergyCapability(powerOutputDirection);
-        setConnected(outputCap.isPresent());
-        if (connected) {
-            outputOptional = outputCap;
-            //noinspection DataFlowIssue
-            output = outputOptional.orElse(null);
-        }
+        output = findEnergyCapability(powerOutputDirection);
+        setConnected(output.getCapability() != null);
     }
     
     @Override

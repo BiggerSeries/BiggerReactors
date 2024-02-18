@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RemoteTargetsManager">
+    <targets>
+      <target name="rogue@shiro" type="ssh/sftp" uuid="7a7c0fca-bea8-4c88-af15-7e2364e2a378">
+        <config>
+          <option name="projectRootOnTarget" value="$USER_HOME$/BiggerReactors" />
+          <option name="serverName" value="rogue@shiro:22 agent" />
+          <option name="useRsync" value="true" />
+        </config>
+        <ContributedStateBase type="JavaLanguageRuntime">
+          <config>
+            <option name="homePath" value="/lib/jvm/java-1.17.0-openjdk-amd64" />
+            <option name="javaVersionString" value="17.0.1" />
+          </config>
+        </ContributedStateBase>
+      </target>
+      <target name="rogue@megumin" type="ssh/sftp" uuid="e0e9db21-10c5-418f-a877-bc37ab225e74">
+        <config>
+          <option name="projectRootOnTarget" value="$USER_HOME$/BiggerReactors" />
+          <option name="serverName" value="rogue@megumin:22 agent" />
+          <option name="useRsync" value="true" />
+        </config>
+        <ContributedStateBase type="JavaLanguageRuntime">
+          <config>
+            <option name="homePath" value="/usr/lib/jvm/java-1.17.0-openjdk-amd64" />
+            <option name="javaVersionString" value="17.0.1" />
+          </config>
+        </ContributedStateBase>
+      </target>
+      <target name="rogue@kazuma" type="ssh/sftp" uuid="ca5b7ba7-a9a1-4f8a-bbd7-d5a454d98577">
+        <config>
+          <option name="projectRootOnTarget" value="$USER_HOME$/BiggerReactors" />
+          <option name="serverName" value="rogue@kazuma:22 agent" />
+          <option name="useRsync" value="true" />
+        </config>
+        <ContributedStateBase type="JavaLanguageRuntime">
+          <config>
+            <option name="homePath" value="/usr/lib/jvm/java-1.17.0-openjdk-amd64" />
+            <option name="javaVersionString" value="17.0.1" />
+          </config>
+        </ContributedStateBase>
+      </target>
+      <target name="rogue@potato" type="ssh/sftp" uuid="c43c8583-4a55-4979-93af-3b3c8711fd7c">
+        <config>
+          <option name="projectRootOnTarget" value="$USER_HOME$/BiggerReactors" />
+          <option name="serverName" value="rogue@10.1.250.18:22 password" />
+          <option name="useRsync" value="true" />
+        </config>
+        <ContributedStateBase type="JavaLanguageRuntime">
+          <config>
+            <option name="homePath" value="/usr/lib/jvm/java-1.17.0-openjdk-amd64" />
+            <option name="javaVersionString" value="17.0.1" />
+          </config>
+        </ContributedStateBase>
+      </target>
+      <target name="rogue@karen:22" type="ssh/sftp" uuid="6bb02c62-11a3-4a26-be97-d6d659e46004">
+        <config>
+          <option name="projectRootOnTarget" value="$PROJECT_DIR$/../../BiggerReactors" />
+          <option name="serverName" value="rogue@karen:22 agent" />
+          <option name="useRsync" value="true" />
+        </config>
+        <ContributedStateBase type="JavaLanguageRuntime">
+          <config>
+            <option name="homePath" value="/usr/lib/jvm/java-1.17.0-openjdk-amd64" />
+            <option name="javaVersionString" value="17.0.5" />
+          </config>
+        </ContributedStateBase>
+      </target>
+    </targets>
+  </component>
+</project>

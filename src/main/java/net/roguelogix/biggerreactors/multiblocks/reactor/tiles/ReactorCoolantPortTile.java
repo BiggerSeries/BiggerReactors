@@ -1,6 +1,5 @@
 package net.roguelogix.biggerreactors.multiblocks.reactor.tiles;
 
-import mekanism.api.chemical.gas.IGasHandler;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -10,29 +9,23 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.roguelogix.biggerreactors.multiblocks.reactor.util.ReactorTransitionTank;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorAccessPort;
 import net.roguelogix.biggerreactors.multiblocks.reactor.blocks.ReactorCoolantPort;
 import net.roguelogix.biggerreactors.multiblocks.reactor.containers.ReactorCoolantPortContainer;
 import net.roguelogix.biggerreactors.multiblocks.reactor.state.ReactorCoolantPortState;
+import net.roguelogix.biggerreactors.multiblocks.reactor.util.ReactorTransitionTank;
+import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
 import net.roguelogix.phosphophyllite.fluids.FluidHandlerWrapper;
 import net.roguelogix.phosphophyllite.fluids.IPhosphophylliteFluidHandler;
-import net.roguelogix.phosphophyllite.client.gui.api.IHasUpdatableState;
-import net.roguelogix.phosphophyllite.fluids.MekanismGasWrappers;
 import net.roguelogix.phosphophyllite.multiblock.common.IEventMultiblock;
 import net.roguelogix.phosphophyllite.multiblock.validated.IValidatedMultiblock;
+import net.roguelogix.phosphophyllite.registry.CapabilityRegistration;
+import net.roguelogix.phosphophyllite.registry.RegisterCapability;
 import net.roguelogix.phosphophyllite.registry.RegisterTile;
 import net.roguelogix.phosphophyllite.util.BlockStates;
 
@@ -48,23 +41,27 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
     @RegisterTile("reactor_coolant_port")
     public static final BlockEntityType.BlockEntitySupplier<ReactorCoolantPortTile> SUPPLIER = new RegisterTile.Producer<>(ReactorCoolantPortTile::new);
     
+    @RegisterCapability
+    private static final CapabilityRegistration FLUID_HANDLER_CAP_REGISTRATION = CapabilityRegistration.tileCap(Capabilities.FluidHandler.BLOCK, ReactorCoolantPortTile.class);
+    
     public ReactorCoolantPortTile(BlockEntityType<?> TYPE, BlockPos pos, BlockState state) {
         super(TYPE, pos, state);
     }
-    
-    private static final Capability<IGasHandler> GAS_HANDLER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
-    });
-    
-    @Override
-    public <T> LazyOptional<T> capability(Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.FLUID_HANDLER) {
-            return LazyOptional.of(() -> this).cast();
-        }
-        if (cap == GAS_HANDLER_CAPABILITY) {
-            return LazyOptional.of(() -> MekanismGasWrappers.wrap(this)).cast();
-        }
-        return super.capability(cap, side);
-    }
+
+    // TODO: mek gas cap registration, needs to not be a hard-dep
+//    private static final Capability<IGasHandler> GAS_HANDLER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
+//    });
+//
+//    @Override
+//    public <T> LazyOptional<T> capability(Capability<T> cap, @Nullable Direction side) {
+//        if (cap == ForgeCapabilities.FLUID_HANDLER) {
+//            return LazyOptional.of(() -> this).cast();
+//        }
+//        if (cap == GAS_HANDLER_CAPABILITY) {
+//            return LazyOptional.of(() -> MekanismGasWrappers.wrap(this)).cast();
+//        }
+//        return super.capability(cap, side);
+//    }
     
     @Nullable
     private ReactorTransitionTank transitionTank;
@@ -138,7 +135,7 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
         if (!connected || direction == INLET) {
             return 0;
         }
-        if (handlerOptional.isPresent() && transitionTank != null) {
+        if (handler != null && transitionTank != null) {
             Fluid fluid = transitionTank.vaporType();
             long amount = transitionTank.vaporAmount();
             amount = transitionTank.drain(fluid, null, amount, true);
@@ -146,7 +143,6 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
             amount = transitionTank.drain(fluid, null, amount, false);
             return amount;
         } else {
-            handlerOptional = LazyOptional.empty();
             handler = null;
             connected = false;
         }
@@ -156,40 +152,32 @@ public class ReactorCoolantPortTile extends ReactorBaseTile implements IPhosphop
     private boolean connected = false;
     Direction steamOutputDirection = null;
     
-    LazyOptional<?> handlerOptional = LazyOptional.empty();
     IPhosphophylliteFluidHandler handler = null;
-    FluidTank EMPTY_TANK = new FluidTank(0);
     private ReactorAccessPort.PortDirection direction = INLET;
     public final ReactorCoolantPortState reactorCoolantPortState = new ReactorCoolantPortState(this);
     
     @SuppressWarnings("DuplicatedCode")
     public void neighborChanged() {
-        handlerOptional = LazyOptional.empty();
         handler = null;
         if (steamOutputDirection == null) {
             connected = false;
             return;
         }
         assert level != null;
-        BlockEntity te = level.getBlockEntity(worldPosition.relative(steamOutputDirection));
-        if (te == null) {
-            connected = false;
-            return;
-        }
+        final var capHandler = level.getCapability(Capabilities.FluidHandler.BLOCK, worldPosition.relative(steamOutputDirection), steamOutputDirection.getOpposite());
         connected = false;
-        LazyOptional<IFluidHandler> fluidOptional = te.getCapability(ForgeCapabilities.FLUID_HANDLER, steamOutputDirection.getOpposite());
-        if (fluidOptional.isPresent()) {
+        if (capHandler != null) {
             connected = true;
-            handlerOptional = fluidOptional;
-            handler = FluidHandlerWrapper.wrap(fluidOptional.orElse(EMPTY_TANK));
-        } else if (GAS_HANDLER_CAPABILITY != null) {
-            LazyOptional<IGasHandler> gasOptional = te.getCapability(GAS_HANDLER_CAPABILITY, steamOutputDirection.getOpposite());
-            if (gasOptional.isPresent()) {
-                IGasHandler gasHandler = gasOptional.orElse(MekanismGasWrappers.EMPTY_TANK);
-                connected = true;
-                handlerOptional = gasOptional;
-                handler = MekanismGasWrappers.wrap(gasHandler);
-            }
+            handler = FluidHandlerWrapper.wrap(capHandler);
+            // TODO: mek gas
+//        } else if (GAS_HANDLER_CAPABILITY != null) {
+//            LazyOptional<IGasHandler> gasOptional = te.getCapability(GAS_HANDLER_CAPABILITY, steamOutputDirection.getOpposite());
+//            if (gasOptional.isPresent()) {
+//                IGasHandler gasHandler = gasOptional.orElse(MekanismGasWrappers.EMPTY_TANK);
+//                connected = true;
+//                handlerOptional = gasOptional;
+//                handler = MekanismGasWrappers.wrap(gasHandler);
+//            }
         }
     }
     

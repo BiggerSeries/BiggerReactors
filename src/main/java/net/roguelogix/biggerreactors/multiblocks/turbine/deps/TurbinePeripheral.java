@@ -4,8 +4,7 @@ import cpw.mods.modlauncher.api.LamdbaExceptionUtils;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.lua.LuaFunction;
 import dan200.computercraft.api.peripheral.IPeripheral;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.roguelogix.biggerreactors.BiggerReactors;
 import net.roguelogix.biggerreactors.multiblocks.turbine.TurbineMultiblockController;
 import net.roguelogix.biggerreactors.multiblocks.turbine.state.VentState;
@@ -22,8 +21,8 @@ public class TurbinePeripheral implements IPeripheral {
     @Nonnull
     private final LamdbaExceptionUtils.Supplier_WithExceptions<TurbineMultiblockController, LuaException> controllerSupplier;
 
-    public static LazyOptional<Object> create(@Nonnull Supplier<TurbineMultiblockController> controllerSupplier) {
-        return LazyOptional.of(() -> new TurbinePeripheral(controllerSupplier));
+    public static TurbinePeripheral create(@Nonnull Supplier<TurbineMultiblockController> controllerSupplier) {
+        return new TurbinePeripheral(controllerSupplier);
     }
 
     public TurbinePeripheral(@Nonnull Supplier<TurbineMultiblockController> rawControllerSupplier) {
@@ -147,7 +146,7 @@ public class TurbinePeripheral implements IPeripheral {
 
             @LuaFunction
             public String name() throws LuaException {
-                return ForgeRegistries.FLUIDS.getKey(controllerSupplier.get().simulation().fluidTank().fluidTypeInTank(tankNum)).toString();
+                return BuiltInRegistries.FLUID.getKey(controllerSupplier.get().simulation().fluidTank().fluidTypeInTank(tankNum)).toString();
             }
 
             @LuaFunction
